@@ -1,17 +1,31 @@
 ﻿using OpenLibSys;
 using System;
+using System.Linq;
+using System.Management;
 using System.Threading;
 using System.Windows.Forms;
-using ZenStatesDebugTool;
 
 namespace ZenTimings
 {
     public partial class MainForm : Form
     {
+        // The only thing we need from SMU for now
+        private enum CPUType : int
+        {
+            Unsupported = 0,
+            DEBUG,
+            SummitRidge,
+            Threadripper,
+            RavenRidge,
+            PinnacleRidge,
+            Picasso,
+            Fenghuang,
+            Matisse,
+            Rome,
+            Renoir
+        };
         private readonly Ols ols;
-        private SMU smu;
-        private SystemInfo si;
-        private SMU.CPUType cpuType = SMU.CPUType.Unsupported;
+        private CPUType cpuType = CPUType.Unsupported;
         private readonly Mutex hMutexPci;
 
         private void CheckOlsStatus()
@@ -62,164 +76,56 @@ namespace ZenTimings
 
         private void InitSystemInfo()
         {
-            si = new SystemInfo
-            {
-                CpuId = GetCpuInfo()
-            };
-
             // CPU Check. Compare family, model, ext family, ext model. Ignore stepping/revision
-            switch (si.CpuId & 0xFFFFFFF0)
+            switch (GetCpuInfo() & 0xFFFFFFF0)
             {
                 case 0x00800F10: // CPU \ Zen \ Summit Ridge \ ZP - B0 \ 14nm
                 case 0x00800F00: // CPU \ Zen \ Summit Ridge \ ZP - A0 \ 14nm
-                    cpuType = SMU.CPUType.SummitRidge;
+                    cpuType = CPUType.SummitRidge;
                     break;
                 case 0x00800F80: // CPU \ Zen + \ Pinnacle Ridge \ Colfax 12nm
-                    cpuType = SMU.CPUType.PinnacleRidge;
+                    cpuType = CPUType.PinnacleRidge;
                     break;
                 case 0x00810F80: // APU \ Zen + \ Picasso \ 12nm
-                    cpuType = SMU.CPUType.Picasso;
+                    cpuType = CPUType.Picasso;
                     break;
                 case 0x00810F00: // APU \ Zen \ Raven Ridge \ RV - A0 \ 14nm
                 case 0x00810F10: // APU \ Zen \ Raven Ridge \ 14nm
                 case 0x00820F00: // APU \ Zen \ Raven Ridge 2 \ RV2 - A0 \ 14nm
-                    cpuType = SMU.CPUType.RavenRidge;
+                    cpuType = CPUType.RavenRidge;
                     break;
                 case 0x00870F10: // CPU \ Zen2 \ Matisse \ MTS - B0 \ 7nm + 14nm I/ O Die
                 case 0x00870F00: // CPU \ Zen2 \ Matisse \ MTS - A0 \ 7nm + 14nm I/ O Die
-                    cpuType = SMU.CPUType.Matisse;
+                    cpuType = CPUType.Matisse;
                     break;
                 case 0x00830F00:
                 case 0x00830F10: // CPU \ Epyc 2 \ Rome \ Treadripper 2 \ Castle Peak 7nm
-                    cpuType = SMU.CPUType.Rome;
+                    cpuType = CPUType.Rome;
                     break;
                 case 0x00850F00:
-                    cpuType = SMU.CPUType.Fenghuang;
+                    cpuType = CPUType.Fenghuang;
                     break;
                 case 0x00850F10: // APU \ Renoir
-                    cpuType = SMU.CPUType.Renoir;
+                    cpuType = CPUType.Renoir;
                     break;
                 default:
-                    cpuType = SMU.CPUType.Unsupported;
+                    cpuType = CPUType.Unsupported;
 #if DEBUG
-                    cpuType = SMU.CPUType.DEBUG;
+                    cpuType = CPUType.DEBUG;
 #endif
                     break;
             }
 
-            smu = GetMaintainedSettings.GetByType(cpuType);
-            smu.Version = GetSmuVersion();
-            si.SmuVersion = smu.Version;
-        }
-
-        private bool SmuWriteReg(uint addr, uint data)
-        {
-            if (ols.WritePciConfigDwordEx(smu.SMU_PCI_ADDR, smu.SMU_OFFSET_ADDR, addr) == 1)
-            { 
-                return ols.WritePciConfigDwordEx(smu.SMU_PCI_ADDR, smu.SMU_OFFSET_DATA, data) == 1;
-            }
-            return false;
-        }
-
-        private bool SmuReadReg(uint addr, ref uint data)
-        {
-            if (ols.WritePciConfigDwordEx(smu.SMU_PCI_ADDR, smu.SMU_OFFSET_ADDR, addr) == 1)
+            if (cpuType == CPUType.Unsupported)
             {
-                return ols.ReadPciConfigDwordEx(smu.SMU_PCI_ADDR, smu.SMU_OFFSET_DATA, ref data) == 1;
+                throw new ApplicationException("CPU is not supported.");
             }
-            return false;
-        }
-
-        private bool SmuWaitDone()
-        {
-            bool res = false;
-            ushort timeout = 1000;
-            uint data = 0;
-            while ((!res || data != 1) && --timeout > 0)
-            {
-                res = SmuReadReg(smu.SMU_ADDR_RSP, ref data);
-            }
-
-            if (timeout == 0 || data != 1) res = false;
-
-            return res;
-        }
-
-        private bool SmuRead(uint msg, ref uint data)
-        {
-            if (SmuWriteReg(smu.SMU_ADDR_RSP, 0))
-            {
-                if (SmuWriteReg(smu.SMU_ADDR_MSG, msg))
-                {
-                    if (SmuWaitDone())
-                    {
-                        return SmuReadReg(smu.SMU_ADDR_ARG0, ref data);
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        private bool SmuWrite(uint msg, uint value)
-        {
-            bool res = false;
-            // Mutex
-            if (hMutexPci.WaitOne(5000))
-            {
-                // Clear response
-                if (SmuWriteReg(smu.SMU_ADDR_RSP, 0))
-                {
-                    // Write data
-                    if (SmuWriteReg(smu.SMU_ADDR_ARG0, value))
-                    {
-                        SmuWriteReg(smu.SMU_ADDR_ARG1, 0);
-                    }
-
-                    // Send message
-                    if (SmuWriteReg(smu.SMU_ADDR_MSG, msg))
-                    {
-                        res = SmuWaitDone();
-                    }
-                }
-            }
-
-            hMutexPci.ReleaseMutex();
-            return res;
         }
 
         private uint ReadDword(uint value)
         {
-            ols.WritePciConfigDword(smu.SMU_PCI_ADDR, (byte)smu.SMU_OFFSET_ADDR, value);
-            return ols.ReadPciConfigDword(smu.SMU_PCI_ADDR, (byte)smu.SMU_OFFSET_DATA);
-        }
-
-        private uint GetSmuVersion()
-        {
-            uint version = 0;
-
-            SmuRead(smu.SMC_MSG_GetSmuVersion, ref version);
-            return version;
-        }
-
-        public MainForm()
-        {
-            try
-            {
-                ols = new Ols();
-                hMutexPci = new Mutex();
-
-                CheckOlsStatus();
-                InitSystemInfo();
-                InitializeComponent();
-                ReadTimings();
-            }
-            catch (ApplicationException ex)
-            {
-                MessageBox.Show(ex.Message, "Error");
-                Dispose();
-                Application.Exit();
-            }
+            ols.WritePciConfigDword(0U, 0xB8, value);
+            return ols.ReadPciConfigDword(0U, 0xBC);
         }
 
         private double GetVDDCR_SOC()
@@ -230,6 +136,31 @@ namespace ZenTimings
                 return 1.55 - vid * 0.00625;
             }
             return 0;
+        }
+
+        private void GetMemoryInfo()
+        {
+            try
+            {
+                ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_PhysicalMemory");
+                ManagementObjectCollection moc = searcher.Get();
+                ManagementObject mo = moc.OfType<ManagementObject>().FirstOrDefault();
+                ulong capacity = 0;
+
+                foreach(ManagementObject obj in moc)
+                {
+                    capacity += (ulong)obj["Capacity"];
+                }
+
+                textBoxCapacity.Text = $"{(capacity / 1024 / 1024 / 1000).ToString()}GB";
+                textBoxPartNumber.Text = (string)mo["PartNumber"];
+                textBoxMCLK.Text = ((uint)mo["ConfiguredClockSpeed"]).ToString();
+
+                if (searcher != null) searcher.Dispose();
+                if (mo != null) mo.Dispose();
+                if (moc != null) moc.Dispose();
+            }
+            catch { }
         }
 
         private void ReadTimings()
@@ -308,6 +239,27 @@ namespace ZenTimings
             // VDDCR_SOC is not returning correct value
             // Same issue exists in Ryzen Master
             // MessageBox.Show(GetVDDCR_SOC().ToString("F2") + "V");
+        }
+
+        public MainForm()
+        {
+            try
+            {
+                ols = new Ols();
+                hMutexPci = new Mutex();
+
+                CheckOlsStatus();
+                InitSystemInfo();
+                InitializeComponent();
+                GetMemoryInfo();
+                ReadTimings();
+            }
+            catch (ApplicationException ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Dispose();
+                Application.Exit();
+            }
         }
     }
 }
