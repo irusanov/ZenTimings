@@ -1,5 +1,7 @@
 ﻿using OpenLibSys;
 using System;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Management;
 using System.Threading;
@@ -131,7 +133,7 @@ namespace ZenTimings
         private double GetVDDCR_SOC()
         {
             // The address is different for each gen
-            uint vid = ReadDword(0x5a058) >> 24;
+            uint vid = ReadDword(0x5a054) >> 24;
             if (vid > 0) {
                 return 1.55 - vid * 0.00625;
             }
@@ -174,7 +176,7 @@ namespace ZenTimings
             // because no bios allow setting different timings for the different channels.
             while (i < 8 && !enabled)
             {
-                offset = (uint)i << 20;
+                offset = i << 20;
                 enabled = ((ReadDword(0x50DF0 + offset) >> 19) & 1) != 1;
                 i++;
             }
@@ -259,6 +261,25 @@ namespace ZenTimings
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Dispose();
                 Application.Exit();
+            }
+        }
+
+        private void buttonScreenshot_Click(object sender, EventArgs e)
+        {
+            Rectangle bounds = Bounds;
+            using (Bitmap bitmap = new Bitmap(bounds.Width, bounds.Height))
+            {
+                using (Graphics g = Graphics.FromImage(bitmap))
+                {
+                    g.CopyFromScreen(new Point(bounds.Left, bounds.Top), Point.Empty, bounds.Size);
+                }
+
+                using (Form saveForm = new SaveForm(bitmap))
+                {
+                    saveForm.ShowDialog();
+                }
+
+                bitmap.Dispose();
             }
         }
     }

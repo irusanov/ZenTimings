@@ -79,11 +79,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form1.cs">
+    <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SaveForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SaveForm.Designer.cs">
+      <DependentUpon>SaveForm.cs</DependentUpon>
     </Compile>
     <Compile Include="OpenLibSys\Ols.cs" />
     <Compile Include="Program.cs" />
@@ -93,8 +99,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resource1.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -104,10 +110,14 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="Resource1.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SaveForm.resx">
+      <DependentUpon>SaveForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.manifest" />
     <None Include="Properties\Settings.settings">
@@ -129,6 +139,15 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Camera-01-24.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Camera-01-16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Camera-02-16.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
