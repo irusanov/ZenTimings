@@ -85,6 +85,7 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="MemoryModule.cs" />
     <Compile Include="SaveForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -139,12 +140,6 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Camera-01-24.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Camera-01-16.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Camera-02-16.png" />

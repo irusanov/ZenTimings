@@ -16,7 +16,6 @@ namespace ZenTimings
             if (disposing && (components != null))
             {
                 ols.Dispose();
-                hMutexPci.Dispose();
                 components.Dispose();
             }
             base.Dispose(disposing);
@@ -1109,6 +1108,7 @@ namespace ZenTimings
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);

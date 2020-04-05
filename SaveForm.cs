@@ -31,7 +31,7 @@ namespace ZenTimings
 
         private void buttonSaveAs_Click(object sender, EventArgs e)
         {
-            SaveFileDialog saveFileDialog1 = new SaveFileDialog
+            SaveFileDialog saveFileDialog = new SaveFileDialog
             {
                 Filter = "png files (*.png)|*.png|All files (*.*)|*.*",
                 FilterIndex = 1,
@@ -40,9 +40,9 @@ namespace ZenTimings
                 RestoreDirectory = true
             };
 
-            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
-                SaveToFile(saveFileDialog1.FileName);
+                SaveToFile(saveFileDialog.FileName);
             }
         }
     }

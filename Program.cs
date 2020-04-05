@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace ZenTimings
@@ -8,20 +7,29 @@ namespace ZenTimings
     static class Program
     {
         /// <summary>
+        /// Name of our mutex
+        /// </summary>
+        private const string mutexName = "Local\\ZenTimings";
+ 
+        /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         static void Main()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Form MainForm = new MainForm();
-            string appString = $"{Application.ProductName} {Application.ProductVersion.Substring(0, Application.ProductVersion.LastIndexOf('.'))}";
-#if DEBUG
-            appString += " (debug)";
-#endif
-            MainForm.Text = appString;
-            Application.Run(MainForm);
+            try
+            {
+                Mutex.OpenExisting(mutexName);
+                return;
+            }
+            catch { }
+            
+            using (var instanceMutex = new Mutex(true, mutexName, out _))
+            {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new MainForm());
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using OpenLibSys;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
@@ -28,7 +29,6 @@ namespace ZenTimings
         };
         private readonly Ols ols;
         private CPUType cpuType = CPUType.Unsupported;
-        private readonly Mutex hMutexPci;
 
         private void CheckOlsStatus()
         {
@@ -140,45 +140,52 @@ namespace ZenTimings
             return 0;
         }
 
-        private void GetMemoryInfo()
+        private void ReadMemoryModulesInfo()
         {
-            try
+            using (var searcher = new ManagementObjectSearcher("select * from Win32_PhysicalMemory"))
             {
-                ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_PhysicalMemory");
-                ManagementObjectCollection moc = searcher.Get();
-                ManagementObject mo = moc.OfType<ManagementObject>().FirstOrDefault();
-                ulong capacity = 0;
+                var modules = new List<MemoryModule>();
 
-                foreach(ManagementObject obj in moc)
+                foreach (var queryObject in searcher.Get().Cast<ManagementObject>())
                 {
-                    capacity += (ulong)obj["Capacity"];
+                    if (!(queryObject["Capacity"] is ulong capacity) ||
+                        !(queryObject["PartNumber"] is string partNumber) ||
+                        !(queryObject["ConfiguredClockSpeed"] is uint clockSpeed))
+                        continue;
+
+                    modules.Add(new MemoryModule(partNumber, capacity, clockSpeed));
                 }
 
-                textBoxCapacity.Text = $"{(capacity / 1024 / 1024 / 1000).ToString()}GB";
-                textBoxPartNumber.Text = (string)mo["PartNumber"];
-                textBoxMCLK.Text = ((uint)mo["ConfiguredClockSpeed"]).ToString();
+                if (modules.Count > 0)
+                {
+                    var totalCapacity = 0UL;
 
-                if (searcher != null) searcher.Dispose();
-                if (mo != null) mo.Dispose();
-                if (moc != null) moc.Dispose();
+                    foreach(var module in modules)
+                    {
+                        totalCapacity += module.Capacity;
+                    }
+
+                    textBoxPartNumber.Text = modules.FirstOrDefault().PartNumber;
+                    textBoxMCLK.Text = modules.FirstOrDefault().ClockSpeed.ToString();
+
+                    if (totalCapacity != 0)
+                        textBoxCapacity.Text = $"{totalCapacity / 1024 / (1024 * 1024)}GB";
+                }
             }
-            catch { }
         }
 
         private void ReadTimings()
         {
             uint offset = 0;
-            uint i = 0;
             bool enabled = false;
 
             // Get the offset by probing the IMC0 to IMC7
             // Reading from first one that matches should be sufficient,
             // because no bios allow setting different timings for the different channels.
-            while (i < 8 && !enabled)
+            for (var i = 0u; i < 8u && !enabled; i++)
             {
                 offset = i << 20;
                 enabled = ((ReadDword(0x50DF0 + offset) >> 19) & 1) != 1;
-                i++;
             }
 
             uint umcBase = ReadDword(0x50200 + offset);
@@ -248,13 +255,10 @@ namespace ZenTimings
             try
             {
                 ols = new Ols();
-                hMutexPci = new Mutex();
 
                 CheckOlsStatus();
                 InitSystemInfo();
                 InitializeComponent();
-                GetMemoryInfo();
-                ReadTimings();
             }
             catch (ApplicationException ex)
             {
@@ -278,9 +282,22 @@ namespace ZenTimings
                 {
                     saveForm.ShowDialog();
                 }
-
-                bitmap.Dispose();
             }
+        }
+
+        /// <summary>
+        /// Gets triggered right before the form gets displayd
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            Text = $"{Application.ProductName} {Application.ProductVersion.Substring(0, Application.ProductVersion.LastIndexOf('.'))}";
+#if DEBUG
+            Text += " (debug)";
+#endif
+            ReadMemoryModulesInfo();
+            ReadTimings();
         }
     }
 }
