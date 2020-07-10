@@ -12,23 +12,13 @@ namespace ZenTimings
 {
     public partial class MainForm : Form
     {
-        // The only thing we need from SMU for now
-        private enum CPUType : int
+        private enum CpuFamily
         {
-            Unsupported = 0,
-            DEBUG,
-            SummitRidge,
-            Threadripper,
-            RavenRidge,
-            PinnacleRidge,
-            Picasso,
-            Fenghuang,
-            Matisse,
-            Rome,
-            Renoir
-        };
+            UNSUPPORTED = 0x0,
+            FAMILY_17H = 0x17
+        }
+
         private readonly Ols ols;
-        private CPUType cpuType = CPUType.Unsupported;
 
         private void CheckOlsStatus()
         {
@@ -65,62 +55,46 @@ namespace ZenTimings
             }
         }
 
-        private uint GetCpuInfo()
+        private static void ExitApplication()
+        {
+            if (Application.MessageLoop)
+            {
+                Application.Exit();
+            }
+            else
+            {
+                Environment.Exit(1);
+            }
+        }
+
+        private static uint GetBits(uint val, int offset, int n)
+        {
+            return (val >> offset) & ~(~0U << n);
+        }
+
+        private CpuFamily GetCpuFamily()
         {
             uint eax = 0, ebx = 0, ecx = 0, edx = 0;
-            ols.CpuidPx(0x00000000, ref eax, ref ebx, ref ecx, ref edx, (UIntPtr)1);
-            if (ols.CpuidPx(0x00000001, ref eax, ref ebx, ref ecx, ref edx, (UIntPtr)1) == 1)
+            ols.Cpuid(0x00000000, ref eax, ref ebx, ref ecx, ref edx);
+            if (ols.Cpuid(0x00000001, ref eax, ref ebx, ref ecx, ref edx) == 1)
             {
-                return eax;
+                CpuFamily family = (CpuFamily)(GetBits(eax, 8, 4) + GetBits(eax, 20, 7));
+                return family;
             }
-            return 0;
+            else
+            {
+                MessageBox.Show("Could not get CPU Family. Aborting.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ExitApplication();
+            }
+            return CpuFamily.UNSUPPORTED;
         }
 
         private void InitSystemInfo()
         {
-            // CPU Check. Compare family, model, ext family, ext model. Ignore stepping/revision
-            switch (GetCpuInfo() & 0xFFFFFFF0)
+            if (GetCpuFamily() != CpuFamily.FAMILY_17H)
             {
-                case 0x00800F10: // CPU \ Zen \ Summit Ridge \ ZP - B0 \ 14nm
-                case 0x00800F00: // CPU \ Zen \ Summit Ridge \ ZP - A0 \ 14nm
-                    cpuType = CPUType.SummitRidge;
-                    break;
-                case 0x00800F80: // CPU \ Zen + \ Pinnacle Ridge \ Colfax 12nm
-                    cpuType = CPUType.PinnacleRidge;
-                    break;
-                case 0x00810F80: // APU \ Zen + \ Picasso \ 12nm
-                    cpuType = CPUType.Picasso;
-                    break;
-                case 0x00810F00: // APU \ Zen \ Raven Ridge \ RV - A0 \ 14nm
-                case 0x00810F10: // APU \ Zen \ Raven Ridge \ 14nm
-                case 0x00820F00: // APU \ Zen \ Raven Ridge 2 \ RV2 - A0 \ 14nm
-                    cpuType = CPUType.RavenRidge;
-                    break;
-                case 0x00870F10: // CPU \ Zen2 \ Matisse \ MTS - B0 \ 7nm + 14nm I/ O Die
-                case 0x00870F00: // CPU \ Zen2 \ Matisse \ MTS - A0 \ 7nm + 14nm I/ O Die
-                    cpuType = CPUType.Matisse;
-                    break;
-                case 0x00830F00:
-                case 0x00830F10: // CPU \ Epyc 2 \ Rome \ Treadripper 2 \ Castle Peak 7nm
-                    cpuType = CPUType.Rome;
-                    break;
-                case 0x00850F00:
-                    cpuType = CPUType.Fenghuang;
-                    break;
-                case 0x00850F10: // APU \ Renoir
-                    cpuType = CPUType.Renoir;
-                    break;
-                default:
-                    cpuType = CPUType.Unsupported;
-#if DEBUG
-                    cpuType = CPUType.DEBUG;
-#endif
-                    break;
-            }
-
-            if (cpuType == CPUType.Unsupported)
-            {
-                throw new ApplicationException("CPU is not supported.");
+                MessageBox.Show("CPU is not supported.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ExitApplication();
             }
         }
 
