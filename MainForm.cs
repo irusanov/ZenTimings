@@ -1,4 +1,4 @@
-﻿using OpenLibSys;
+using OpenLibSys;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -16,7 +16,7 @@ namespace ZenTimings
         {
             UNSUPPORTED = 0x0,
             FAMILY_17H = 0x17
-        }
+        };
 
         private readonly Ols ols;
 
@@ -155,11 +155,11 @@ namespace ZenTimings
 
             // Get the offset by probing the IMC0 to IMC7
             // Reading from first one that matches should be sufficient,
-            // because no bios allow setting different timings for the different channels.
+            // because no bios allows setting different timings for the different channels.
             for (var i = 0u; i < 8u && !enabled; i++)
             {
                 offset = i << 20;
-                enabled = ((ReadDword(0x50DF0 + offset) >> 19) & 1) != 1;
+                enabled = GetBits(ReadDword(0x50DF0 + offset), 19, 1) == 0;
             }
 
             uint umcBase = ReadDword(0x50200 + offset);
@@ -188,36 +188,36 @@ namespace ZenTimings
             uint num23 = (int)num20 != (int)num21 ? (num20 != 0x21060138 ? num20 : num21) : num20;
 
             textBoxBGS.Text = (bgs0 == 0x87654321 && bgs1 == 0x87654321) ? "Disabled" : "Enabled";
-            textBoxBGSAlt.Text = ((bgsa0 & 0x7F0) >> 4 > 0 || (bgsa1 & 0x7F0) >> 4 > 0) ? "Enabled" : "Disabled";
-            textBoxGDM.Text = (umcBase & 0x800) >> 11 > 0 ? "Enabled" : "Disabled";
-            textBoxCmd2T.Text = (umcBase & 0x400) >> 10 > 0 ? "2T" : "1T";
+            textBoxBGSAlt.Text = GetBits(bgsa0, 4, 7) > 0 || GetBits(bgsa1, 4, 7) > 0 ? "Enabled" : "Disabled";
+            textBoxGDM.Text = GetBits(umcBase, 11, 1) > 0 ? "Enabled" : "Disabled";
+            textBoxCmd2T.Text = GetBits(umcBase, 10, 1) > 0 ? "2T" : "1T";
 
-            textBoxCL.Text = (num5 & 0x3F).ToString();
-            textBoxRCDWR.Text = ((num5 & 0x3F000000) >> 24).ToString();
-            textBoxRCDRD.Text = ((num5 & 0x3F0000) >> 16).ToString();
-            textBoxRP.Text = ((num6 & 0x3F0000) >> 16).ToString();
-            textBoxRAS.Text = ((num5 & 0x7F00) >> 8).ToString();
-            textBoxRC.Text = (num6 & 0xFF).ToString();
-            textBoxRRDS.Text = (num7 & 0x1F).ToString();
-            textBoxRRDL.Text = ((num7 & 0x1F00) >> 8).ToString();
-            textBoxFAW.Text = (num8 & 0xFF).ToString();
-            textBoxWTRS.Text = ((num9 & 0x1F00) >> 8).ToString();
-            textBoxWTRL.Text = ((num9 & 0x7F0000) >> 16).ToString();
-            textBoxWR.Text = (num10 & 0xFF).ToString();
-            textBoxRDRDSCL.Text = ((num12 & 0x3F000000) >> 24).ToString();
-            textBoxWRWRSCL.Text = ((num13 & 0x3F000000) >> 24).ToString();
-            textBoxRFC.Text = (num23 & 0x7FF).ToString();
-            textBoxCWL.Text = (num9 & 0x3F).ToString();
-            textBoxRTP.Text = ((num7 & 0x1F000000) >> 24).ToString();
-            textBoxRDWR.Text = ((num14 & 0x1F00) >> 8).ToString();
-            textBoxWRRD.Text = (num14 & 0xF).ToString();
-            textBoxRDRDSC.Text = ((num12 & 0xF0000) >> 16).ToString();
-            textBoxRDRDSD.Text = ((num12 & 0xF00U) >> 8).ToString();
-            textBoxRDRDDD.Text = (num12 & 0xF).ToString();
-            textBoxWRWRSC.Text = ((num13 & 0xF0000) >> 16).ToString();
-            textBoxWRWRSD.Text = ((num13 & 0xF00) >> 8).ToString();
-            textBoxWRWRDD.Text = (num13 & 0xF).ToString();
-            textBoxCKE.Text = ((num18 & 0x1F000000) >> 24).ToString();
+            textBoxCL.Text = GetBits(num5, 0, 6).ToString();
+            textBoxRCDWR.Text = GetBits(num5, 24, 6).ToString();
+            textBoxRCDRD.Text = GetBits(num5, 16, 6).ToString();
+            textBoxRP.Text = GetBits(num6, 16, 6).ToString();
+            textBoxRAS.Text = GetBits(num5, 8, 7).ToString();
+            textBoxRC.Text = GetBits(num6, 0, 8).ToString();
+            textBoxRRDS.Text = GetBits(num7, 0, 5).ToString();
+            textBoxRRDL.Text = GetBits(num7, 8, 5).ToString();
+            textBoxFAW.Text = GetBits(num8, 0, 8).ToString();
+            textBoxWTRS.Text = GetBits(num9, 8, 5).ToString();
+            textBoxWTRL.Text = GetBits(num9, 16, 7).ToString();
+            textBoxWR.Text = GetBits(num10, 0, 8).ToString();
+            textBoxRDRDSCL.Text = GetBits(num12, 24, 6).ToString();
+            textBoxWRWRSCL.Text = GetBits(num13, 24, 6).ToString();
+            textBoxRFC.Text = GetBits(num23, 0, 11).ToString();
+            textBoxCWL.Text = GetBits(num9, 0, 6).ToString();
+            textBoxRTP.Text = GetBits(num7, 24, 5).ToString();
+            textBoxRDWR.Text = GetBits(num14, 8, 5).ToString();
+            textBoxWRRD.Text = GetBits(num14, 0, 4).ToString();
+            textBoxRDRDSC.Text = GetBits(num12, 16, 4).ToString();
+            textBoxRDRDSD.Text = GetBits(num12, 8, 4).ToString();
+            textBoxRDRDDD.Text = GetBits(num12, 0, 4).ToString();
+            textBoxWRWRSC.Text = GetBits(num13, 16, 4).ToString();
+            textBoxWRWRSD.Text = GetBits(num13, 8, 4).ToString();
+            textBoxWRWRDD.Text = GetBits(num13, 0, 4).ToString();
+            textBoxCKE.Text = GetBits(num18, 24, 5).ToString();
 
             // VDDCR_SOC is not returning correct value
             // Same issue exists in Ryzen Master
