@@ -89,6 +89,20 @@ namespace ZenTimings
             return CpuFamily.UNSUPPORTED;
         }
 
+        public static object TryGetProperty(ManagementObject wmiObj, string propertyName)
+        {
+            object retval;
+            try
+            {
+                retval = wmiObj.GetPropertyValue(propertyName);
+            }
+            catch (ManagementException ex)
+            {
+                retval = null;
+            }
+            return retval;
+        }
+
         private void InitSystemInfo()
         {
             if (GetCpuFamily() != CpuFamily.FAMILY_17H)
@@ -118,33 +132,48 @@ namespace ZenTimings
         {
             using (var searcher = new ManagementObjectSearcher("select * from Win32_PhysicalMemory"))
             {
-                var modules = new List<MemoryModule>();
-
-                foreach (var queryObject in searcher.Get().Cast<ManagementObject>())
+                try
                 {
-                    if (!(queryObject["Capacity"] is ulong capacity) ||
-                        !(queryObject["PartNumber"] is string partNumber) ||
-                        !(queryObject["ConfiguredClockSpeed"] is uint clockSpeed))
-                        continue;
+                    var modules = new List<MemoryModule>();
 
-                    modules.Add(new MemoryModule(partNumber, capacity, clockSpeed));
-                }
-
-                if (modules.Count > 0)
-                {
-                    var totalCapacity = 0UL;
-
-                    foreach(var module in modules)
+                    foreach (var queryObject in searcher.Get().Cast<ManagementObject>())
                     {
-                        totalCapacity += module.Capacity;
+                        ulong capacity = 0UL;
+                        uint clockSpeed = 0U;
+                        string partNumber = "N/A";
+                        object temp;
+
+                        temp = TryGetProperty(queryObject, "Capacity");
+                        if (temp != null) capacity = (ulong)temp;
+
+                        temp = TryGetProperty(queryObject, "ConfiguredClockSpeed");
+                        if (temp != null) clockSpeed = (uint)temp;
+
+                        temp = TryGetProperty(queryObject, "partNumber");
+                        if (temp != null) partNumber = (string)temp;
+
+                        modules.Add(new MemoryModule(partNumber, capacity, clockSpeed));
                     }
 
-                    textBoxPartNumber.Text = modules.FirstOrDefault().PartNumber;
-                    textBoxMCLK.Text = modules.FirstOrDefault().ClockSpeed.ToString();
+                    if (modules.Count > 0)
+                    {
+                        var totalCapacity = 0UL;
 
-                    if (totalCapacity != 0)
-                        textBoxCapacity.Text = $"{totalCapacity / 1024 / (1024 * 1024)}GB";
+                        foreach (var module in modules)
+                        {
+                            totalCapacity += module.Capacity;
+                        }
+
+                        if (modules.FirstOrDefault().ClockSpeed != 0)
+                            textBoxMCLK.Text = modules.FirstOrDefault().ClockSpeed.ToString();
+
+                        if (totalCapacity != 0)
+                            textBoxCapacity.Text = $"{totalCapacity / 1024 / (1024 * 1024)}GB";
+
+                        textBoxPartNumber.Text = modules.FirstOrDefault().PartNumber;
+                    }
                 }
+                catch { }
             }
         }
 
