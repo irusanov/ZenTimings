@@ -74,7 +74,6 @@ namespace ZenTimings
         private CpuFamily GetCpuFamily()
         {
             uint eax = 0, ebx = 0, ecx = 0, edx = 0;
-            ols.Cpuid(0x00000000, ref eax, ref ebx, ref ecx, ref edx);
             if (ols.Cpuid(0x00000001, ref eax, ref ebx, ref ecx, ref edx) == 1)
             {
                 CpuFamily family = (CpuFamily)(GetBits(eax, 8, 4) + GetBits(eax, 20, 7));
@@ -246,7 +245,7 @@ namespace ZenTimings
             if (mclk == 0)
             {
                 mclk = GetBits(umcBase, 0, 7) / 3.0f * 200;
-                textBoxMCLK.Text = Convert.ToInt32(mclk / 100).ToString();
+                textBoxMCLK.Text = Convert.ToInt32(mclk).ToString();
             }
 
             textBoxRFCns.Text = Convert.ToInt32(trfc * 2000 / mclk).ToString();
