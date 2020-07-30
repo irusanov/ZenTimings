@@ -2,7 +2,7 @@
 
 namespace ZenTimings
 {
-    class MemoryModule: IEnumerable
+    class MemoryModule : IEnumerable
     {
         public string PartNumber { get; set; } = "";
         public ulong Capacity { get; set; } = 0;

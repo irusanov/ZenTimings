@@ -2,10 +2,8 @@ using OpenLibSys;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Linq;
 using System.Management;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace ZenTimings
@@ -19,6 +17,7 @@ namespace ZenTimings
         };
 
         private readonly Ols ols;
+        private readonly List<MemoryModule> modules = new List<MemoryModule>();
 
         private void CheckOlsStatus()
         {
@@ -122,7 +121,8 @@ namespace ZenTimings
         {
             // The address is different for each gen
             uint vid = ReadDword(0x5a054) >> 24;
-            if (vid > 0) {
+            if (vid > 0)
+            {
                 return 1.55 - vid * 0.00625;
             }
             return 0;
@@ -134,8 +134,6 @@ namespace ZenTimings
             {
                 try
                 {
-                    var modules = new List<MemoryModule>();
-
                     foreach (var queryObject in searcher.Get().Cast<ManagementObject>())
                     {
                         ulong capacity = 0UL;
@@ -196,57 +194,86 @@ namespace ZenTimings
             uint bgsa1 = ReadDword(0x500D4 + offset);
             uint bgs0 = ReadDword(0x50050 + offset);
             uint bgs1 = ReadDword(0x50058 + offset);
-            uint num5 = ReadDword(0x50204 + offset);
-            uint num6 = ReadDword(0x50208 + offset);
-            uint num7 = ReadDword(0x5020C + offset);
-            uint num8 = ReadDword(0x50210 + offset);
-            uint num9 = ReadDword(0x50214 + offset);
-            uint num10 = ReadDword(0x50218 + offset);
-            int num11 = (int)ReadDword(0x5021C + offset);
-            uint num12 = ReadDword(0x50220 + offset);
-            uint num13 = ReadDword(0x50224 + offset);
-            uint num14 = ReadDword(0x50228 + offset);
-            int num15 = (int)ReadDword(0x50230 + offset);
-            int num16 = (int)ReadDword(0x50234 + offset);
-            int num17 = (int)ReadDword(0x50250 + offset);
-            uint num18 = ReadDword(0x50254 + offset);
-            uint num19 = ReadDword(0x50258 + offset);
-            uint num20 = ReadDword(0x50260 + offset);
-            uint num21 = ReadDword(0x50264 + offset);
-            int num22 = (int)ReadDword(0x5028C + offset);
-            uint num23 = (int)num20 != (int)num21 ? (num20 != 0x21060138 ? num20 : num21) : num20;
+            uint timings5 = ReadDword(0x50204 + offset);
+            uint timings6 = ReadDword(0x50208 + offset);
+            uint timings7 = ReadDword(0x5020C + offset);
+            uint timings8 = ReadDword(0x50210 + offset);
+            uint timings9 = ReadDword(0x50214 + offset);
+            uint timings10 = ReadDword(0x50218 + offset);
+            uint timings11 = ReadDword(0x5021C + offset);
+            uint timings12 = ReadDword(0x50220 + offset);
+            uint timings13 = ReadDword(0x50224 + offset);
+            uint timings14 = ReadDword(0x50228 + offset);
+            uint timings15 = ReadDword(0x50230 + offset);
+            uint timings16 = ReadDword(0x50234 + offset);
+            uint timings17 = ReadDword(0x50250 + offset);
+            uint timings18 = ReadDword(0x50254 + offset);
+            uint timings19 = ReadDword(0x50258 + offset);
+            uint timings20 = ReadDword(0x50260 + offset);
+            uint timings21 = ReadDword(0x50264 + offset);
+            uint timings22 = ReadDword(0x5028C + offset);
+            uint timings23 = timings20 != timings21 ? (timings20 != 0x21060138 ? timings20 : timings21) : timings20;
 
             textBoxBGS.Text = (bgs0 == 0x87654321 && bgs1 == 0x87654321) ? "Disabled" : "Enabled";
             textBoxBGSAlt.Text = GetBits(bgsa0, 4, 7) > 0 || GetBits(bgsa1, 4, 7) > 0 ? "Enabled" : "Disabled";
             textBoxGDM.Text = GetBits(umcBase, 11, 1) > 0 ? "Enabled" : "Disabled";
             textBoxCmd2T.Text = GetBits(umcBase, 10, 1) > 0 ? "2T" : "1T";
 
-            textBoxCL.Text = GetBits(num5, 0, 6).ToString();
-            textBoxRCDWR.Text = GetBits(num5, 24, 6).ToString();
-            textBoxRCDRD.Text = GetBits(num5, 16, 6).ToString();
-            textBoxRP.Text = GetBits(num6, 16, 6).ToString();
-            textBoxRAS.Text = GetBits(num5, 8, 7).ToString();
-            textBoxRC.Text = GetBits(num6, 0, 8).ToString();
-            textBoxRRDS.Text = GetBits(num7, 0, 5).ToString();
-            textBoxRRDL.Text = GetBits(num7, 8, 5).ToString();
-            textBoxFAW.Text = GetBits(num8, 0, 8).ToString();
-            textBoxWTRS.Text = GetBits(num9, 8, 5).ToString();
-            textBoxWTRL.Text = GetBits(num9, 16, 7).ToString();
-            textBoxWR.Text = GetBits(num10, 0, 8).ToString();
-            textBoxRDRDSCL.Text = GetBits(num12, 24, 6).ToString();
-            textBoxWRWRSCL.Text = GetBits(num13, 24, 6).ToString();
-            textBoxRFC.Text = GetBits(num23, 0, 11).ToString();
-            textBoxCWL.Text = GetBits(num9, 0, 6).ToString();
-            textBoxRTP.Text = GetBits(num7, 24, 5).ToString();
-            textBoxRDWR.Text = GetBits(num14, 8, 5).ToString();
-            textBoxWRRD.Text = GetBits(num14, 0, 4).ToString();
-            textBoxRDRDSC.Text = GetBits(num12, 16, 4).ToString();
-            textBoxRDRDSD.Text = GetBits(num12, 8, 4).ToString();
-            textBoxRDRDDD.Text = GetBits(num12, 0, 4).ToString();
-            textBoxWRWRSC.Text = GetBits(num13, 16, 4).ToString();
-            textBoxWRWRSD.Text = GetBits(num13, 8, 4).ToString();
-            textBoxWRWRDD.Text = GetBits(num13, 0, 4).ToString();
-            textBoxCKE.Text = GetBits(num18, 24, 5).ToString();
+            textBoxCL.Text = GetBits(timings5, 0, 6).ToString();
+            textBoxRCDWR.Text = GetBits(timings5, 24, 6).ToString();
+            textBoxRCDRD.Text = GetBits(timings5, 16, 6).ToString();
+            textBoxRP.Text = GetBits(timings6, 16, 6).ToString();
+            textBoxRAS.Text = GetBits(timings5, 8, 7).ToString();
+            textBoxRC.Text = GetBits(timings6, 0, 8).ToString();
+            textBoxRRDS.Text = GetBits(timings7, 0, 5).ToString();
+            textBoxRRDL.Text = GetBits(timings7, 8, 5).ToString();
+            textBoxFAW.Text = GetBits(timings8, 0, 8).ToString();
+            textBoxWTRS.Text = GetBits(timings9, 8, 5).ToString();
+            textBoxWTRL.Text = GetBits(timings9, 16, 7).ToString();
+            textBoxWR.Text = GetBits(timings10, 0, 8).ToString();
+            textBoxRDRDSCL.Text = GetBits(timings12, 24, 6).ToString();
+            textBoxWRWRSCL.Text = GetBits(timings13, 24, 6).ToString();
+
+            uint trfc = GetBits(timings23, 0, 11);
+            uint trfc2 = GetBits(timings23, 11, 11);
+            uint trfc4 = GetBits(timings23, 22, 11);
+            textBoxRFC.Text = trfc.ToString();
+            textBoxRFC2.Text = trfc2.ToString();
+            textBoxRFC4.Text = trfc4.ToString();
+
+            float mclk = modules.FirstOrDefault().ClockSpeed * 1.0f;
+            // Fallback to ratio when ConfiguredClockSpeed fails
+            if (mclk == 0)
+            {
+                mclk = GetBits(umcBase, 0, 7) / 3.0f * 200;
+                textBoxMCLK.Text = Convert.ToInt32(mclk / 100).ToString();
+            }
+
+            textBoxRFCns.Text = Convert.ToInt32(trfc * 2000 / mclk).ToString();
+
+            ToolTip tooltip = new ToolTip();
+            tooltip.SetToolTip(textBoxRFC2, $"{Convert.ToInt32(trfc2 * 2000 / mclk)} ns");
+            tooltip.SetToolTip(textBoxRFC4, $"{Convert.ToInt32(trfc4 * 2000 / mclk)} ns");
+
+            textBoxCWL.Text = GetBits(timings9, 0, 6).ToString();
+            textBoxRTP.Text = GetBits(timings7, 24, 5).ToString();
+            textBoxRDWR.Text = GetBits(timings14, 8, 5).ToString();
+            textBoxWRRD.Text = GetBits(timings14, 0, 4).ToString();
+            textBoxRDRDSC.Text = GetBits(timings12, 16, 4).ToString();
+            textBoxRDRDSD.Text = GetBits(timings12, 8, 4).ToString();
+            textBoxRDRDDD.Text = GetBits(timings12, 0, 4).ToString();
+            textBoxWRWRSC.Text = GetBits(timings13, 16, 4).ToString();
+            textBoxWRWRSD.Text = GetBits(timings13, 8, 4).ToString();
+            textBoxWRWRDD.Text = GetBits(timings13, 0, 4).ToString();
+            textBoxCKE.Text = GetBits(timings18, 24, 5).ToString();
+
+            textBoxSTAG.Text = GetBits(timings17, 16, 8).ToString();
+            textBoxMOD.Text = GetBits(timings16, 8, 6).ToString();
+            textBoxMRD.Text = GetBits(timings16, 0, 6).ToString();
+
+            uint trefi = GetBits(timings15, 0, 16);
+            textBoxREFI.Text = trefi.ToString();
+            textBoxREFIns.Text = Convert.ToInt32(1000 / mclk * 2 * trefi).ToString();
 
             // VDDCR_SOC is not returning correct value
             // Same issue exists in Ryzen Master
@@ -271,7 +298,7 @@ namespace ZenTimings
             }
         }
 
-        private void buttonScreenshot_Click(object sender, EventArgs e)
+        private void ButtonScreenshot_Click(object sender, EventArgs e)
         {
             Rectangle bounds = Bounds;
             using (Bitmap bitmap = new Bitmap(bounds.Width, bounds.Height))

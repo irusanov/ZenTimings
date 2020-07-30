@@ -10,7 +10,7 @@ namespace ZenTimings
         /// Name of our mutex
         /// </summary>
         private const string mutexName = "Local\\ZenTimings";
- 
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -23,7 +23,7 @@ namespace ZenTimings
                 return;
             }
             catch { }
-            
+
             using (var instanceMutex = new Mutex(true, mutexName, out _))
             {
                 Application.EnableVisualStyles();
