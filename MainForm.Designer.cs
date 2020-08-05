@@ -297,10 +297,12 @@ namespace ZenTimings
             // 
             this.textBoxMRD.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxMRD.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxMRD.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxMRD.Location = new System.Drawing.Point(234, 512);
             this.textBoxMRD.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxMRD.Name = "textBoxMRD";
             this.textBoxMRD.ReadOnly = true;
+            this.textBoxMRD.ShortcutsEnabled = false;
             this.textBoxMRD.Size = new System.Drawing.Size(54, 20);
             this.textBoxMRD.TabIndex = 81;
             this.textBoxMRD.TabStop = false;
@@ -311,10 +313,12 @@ namespace ZenTimings
             // 
             this.textBoxMOD.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxMOD.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxMOD.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxMOD.Location = new System.Drawing.Point(234, 488);
             this.textBoxMOD.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxMOD.Name = "textBoxMOD";
             this.textBoxMOD.ReadOnly = true;
+            this.textBoxMOD.ShortcutsEnabled = false;
             this.textBoxMOD.Size = new System.Drawing.Size(54, 20);
             this.textBoxMOD.TabIndex = 80;
             this.textBoxMOD.TabStop = false;
@@ -325,10 +329,12 @@ namespace ZenTimings
             // 
             this.textBoxREFIns.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxREFIns.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxREFIns.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxREFIns.Location = new System.Drawing.Point(234, 464);
             this.textBoxREFIns.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxREFIns.Name = "textBoxREFIns";
             this.textBoxREFIns.ReadOnly = true;
+            this.textBoxREFIns.ShortcutsEnabled = false;
             this.textBoxREFIns.Size = new System.Drawing.Size(54, 20);
             this.textBoxREFIns.TabIndex = 79;
             this.textBoxREFIns.TabStop = false;
@@ -339,10 +345,12 @@ namespace ZenTimings
             // 
             this.textBoxREFI.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxREFI.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxREFI.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxREFI.Location = new System.Drawing.Point(234, 440);
             this.textBoxREFI.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxREFI.Name = "textBoxREFI";
             this.textBoxREFI.ReadOnly = true;
+            this.textBoxREFI.ShortcutsEnabled = false;
             this.textBoxREFI.Size = new System.Drawing.Size(54, 20);
             this.textBoxREFI.TabIndex = 78;
             this.textBoxREFI.TabStop = false;
@@ -353,10 +361,12 @@ namespace ZenTimings
             // 
             this.textBoxSTAG.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxSTAG.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxSTAG.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxSTAG.Location = new System.Drawing.Point(84, 512);
             this.textBoxSTAG.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxSTAG.Name = "textBoxSTAG";
             this.textBoxSTAG.ReadOnly = true;
+            this.textBoxSTAG.ShortcutsEnabled = false;
             this.textBoxSTAG.Size = new System.Drawing.Size(51, 20);
             this.textBoxSTAG.TabIndex = 77;
             this.textBoxSTAG.TabStop = false;
@@ -379,10 +389,12 @@ namespace ZenTimings
             // 
             this.textBoxRFC4.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxRFC4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxRFC4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRFC4.Location = new System.Drawing.Point(84, 488);
             this.textBoxRFC4.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxRFC4.Name = "textBoxRFC4";
             this.textBoxRFC4.ReadOnly = true;
+            this.textBoxRFC4.ShortcutsEnabled = false;
             this.textBoxRFC4.Size = new System.Drawing.Size(51, 20);
             this.textBoxRFC4.TabIndex = 75;
             this.textBoxRFC4.TabStop = false;
@@ -393,10 +405,12 @@ namespace ZenTimings
             // 
             this.textBoxRFC2.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxRFC2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxRFC2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRFC2.Location = new System.Drawing.Point(84, 464);
             this.textBoxRFC2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxRFC2.Name = "textBoxRFC2";
             this.textBoxRFC2.ReadOnly = true;
+            this.textBoxRFC2.ShortcutsEnabled = false;
             this.textBoxRFC2.Size = new System.Drawing.Size(51, 20);
             this.textBoxRFC2.TabIndex = 74;
             this.textBoxRFC2.TabStop = false;
@@ -431,10 +445,12 @@ namespace ZenTimings
             // 
             this.textBoxRFCns.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxRFCns.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxRFCns.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRFCns.Location = new System.Drawing.Point(84, 440);
             this.textBoxRFCns.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxRFCns.Name = "textBoxRFCns";
             this.textBoxRFCns.ReadOnly = true;
+            this.textBoxRFCns.ShortcutsEnabled = false;
             this.textBoxRFCns.Size = new System.Drawing.Size(51, 20);
             this.textBoxRFCns.TabIndex = 71;
             this.textBoxRFCns.TabStop = false;
@@ -469,10 +485,12 @@ namespace ZenTimings
             // 
             this.textBoxCL.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxCL.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxCL.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCL.Location = new System.Drawing.Point(84, 128);
             this.textBoxCL.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxCL.Name = "textBoxCL";
             this.textBoxCL.ReadOnly = true;
+            this.textBoxCL.ShortcutsEnabled = false;
             this.textBoxCL.Size = new System.Drawing.Size(51, 20);
             this.textBoxCL.TabIndex = 1;
             this.textBoxCL.TabStop = false;
@@ -495,10 +513,12 @@ namespace ZenTimings
             // 
             this.textBoxRCDWR.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxRCDWR.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxRCDWR.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRCDWR.Location = new System.Drawing.Point(84, 152);
             this.textBoxRCDWR.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxRCDWR.Name = "textBoxRCDWR";
             this.textBoxRCDWR.ReadOnly = true;
+            this.textBoxRCDWR.ShortcutsEnabled = false;
             this.textBoxRCDWR.Size = new System.Drawing.Size(51, 20);
             this.textBoxRCDWR.TabIndex = 3;
             this.textBoxRCDWR.TabStop = false;
@@ -521,10 +541,12 @@ namespace ZenTimings
             // 
             this.textBoxRCDRD.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxRCDRD.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxRCDRD.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRCDRD.Location = new System.Drawing.Point(84, 176);
             this.textBoxRCDRD.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxRCDRD.Name = "textBoxRCDRD";
             this.textBoxRCDRD.ReadOnly = true;
+            this.textBoxRCDRD.ShortcutsEnabled = false;
             this.textBoxRCDRD.Size = new System.Drawing.Size(51, 20);
             this.textBoxRCDRD.TabIndex = 5;
             this.textBoxRCDRD.TabStop = false;
@@ -619,10 +641,12 @@ namespace ZenTimings
             // 
             this.textBoxRP.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxRP.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxRP.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRP.Location = new System.Drawing.Point(84, 200);
             this.textBoxRP.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxRP.Name = "textBoxRP";
             this.textBoxRP.ReadOnly = true;
+            this.textBoxRP.ShortcutsEnabled = false;
             this.textBoxRP.Size = new System.Drawing.Size(51, 20);
             this.textBoxRP.TabIndex = 13;
             this.textBoxRP.TabStop = false;
@@ -633,10 +657,12 @@ namespace ZenTimings
             // 
             this.textBoxRAS.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxRAS.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxRAS.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRAS.Location = new System.Drawing.Point(84, 224);
             this.textBoxRAS.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxRAS.Name = "textBoxRAS";
             this.textBoxRAS.ReadOnly = true;
+            this.textBoxRAS.ShortcutsEnabled = false;
             this.textBoxRAS.Size = new System.Drawing.Size(51, 20);
             this.textBoxRAS.TabIndex = 14;
             this.textBoxRAS.TabStop = false;
@@ -647,10 +673,12 @@ namespace ZenTimings
             // 
             this.textBoxRC.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxRC.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxRC.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRC.Location = new System.Drawing.Point(84, 248);
             this.textBoxRC.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxRC.Name = "textBoxRC";
             this.textBoxRC.ReadOnly = true;
+            this.textBoxRC.ShortcutsEnabled = false;
             this.textBoxRC.Size = new System.Drawing.Size(51, 20);
             this.textBoxRC.TabIndex = 15;
             this.textBoxRC.TabStop = false;
@@ -661,10 +689,12 @@ namespace ZenTimings
             // 
             this.textBoxRRDS.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxRRDS.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxRRDS.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRRDS.Location = new System.Drawing.Point(84, 272);
             this.textBoxRRDS.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxRRDS.Name = "textBoxRRDS";
             this.textBoxRRDS.ReadOnly = true;
+            this.textBoxRRDS.ShortcutsEnabled = false;
             this.textBoxRRDS.Size = new System.Drawing.Size(51, 20);
             this.textBoxRRDS.TabIndex = 16;
             this.textBoxRRDS.TabStop = false;
@@ -675,10 +705,12 @@ namespace ZenTimings
             // 
             this.textBoxRRDL.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxRRDL.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxRRDL.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRRDL.Location = new System.Drawing.Point(84, 296);
             this.textBoxRRDL.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxRRDL.Name = "textBoxRRDL";
             this.textBoxRRDL.ReadOnly = true;
+            this.textBoxRRDL.ShortcutsEnabled = false;
             this.textBoxRRDL.Size = new System.Drawing.Size(51, 20);
             this.textBoxRRDL.TabIndex = 17;
             this.textBoxRRDL.TabStop = false;
@@ -689,10 +721,12 @@ namespace ZenTimings
             // 
             this.textBoxFAW.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxFAW.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxFAW.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxFAW.Location = new System.Drawing.Point(84, 320);
             this.textBoxFAW.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxFAW.Name = "textBoxFAW";
             this.textBoxFAW.ReadOnly = true;
+            this.textBoxFAW.ShortcutsEnabled = false;
             this.textBoxFAW.Size = new System.Drawing.Size(51, 20);
             this.textBoxFAW.TabIndex = 18;
             this.textBoxFAW.TabStop = false;
@@ -703,10 +737,12 @@ namespace ZenTimings
             // 
             this.textBoxWTRS.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxWTRS.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxWTRS.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxWTRS.Location = new System.Drawing.Point(84, 344);
             this.textBoxWTRS.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxWTRS.Name = "textBoxWTRS";
             this.textBoxWTRS.ReadOnly = true;
+            this.textBoxWTRS.ShortcutsEnabled = false;
             this.textBoxWTRS.Size = new System.Drawing.Size(51, 20);
             this.textBoxWTRS.TabIndex = 19;
             this.textBoxWTRS.TabStop = false;
@@ -741,10 +777,12 @@ namespace ZenTimings
             // 
             this.textBoxWTRL.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxWTRL.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxWTRL.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxWTRL.Location = new System.Drawing.Point(84, 368);
             this.textBoxWTRL.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxWTRL.Name = "textBoxWTRL";
             this.textBoxWTRL.ReadOnly = true;
+            this.textBoxWTRL.ShortcutsEnabled = false;
             this.textBoxWTRL.Size = new System.Drawing.Size(51, 20);
             this.textBoxWTRL.TabIndex = 31;
             this.textBoxWTRL.TabStop = false;
@@ -755,10 +793,12 @@ namespace ZenTimings
             // 
             this.textBoxWR.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxWR.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxWR.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxWR.Location = new System.Drawing.Point(84, 392);
             this.textBoxWR.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxWR.Name = "textBoxWR";
             this.textBoxWR.ReadOnly = true;
+            this.textBoxWR.ShortcutsEnabled = false;
             this.textBoxWR.Size = new System.Drawing.Size(51, 20);
             this.textBoxWR.TabIndex = 32;
             this.textBoxWR.TabStop = false;
@@ -769,10 +809,12 @@ namespace ZenTimings
             // 
             this.textBoxCWL.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxCWL.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxCWL.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCWL.Location = new System.Drawing.Point(234, 176);
             this.textBoxCWL.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxCWL.Name = "textBoxCWL";
             this.textBoxCWL.ReadOnly = true;
+            this.textBoxCWL.ShortcutsEnabled = false;
             this.textBoxCWL.Size = new System.Drawing.Size(54, 20);
             this.textBoxCWL.TabIndex = 36;
             this.textBoxCWL.TabStop = false;
@@ -783,10 +825,12 @@ namespace ZenTimings
             // 
             this.textBoxRTP.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxRTP.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxRTP.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRTP.Location = new System.Drawing.Point(234, 200);
             this.textBoxRTP.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxRTP.Name = "textBoxRTP";
             this.textBoxRTP.ReadOnly = true;
+            this.textBoxRTP.ShortcutsEnabled = false;
             this.textBoxRTP.Size = new System.Drawing.Size(54, 20);
             this.textBoxRTP.TabIndex = 37;
             this.textBoxRTP.TabStop = false;
@@ -797,10 +841,12 @@ namespace ZenTimings
             // 
             this.textBoxRDWR.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxRDWR.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxRDWR.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRDWR.Location = new System.Drawing.Point(234, 224);
             this.textBoxRDWR.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxRDWR.Name = "textBoxRDWR";
             this.textBoxRDWR.ReadOnly = true;
+            this.textBoxRDWR.ShortcutsEnabled = false;
             this.textBoxRDWR.Size = new System.Drawing.Size(54, 20);
             this.textBoxRDWR.TabIndex = 38;
             this.textBoxRDWR.TabStop = false;
@@ -811,10 +857,12 @@ namespace ZenTimings
             // 
             this.textBoxWRRD.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxWRRD.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxWRRD.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxWRRD.Location = new System.Drawing.Point(234, 248);
             this.textBoxWRRD.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxWRRD.Name = "textBoxWRRD";
             this.textBoxWRRD.ReadOnly = true;
+            this.textBoxWRRD.ShortcutsEnabled = false;
             this.textBoxWRRD.Size = new System.Drawing.Size(54, 20);
             this.textBoxWRRD.TabIndex = 39;
             this.textBoxWRRD.TabStop = false;
@@ -825,10 +873,12 @@ namespace ZenTimings
             // 
             this.textBoxRDRDSC.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxRDRDSC.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxRDRDSC.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRDRDSC.Location = new System.Drawing.Point(234, 272);
             this.textBoxRDRDSC.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxRDRDSC.Name = "textBoxRDRDSC";
             this.textBoxRDRDSC.ReadOnly = true;
+            this.textBoxRDRDSC.ShortcutsEnabled = false;
             this.textBoxRDRDSC.Size = new System.Drawing.Size(54, 20);
             this.textBoxRDRDSC.TabIndex = 40;
             this.textBoxRDRDSC.TabStop = false;
@@ -839,10 +889,12 @@ namespace ZenTimings
             // 
             this.textBoxRDRDSD.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxRDRDSD.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxRDRDSD.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRDRDSD.Location = new System.Drawing.Point(234, 296);
             this.textBoxRDRDSD.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxRDRDSD.Name = "textBoxRDRDSD";
             this.textBoxRDRDSD.ReadOnly = true;
+            this.textBoxRDRDSD.ShortcutsEnabled = false;
             this.textBoxRDRDSD.Size = new System.Drawing.Size(54, 20);
             this.textBoxRDRDSD.TabIndex = 41;
             this.textBoxRDRDSD.TabStop = false;
@@ -853,10 +905,12 @@ namespace ZenTimings
             // 
             this.textBoxRDRDDD.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxRDRDDD.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxRDRDDD.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRDRDDD.Location = new System.Drawing.Point(234, 320);
             this.textBoxRDRDDD.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxRDRDDD.Name = "textBoxRDRDDD";
             this.textBoxRDRDDD.ReadOnly = true;
+            this.textBoxRDRDDD.ShortcutsEnabled = false;
             this.textBoxRDRDDD.Size = new System.Drawing.Size(54, 20);
             this.textBoxRDRDDD.TabIndex = 50;
             this.textBoxRDRDDD.TabStop = false;
@@ -867,10 +921,12 @@ namespace ZenTimings
             // 
             this.textBoxWRWRSC.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxWRWRSC.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxWRWRSC.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxWRWRSC.Location = new System.Drawing.Point(234, 344);
             this.textBoxWRWRSC.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxWRWRSC.Name = "textBoxWRWRSC";
             this.textBoxWRWRSC.ReadOnly = true;
+            this.textBoxWRWRSC.ShortcutsEnabled = false;
             this.textBoxWRWRSC.Size = new System.Drawing.Size(54, 20);
             this.textBoxWRWRSC.TabIndex = 51;
             this.textBoxWRWRSC.TabStop = false;
@@ -881,10 +937,12 @@ namespace ZenTimings
             // 
             this.textBoxWRWRSD.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxWRWRSD.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxWRWRSD.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxWRWRSD.Location = new System.Drawing.Point(234, 368);
             this.textBoxWRWRSD.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxWRWRSD.Name = "textBoxWRWRSD";
             this.textBoxWRWRSD.ReadOnly = true;
+            this.textBoxWRWRSD.ShortcutsEnabled = false;
             this.textBoxWRWRSD.Size = new System.Drawing.Size(54, 20);
             this.textBoxWRWRSD.TabIndex = 52;
             this.textBoxWRWRSD.TabStop = false;
@@ -895,10 +953,12 @@ namespace ZenTimings
             // 
             this.textBoxWRWRDD.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxWRWRDD.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxWRWRDD.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxWRWRDD.Location = new System.Drawing.Point(234, 392);
             this.textBoxWRWRDD.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxWRWRDD.Name = "textBoxWRWRDD";
             this.textBoxWRWRDD.ReadOnly = true;
+            this.textBoxWRWRDD.ShortcutsEnabled = false;
             this.textBoxWRWRDD.Size = new System.Drawing.Size(54, 20);
             this.textBoxWRWRDD.TabIndex = 53;
             this.textBoxWRWRDD.TabStop = false;
@@ -909,10 +969,12 @@ namespace ZenTimings
             // 
             this.textBoxCKE.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxCKE.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxCKE.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCKE.Location = new System.Drawing.Point(234, 416);
             this.textBoxCKE.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxCKE.Name = "textBoxCKE";
             this.textBoxCKE.ReadOnly = true;
+            this.textBoxCKE.ShortcutsEnabled = false;
             this.textBoxCKE.Size = new System.Drawing.Size(54, 20);
             this.textBoxCKE.TabIndex = 54;
             this.textBoxCKE.TabStop = false;
@@ -1067,10 +1129,12 @@ namespace ZenTimings
             // 
             this.textBoxRFC.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxRFC.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxRFC.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRFC.Location = new System.Drawing.Point(84, 416);
             this.textBoxRFC.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxRFC.Name = "textBoxRFC";
             this.textBoxRFC.ReadOnly = true;
+            this.textBoxRFC.ShortcutsEnabled = false;
             this.textBoxRFC.Size = new System.Drawing.Size(51, 20);
             this.textBoxRFC.TabIndex = 35;
             this.textBoxRFC.TabStop = false;
@@ -1081,10 +1145,12 @@ namespace ZenTimings
             // 
             this.textBoxWRWRSCL.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxWRWRSCL.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxWRWRSCL.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxWRWRSCL.Location = new System.Drawing.Point(234, 152);
             this.textBoxWRWRSCL.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxWRWRSCL.Name = "textBoxWRWRSCL";
             this.textBoxWRWRSCL.ReadOnly = true;
+            this.textBoxWRWRSCL.ShortcutsEnabled = false;
             this.textBoxWRWRSCL.Size = new System.Drawing.Size(54, 20);
             this.textBoxWRWRSCL.TabIndex = 34;
             this.textBoxWRWRSCL.TabStop = false;
@@ -1119,10 +1185,12 @@ namespace ZenTimings
             // 
             this.textBoxRDRDSCL.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxRDRDSCL.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxRDRDSCL.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRDRDSCL.Location = new System.Drawing.Point(234, 128);
             this.textBoxRDRDSCL.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxRDRDSCL.Name = "textBoxRDRDSCL";
             this.textBoxRDRDSCL.ReadOnly = true;
+            this.textBoxRDRDSCL.ShortcutsEnabled = false;
             this.textBoxRDRDSCL.Size = new System.Drawing.Size(54, 20);
             this.textBoxRDRDSCL.TabIndex = 33;
             this.textBoxRDRDSCL.TabStop = false;
@@ -1168,6 +1236,7 @@ namespace ZenTimings
             this.textBoxGDM.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxGDM.Name = "textBoxGDM";
             this.textBoxGDM.ReadOnly = true;
+            this.textBoxGDM.ShortcutsEnabled = false;
             this.textBoxGDM.Size = new System.Drawing.Size(51, 20);
             this.textBoxGDM.TabIndex = 60;
             this.textBoxGDM.TabStop = false;
@@ -1178,10 +1247,12 @@ namespace ZenTimings
             // 
             this.textBoxBGSAlt.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxBGSAlt.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxBGSAlt.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxBGSAlt.Location = new System.Drawing.Point(234, 70);
             this.textBoxBGSAlt.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxBGSAlt.Name = "textBoxBGSAlt";
             this.textBoxBGSAlt.ReadOnly = true;
+            this.textBoxBGSAlt.ShortcutsEnabled = false;
             this.textBoxBGSAlt.Size = new System.Drawing.Size(54, 20);
             this.textBoxBGSAlt.TabIndex = 61;
             this.textBoxBGSAlt.TabStop = false;
@@ -1192,10 +1263,12 @@ namespace ZenTimings
             // 
             this.textBoxCmd2T.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxCmd2T.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxCmd2T.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCmd2T.Location = new System.Drawing.Point(234, 94);
             this.textBoxCmd2T.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxCmd2T.Name = "textBoxCmd2T";
             this.textBoxCmd2T.ReadOnly = true;
+            this.textBoxCmd2T.ShortcutsEnabled = false;
             this.textBoxCmd2T.Size = new System.Drawing.Size(54, 20);
             this.textBoxCmd2T.TabIndex = 62;
             this.textBoxCmd2T.TabStop = false;
@@ -1255,6 +1328,7 @@ namespace ZenTimings
             this.textBoxMCLK.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxMCLK.CausesValidation = false;
             this.textBoxMCLK.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxMCLK.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxMCLK.Location = new System.Drawing.Point(84, 46);
             this.textBoxMCLK.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxMCLK.Name = "textBoxMCLK";
@@ -1271,6 +1345,7 @@ namespace ZenTimings
             this.textBoxCapacity.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBoxCapacity.CausesValidation = false;
             this.textBoxCapacity.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxCapacity.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCapacity.Location = new System.Drawing.Point(234, 46);
             this.textBoxCapacity.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxCapacity.Name = "textBoxCapacity";
@@ -1312,6 +1387,7 @@ namespace ZenTimings
             this.textBoxPartNumber.CausesValidation = false;
             this.tableLayoutPanel1.SetColumnSpan(this.textBoxPartNumber, 4);
             this.textBoxPartNumber.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxPartNumber.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxPartNumber.ForeColor = System.Drawing.SystemColors.WindowText;
             this.textBoxPartNumber.Location = new System.Drawing.Point(84, 12);
             this.textBoxPartNumber.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
