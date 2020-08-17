@@ -288,8 +288,8 @@ namespace ZenTimings
             this.tableLayoutPanelValues.Controls.Add(this.textBoxAddrCmdSetup, 8, 20);
             this.tableLayoutPanelValues.Controls.Add(this.textBoxCsOdtSetup, 8, 19);
             this.tableLayoutPanelValues.Controls.Add(this.textBoxCkeDrvStren, 8, 17);
-            this.tableLayoutPanelValues.Controls.Add(this.textBoxAddrCmdDrvStren, 8, 16);
-            this.tableLayoutPanelValues.Controls.Add(this.textBoxCsOdtCmdDrvStren, 8, 15);
+            this.tableLayoutPanelValues.Controls.Add(this.textBoxAddrCmdDrvStren, 8, 15);
+            this.tableLayoutPanelValues.Controls.Add(this.textBoxCsOdtCmdDrvStren, 8, 16);
             this.tableLayoutPanelValues.Controls.Add(this.textBoxClkDrvStren, 8, 14);
             this.tableLayoutPanelValues.Controls.Add(this.textBoxRttPark, 8, 12);
             this.tableLayoutPanelValues.Controls.Add(this.textBoxRttWr, 8, 11);
@@ -299,8 +299,8 @@ namespace ZenTimings
             this.tableLayoutPanelValues.Controls.Add(this.labelAddrCmdSetup, 7, 20);
             this.tableLayoutPanelValues.Controls.Add(this.labelCsOdtSetup, 7, 19);
             this.tableLayoutPanelValues.Controls.Add(this.labelCkeDrvStren, 7, 17);
-            this.tableLayoutPanelValues.Controls.Add(this.labelAddrCmdDrvStren, 7, 16);
-            this.tableLayoutPanelValues.Controls.Add(this.labelCsOdtCmdDrvStren, 7, 15);
+            this.tableLayoutPanelValues.Controls.Add(this.labelAddrCmdDrvStren, 7, 15);
+            this.tableLayoutPanelValues.Controls.Add(this.labelCsOdtCmdDrvStren, 7, 16);
             this.tableLayoutPanelValues.Controls.Add(this.labelClkDrvStren, 7, 14);
             this.tableLayoutPanelValues.Controls.Add(this.labelRttPark, 7, 12);
             this.tableLayoutPanelValues.Controls.Add(this.labelRttWr, 7, 11);
@@ -1624,7 +1624,7 @@ namespace ZenTimings
             this.textBoxAddrCmdDrvStren.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxAddrCmdDrvStren.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxAddrCmdDrvStren.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxAddrCmdDrvStren.Location = new System.Drawing.Point(372, 292);
+            this.textBoxAddrCmdDrvStren.Location = new System.Drawing.Point(372, 274);
             this.textBoxAddrCmdDrvStren.Name = "textBoxAddrCmdDrvStren";
             this.textBoxAddrCmdDrvStren.Size = new System.Drawing.Size(52, 18);
             this.textBoxAddrCmdDrvStren.TabIndex = 103;
@@ -1637,7 +1637,7 @@ namespace ZenTimings
             this.textBoxCsOdtCmdDrvStren.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxCsOdtCmdDrvStren.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCsOdtCmdDrvStren.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxCsOdtCmdDrvStren.Location = new System.Drawing.Point(372, 274);
+            this.textBoxCsOdtCmdDrvStren.Location = new System.Drawing.Point(372, 292);
             this.textBoxCsOdtCmdDrvStren.Name = "textBoxCsOdtCmdDrvStren";
             this.textBoxCsOdtCmdDrvStren.Size = new System.Drawing.Size(52, 18);
             this.textBoxCsOdtCmdDrvStren.TabIndex = 102;
@@ -1772,7 +1772,7 @@ namespace ZenTimings
             this.labelAddrCmdDrvStren.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelAddrCmdDrvStren.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelAddrCmdDrvStren.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelAddrCmdDrvStren.Location = new System.Drawing.Point(280, 292);
+            this.labelAddrCmdDrvStren.Location = new System.Drawing.Point(280, 274);
             this.labelAddrCmdDrvStren.Name = "labelAddrCmdDrvStren";
             this.labelAddrCmdDrvStren.Size = new System.Drawing.Size(86, 18);
             this.labelAddrCmdDrvStren.TabIndex = 88;
@@ -1786,7 +1786,7 @@ namespace ZenTimings
             this.labelCsOdtCmdDrvStren.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelCsOdtCmdDrvStren.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelCsOdtCmdDrvStren.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelCsOdtCmdDrvStren.Location = new System.Drawing.Point(280, 274);
+            this.labelCsOdtCmdDrvStren.Location = new System.Drawing.Point(280, 292);
             this.labelCsOdtCmdDrvStren.Name = "labelCsOdtCmdDrvStren";
             this.labelCsOdtCmdDrvStren.Size = new System.Drawing.Size(86, 18);
             this.labelCsOdtCmdDrvStren.TabIndex = 89;
@@ -1972,7 +1972,7 @@ namespace ZenTimings
             // 
             // PowerCfgTimer
             // 
-            this.PowerCfgTimer.Interval = 500;
+            this.PowerCfgTimer.Interval = 2000;
             this.PowerCfgTimer.Tick += new System.EventHandler(this.PowerCfgTimer_Tick);
             // 
             // tableLayoutPanel2
@@ -2114,14 +2114,14 @@ namespace ZenTimings
             // optionsToolStripMenuItem
             // 
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
             this.optionsToolStripMenuItem.Text = "&Options";
             this.optionsToolStripMenuItem.Click += new System.EventHandler(this.OptionsToolStripMenuItem_Click);
             // 
             // debugToolstripItem
             // 
             this.debugToolstripItem.Name = "debugToolstripItem";
-            this.debugToolstripItem.Size = new System.Drawing.Size(180, 22);
+            this.debugToolstripItem.Size = new System.Drawing.Size(116, 22);
             this.debugToolstripItem.Text = "&Debug";
             this.debugToolstripItem.Click += new System.EventHandler(this.DebugToolstripItem_Click);
             // 

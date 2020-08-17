@@ -298,12 +298,6 @@ namespace ZenTimings
                     sviSocAddress = F17H_M01H_SVI_TEL_PLANE1;
                     break;
 
-                //case 0x18: // Zen+ APU
-                case SMU.CPUType.Picasso:
-                    sviCoreaddress = F17H_M01H_SVI_TEL_PLANE1;
-                    sviSocAddress = F17H_M01H_SVI_TEL_PLANE0;
-                    break;
-
                 //case 0x31: // Zen2 Threadripper/EPYC
                 case SMU.CPUType.CastlePeak:
                 case SMU.CPUType.Rome:
@@ -311,8 +305,10 @@ namespace ZenTimings
                     sviSocAddress = F17H_M30H_SVI_TEL_PLANE1;
                     break;
 
+                //case 0x18: // Zen+ APU
                 //case 0x60: // Zen2 APU
                 //case 0x71: // Zen2 Ryzen
+                case SMU.CPUType.Picasso:
                 case SMU.CPUType.Matisse:
                 case SMU.CPUType.Renoir:
                     sviCoreaddress = F17H_M70H_SVI_TEL_PLANE0;
@@ -712,7 +708,7 @@ namespace ZenTimings
 
         private void DebugToolstripItem_Click(object sender, EventArgs e)
         {
-            Form debugWnd = new DebugDialog(dramBaseAddress, modules, MEMCFG, SI, BMC.Table, PowerTable.Table);
+            Form debugWnd = new DebugDialog(dramBaseAddress, modules, MEMCFG, SI, BMC.Table, PowerTable.Table, OPS);
             debugWnd.ShowDialog();
         }
     }

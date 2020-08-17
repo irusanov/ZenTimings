@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -20,6 +20,10 @@ namespace ZenTimings
         {
             //Dispose();
             Close();
+        }
+        private void CheckBoxAutoRefresh_CheckedChanged(object sender, EventArgs e)
+        {
+            numericUpDownRefreshInterval.Enabled = checkBoxAutoRefresh.Checked;
         }
     }
 }

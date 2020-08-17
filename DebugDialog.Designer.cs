@@ -86,7 +86,7 @@
             this.buttonDebugCancel.Name = "buttonDebugCancel";
             this.buttonDebugCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonDebugCancel.TabIndex = 2;
-            this.buttonDebugCancel.Text = "Cancel";
+            this.buttonDebugCancel.Text = "Close";
             this.buttonDebugCancel.UseVisualStyleBackColor = true;
             this.buttonDebugCancel.Click += new System.EventHandler(this.ButtonDebugCancel_Click);
             // 
