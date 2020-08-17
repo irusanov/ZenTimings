@@ -63,9 +63,19 @@ namespace ZenTimings.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Camera_02_16 {
+        internal static System.Drawing.Bitmap camera {
             get {
-                object obj = ResourceManager.GetObject("Camera_02_16", resourceCulture);
+                object obj = ResourceManager.GetObject("camera", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap icon_64 {
+            get {
+                object obj = ResourceManager.GetObject("icon_64", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
