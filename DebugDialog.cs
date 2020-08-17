@@ -5,6 +5,7 @@ using System.Management;
 using System.Reflection;
 using System.Windows.Forms;
 using ZenStates;
+using ZenTimings.Utils;
 
 namespace ZenTimings
 {
@@ -15,8 +16,8 @@ namespace ZenTimings
         private readonly MemoryConfig MEMCFG;
         private readonly uint baseAddress;
         private readonly SystemInfo SI;
-        private readonly uint[] PT;
-        private readonly byte[] BMC;
+        private readonly PowerTable PT;
+        private readonly BiosMemController BMC;
         private readonly string wmiScope = "root\\wmi";
         private readonly string className = "AMD_ACPI";
         private readonly Ops OPS;
@@ -27,7 +28,7 @@ namespace ZenTimings
 
         public DebugDialog(uint dramBaseAddr, List<MemoryModule> memModules, 
             MemoryConfig memCfg, SystemInfo systemInfo,
-            byte[] biosMemCtrlTable, uint[] powerTable,
+            BiosMemController biosMemCtrl, PowerTable powerTable,
             Ops ops)
         {
             InitializeComponent();
@@ -36,7 +37,7 @@ namespace ZenTimings
             SI = systemInfo;
             MEMCFG = memCfg;
             PT = powerTable;
-            BMC = biosMemCtrlTable;
+            BMC = biosMemCtrl;
             OPS = ops;
         }
 
@@ -46,18 +47,19 @@ namespace ZenTimings
             MessageBox.Show(message, title);
         }
 
-        private void SetButtonsState(bool enabled = true)
+        private void SetControlsState(bool enabled = true)
         {
             buttonDebugCancel.Enabled = enabled;
             buttonDebugSave.Enabled = enabled;
             buttonDebug.Enabled = enabled;
+            textBoxDebugOutput.Enabled = enabled;
         }
 
         private void RunBackgroundTask(DoWorkEventHandler task, RunWorkerCompletedEventHandler completedHandler)
         {
             try
             {
-                SetButtonsState(false);
+                SetControlsState(false);
 
                 backgroundWorker1 = new BackgroundWorker();
                 backgroundWorker1.DoWork += task;
@@ -67,14 +69,14 @@ namespace ZenTimings
             catch (ApplicationException ex)
             {
                 //SetStatusText(Resources.Error);
-                SetButtonsState();
+                SetControlsState();
                 HandleError(ex.Message);
             }
         }
 
         private void Scan_WorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            SetButtonsState();
+            SetControlsState();
             //SetStatusText("Scan Complete.");
         }
 
@@ -201,19 +203,29 @@ namespace ZenTimings
 
                 // Configured DRAM memory controller settings from BIOS
                 AddHeading("BIOS: Memory Controller Config");
-                for (int i = 0; i < BMC.Length; ++i)
+                for (int i = 0; i < BMC.Table.Length; ++i)
                 {
-                    AddLine($"Index {i:D3}: {BMC[i]:X2} ({BMC[i]})");
+                    AddLine($"Index {i:D3}: {BMC.Table[i]:X2} ({BMC.Table[i]})");
                 }
                 AddLine();
 
                 // SMU power table
                 AddHeading("SMU: Power Table");
-                for (int i = 0; i < PT.Length; ++i)
+                for (int i = 0; i < PT.Table.Length; ++i)
                 {
-                    byte[] temp = BitConverter.GetBytes(PT[i]);
+                    byte[] temp = BitConverter.GetBytes(PT.Table[i]);
                     AddLine($"Offset {i * 0x4:X3}: {BitConverter.ToSingle(temp, 0):F8}");
                 }
+                AddLine();
+
+                // SMU power table
+                AddHeading("SMU: Power Table Detected Values");
+                AddLine($"MCLK: {PT.MCLK}");
+                AddLine($"FCLK: {PT.FCLK}");
+                AddLine($"UCLK: {PT.UCLK}");
+                AddLine($"VSOC_SMU: {PT.VDDCR_SOC}");
+                AddLine($"CLDO_VDDP: {PT.CLDO_VDDP}");
+                AddLine($"CLDO_VDDG: {PT.CLDO_VDDG}");
                 AddLine();
 
                 // All WMI classes in root namespace
@@ -247,15 +259,17 @@ namespace ZenTimings
                     AddLine($"0x{startAddress:X8}: 0x{data:X8}");
                     startAddress += 4;
                 }
-                AddLine();
 
-                textBoxDebugOutput.Text = result;
+                Invoke(new MethodInvoker(delegate
+                {
+                    textBoxDebugOutput.Text = result;
+                }));
             }
             catch (ApplicationException ex)
             {
                 Invoke(new MethodInvoker(delegate
                 {
-                    SetButtonsState();
+                    SetControlsState();
                     HandleError(ex.Message);
                 }));
             }

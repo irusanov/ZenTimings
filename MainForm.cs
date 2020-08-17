@@ -27,9 +27,9 @@ namespace ZenTimings
         private readonly List<BiosACPIFunction> biosFunctions = new List<BiosACPIFunction>();
         private readonly Ops OPS = new Ops();
         private readonly MemoryConfig MEMCFG = new MemoryConfig();
-        private SystemInfo SI;
-        private BiosMemController BMC;
+        private readonly BiosMemController BMC;
         private readonly PowerTable PowerTable;
+        private SystemInfo SI;
         private uint dramBaseAddress = 0;
         private UIntPtr dramPtr;
         private bool compatMode = false;
@@ -708,7 +708,7 @@ namespace ZenTimings
 
         private void DebugToolstripItem_Click(object sender, EventArgs e)
         {
-            Form debugWnd = new DebugDialog(dramBaseAddress, modules, MEMCFG, SI, BMC.Table, PowerTable.Table, OPS);
+            Form debugWnd = new DebugDialog(dramBaseAddress, modules, MEMCFG, SI, BMC, PowerTable, OPS);
             debugWnd.ShowDialog();
         }
     }
