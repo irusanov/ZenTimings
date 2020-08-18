@@ -308,10 +308,14 @@ namespace ZenTimings
                 //case 0x71: // Zen2 Ryzen
                 case SMU.CPUType.Picasso:
                 case SMU.CPUType.Matisse:
-                case SMU.CPUType.Renoir:
+                //case SMU.CPUType.Renoir:
                     sviCoreaddress = F17H_M70H_SVI_TEL_PLANE0;
                     sviSocAddress = F17H_M70H_SVI_TEL_PLANE1;
                     break;
+
+                // Temprorary skip Renoir. SVI2 PCI address range is empty.
+                case SMU.CPUType.Renoir:
+                    return;
 
                 default:
                     sviCoreaddress = F17H_M01H_SVI_TEL_PLANE0;
