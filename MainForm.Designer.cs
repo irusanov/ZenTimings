@@ -285,8 +285,8 @@ namespace ZenTimings
             this.tableLayoutPanelValues.Controls.Add(this.labelCLDO_VDDP, 7, 6);
             this.tableLayoutPanelValues.Controls.Add(this.labelCLDO_VDDG, 7, 7);
             this.tableLayoutPanelValues.Controls.Add(this.textBoxCkeSetup, 8, 21);
-            this.tableLayoutPanelValues.Controls.Add(this.textBoxAddrCmdSetup, 8, 20);
-            this.tableLayoutPanelValues.Controls.Add(this.textBoxCsOdtSetup, 8, 19);
+            this.tableLayoutPanelValues.Controls.Add(this.textBoxAddrCmdSetup, 8, 19);
+            this.tableLayoutPanelValues.Controls.Add(this.textBoxCsOdtSetup, 8, 20);
             this.tableLayoutPanelValues.Controls.Add(this.textBoxCkeDrvStren, 8, 17);
             this.tableLayoutPanelValues.Controls.Add(this.textBoxAddrCmdDrvStren, 8, 15);
             this.tableLayoutPanelValues.Controls.Add(this.textBoxCsOdtCmdDrvStren, 8, 16);
@@ -296,8 +296,8 @@ namespace ZenTimings
             this.tableLayoutPanelValues.Controls.Add(this.textBoxRttNom, 8, 10);
             this.tableLayoutPanelValues.Controls.Add(this.textBoxProcODT, 8, 9);
             this.tableLayoutPanelValues.Controls.Add(this.labelCkeSetup, 7, 21);
-            this.tableLayoutPanelValues.Controls.Add(this.labelAddrCmdSetup, 7, 20);
-            this.tableLayoutPanelValues.Controls.Add(this.labelCsOdtSetup, 7, 19);
+            this.tableLayoutPanelValues.Controls.Add(this.labelAddrCmdSetup, 7, 19);
+            this.tableLayoutPanelValues.Controls.Add(this.labelCsOdtSetup, 7, 20);
             this.tableLayoutPanelValues.Controls.Add(this.labelCkeDrvStren, 7, 17);
             this.tableLayoutPanelValues.Controls.Add(this.labelAddrCmdDrvStren, 7, 15);
             this.tableLayoutPanelValues.Controls.Add(this.labelCsOdtCmdDrvStren, 7, 16);
@@ -1585,7 +1585,7 @@ namespace ZenTimings
             this.textBoxAddrCmdSetup.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxAddrCmdSetup.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxAddrCmdSetup.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxAddrCmdSetup.Location = new System.Drawing.Point(372, 364);
+            this.textBoxAddrCmdSetup.Location = new System.Drawing.Point(372, 346);
             this.textBoxAddrCmdSetup.Name = "textBoxAddrCmdSetup";
             this.textBoxAddrCmdSetup.Size = new System.Drawing.Size(52, 18);
             this.textBoxAddrCmdSetup.TabIndex = 106;
@@ -1598,7 +1598,7 @@ namespace ZenTimings
             this.textBoxCsOdtSetup.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxCsOdtSetup.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCsOdtSetup.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxCsOdtSetup.Location = new System.Drawing.Point(372, 346);
+            this.textBoxCsOdtSetup.Location = new System.Drawing.Point(372, 364);
             this.textBoxCsOdtSetup.Name = "textBoxCsOdtSetup";
             this.textBoxCsOdtSetup.Size = new System.Drawing.Size(52, 18);
             this.textBoxCsOdtSetup.TabIndex = 105;
@@ -1730,7 +1730,7 @@ namespace ZenTimings
             this.labelAddrCmdSetup.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelAddrCmdSetup.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelAddrCmdSetup.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelAddrCmdSetup.Location = new System.Drawing.Point(280, 364);
+            this.labelAddrCmdSetup.Location = new System.Drawing.Point(280, 346);
             this.labelAddrCmdSetup.Name = "labelAddrCmdSetup";
             this.labelAddrCmdSetup.Size = new System.Drawing.Size(86, 18);
             this.labelAddrCmdSetup.TabIndex = 91;
@@ -1744,7 +1744,7 @@ namespace ZenTimings
             this.labelCsOdtSetup.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelCsOdtSetup.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelCsOdtSetup.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelCsOdtSetup.Location = new System.Drawing.Point(280, 346);
+            this.labelCsOdtSetup.Location = new System.Drawing.Point(280, 364);
             this.labelCsOdtSetup.Name = "labelCsOdtSetup";
             this.labelCsOdtSetup.Size = new System.Drawing.Size(86, 18);
             this.labelCsOdtSetup.TabIndex = 92;
