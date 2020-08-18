@@ -16,9 +16,8 @@ namespace ZenTimings
             InitializeComponent();
         }
 
-        private void buttonSettingsCancel_Click(object sender, EventArgs e)
+        private void ButtonSettingsCancel_Click(object sender, EventArgs e)
         {
-            //Dispose();
             Close();
         }
         private void CheckBoxAutoRefresh_CheckedChanged(object sender, EventArgs e)
