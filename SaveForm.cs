@@ -19,7 +19,7 @@ namespace ZenTimings
             screenshot.Save(filename);
             screenshot.Dispose();
             Close();
-            Dispose();
+            //Dispose();
         }
 
         private void buttonSave_Click(object sender, EventArgs e)

@@ -2,10 +2,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Management;
+using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Windows.Forms;
 using ZenStates;
@@ -544,18 +546,13 @@ namespace ZenTimings
 
         private void ButtonScreenshot_Click(object sender, EventArgs e)
         {
-            Rectangle bounds = Bounds;
-            using (Bitmap bitmap = new Bitmap(bounds.Width, bounds.Height))
-            {
-                using (Graphics g = Graphics.FromImage(bitmap))
-                {
-                    g.CopyFromScreen(new Point(bounds.Left, bounds.Top), Point.Empty, bounds.Size);
-                }
+            Screenshot screenshot = new Screenshot();
+            Bitmap bitmap = screenshot.CaptureActiveWindow();
 
-                using (Form saveForm = new SaveForm(bitmap))
-                {
-                    saveForm.ShowDialog();
-                }
+            using (Form saveForm = new SaveForm(bitmap))
+            {
+                saveForm.ShowDialog();
+                screenshot.Dispose();
             }
         }
 
