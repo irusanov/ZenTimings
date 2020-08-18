@@ -2,14 +2,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Management;
-using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Windows.Forms;
 using ZenStates;
@@ -47,20 +44,17 @@ namespace ZenTimings
         private static void ExitApplication()
         {
             if (Application.MessageLoop)
-            {
                 Application.Exit();
-            }
             else
-            {
                 Environment.Exit(1);
-            }
         }
+
         private void FloatToVoltageString(object sender, ConvertEventArgs cevent)
         {
             // The method converts only to string type. Test this using the DesiredType.
             if (cevent.DesiredType != typeof(string)) return;
 
-            // Use the ToString method to format the value as currency ("c").
+            // Use the ToString method to format the value as float.
             cevent.Value = $"{(float) cevent.Value:F4}V";
         }
 
@@ -262,7 +256,6 @@ namespace ZenTimings
 
                     if (OPS.TransferTableToDram() != SMU.Status.OK)
                         OPS.TransferTableToDram(); // retry
-
 
                     for (int i = 0; i < table.Length; ++i)
                     {
@@ -559,6 +552,27 @@ namespace ZenTimings
             }
         }
 
+        private void StartAutoRefresh()
+        {
+            PowerCfgTimer.Start();
+
+            if (CheckConfigFileIsPresent() && settings.AutoRefresh)
+            {
+                PowerCfgTimer.Interval = settings.AutoRefreshInterval;
+            }
+            else
+            {
+                // Refresh until table is transferred to DRAM or timeout
+                var timeout = 8192;
+                uint temp;
+                do
+                    NativeMethods.GetPhysLong(dramPtr, out temp);
+                while (temp == 0 && --timeout > 0);
+
+                PowerCfgTimer.Stop();
+            }
+        }
+
         /// <summary>
         /// Gets triggered right before the form gets displayd
         /// </summary>
@@ -593,11 +607,7 @@ namespace ZenTimings
                 compatMode = true;
             }
 
-            if (CheckConfigFileIsPresent() && settings.AutoRefresh)
-            {
-                PowerCfgTimer.Interval = settings.AutoRefreshInterval;
-                PowerCfgTimer.Start();
-            }
+            StartAutoRefresh();
 
             if (compatMode)
             {
