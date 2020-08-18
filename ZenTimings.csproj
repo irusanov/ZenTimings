@@ -99,6 +99,7 @@
     <Compile Include="OptionsDialog.Designer.cs">
       <DependentUpon>OptionsDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Utils\AppSettings.cs" />
     <Compile Include="Utils\BiosACPIFunction.cs" />
     <Compile Include="Utils\BiosMemController.cs" />
     <Compile Include="MainForm.cs">
@@ -159,6 +160,7 @@
     <EmbeddedResource Include="SaveForm.resx">
       <DependentUpon>SaveForm.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="app.config" />
     <None Include="app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

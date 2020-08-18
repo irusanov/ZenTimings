@@ -3,8 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Management;
 using System.Runtime.InteropServices;
@@ -35,6 +37,7 @@ namespace ZenTimings
         private uint dramBaseAddress = 0;
         private UIntPtr dramPtr;
         private bool compatMode = false;
+        private readonly AppSettings settings = new AppSettings();
 #if DEBUG
         readonly TextWriterTraceListener[] listeners = new TextWriterTraceListener[] {
             //new TextWriterTraceListener("debug.txt")
@@ -584,22 +587,21 @@ namespace ZenTimings
             {
                 dramPtr = new UIntPtr(dramBaseAddress);
                 ReadPowerConfig();
-#if !DEBUG
-                PowerCfgTimer.Start();
-#endif
             }
             else
             {
                 compatMode = true;
             }
 
+            if (CheckConfigFileIsPresent() && settings.AutoRefresh)
+            {
+                PowerCfgTimer.Interval = settings.AutoRefreshInterval;
+                PowerCfgTimer.Start();
+            }
+
             if (compatMode)
             {
                 Text += " (compatibility)";
-                /*MessageBox.Show("Could not get DRAM base address.\nRunning in compatibility mode.",
-                    "Warning",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);*/
 
                 MessageBox.Show("Could not get some of the parameters.\nRunning in compatibility mode.",
                     "Warning",
@@ -626,9 +628,9 @@ namespace ZenTimings
 #endif
         }
 
-        private void ButtonExit_Click(object sender, EventArgs e)
+        public static bool CheckConfigFileIsPresent()
         {
-            ExitApplication();
+            return File.Exists(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
         }
 
         private void PowerCfgTimer_Tick(object sender, EventArgs e)
@@ -699,7 +701,7 @@ namespace ZenTimings
 
         private void OptionsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form optionsWnd = new OptionsDialog();
+            Form optionsWnd = new OptionsDialog(settings, PowerCfgTimer);
             optionsWnd.ShowDialog();
         }
 

@@ -106,18 +106,19 @@ namespace ZenTimings
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(71, 26);
             this.label1.TabIndex = 2;
-            this.label1.Text = "ns";
+            this.label1.Text = "ms";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // tableLayoutPanel2
             // 
             this.tableLayoutPanel2.AutoSize = true;
-            this.tableLayoutPanel2.ColumnCount = 3;
+            this.tableLayoutPanel2.ColumnCount = 4;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.Controls.Add(this.buttonSettingsCancel, 2, 0);
-            this.tableLayoutPanel2.Controls.Add(this.buttonSettingsApply, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.buttonSettingsCancel, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.buttonSettingsApply, 2, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 103);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -145,6 +146,7 @@ namespace ZenTimings
             this.buttonSettingsApply.TabIndex = 1;
             this.buttonSettingsApply.Text = "Apply";
             this.buttonSettingsApply.UseVisualStyleBackColor = true;
+            this.buttonSettingsApply.Click += new System.EventHandler(this.ButtonSettingsApply_Click);
             // 
             // OptionsDialog
             // 
