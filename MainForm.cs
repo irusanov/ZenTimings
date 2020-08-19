@@ -2,12 +2,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Management;
 using System.Security.Permissions;
+using System.Threading;
 using System.Windows.Forms;
 using ZenStates;
 using ZenTimings.Utils;
@@ -34,6 +36,7 @@ namespace ZenTimings
         private uint dramBaseAddress = 0;
         private UIntPtr dramPtr;
         private bool compatMode = false;
+        private BackgroundWorker backgroundWorker1;
         private readonly AppSettings settings = new AppSettings();
 #if DEBUG
         readonly TextWriterTraceListener[] listeners = new TextWriterTraceListener[] {
@@ -557,24 +560,42 @@ namespace ZenTimings
             }
         }
 
+        private void WaitForPowerTable(object sender, DoWorkEventArgs e)
+        {
+            // Refresh until table is transferred to DRAM or timeout
+            var timeout = 10000; // in ms
+            var startTime = DateTime.UtcNow;
+            uint temp = 0;
+            int minimum_retries = 1;
+
+            while ((temp == 0 || minimum_retries-- > 0) && DateTime.UtcNow - startTime < TimeSpan.FromMilliseconds(timeout))
+            {
+                NativeMethods.GetPhysLong(dramPtr, out temp);
+            }
+        }
+
+        private void WaitForPowerTable_Complete(object sender, RunWorkerCompletedEventArgs e)
+        {
+            PowerCfgTimer.Stop();
+        }
+
         private void StartAutoRefresh()
         {
             PowerCfgTimer.Start();
 
-            if (CheckConfigFileIsPresent() && settings.AutoRefresh)
+            if (!CheckConfigFileIsPresent())
+                return;
+
+            if (settings.AutoRefresh)
             {
                 PowerCfgTimer.Interval = settings.AutoRefreshInterval;
             }
             else
             {
-                // Refresh until table is transferred to DRAM or timeout
-                var timeout = 8192;
-                uint temp;
-                do
-                    NativeMethods.GetPhysLong(dramPtr, out temp);
-                while (temp == 0 && --timeout > 0);
-
-                PowerCfgTimer.Stop();
+                backgroundWorker1 = new BackgroundWorker();
+                backgroundWorker1.DoWork += WaitForPowerTable;
+                backgroundWorker1.RunWorkerCompleted += WaitForPowerTable_Complete;
+                backgroundWorker1.RunWorkerAsync();
             }
         }
 
