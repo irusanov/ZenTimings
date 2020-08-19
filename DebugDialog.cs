@@ -19,7 +19,7 @@ namespace ZenTimings
         private readonly PowerTable PT;
         private readonly BiosMemController BMC;
         private readonly string wmiScope = "root\\wmi";
-        private readonly string className = "AMD_ACPI";
+        private readonly string wmiAMDACPI = "AMD_ACPI";
         private readonly Ops OPS;
         private ManagementBaseObject pack;
         private string instanceName;
@@ -51,6 +51,7 @@ namespace ZenTimings
         {
             buttonDebugCancel.Enabled = enabled;
             buttonDebugSave.Enabled = enabled;
+            buttonDebugSaveAs.Enabled = enabled;
             buttonDebug.Enabled = enabled;
             textBoxDebugOutput.Enabled = enabled;
         }
@@ -84,7 +85,7 @@ namespace ZenTimings
         {
             try
             {
-                instanceName = WMI.GetInstanceName(wmiScope, className);
+                instanceName = WMI.GetInstanceName(wmiScope, wmiAMDACPI);
             }
             catch { }
 
@@ -96,7 +97,7 @@ namespace ZenTimings
             try
             {
                 classInstance = new ManagementObject(wmiScope,
-                    $"{className}.InstanceName='{instanceName}'",
+                    $"{wmiAMDACPI}.InstanceName='{instanceName}'",
                     null);
             }
             catch { }
@@ -229,15 +230,22 @@ namespace ZenTimings
                 AddLine();
 
                 // All WMI classes in root namespace
-                AddHeading("WMI: Root Classes");
+                /*AddHeading("WMI: Root Classes");
                 List<string> namespaces = WMI.GetClassNamesWithinWmiNamespace(wmiScope);
 
                 foreach (var ns in namespaces)
                 {
                     AddLine(ns);
                 }
-                AddLine();
+                AddLine();*/
 
+                // Check if AMD_ACPI class exists
+                AddHeading("WMI: AMD_ACPI");
+                if (WMI.Query(wmiScope, wmiAMDACPI) != null)
+                    AddLine("OK");
+                else
+                    AddLine("<FAILED>");
+                AddLine();
 
                 AddHeading("WMI: Instance Name");
                 var wmiInstanceName = GetWmiInstanceName();
@@ -245,7 +253,6 @@ namespace ZenTimings
                     wmiInstanceName = "<FAILED>";
                 AddLine(wmiInstanceName);
                 AddLine();
-
 
                 PrintWmiFunctions();
                 AddLine();
@@ -275,22 +282,35 @@ namespace ZenTimings
             }
         }
 
-        private void ButtonDebug_Click(object sender, EventArgs e)
-        {
-            RunBackgroundTask(Debug, Scan_WorkerCompleted);
-        }
-
-        private void ButtonDebugCancel_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
-
-        private void ButtonDebugSave_Click(object sender, EventArgs e)
+        private void SaveToFile(bool saveAs = false)
         {
             string unixTimestamp = Convert.ToString((DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMinutes);
             string filename = $@"{string.Join("_", Text.Split())}_{unixTimestamp}.txt";
+
+            if (saveAs)
+            {
+                SaveFileDialog saveFileDialog = new SaveFileDialog
+                {
+                    Filter = "text files (*.txt)|*.txt|All files (*.*)|*.*",
+                    FilterIndex = 1,
+                    DefaultExt = "txt",
+                    FileName = filename,
+                    RestoreDirectory = true
+                };
+
+                if (saveFileDialog.ShowDialog() != DialogResult.OK)
+                    return;
+
+                filename = saveFileDialog.FileName;
+            }
+
             System.IO.File.WriteAllText(filename, textBoxDebugOutput.Text);
             MessageBox.Show($"Debug report saved as {filename}");
         }
+
+        private void ButtonDebug_Click(object sender, EventArgs e) => RunBackgroundTask(Debug, Scan_WorkerCompleted);
+        private void ButtonDebugCancel_Click(object sender, EventArgs e) => Close();
+        private void ButtonDebugSave_Click(object sender, EventArgs e) => SaveToFile();
+        private void ButtonDebugSaveAs_Click(object sender, EventArgs e) => SaveToFile(true);
     }
 }

@@ -28,6 +28,7 @@ namespace ZenTimings
             checkBoxAutoRefresh.Checked = settingsInstance.AutoRefresh;
             numericUpDownRefreshInterval.Value = settingsInstance.AutoRefreshInterval;
             numericUpDownRefreshInterval.Enabled = checkBoxAutoRefresh.Checked;
+            labelAutoRefreshWarning.Visible = !checkBoxAutoRefresh.Checked;
         }
 
         private void ButtonSettingsCancel_Click(object sender, EventArgs e) => Close();
@@ -35,6 +36,7 @@ namespace ZenTimings
         private void CheckBoxAutoRefresh_CheckedChanged(object sender, EventArgs e)
         {
             numericUpDownRefreshInterval.Enabled = checkBoxAutoRefresh.Checked;
+            labelAutoRefreshWarning.Visible = !checkBoxAutoRefresh.Checked;
         }
 
         private void ButtonSettingsApply_Click(object sender, EventArgs e)

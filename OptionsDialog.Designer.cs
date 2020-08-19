@@ -32,6 +32,7 @@ namespace ZenTimings
             this.checkBoxAutoRefresh = new System.Windows.Forms.CheckBox();
             this.numericUpDownRefreshInterval = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
+            this.labelAutoRefreshWarning = new System.Windows.Forms.Label();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.buttonSettingsCancel = new System.Windows.Forms.Button();
             this.buttonSettingsApply = new System.Windows.Forms.Button();
@@ -49,11 +50,14 @@ namespace ZenTimings
             this.tableLayoutPanel1.Controls.Add(this.checkBoxAutoRefresh, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.numericUpDownRefreshInterval, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.label1, 2, 0);
+            this.tableLayoutPanel1.Controls.Add(this.labelAutoRefreshWarning, 0, 2);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Padding = new System.Windows.Forms.Padding(10);
-            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowCount = 4;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(297, 100);
@@ -109,6 +113,23 @@ namespace ZenTimings
             this.label1.Text = "ms";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // labelAutoRefreshWarning
+            // 
+            this.labelAutoRefreshWarning.AutoSize = true;
+            this.labelAutoRefreshWarning.BackColor = System.Drawing.SystemColors.Info;
+            this.tableLayoutPanel1.SetColumnSpan(this.labelAutoRefreshWarning, 3);
+            this.labelAutoRefreshWarning.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelAutoRefreshWarning.ForeColor = System.Drawing.SystemColors.InfoText;
+            this.labelAutoRefreshWarning.Location = new System.Drawing.Point(13, 46);
+            this.labelAutoRefreshWarning.Name = "labelAutoRefreshWarning";
+            this.labelAutoRefreshWarning.Padding = new System.Windows.Forms.Padding(0, 4, 0, 4);
+            this.labelAutoRefreshWarning.Size = new System.Drawing.Size(271, 34);
+            this.labelAutoRefreshWarning.TabIndex = 3;
+            this.labelAutoRefreshWarning.Text = "Disabling auto-refresh might lead to inaccurate\nvoltages and frequencies on first" +
+    " launch";
+            this.labelAutoRefreshWarning.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.labelAutoRefreshWarning.Visible = false;
+            // 
             // tableLayoutPanel2
             // 
             this.tableLayoutPanel2.AutoSize = true;
@@ -134,7 +155,7 @@ namespace ZenTimings
             this.buttonSettingsCancel.Name = "buttonSettingsCancel";
             this.buttonSettingsCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonSettingsCancel.TabIndex = 0;
-            this.buttonSettingsCancel.Text = "OK";
+            this.buttonSettingsCancel.Text = "Close";
             this.buttonSettingsCancel.UseVisualStyleBackColor = true;
             this.buttonSettingsCancel.Click += new System.EventHandler(this.ButtonSettingsCancel_Click);
             // 
@@ -182,5 +203,6 @@ namespace ZenTimings
         private System.Windows.Forms.Button buttonSettingsApply;
         private System.Windows.Forms.NumericUpDown numericUpDownRefreshInterval;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label labelAutoRefreshWarning;
     }
 }

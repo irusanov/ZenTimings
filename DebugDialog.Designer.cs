@@ -33,6 +33,7 @@
             this.buttonDebug = new System.Windows.Forms.Button();
             this.buttonDebugSave = new System.Windows.Forms.Button();
             this.buttonDebugCancel = new System.Windows.Forms.Button();
+            this.buttonDebugSaveAs = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.textBoxDebugOutput = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel2.SuspendLayout();
@@ -42,14 +43,16 @@
             // tableLayoutPanel2
             // 
             this.tableLayoutPanel2.AutoSize = true;
-            this.tableLayoutPanel2.ColumnCount = 4;
+            this.tableLayoutPanel2.ColumnCount = 5;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.Controls.Add(this.buttonDebug, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.buttonDebugSave, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.buttonDebugCancel, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.buttonDebugCancel, 4, 0);
+            this.tableLayoutPanel2.Controls.Add(this.buttonDebugSaveAs, 2, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 475);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -89,6 +92,17 @@
             this.buttonDebugCancel.Text = "Close";
             this.buttonDebugCancel.UseVisualStyleBackColor = true;
             this.buttonDebugCancel.Click += new System.EventHandler(this.ButtonDebugCancel_Click);
+            // 
+            // buttonDebugSaveAs
+            // 
+            this.buttonDebugSaveAs.Enabled = false;
+            this.buttonDebugSaveAs.Location = new System.Drawing.Point(170, 8);
+            this.buttonDebugSaveAs.Name = "buttonDebugSaveAs";
+            this.buttonDebugSaveAs.Size = new System.Drawing.Size(75, 23);
+            this.buttonDebugSaveAs.TabIndex = 3;
+            this.buttonDebugSaveAs.Text = "Save As...";
+            this.buttonDebugSaveAs.UseVisualStyleBackColor = true;
+            this.buttonDebugSaveAs.Click += new System.EventHandler(this.ButtonDebugSaveAs_Click);
             // 
             // tableLayoutPanel1
             // 
@@ -147,5 +161,6 @@
         private System.Windows.Forms.TextBox textBoxDebugOutput;
         private System.Windows.Forms.Button buttonDebugSave;
         private System.Windows.Forms.Button buttonDebugCancel;
+        private System.Windows.Forms.Button buttonDebugSaveAs;
     }
 }
