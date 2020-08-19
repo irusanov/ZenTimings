@@ -63,10 +63,7 @@ namespace ZenTimings.Utils
             [FieldOffset(0x1F8)] public uint CldoVddg;
         };
 
-        public PowerTable(SMU.SmuType smutype)
-        {
-            SmuType = smutype;
-        }
+        public PowerTable(SMU.SmuType smutype) => SmuType = smutype;
 
         private void ParseTable(uint[] pt)
         {
@@ -100,25 +97,34 @@ namespace ZenTimings.Utils
                 }
 
                 //Type typeOfTable = powerTable.GetType();
+                float bclkCorrection = 1.00f;
 
                 try
                 {
                     bytes = BitConverter.GetBytes(powerTable.Mclk);
-                    MCLK = $"{BitConverter.ToSingle(bytes, 0):F2}";
+                    float mclk = BitConverter.ToSingle(bytes, 0);
+
+                    // Compensate for lack of BCLK detection, based on configuredClockSpeed
+                    if ((ConfiguredClockSpeed / 2) % mclk > 1)
+                        bclkCorrection = ConfiguredClockSpeed / 2 / mclk;
+
+                    MCLK = $"{(mclk * bclkCorrection):F2}";
                 }
                 catch { }
 
                 try
                 {
                     bytes = BitConverter.GetBytes(powerTable.Fclk);
-                    FCLK = $"{BitConverter.ToSingle(bytes, 0):F2}";
+                    float fclk = BitConverter.ToSingle(bytes, 0);
+                    FCLK = $"{(fclk * bclkCorrection):F2}";
                 }
                 catch { }
 
                 try
                 {
                     bytes = BitConverter.GetBytes(powerTable.Uclk);
-                    UCLK = $"{BitConverter.ToSingle(bytes, 0):F2}";
+                    float uclk = BitConverter.ToSingle(bytes, 0);
+                    UCLK = $"{(uclk * bclkCorrection):F2}";
                 }
                 catch { }
 
@@ -203,11 +209,12 @@ namespace ZenTimings.Utils
             get => cldo_vddg ?? "N/A";
             set => SetProperty(ref cldo_vddg, value, InternalEventArgsCache.CLDO_VDDG);
         }
-
         protected void OnPropertyChanged(PropertyChangedEventArgs eventArgs)
         {
             PropertyChanged?.Invoke(this, eventArgs);
         }
+
+        public float ConfiguredClockSpeed { get; set; }
     }
 
     internal static class InternalEventArgsCache

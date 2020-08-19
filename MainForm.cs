@@ -263,6 +263,7 @@ namespace ZenTimings
                         table[i] = data;
                     }
 
+                    PowerTable.ConfiguredClockSpeed = MEMCFG.Frequency;
                     PowerTable.Table = table;
                 }
                 catch (EntryPointNotFoundException ex)
