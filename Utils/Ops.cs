@@ -395,7 +395,8 @@ namespace ZenStates
 
             switch (Smu.SMU_TYPE)
             {
-                // SummitRidge
+                // SummitRidge, PinnacleRidge
+                case SMU.SmuType.TYPE_CPU0:
                 case SMU.SmuType.TYPE_CPU1:
                     args[0] = 0;
                     status = SendSmuCommand(Smu.SMU_MSG_GetDramBaseAddress - 1, ref args);

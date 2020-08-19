@@ -129,7 +129,7 @@ namespace ZenStates
             SMU_ADDR_RSP = 0x03B10564;
             SMU_ADDR_ARG = 0x03B10598;
             */
-            SMU_TYPE = SmuType.TYPE_CPU1;
+            SMU_TYPE = SmuType.TYPE_CPU0;
 
             SMU_ADDR_MSG = 0x03B1051C;
             SMU_ADDR_RSP = 0x03B10568;

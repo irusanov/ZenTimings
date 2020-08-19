@@ -327,14 +327,6 @@ namespace ZenTimings
                     break;
             }
 
-            /*if (OPS.Smu.SMU_TYPE == SMU.SmuType.TYPE_CPU1)
-            {
-                float mclk = MEMCFG.Frequency / 2;
-                textBoxMCLK.Text = textBoxFCLK.Text = $"{mclk:F2}";
-                textBoxFCLK.Text = textBoxFCLK.Text = $"{mclk:F2}";
-                textBoxUCLK.Text = textBoxFCLK.Text = $"{mclk:F2}";
-            }*/
-
             uint vddcr_soc = (OPS.ReadDword(sviSocAddress) >> 16) & 0xFF;
             //uint vcore = (ops.ReadDword(sviCoreaddress) >> 16) & 0xFF;
 

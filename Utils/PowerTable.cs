@@ -43,9 +43,19 @@ namespace ZenTimings.Utils
 
         [Serializable]
         [StructLayout(LayoutKind.Explicit)]
-        private struct PowerTableCPU1
+        private struct PowerTableCPU0
         {
             [FieldOffset(0x068)] public uint VddcrSoc;
+            [FieldOffset(0x084)] public uint Fclk;
+            [FieldOffset(0x084)] public uint Uclk;
+            [FieldOffset(0x084)] public uint Mclk;
+        };
+
+        [Serializable]
+        [StructLayout(LayoutKind.Explicit)]
+        private struct PowerTableCPU1
+        {
+            [FieldOffset(0x074)] public uint VddcrSoc;
             [FieldOffset(0x084)] public uint Fclk;
             [FieldOffset(0x084)] public uint Uclk;
             [FieldOffset(0x084)] public uint Mclk;
@@ -78,6 +88,10 @@ namespace ZenTimings.Utils
 
                 switch (SmuType)
                 {
+                    case SMU.SmuType.TYPE_CPU0:
+                        powerTable = (PowerTableCPU0)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(PowerTableCPU0));
+                        break;
+
                     case SMU.SmuType.TYPE_CPU1:
                         powerTable = (PowerTableCPU1)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(PowerTableCPU1));
                         break;
