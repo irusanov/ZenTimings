@@ -1,5 +1,4 @@
-﻿using System.Windows.Forms;
-using ZenTimings.Properties;
+﻿using ZenTimings.Properties;
 
 namespace ZenTimings.Utils
 {
@@ -30,13 +29,15 @@ namespace ZenTimings.Utils
 
         public AppSettings() => Load();
 
-        public bool AutoRefresh { 
+        public bool AutoRefresh
+        {
             get => settings.AutoRefresh;
             set => settings.AutoRefresh = value;
         }
-        public int AutoRefreshInterval {
-            get => settings.AutoRefreshInterval; 
-            set => settings.AutoRefreshInterval = value; 
+        public int AutoRefreshInterval
+        {
+            get => settings.AutoRefreshInterval;
+            set => settings.AutoRefreshInterval = value;
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace ZenTimings
@@ -18,7 +17,8 @@ namespace ZenTimings
         }
 
         float frequency;
-        public float Frequency {
+        public float Frequency
+        {
             get => frequency;
             set
             {
@@ -279,7 +279,8 @@ namespace ZenTimings
         public uint RFC
         {
             get => rfc;
-            set {
+            set
+            {
                 SetProperty(ref rfc, value, InternalEventArgsCache.RFC);
                 double trfcns = Convert.ToDouble(RFC * 2000 / Frequency);
                 RFCns = $"{trfcns:F4}";

@@ -26,7 +26,7 @@ namespace ZenTimings
         ManagementObject classInstance;
         private BackgroundWorker backgroundWorker1;
 
-        public DebugDialog(uint dramBaseAddr, List<MemoryModule> memModules, 
+        public DebugDialog(uint dramBaseAddr, List<MemoryModule> memModules,
             MemoryConfig memCfg, SystemInfo systemInfo,
             BiosMemController biosMemCtrl, PowerTable powerTable,
             Ops ops)
@@ -92,7 +92,7 @@ namespace ZenTimings
             return instanceName;
         }
 
-        private void PrintWmiFunctions() 
+        private void PrintWmiFunctions()
         {
             try
             {
@@ -102,7 +102,8 @@ namespace ZenTimings
             }
             catch { }
 
-            try {
+            try
+            {
                 // Get function names with their IDs
                 string[] functionObjects = { "GetObjectID", "GetObjectID2" };
                 int index = 1;
@@ -147,9 +148,9 @@ namespace ZenTimings
             string h =
                 "########################################################" +
                 Environment.NewLine +
-                heading + 
+                heading +
                 Environment.NewLine +
-                "########################################################" + 
+                "########################################################" +
                 Environment.NewLine;
             result += h;
         }
@@ -161,7 +162,7 @@ namespace ZenTimings
 
         private void Debug(object sender, DoWorkEventArgs e)
         {
-            try 
+            try
             {
                 result = $"{Application.ProductName} v{Application.ProductVersion} Debug Report" +
                     Environment.NewLine +
@@ -181,7 +182,7 @@ namespace ZenTimings
                         AddLine(property.Name + ": " + property.GetValue(SI, null));
                 }
                 AddLine();
-                
+
                 // DRAM modules info
                 AddHeading("Memory Modules");
 

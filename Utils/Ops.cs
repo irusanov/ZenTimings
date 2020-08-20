@@ -422,7 +422,7 @@ namespace ZenStates
                         return 0;
                     address = args[0];
                     break;
-                
+
                 // Renoir
                 case SMU.SmuType.TYPE_APU1:
                     status = SendSmuCommand(Smu.SMU_MSG_GetDramBaseAddress, ref args);
@@ -468,7 +468,7 @@ namespace ZenStates
 
             if (status == SMU.Status.OK)
                 return address;
-            
+
             return 0;
         }
 

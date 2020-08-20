@@ -171,7 +171,8 @@ namespace ZenTimings.Utils
         }
 
         public SMU.SmuType SmuType { get; protected set; }
-        public uint[] Table {
+        public uint[] Table
+        {
             get => table;
             set
             {
@@ -180,7 +181,7 @@ namespace ZenTimings.Utils
                     table = value;
                     ParseTable(value);
                 }
-            } 
+            }
         }
 
         string fclk;

@@ -120,7 +120,7 @@ namespace ZenTimings
                 // Add the input parameters.
                 if (inParams != null)
                     inParams[$"{inParamName}"] = arg;
-                
+
                 // Execute the method and obtain the return values.
                 ManagementBaseObject outParams = mo.InvokeMethod($"{methodName}", inParams, null);
 

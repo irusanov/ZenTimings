@@ -9,7 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Management;
 using System.Security.Permissions;
-using System.Threading;
 using System.Windows.Forms;
 using ZenStates;
 using ZenTimings.Utils;
@@ -58,7 +57,7 @@ namespace ZenTimings
             if (cevent.DesiredType != typeof(string)) return;
 
             // Use the ToString method to format the value as float.
-            cevent.Value = $"{(float) cevent.Value:F4}V";
+            cevent.Value = $"{(float)cevent.Value:F4}V";
         }
 
         private void InitSystemInfo()
@@ -85,7 +84,7 @@ namespace ZenTimings
             int[] coreCount = OPS.GetCoreCount();
             SI.FusedCoreCount = coreCount[0];
             SI.Threads = coreCount[1];
-            
+
 
             ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_BaseBoard");
             foreach (ManagementObject obj in searcher.Get())
@@ -211,9 +210,10 @@ namespace ZenTimings
                             MEMCFG.TotalCapacity = $"{totalCapacity / 1024 / (1024 * 1024)}GB";
                     }
                 }
-                catch {
+                catch
+                {
                     MessageBox.Show("Failed to get installed memory parameters. Corresponding fields will be empty.",
-                        "Warning", 
+                        "Warning",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Warning);
                 }
@@ -412,7 +412,7 @@ namespace ZenTimings
                     compatMode = true;
                 }
             }
-            catch 
+            catch
             {
                 MessageBox.Show("Failed to read AMD ACPI. Some parameters will be empty.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
@@ -496,7 +496,7 @@ namespace ZenTimings
             MEMCFG.WRRD = OPS.GetBits(timings14, 0, 4);
 
             MEMCFG.REFI = OPS.GetBits(timings15, 0, 16);
-       
+
             MEMCFG.MODPDA = OPS.GetBits(timings16, 24, 6);
             MEMCFG.MRDPDA = OPS.GetBits(timings16, 16, 6);
             MEMCFG.MOD = OPS.GetBits(timings16, 8, 6);
@@ -644,7 +644,7 @@ namespace ZenTimings
                     var prop = ctrl.Name.Replace("textBox", "");
                     ctrl.Enabled = false;
                     var label = tableLayoutPanelValues.Controls[$"label{prop}"];
-                    if (label != null) 
+                    if (label != null)
                         label.Enabled = false;
                 }
             }
@@ -676,7 +676,7 @@ namespace ZenTimings
                 if ((e.Row + 1) % 2 == 0)
                 {
                     e.Graphics.FillRectangle(brush, e.CellBounds);
-                }    
+                }
             }
         }
 

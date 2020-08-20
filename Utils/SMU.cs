@@ -41,7 +41,7 @@ namespace ZenStates
             Renoir
         };
 
-        public enum PackageType: int
+        public enum PackageType : int
         {
             FP6 = 0,
             AM4 = 2,
@@ -122,7 +122,7 @@ namespace ZenStates
     // Zen (Summit Ridge), ThreadRipper
     public class SummitRidgeSettings : SMU
     {
-        public SummitRidgeSettings() 
+        public SummitRidgeSettings()
         {
             /*
             SMU_ADDR_MSG = 0x03B10528;

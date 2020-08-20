@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Runtime.InteropServices;
 
 namespace ZenTimings
@@ -122,7 +121,7 @@ namespace ZenTimings
 
         public Resistances Config { get; set; }
 
-        public string GetProcODTString (int key) => GetByKey(ProcOdtDict, key);
+        public string GetProcODTString(int key) => GetByKey(ProcOdtDict, key);
         public string GetDrvStrenString(int key) => GetByKey(DriveStrengthDict, key);
         public string GetRttString(int key) => GetByKey(RttDict, key);
         public string GetRttWrString(int key) => GetByKey(RttWrDict, key);
