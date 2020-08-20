@@ -25,7 +25,6 @@ namespace ZenTimings.Utils
         private struct PowerTableAPU0
         {
             [FieldOffset(0x104)] public uint VddcrSoc;
-            [FieldOffset(0x114)] public uint Bclk;
             [FieldOffset(0x298)] public uint Fclk;
             [FieldOffset(0x2C8)] public uint Uclk;
             [FieldOffset(0x2CC)] public uint Mclk;
@@ -45,6 +44,7 @@ namespace ZenTimings.Utils
         [StructLayout(LayoutKind.Explicit)]
         private struct PowerTableCPU0
         {
+            [FieldOffset(0x044)] public uint CldoVddp;
             [FieldOffset(0x068)] public uint VddcrSoc;
             [FieldOffset(0x084)] public uint Fclk;
             [FieldOffset(0x084)] public uint Uclk;
@@ -55,7 +55,8 @@ namespace ZenTimings.Utils
         [StructLayout(LayoutKind.Explicit)]
         private struct PowerTableCPU1
         {
-            [FieldOffset(0x074)] public uint VddcrSoc;
+            [FieldOffset(0x03C)] public uint CldoVddp;
+            [FieldOffset(0x060)] public uint VddcrSoc;
             [FieldOffset(0x084)] public uint Fclk;
             [FieldOffset(0x084)] public uint Uclk;
             [FieldOffset(0x084)] public uint Mclk;
