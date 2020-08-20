@@ -95,5 +95,10 @@ namespace ZenTimings
             }
         }
         #endregion
+
+        private void LinkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://zentimings.protonrom.com");
+        }
     }
 }
