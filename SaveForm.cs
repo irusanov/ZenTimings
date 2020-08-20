@@ -22,14 +22,14 @@ namespace ZenTimings
             //Dispose();
         }
 
-        private void buttonSave_Click(object sender, EventArgs e)
+        private void ButtonSave_Click(object sender, EventArgs e)
         {
             string unixTimestamp = Convert.ToString((DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMinutes);
             string filename = $@"{string.Join("_", this.Text.Split())}_{unixTimestamp}.png";
             SaveToFile(filename);
         }
 
-        private void buttonSaveAs_Click(object sender, EventArgs e)
+        private void ButtonSaveAs_Click(object sender, EventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog
             {
@@ -44,6 +44,13 @@ namespace ZenTimings
             {
                 SaveToFile(saveFileDialog.FileName);
             }
+        }
+
+        private void ButtonCopyToClipboard_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetImage(screenshot);
+            statusStrip1.Visible = true;
+            toolStripStatusLabel1.Text = "Screenshot copied to clipboard.";
         }
     }
 }
