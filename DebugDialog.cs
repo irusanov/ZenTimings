@@ -99,11 +99,7 @@ namespace ZenTimings
                 classInstance = new ManagementObject(wmiScope,
                     $"{wmiAMDACPI}.InstanceName='{instanceName}'",
                     null);
-            }
-            catch { }
 
-            try
-            {
                 // Get function names with their IDs
                 string[] functionObjects = { "GetObjectID", "GetObjectID2" };
                 int index = 1;
@@ -162,16 +158,16 @@ namespace ZenTimings
 
         private void Debug(object sender, DoWorkEventArgs e)
         {
+            result = $"{Application.ProductName} v{Application.ProductVersion} Debug Report" +
+                Environment.NewLine +
+                Environment.NewLine;
+
+            Type type = SI.GetType();
+            PropertyInfo[] properties = type.GetProperties();
+
+            AddHeading("System Info");
             try
             {
-                result = $"{Application.ProductName} v{Application.ProductVersion} Debug Report" +
-                    Environment.NewLine +
-                    Environment.NewLine;
-
-                AddHeading("System Info");
-                Type type = SI.GetType();
-                PropertyInfo[] properties = type.GetProperties();
-
                 foreach (PropertyInfo property in properties)
                 {
                     if (property.Name == "CpuId" || property.Name == "PatchLevel")
@@ -181,84 +177,124 @@ namespace ZenTimings
                     else
                         AddLine(property.Name + ": " + property.GetValue(SI, null));
                 }
-                AddLine();
+            }
+            catch
+            {
+                AddLine("<FAILED>");
+            }
+            AddLine();
 
-                // DRAM modules info
-                AddHeading("Memory Modules");
+            // DRAM modules info
+            AddHeading("Memory Modules");
 
-                foreach (MemoryModule module in modules)
-                {
-                    AddLine($"{module.PartNumber} {module.Capacity / 1024 / (1024 * 1024)}GB {module.ClockSpeed}MHz");
-                }
-                AddLine();
+            foreach (MemoryModule module in modules)
+            {
+                AddLine($"{module.PartNumber} {module.Capacity / 1024 / (1024 * 1024)}GB {module.ClockSpeed}MHz");
+            }
+            AddLine();
 
-                // Memory timings info
-                AddHeading("Memory Config");
-                type = MEMCFG.GetType();
-                properties = type.GetProperties();
+            // Memory timings info
+            AddHeading("Memory Config");
+            type = MEMCFG.GetType();
+            properties = type.GetProperties();
+
+            try
+            {
+
                 AddLine($"DRAM Base Address: {baseAddress:X8}");
                 foreach (PropertyInfo property in properties)
-                {
                     AddLine(property.Name + ": " + property.GetValue(MEMCFG, null));
-                }
-                AddLine();
+            }
+            catch
+            {
+                AddLine("<FAILED>");
+            }
+            AddLine();
 
-                // Configured DRAM memory controller settings from BIOS
-                AddHeading("BIOS: Memory Controller Config");
+            // Configured DRAM memory controller settings from BIOS
+            AddHeading("BIOS: Memory Controller Config");
+            try
+            {
                 for (int i = 0; i < BMC.Table.Length; ++i)
-                {
                     AddLine($"Index {i:D3}: {BMC.Table[i]:X2} ({BMC.Table[i]})");
-                }
-                AddLine();
+            }
+            catch
+            {
+                AddLine("<FAILED>");
+            }
+            AddLine();
 
-                // SMU power table
-                AddHeading("SMU: Power Table");
+            // SMU power table
+            AddHeading("SMU: Power Table");
+            try
+            {
                 for (int i = 0; i < PT.Table.Length; ++i)
                 {
                     byte[] temp = BitConverter.GetBytes(PT.Table[i]);
                     AddLine($"Offset {i * 0x4:X3}: {BitConverter.ToSingle(temp, 0):F8}");
                 }
-                AddLine();
+            }
+            catch
+            {
+                AddLine("<FAILED>");
+            }
+            AddLine();
 
-                // SMU power table
-                AddHeading("SMU: Power Table Detected Values");
+            // SMU power table
+            AddHeading("SMU: Power Table Detected Values");
+            try
+            {
                 AddLine($"MCLK: {PT.MCLK}");
                 AddLine($"FCLK: {PT.FCLK}");
                 AddLine($"UCLK: {PT.UCLK}");
                 AddLine($"VSOC_SMU: {PT.VDDCR_SOC}");
                 AddLine($"CLDO_VDDP: {PT.CLDO_VDDP}");
                 AddLine($"CLDO_VDDG: {PT.CLDO_VDDG}");
-                AddLine();
+            }
+            catch
+            {
+                AddLine("<FAILED>");
+            }
+            AddLine();
 
-                // All WMI classes in root namespace
-                /*AddHeading("WMI: Root Classes");
-                List<string> namespaces = WMI.GetClassNamesWithinWmiNamespace(wmiScope);
+            // All WMI classes in root namespace
+            /*AddHeading("WMI: Root Classes");
+            List<string> namespaces = WMI.GetClassNamesWithinWmiNamespace(wmiScope);
 
-                foreach (var ns in namespaces)
-                {
-                    AddLine(ns);
-                }
-                AddLine();*/
+            foreach (var ns in namespaces)
+            {
+                AddLine(ns);
+            }
+            AddLine();*/
 
-                // Check if AMD_ACPI class exists
-                AddHeading("WMI: AMD_ACPI");
-                if (WMI.Query(wmiScope, wmiAMDACPI) != null)
-                    AddLine("OK");
-                else
-                    AddLine("<FAILED>");
-                AddLine();
+            // Check if AMD_ACPI class exists
+            AddHeading("WMI: AMD_ACPI");
+            if (WMI.Query(wmiScope, wmiAMDACPI) != null)
+                AddLine("OK");
+            else
+                AddLine("<FAILED>");
+            AddLine();
 
-                AddHeading("WMI: Instance Name");
+            AddHeading("WMI: Instance Name");
+            try
+            {
                 var wmiInstanceName = GetWmiInstanceName();
                 if (wmiInstanceName.Length == 0)
                     wmiInstanceName = "<FAILED>";
                 AddLine(wmiInstanceName);
-                AddLine();
+            }
+            catch
+            {
+                AddLine("<FAILED>");
+            }
+            AddLine();
 
-                PrintWmiFunctions();
-                AddLine();
+            PrintWmiFunctions();
+            AddLine();
 
-                AddHeading("SVI2: PCI Range");
+            AddHeading("SVI2: PCI Range");
+            try
+            {
                 uint startAddress = 0x0005A000;
                 uint endAddress = 0x0005A0FF;
                 while (startAddress <= endAddress)
@@ -267,20 +303,17 @@ namespace ZenTimings
                     AddLine($"0x{startAddress:X8}: 0x{data:X8}");
                     startAddress += 4;
                 }
-
-                Invoke(new MethodInvoker(delegate
-                {
-                    textBoxDebugOutput.Text = result;
-                }));
             }
-            catch (ApplicationException ex)
+            catch
             {
-                Invoke(new MethodInvoker(delegate
-                {
-                    SetControlsState();
-                    HandleError(ex.Message);
-                }));
+                AddLine("<FAILED>");
             }
+
+            Invoke(new MethodInvoker(delegate
+            {
+                textBoxDebugOutput.Text = result;
+                SetControlsState();
+            }));
         }
 
         private void SaveToFile(bool saveAs = false)
