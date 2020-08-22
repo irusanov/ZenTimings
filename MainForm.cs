@@ -1,6 +1,7 @@
 //#define BETA
 
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -37,6 +38,7 @@ namespace ZenTimings
         private bool compatMode = false;
         private BackgroundWorker backgroundWorker1;
         private readonly AppSettings settings = new AppSettings();
+        private readonly uint[] table = new uint[PowerTable.tableSize / 4];
 #if DEBUG
         readonly TextWriterTraceListener[] listeners = new TextWriterTraceListener[] {
             //new TextWriterTraceListener("debug.txt")
@@ -255,7 +257,6 @@ namespace ZenTimings
                 try
                 {
                     uint data = 0;
-                    uint[] table = new uint[PowerTable.tableSize / 4];
 
                     if (OPS.TransferTableToDram() != SMU.Status.OK)
                         OPS.TransferTableToDram(); // retry
@@ -266,8 +267,11 @@ namespace ZenTimings
                         table[i] = data;
                     }
 
-                    PowerTable.ConfiguredClockSpeed = MEMCFG.Frequency;
-                    PowerTable.Table = table;
+                    if (table.Any(v => v != 0))
+                    {
+                        PowerTable.ConfiguredClockSpeed = MEMCFG.Frequency;
+                        PowerTable.Table = table;
+                    }
                 }
                 catch (EntryPointNotFoundException ex)
                 {
@@ -388,33 +392,35 @@ namespace ZenTimings
 
                 // Get APCB config from BIOS. Holds memory parameters.
                 BiosACPIFunction cmd = GetFunctionByIdString("Get APCB Config");
-                if (cmd != null)
-                {
-                    BMC.Table = WMI.RunCommand(classInstance, cmd.ID);
+                if (cmd == null)
+                    throw new Exception();
 
-                    textBoxProcODT.Text = BMC.GetProcODTString(BMC.Config.ProcODT);
+                BMC.Table = WMI.RunCommand(classInstance, cmd.ID);
+                var allZero = !BMC.Table.Any(v => v != 0);
 
-                    textBoxClkDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.ClkDrvStren);
-                    textBoxAddrCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.AddrCmdDrvStren);
-                    textBoxCsOdtCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CsOdtCmdDrvStren);
-                    textBoxCkeDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CkeDrvStren);
+                if (allZero || BMC.Table == null)
+                    throw new Exception();
 
-                    textBoxRttNom.Text = BMC.GetRttString(BMC.Config.RttNom);
-                    textBoxRttWr.Text = BMC.GetRttWrString(BMC.Config.RttWr);
-                    textBoxRttPark.Text = BMC.GetRttString(BMC.Config.RttPark);
+                textBoxProcODT.Text = BMC.GetProcODTString(BMC.Config.ProcODT);
 
-                    textBoxAddrCmdSetup.Text = $"{BMC.Config.AddrCmdSetup}";
-                    textBoxCsOdtSetup.Text = $"{BMC.Config.CsOdtSetup}";
-                    textBoxCkeSetup.Text = $"{BMC.Config.CkeSetup}";
-                }
-                else
-                {
-                    compatMode = true;
-                }
+                textBoxClkDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.ClkDrvStren);
+                textBoxAddrCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.AddrCmdDrvStren);
+                textBoxCsOdtCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CsOdtCmdDrvStren);
+                textBoxCkeDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CkeDrvStren);
+
+                textBoxRttNom.Text = BMC.GetRttString(BMC.Config.RttNom);
+                textBoxRttWr.Text = BMC.GetRttWrString(BMC.Config.RttWr);
+                textBoxRttPark.Text = BMC.GetRttString(BMC.Config.RttPark);
+
+                textBoxAddrCmdSetup.Text = $"{BMC.Config.AddrCmdSetup}";
+                textBoxCsOdtSetup.Text = $"{BMC.Config.CsOdtSetup}";
+                textBoxCkeSetup.Text = $"{BMC.Config.CkeSetup}";
             }
-            catch
+            catch (Exception ex)
             {
+                compatMode = true;
                 MessageBox.Show("Failed to read AMD ACPI. Some parameters will be empty.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                Console.WriteLine(ex.Message);
             }
         }
 
