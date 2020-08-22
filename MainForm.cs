@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Management;
 using System.Security.Permissions;
+using System.Threading;
 using System.Windows.Forms;
 using ZenStates;
 using ZenTimings.Utils;
@@ -560,16 +561,27 @@ namespace ZenTimings
 
         private void WaitForPowerTable(object sender, DoWorkEventArgs e)
         {
-            // Refresh until table is transferred to DRAM or timeout
-            var timeout = 10000; // in ms
-            var startTime = DateTime.UtcNow;
-            uint temp = 0;
             int minimum_retries = 1;
 
-            while ((temp == 0 || minimum_retries-- > 0) && DateTime.UtcNow - startTime < TimeSpan.FromMilliseconds(timeout))
+            // Refresh until table is transferred to DRAM or timeout
+            NativeMethods.GetPhysLong(dramPtr, out uint temp);
+
+            // Already in DRAM and auto-refresh disabled
+            if (temp != 0)
+            {
+                Thread.Sleep(PowerCfgTimer.Interval * minimum_retries);
+                return;
+            }
+
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
+
+            while (temp == 0 && timer.Elapsed.TotalMilliseconds < 1000)
             {
                 NativeMethods.GetPhysLong(dramPtr, out temp);
             }
+
+            timer.Stop();
         }
 
         private void WaitForPowerTable_Complete(object sender, RunWorkerCompletedEventArgs e)
