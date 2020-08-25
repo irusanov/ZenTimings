@@ -293,6 +293,35 @@ namespace ZenStates
             return count;
         }
 
+        public int GetCCDCount()
+        {
+            uint value1, value2, value3, value4;
+            int ccdCount = 0;
+
+            value1 = ReadDword(0x5D21A);
+            value2 = ReadDword(0x5D21B);
+            value3 = ReadDword(0x5D21C);
+
+            value1 = (value1 >> 22) & 0xff;
+            value2 = (value2 >> 30) & 0xff;
+            value3 &= 0x3f;
+
+            value4 = value2 | (4 * value3);
+
+            if (!((value1 & 1) == 0 || (value4 & 1) == 1))
+                ccdCount += 1;
+
+            uint mask = 1u;
+            while (mask <= 0x80)
+            {
+                if ((value1 & mask) == 1 && (value4 & mask) == 0)
+                    ccdCount += 1;
+                mask *= 2;
+            }
+
+            return ccdCount;
+        }
+
         private string GetStringPart(uint val)
         {
             return val != 0 ? Convert.ToChar(val).ToString() : "";

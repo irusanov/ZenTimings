@@ -5,7 +5,7 @@ namespace ZenStates
     [Serializable]
     public class SystemInfo
     {
-        private int fusedCoreCount;
+        private int ccdCount;
         private int threads;
 
         private static string SmuVersionToString(uint version)
@@ -64,21 +64,7 @@ namespace ZenStates
         public string CpuName { get; set; }
         public string BiosVersion { get; set; }
         public uint SmuVersion { get; set; }
-        public int FusedCoreCount
-        {
-            get { return fusedCoreCount; }
-            set
-            {
-                fusedCoreCount = value;
-                //PhysicalCoreCount = value + value % 8;
-                CCDCount = value / 6;
-                CCXCount = CCDCount * 2;
-                if (CCDCount == 0) CCDCount = 1;
-                if (CCXCount == 0) CCXCount = 1;
-                NumCoresInCCX = value / CCXCount;
-                PhysicalCoreCount = CCXCount * 4;
-            }
-        }
+        public int FusedCoreCount { get; set; }
 
         public int Threads
         {
@@ -86,13 +72,22 @@ namespace ZenStates
             set
             {
                 threads = value;
-                SMT = value > fusedCoreCount;
+                SMT = value > FusedCoreCount;
             }
         }
 
         public uint PatchLevel { get; set; }
         public int PhysicalCoreCount { get; private set; }
-        public int CCDCount { get; private set; }
+        public int CCDCount {
+            get => ccdCount;
+            set
+            {
+                ccdCount = value;
+                CCXCount = ccdCount * 2;
+                NumCoresInCCX = FusedCoreCount / CCXCount;
+                PhysicalCoreCount = CCXCount * 4;
+            } 
+        }
         public int CCXCount { get; private set; }
         public int NumCoresInCCX { get; private set; }
         public bool SMT { get; private set; }

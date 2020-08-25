@@ -72,6 +72,7 @@ namespace ZenTimings
                 ExitApplication();
             }
 
+            int[] coreCount = OPS.GetCoreCount();
             SI = new SystemInfo
             {
                 CpuId = OPS.GetCpuId(),
@@ -80,13 +81,13 @@ namespace ZenTimings
                 PackageType = OPS.GetPkgType(),
                 PatchLevel = OPS.GetPatchLevel(),
                 SmuVersion = OPS.Smu.Version,
+                FusedCoreCount = coreCount[0],
+                Threads = coreCount[1],
+                CCDCount = OPS.GetCCDCount(),
             };
 
             SI.Model = (SI.CpuId & 0xff) >> 4;
-            SI.ExtendedModel = SI.Model + ((SI.CpuId >> 12) & 0xf0);
-            int[] coreCount = OPS.GetCoreCount();
-            SI.FusedCoreCount = coreCount[0];
-            SI.Threads = coreCount[1];
+            SI.ExtendedModel = SI.Model + ((SI.CpuId >> 12) & 0xF0);
 
 
             ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_BaseBoard");
