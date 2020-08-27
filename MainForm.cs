@@ -84,6 +84,7 @@ namespace ZenTimings
                 FusedCoreCount = coreCount[0],
                 Threads = coreCount[1],
                 CCDCount = OPS.GetCCDCount(),
+                CodeName = $"{OPS.CpuType}",
             };
 
             SI.Model = (SI.CpuId & 0xff) >> 4;
@@ -654,10 +655,10 @@ namespace ZenTimings
             {
                 Text += " (compatibility)";
 
-                MessageBox.Show("Could not get some of the parameters.\nRunning in compatibility mode.",
+                /*MessageBox.Show("Running in compatibility mode.",
                     "Warning",
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
+                    MessageBoxIcon.Warning);*/
             }
 
             foreach (Control ctrl in tableLayoutPanelValues.Controls)

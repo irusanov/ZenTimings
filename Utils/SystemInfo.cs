@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 
 namespace ZenStates
 {
@@ -28,6 +29,7 @@ namespace ZenStates
             MbVendor = "";
             MbName = "";
             CpuName = "";
+            CodeName = "";
             BiosVersion = "";
             SmuVersion = 0;
             FusedCoreCount = 2; // minimum cores
@@ -36,7 +38,7 @@ namespace ZenStates
         }
 
         public SystemInfo(uint cpuId, uint model, uint eModel, int nodes, uint pkgType,
-            string mbVendor, string mbName, string cpuName, string biosVersion,
+            string mbVendor, string mbName, string cpuName, string codeName, string biosVersion,
             uint smuVersion, int fusedCoreCount, int threads, uint patchLevel)
         {
             CpuId = cpuId;
@@ -47,6 +49,7 @@ namespace ZenStates
             MbVendor = mbVendor ?? throw new ArgumentNullException(nameof(mbVendor));
             MbName = mbName ?? throw new ArgumentNullException(nameof(mbName));
             CpuName = cpuName ?? throw new ArgumentNullException(nameof(cpuName));
+            CodeName = codeName ?? throw new ArgumentNullException(nameof(codeName));
             BiosVersion = biosVersion ?? throw new ArgumentNullException(nameof(biosVersion));
             SmuVersion = smuVersion;
             FusedCoreCount = fusedCoreCount;
@@ -62,6 +65,7 @@ namespace ZenStates
         public string MbVendor { get; set; }
         public string MbName { get; set; }
         public string CpuName { get; set; }
+        public string CodeName { get; set; }
         public string BiosVersion { get; set; }
         public uint SmuVersion { get; set; }
         public int FusedCoreCount { get; set; }
