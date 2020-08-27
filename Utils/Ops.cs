@@ -94,13 +94,13 @@ namespace ZenStates
 
         public bool SmuWaitDone()
         {
-            bool res = false;
+            bool res;
             ushort timeout = SMU_TIMEOUT;
             uint data = 0;
-            while ((!res || data != 1) && --timeout > 0)
-            {
+
+            do
                 res = SmuReadReg(Smu.SMU_ADDR_RSP, ref data);
-            }
+            while ((!res || data != 1) && --timeout > 0);
 
             if (timeout == 0 || data != 1) res = false;
 
@@ -182,7 +182,7 @@ namespace ZenStates
         {
             SMU.CPUType cpuType;
 
-            // CPU Check. Compare family, model, ext family, ext model. Ignore stepping/revision
+            // CPU Check. Compare family, model, ext family, ext model
             switch (GetCpuId())
             {
                 case 0x00800F11: // CPU \ Zen \ Summit Ridge \ ZP - B0 \ 14nm
@@ -229,9 +229,6 @@ namespace ZenStates
                     break;
                 default:
                     cpuType = SMU.CPUType.Unsupported;
-#if DEBUG
-                    cpuType = SMU.CPUType.DEBUG;
-#endif
                     break;
             }
 
@@ -263,7 +260,7 @@ namespace ZenStates
             uint eax = 0, ebx = 0, ecx = 0, edx = 0;
             if (Ols.Cpuid(0x8000001E, ref eax, ref ebx, ref ecx, ref edx) == 1)
             {
-                return Convert.ToInt32(ecx >> 8 & 0x7);
+                return Convert.ToInt32(ecx >> 8 & 0x7) + 1;
             }
             return 1;
         }
@@ -311,13 +308,11 @@ namespace ZenStates
             if (!((value1 & 1) == 0 || (value4 & 1) == 1))
                 ccdCount += 1;
 
-            uint mask = 1u;
-            while (mask <= 0x80)
-            {
-                if ((value1 & mask) == 1 && (value4 & mask) == 0)
+            int i = 0;
+            do {
+                if ((value1 & (1 << i)) == 1 && (value4 & (1 << i)) == 0)
                     ccdCount += 1;
-                mask *= 2;
-            }
+            } while (++i < 8);
 
             return ccdCount;
         }
@@ -378,7 +373,7 @@ namespace ZenStates
             uint eax = 0;
             uint edx = 0;
 
-            if (ols.RdmsrTx(MSR_PStateStat, ref eax, ref edx, (UIntPtr)(1)) == 1)
+            if (ols.Rdmsr(MSR_PStateStat, ref eax, ref edx) == 1)
             {
                 // Summit Ridge, Raven Ridge
                 return Convert.ToBoolean((eax >> 1) & 1);
