@@ -296,14 +296,18 @@ namespace ZenTimings
                 //case 0x8:  // Zen+
                 //case 0x11: // Zen APU
                 case SMU.CPUType.SummitRidge:
-                case SMU.CPUType.Threadripper:
                 case SMU.CPUType.PinnacleRidge:
-                case SMU.CPUType.Naples:
-                case SMU.CPUType.Colfax:
                 case SMU.CPUType.RavenRidge:
                 case SMU.CPUType.Fenghuang:
                     sviCoreaddress = F17H_M01H_SVI_TEL_PLANE0;
                     sviSocAddress = F17H_M01H_SVI_TEL_PLANE1;
+                    break;
+
+                case SMU.CPUType.Threadripper:
+                case SMU.CPUType.Naples:
+                case SMU.CPUType.Colfax:
+                    sviCoreaddress = F17H_M01H_SVI_TEL_PLANE1;
+                    sviSocAddress = F17H_M01H_SVI_TEL_PLANE0;
                     break;
 
                 //case 0x31: // Zen2 Threadripper/EPYC
