@@ -20,14 +20,7 @@ namespace ZenTimings
         public float Frequency
         {
             get => frequency;
-            set
-            {
-                SetProperty(ref frequency, value, InternalEventArgsCache.Frequency);
-                double trfcns = Convert.ToDouble(RFC * 2000 / Frequency);
-                RFCns = $"{trfcns:F4}";
-                double trefins = Convert.ToDouble(1000 / Frequency * 2 * REFI);
-                REFIns = $"{trefins:F3}";
-            }
+            set => SetProperty(ref frequency, value, InternalEventArgsCache.Frequency);
         }
 
         string totalCapacity;
@@ -282,7 +275,10 @@ namespace ZenTimings
             set
             {
                 SetProperty(ref rfc, value, InternalEventArgsCache.RFC);
-                double trfcns = Convert.ToDouble(RFC * 2000 / Frequency);
+
+                double rfcValue = Convert.ToDouble(RFC);
+                double trfcns = rfcValue * 2000 / Frequency;
+                if (trfcns > rfcValue) trfcns /= 2;
                 RFCns = $"{trfcns:F4}";
             }
         }
@@ -315,7 +311,9 @@ namespace ZenTimings
             set
             {
                 SetProperty(ref refi, value, InternalEventArgsCache.REFI);
-                double trefins = Convert.ToDouble(1000 / Frequency * 2 * REFI);
+                double refiValue = Convert.ToDouble(REFI);
+                double trefins = 1000 / Frequency * 2 * refiValue;
+                if (trefins > refiValue) trefins /= 2;
                 REFIns = $"{trefins:F3}";
             }
         }

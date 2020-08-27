@@ -120,8 +120,9 @@ namespace ZenTimings.Utils
                     float mclk = BitConverter.ToSingle(bytes, 0);
 
                     // Compensate for lack of BCLK detection, based on configuredClockSpeed
-                    if ((ConfiguredClockSpeed / 2) % mclk > 1)
-                        bclkCorrection = ConfiguredClockSpeed / 2 / mclk;
+                    var dramFreq = ConfiguredClockSpeed / 2;
+                    if ((dramFreq + 1) / mclk > 1 && dramFreq % mclk > 1)
+                        bclkCorrection = dramFreq / mclk;
 
                     MCLK = $"{(mclk * bclkCorrection):F2}";
                 }
