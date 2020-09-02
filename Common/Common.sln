@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-VisualStudioVersion = 16.0.29709.97
+VisualStudioVersion = 16.0.30330.147
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenTimings", "ZenTimings.csproj", "{EBBE5285-83E1-4B84-8388-6DC13C51333F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "..\Common\Common.csproj", "{39C55831-97A2-498D-A9DD-27BF677E579A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common.csproj", "{39C55831-97A2-498D-A9DD-27BF677E579A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,10 +11,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{EBBE5285-83E1-4B84-8388-6DC13C51333F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EBBE5285-83E1-4B84-8388-6DC13C51333F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EBBE5285-83E1-4B84-8388-6DC13C51333F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EBBE5285-83E1-4B84-8388-6DC13C51333F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{39C55831-97A2-498D-A9DD-27BF677E579A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{39C55831-97A2-498D-A9DD-27BF677E579A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39C55831-97A2-498D-A9DD-27BF677E579A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -26,6 +20,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {9233A599-9AB4-4A0E-8846-BFB59677BDEF}
+		SolutionGuid = {05DA2A8A-66D5-400C-B9CC-26CBBC9B2234}
 	EndGlobalSection
 EndGlobal

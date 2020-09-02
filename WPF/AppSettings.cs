@@ -1,6 +1,6 @@
 ﻿using ZenTimings.Properties;
 
-namespace ZenTimings.Utils
+namespace ZenTimings
 {
     public sealed class AppSettings
     {

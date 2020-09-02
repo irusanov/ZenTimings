@@ -1,5 +1,4 @@
-﻿
-using ZenTimings.Properties;
+﻿using ZenTimings.Properties;
 
 namespace ZenTimings
 {

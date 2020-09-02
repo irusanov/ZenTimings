@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace ZenTimings.Utils
 {
-    class Screenshot : IDisposable
+    public class Screenshot : IDisposable
     {
         // GDI stuff for window screenshot without shadows
         [DllImport("gdi32.dll")]

@@ -88,6 +88,7 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="AppSettings.cs" />
     <Compile Include="DebugDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -100,24 +101,18 @@
     <Compile Include="OptionsDialog.Designer.cs">
       <DependentUpon>OptionsDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Utils\AppSettings.cs" />
-    <Compile Include="Utils\BiosACPIFunction.cs" />
-    <Compile Include="Utils\BiosMemController.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Utils\MemoryModule.cs" />
     <Compile Include="SaveForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="SaveForm.Designer.cs">
       <DependentUpon>SaveForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Utils\NativeMethods.cs" />
-    <Compile Include="Utils\Ols.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resource1.Designer.cs">
@@ -125,13 +120,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resource1.resx</DependentUpon>
     </Compile>
-    <Compile Include="Utils\Ops.cs" />
-    <Compile Include="Utils\PowerTable.cs" />
-    <Compile Include="Utils\Screenshot.cs" />
-    <Compile Include="Utils\SMU.cs" />
-    <Compile Include="Utils\SystemInfo.cs" />
-    <Compile Include="Utils\MemoryConfig.cs" />
-    <Compile Include="Utils\WMI.cs" />
     <EmbeddedResource Include="AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </EmbeddedResource>
@@ -188,6 +176,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\camera.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{39c55831-97a2-498d-a9dd-27bf677e579a}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

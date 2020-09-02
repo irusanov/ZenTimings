@@ -71,19 +71,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Utils\AppSettings.cs" />
-    <Compile Include="Utils\BiosACPIFunction.cs" />
-    <Compile Include="Utils\BiosMemController.cs" />
-    <Compile Include="Utils\MemoryConfig.cs" />
-    <Compile Include="Utils\MemoryModule.cs" />
-    <Compile Include="Utils\NativeMethods.cs" />
-    <Compile Include="Utils\Ols.cs" />
-    <Compile Include="Utils\Ops.cs" />
-    <Compile Include="Utils\PowerTable.cs" />
-    <Compile Include="Utils\Screenshot.cs" />
-    <Compile Include="Utils\SMU.cs" />
-    <Compile Include="Utils\SystemInfo.cs" />
-    <Compile Include="Utils\WMI.cs" />
+    <Compile Include="AppSettings.cs" />
     <Compile Include="Windows\AboutDialog.xaml.cs">
       <DependentUpon>AboutDialog.xaml</DependentUpon>
     </Compile>
@@ -162,6 +150,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\icon-16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{39c55831-97a2-498d-a9dd-27bf677e579a}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

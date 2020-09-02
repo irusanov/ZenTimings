@@ -526,7 +526,7 @@ namespace ZenStates
 
         public void Dispose()
         {
-            amdSmuMutex.Dispose();
+            amdSmuMutex.ReleaseMutex();
             Ols.Dispose();
         }
     }
