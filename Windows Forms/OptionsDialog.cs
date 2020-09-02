@@ -25,10 +25,6 @@ namespace ZenTimings
             toolTip.SetToolTip(checkBoxAutoRefresh, Caption);
             toolTip.SetToolTip(numericUpDownRefreshInterval, Caption);
 
-            comboBoxTheme.Items.Add("Light");
-            comboBoxTheme.Items.Add("Dark");
-            comboBoxTheme.SelectedIndex = 0;
-
             checkBoxCompactMode.Checked = settingsInstance.CompactMode;
             checkBoxAutoRefresh.Checked = settingsInstance.AutoRefresh;
             numericUpDownRefreshInterval.Value = settingsInstance.AutoRefreshInterval;
