@@ -1,5 +1,4 @@
 ﻿using System;
-using System.CodeDom;
 
 namespace ZenStates
 {
@@ -82,15 +81,25 @@ namespace ZenStates
 
         public uint PatchLevel { get; set; }
         public int PhysicalCoreCount { get; private set; }
-        public int CCDCount {
+        public int CCDCount
+        {
             get => ccdCount;
             set
             {
-                ccdCount = value;
-                CCXCount = ccdCount * 2;
+                if (value > 0)
+                {
+                    ccdCount = value;
+                    CCXCount = ccdCount * 2;
+                }
+                else
+                {
+                    ccdCount = 1;
+                    CCXCount = ccdCount;
+                }
+
                 NumCoresInCCX = FusedCoreCount / CCXCount;
                 PhysicalCoreCount = CCXCount * 4;
-            } 
+            }
         }
         public int CCXCount { get; private set; }
         public int NumCoresInCCX { get; private set; }

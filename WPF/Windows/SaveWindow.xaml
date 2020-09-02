@@ -1,0 +1,30 @@
+﻿<adonisControls:AdonisWindow x:Class="ZenTimings.Windows.SaveWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+        xmlns:local="clr-namespace:ZenTimings.Windows"
+        mc:Ignorable="d"
+        Title="ZenTimings Screenshot" Height="63.38" Width="237.726" SizeToContent="WidthAndHeight" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <Button x:Name="buttonCopyToClipboard" Grid.Column="0" Content="Copy" VerticalAlignment="Top" Width="70" Margin="3" Click="ButtonCopyToClipboard_Click"/>
+        <Button x:Name="buttonSave" Grid.Column="1" Content="Save" VerticalAlignment="Top" Width="70" Margin="3" Click="ButtonSave_Click"/>
+        <Button x:Name="buttonSaveAs" Grid.Column="2" Content="Save As..." VerticalAlignment="Top" Width="70" Margin="3" Click="ButtonSaveAs_Click"/>
+
+        <StatusBar x:Name="statusStrip1" Grid.Row="1" Grid.ColumnSpan="3" Visibility="Collapsed" Padding="3">
+            <StatusBarItem Content="Screenshot copied to clipboard." />
+        </StatusBar>
+    </Grid>
+</adonisControls:AdonisWindow>

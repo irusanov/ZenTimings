@@ -1,3 +1,5 @@
+using System;
+
 namespace ZenTimings
 {
     partial class MainForm
@@ -35,9 +37,7 @@ namespace ZenTimings
             this.textBoxMRDPDA = new System.Windows.Forms.Label();
             this.textBoxMODPDA = new System.Windows.Forms.Label();
             this.labelMRDPDA = new System.Windows.Forms.Label();
-            this.textBoxVSOC_SVI2 = new System.Windows.Forms.Label();
             this.labelMODPDA = new System.Windows.Forms.Label();
-            this.labelVSOC_SVI2 = new System.Windows.Forms.Label();
             this.label38 = new System.Windows.Forms.Label();
             this.label37 = new System.Windows.Forms.Label();
             this.label36 = new System.Windows.Forms.Label();
@@ -147,6 +147,8 @@ namespace ZenTimings
             this.textBoxVDDCR_SOC = new System.Windows.Forms.Label();
             this.textBoxCLDO_VDDP = new System.Windows.Forms.Label();
             this.textBoxCLDO_VDDG = new System.Windows.Forms.Label();
+            this.textBoxVSOC_SVI2 = new System.Windows.Forms.Label();
+            this.labelVSOC_SVI2 = new System.Windows.Forms.Label();
             this.label31 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.textBoxRFC = new System.Windows.Forms.Label();
@@ -196,9 +198,7 @@ namespace ZenTimings
             this.tableLayoutPanelValues.Controls.Add(this.textBoxMRDPDA, 5, 21);
             this.tableLayoutPanelValues.Controls.Add(this.textBoxMODPDA, 2, 21);
             this.tableLayoutPanelValues.Controls.Add(this.labelMRDPDA, 4, 21);
-            this.tableLayoutPanelValues.Controls.Add(this.textBoxVSOC_SVI2, 8, 4);
             this.tableLayoutPanelValues.Controls.Add(this.labelMODPDA, 1, 21);
-            this.tableLayoutPanelValues.Controls.Add(this.labelVSOC_SVI2, 7, 4);
             this.tableLayoutPanelValues.Controls.Add(this.label38, 4, 20);
             this.tableLayoutPanelValues.Controls.Add(this.label37, 1, 20);
             this.tableLayoutPanelValues.Controls.Add(this.label36, 4, 18);
@@ -308,6 +308,8 @@ namespace ZenTimings
             this.tableLayoutPanelValues.Controls.Add(this.textBoxVDDCR_SOC, 8, 5);
             this.tableLayoutPanelValues.Controls.Add(this.textBoxCLDO_VDDP, 8, 6);
             this.tableLayoutPanelValues.Controls.Add(this.textBoxCLDO_VDDG, 8, 7);
+            this.tableLayoutPanelValues.Controls.Add(this.textBoxVSOC_SVI2, 8, 4);
+            this.tableLayoutPanelValues.Controls.Add(this.labelVSOC_SVI2, 7, 4);
             this.tableLayoutPanelValues.Controls.Add(this.label31, 1, 16);
             this.tableLayoutPanelValues.Controls.Add(this.label15, 1, 17);
             this.tableLayoutPanelValues.Controls.Add(this.textBoxRFC, 2, 17);
@@ -386,19 +388,6 @@ namespace ZenTimings
             this.labelMRDPDA.Text = "tMRDPDA";
             this.labelMRDPDA.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // textBoxVSOC_SVI2
-            // 
-            this.textBoxVSOC_SVI2.BackColor = System.Drawing.Color.Transparent;
-            this.textBoxVSOC_SVI2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBoxVSOC_SVI2.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxVSOC_SVI2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxVSOC_SVI2.Location = new System.Drawing.Point(372, 76);
-            this.textBoxVSOC_SVI2.Name = "textBoxVSOC_SVI2";
-            this.textBoxVSOC_SVI2.Size = new System.Drawing.Size(52, 18);
-            this.textBoxVSOC_SVI2.TabIndex = 117;
-            this.textBoxVSOC_SVI2.Text = "N/A";
-            this.textBoxVSOC_SVI2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // labelMODPDA
             // 
             this.labelMODPDA.AutoSize = true;
@@ -412,20 +401,6 @@ namespace ZenTimings
             this.labelMODPDA.TabIndex = 77;
             this.labelMODPDA.Text = "tMODPDA";
             this.labelMODPDA.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // labelVSOC_SVI2
-            // 
-            this.labelVSOC_SVI2.AutoSize = true;
-            this.labelVSOC_SVI2.BackColor = System.Drawing.Color.Transparent;
-            this.labelVSOC_SVI2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelVSOC_SVI2.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelVSOC_SVI2.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelVSOC_SVI2.Location = new System.Drawing.Point(280, 76);
-            this.labelVSOC_SVI2.Name = "labelVSOC_SVI2";
-            this.labelVSOC_SVI2.Size = new System.Drawing.Size(86, 18);
-            this.labelVSOC_SVI2.TabIndex = 112;
-            this.labelVSOC_SVI2.Text = "VSOC (SVI2)";
-            this.labelVSOC_SVI2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // label38
             // 
@@ -1900,6 +1875,33 @@ namespace ZenTimings
             this.textBoxCLDO_VDDG.TabIndex = 118;
             this.textBoxCLDO_VDDG.Text = "N/A";
             this.textBoxCLDO_VDDG.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // textBoxVSOC_SVI2
+            // 
+            this.textBoxVSOC_SVI2.BackColor = System.Drawing.Color.Transparent;
+            this.textBoxVSOC_SVI2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxVSOC_SVI2.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxVSOC_SVI2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
+            this.textBoxVSOC_SVI2.Location = new System.Drawing.Point(372, 76);
+            this.textBoxVSOC_SVI2.Name = "textBoxVSOC_SVI2";
+            this.textBoxVSOC_SVI2.Size = new System.Drawing.Size(52, 18);
+            this.textBoxVSOC_SVI2.TabIndex = 117;
+            this.textBoxVSOC_SVI2.Text = "N/A";
+            this.textBoxVSOC_SVI2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelVSOC_SVI2
+            // 
+            this.labelVSOC_SVI2.AutoSize = true;
+            this.labelVSOC_SVI2.BackColor = System.Drawing.Color.Transparent;
+            this.labelVSOC_SVI2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelVSOC_SVI2.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelVSOC_SVI2.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.labelVSOC_SVI2.Location = new System.Drawing.Point(280, 76);
+            this.labelVSOC_SVI2.Name = "labelVSOC_SVI2";
+            this.labelVSOC_SVI2.Size = new System.Drawing.Size(86, 18);
+            this.labelVSOC_SVI2.TabIndex = 112;
+            this.labelVSOC_SVI2.Text = "VSOC (SVI2)";
+            this.labelVSOC_SVI2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // label31
             // 

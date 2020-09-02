@@ -32,10 +32,12 @@ namespace ZenTimings
             this.checkBoxAutoRefresh = new System.Windows.Forms.CheckBox();
             this.numericUpDownRefreshInterval = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
-            this.labelAutoRefreshWarning = new System.Windows.Forms.Label();
+            this.checkBoxCompactMode = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.buttonSettingsCancel = new System.Windows.Forms.Button();
             this.buttonSettingsApply = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.comboBoxTheme = new System.Windows.Forms.ComboBox();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownRefreshInterval)).BeginInit();
             this.tableLayoutPanel2.SuspendLayout();
@@ -47,17 +49,20 @@ namespace ZenTimings
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Controls.Add(this.checkBoxAutoRefresh, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.numericUpDownRefreshInterval, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.label1, 2, 0);
-            this.tableLayoutPanel1.Controls.Add(this.labelAutoRefreshWarning, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.checkBoxAutoRefresh, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.numericUpDownRefreshInterval, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.label1, 2, 1);
+            this.tableLayoutPanel1.Controls.Add(this.checkBoxCompactMode, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.label2, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.comboBoxTheme, 1, 3);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Padding = new System.Windows.Forms.Padding(10);
-            this.tableLayoutPanel1.RowCount = 4;
+            this.tableLayoutPanel1.RowCount = 5;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(297, 100);
@@ -67,7 +72,7 @@ namespace ZenTimings
             // 
             this.checkBoxAutoRefresh.AutoSize = true;
             this.checkBoxAutoRefresh.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxAutoRefresh.Location = new System.Drawing.Point(13, 13);
+            this.checkBoxAutoRefresh.Location = new System.Drawing.Point(13, 38);
             this.checkBoxAutoRefresh.Name = "checkBoxAutoRefresh";
             this.checkBoxAutoRefresh.Size = new System.Drawing.Size(94, 19);
             this.checkBoxAutoRefresh.TabIndex = 0;
@@ -82,7 +87,7 @@ namespace ZenTimings
             0,
             0,
             0});
-            this.numericUpDownRefreshInterval.Location = new System.Drawing.Point(133, 13);
+            this.numericUpDownRefreshInterval.Location = new System.Drawing.Point(133, 38);
             this.numericUpDownRefreshInterval.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -106,29 +111,26 @@ namespace ZenTimings
             // 
             this.label1.AutoSize = true;
             this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label1.Location = new System.Drawing.Point(213, 10);
+            this.label1.Location = new System.Drawing.Point(213, 35);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(71, 26);
             this.label1.TabIndex = 2;
             this.label1.Text = "ms";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // labelAutoRefreshWarning
+            // checkBoxCompactMode
             // 
-            this.labelAutoRefreshWarning.AutoSize = true;
-            this.labelAutoRefreshWarning.BackColor = System.Drawing.SystemColors.Info;
-            this.tableLayoutPanel1.SetColumnSpan(this.labelAutoRefreshWarning, 3);
-            this.labelAutoRefreshWarning.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelAutoRefreshWarning.ForeColor = System.Drawing.SystemColors.InfoText;
-            this.labelAutoRefreshWarning.Location = new System.Drawing.Point(13, 46);
-            this.labelAutoRefreshWarning.Name = "labelAutoRefreshWarning";
-            this.labelAutoRefreshWarning.Padding = new System.Windows.Forms.Padding(0, 4, 0, 4);
-            this.labelAutoRefreshWarning.Size = new System.Drawing.Size(271, 34);
-            this.labelAutoRefreshWarning.TabIndex = 3;
-            this.labelAutoRefreshWarning.Text = "Disabling auto-refresh might lead to inaccurate\nvoltages and frequencies on first" +
-    " launch";
-            this.labelAutoRefreshWarning.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.labelAutoRefreshWarning.Visible = false;
+            this.checkBoxCompactMode.AutoSize = true;
+            this.tableLayoutPanel1.SetColumnSpan(this.checkBoxCompactMode, 3);
+            this.checkBoxCompactMode.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.checkBoxCompactMode.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBoxCompactMode.Location = new System.Drawing.Point(13, 13);
+            this.checkBoxCompactMode.Name = "checkBoxCompactMode";
+            this.checkBoxCompactMode.Size = new System.Drawing.Size(271, 19);
+            this.checkBoxCompactMode.TabIndex = 3;
+            this.checkBoxCompactMode.Text = "Compact Mode";
+            this.checkBoxCompactMode.UseVisualStyleBackColor = true;
+            this.checkBoxCompactMode.CheckedChanged += new System.EventHandler(this.CheckBoxCompactMode_CheckedChanged);
             // 
             // tableLayoutPanel2
             // 
@@ -169,6 +171,26 @@ namespace ZenTimings
             this.buttonSettingsApply.UseVisualStyleBackColor = true;
             this.buttonSettingsApply.Click += new System.EventHandler(this.ButtonSettingsApply_Click);
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label2.Location = new System.Drawing.Point(13, 61);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(40, 27);
+            this.label2.TabIndex = 4;
+            this.label2.Text = "Theme";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // comboBoxTheme
+            // 
+            this.comboBoxTheme.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxTheme.FormattingEnabled = true;
+            this.comboBoxTheme.Location = new System.Drawing.Point(133, 64);
+            this.comboBoxTheme.Name = "comboBoxTheme";
+            this.comboBoxTheme.Size = new System.Drawing.Size(74, 21);
+            this.comboBoxTheme.TabIndex = 5;
+            // 
             // OptionsDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -203,6 +225,8 @@ namespace ZenTimings
         private System.Windows.Forms.Button buttonSettingsApply;
         private System.Windows.Forms.NumericUpDown numericUpDownRefreshInterval;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label labelAutoRefreshWarning;
+        private System.Windows.Forms.CheckBox checkBoxCompactMode;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ComboBox comboBoxTheme;
     }
 }

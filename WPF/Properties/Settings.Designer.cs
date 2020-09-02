@@ -46,5 +46,29 @@ namespace ZenTimings.Properties {
                 this["AutoRefreshInterval"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool CompactMode {
+            get {
+                return ((bool)(this["CompactMode"]));
+            }
+            set {
+                this["CompactMode"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool IsRestarting {
+            get {
+                return ((bool)(this["IsRestarting"]));
+            }
+            set {
+                this["IsRestarting"] = value;
+            }
+        }
     }
 }

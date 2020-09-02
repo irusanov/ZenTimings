@@ -292,18 +292,29 @@ namespace ZenStates
 
         public int GetCCDCount()
         {
-            uint value1, value2, value3, value4;
+            uint value1 = 0, value2 = 0, value3 = 0;
             int ccdCount = 0;
+            uint reg1 = 0x5D22A;
+            uint reg2 = 0x5D22B;
+            uint reg3 = 0x5D22C;
 
-            value1 = ReadDword(0x5D21A);
-            value2 = ReadDword(0x5D21B);
-            value3 = ReadDword(0x5D21C);
+            if (CpuType == SMU.CPUType.Matisse)
+            {
+                reg1 = 0x5D21A;
+                reg2 = 0x5D21B;
+                reg3 = 0x5D21C;
+            }
+
+            if (!SmuReadReg(reg1, ref value1) ||
+                !SmuReadReg(reg2, ref value2) || 
+                !SmuReadReg(reg3, ref value3))
+                return ccdCount;
 
             value1 = (value1 >> 22) & 0xff;
             value2 = (value2 >> 30) & 0xff;
             value3 &= 0x3f;
 
-            value4 = value2 | (4 * value3);
+            uint value4 = value2 | 4 * value3;
 
             if (!((value1 & 1) == 0 || (value4 & 1) == 1))
                 ccdCount += 1;

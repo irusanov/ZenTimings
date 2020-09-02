@@ -117,51 +117,51 @@ namespace ZenTimings.Utils
                 try
                 {
                     bytes = BitConverter.GetBytes(powerTable.Mclk);
-                    float mclk = BitConverter.ToSingle(bytes, 0);
+                    float mclkFreq = BitConverter.ToSingle(bytes, 0);
 
                     // Compensate for lack of BCLK detection, based on configuredClockSpeed
                     var dramFreq = ConfiguredClockSpeed / 2;
-                    if ((dramFreq + 1) / mclk > 1 && dramFreq % mclk > 1)
-                        bclkCorrection = dramFreq / mclk;
+                    //if ((dramFreq + 1) / mclkFreq > 1 && dramFreq % mclkFreq > 1)
+                    bclkCorrection = dramFreq / mclkFreq;
 
-                    MCLK = $"{(mclk * bclkCorrection):F2}";
+                    MCLK = mclkFreq * bclkCorrection;
                 }
                 catch { }
 
                 try
                 {
                     bytes = BitConverter.GetBytes(powerTable.Fclk);
-                    float fclk = BitConverter.ToSingle(bytes, 0);
-                    FCLK = $"{(fclk * bclkCorrection):F2}";
+                    float fclkFreq = BitConverter.ToSingle(bytes, 0);
+                    FCLK = fclkFreq * bclkCorrection;
                 }
                 catch { }
 
                 try
                 {
                     bytes = BitConverter.GetBytes(powerTable.Uclk);
-                    float uclk = BitConverter.ToSingle(bytes, 0);
-                    UCLK = $"{(uclk * bclkCorrection):F2}";
+                    float uclkFreq = BitConverter.ToSingle(bytes, 0);
+                    UCLK = uclkFreq * bclkCorrection;
                 }
                 catch { }
 
                 try
                 {
                     bytes = BitConverter.GetBytes(powerTable.VddcrSoc);
-                    VDDCR_SOC = $"{BitConverter.ToSingle(bytes, 0):F4}V";
+                    VDDCR_SOC = BitConverter.ToSingle(bytes, 0);
                 }
                 catch { }
 
                 try
                 {
                     bytes = BitConverter.GetBytes(powerTable.CldoVddp);
-                    CLDO_VDDP = $"{BitConverter.ToSingle(bytes, 0):F4}V";
+                    CLDO_VDDP = BitConverter.ToSingle(bytes, 0);
                 }
                 catch { }
 
                 try
                 {
                     bytes = BitConverter.GetBytes(powerTable.CldoVddg);
-                    CLDO_VDDG = $"{BitConverter.ToSingle(bytes, 0):F4}V";
+                    CLDO_VDDG = BitConverter.ToSingle(bytes, 0);
                 }
                 catch { }
             }
@@ -185,45 +185,45 @@ namespace ZenTimings.Utils
             }
         }
 
-        string fclk;
-        public string FCLK
+        float fclk;
+        public float FCLK
         {
-            get => fclk ?? "N/A";
+            get => fclk;
             set => SetProperty(ref fclk, value, InternalEventArgsCache.FCLK);
         }
 
-        string mclk;
-        public string MCLK
+        float mclk;
+        public float MCLK
         {
-            get => mclk ?? "N/A";
+            get => mclk;
             set => SetProperty(ref mclk, value, InternalEventArgsCache.MCLK);
         }
 
-        string uclk;
-        public string UCLK
+        float uclk;
+        public float UCLK
         {
-            get => uclk ?? "N/A";
+            get => uclk;
             set => SetProperty(ref uclk, value, InternalEventArgsCache.UCLK);
         }
 
-        string vddcr_soc;
-        public string VDDCR_SOC
+        float vddcr_soc;
+        public float VDDCR_SOC
         {
-            get => vddcr_soc ?? "N/A";
+            get => vddcr_soc;
             set => SetProperty(ref vddcr_soc, value, InternalEventArgsCache.VDDCR_SOC);
         }
 
-        string cldo_vddp;
-        public string CLDO_VDDP
+        float cldo_vddp;
+        public float CLDO_VDDP
         {
-            get => cldo_vddp ?? "N/A";
+            get => cldo_vddp;
             set => SetProperty(ref cldo_vddp, value, InternalEventArgsCache.CLDO_VDDP);
         }
 
-        string cldo_vddg;
-        public string CLDO_VDDG
+        float cldo_vddg;
+        public float CLDO_VDDG
         {
-            get => cldo_vddg ?? "N/A";
+            get => cldo_vddg;
             set => SetProperty(ref cldo_vddg, value, InternalEventArgsCache.CLDO_VDDG);
         }
         protected void OnPropertyChanged(PropertyChangedEventArgs eventArgs)

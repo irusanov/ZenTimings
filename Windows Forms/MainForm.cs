@@ -1,7 +1,6 @@
 //#define BETA
 
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -34,8 +33,7 @@ namespace ZenTimings
         private readonly BiosMemController BMC;
         private readonly PowerTable PowerTable;
         private SystemInfo SI;
-        private uint dramBaseAddress = 0;
-        private UIntPtr dramPtr;
+        private readonly uint dramBaseAddress = 0;
         private bool compatMode = false;
         private BackgroundWorker backgroundWorker1;
         private readonly AppSettings settings = new AppSettings();
@@ -62,6 +60,16 @@ namespace ZenTimings
             // Use the ToString method to format the value as float.
             cevent.Value = $"{(float)cevent.Value:F4}V";
         }
+
+        private void FloatToFrequencyString(object sender, ConvertEventArgs cevent)
+        {
+            // The method converts only to string type. Test this using the DesiredType.
+            if (cevent.DesiredType != typeof(string)) return;
+
+            // Use the ToString method to format the value as float.
+            cevent.Value = $"{(float)cevent.Value:F2}";
+        }
+
 
         private void InitSystemInfo()
         {
@@ -114,6 +122,8 @@ namespace ZenTimings
 
         private void BindControls()
         {
+            Binding b;
+
             // First column
             textBoxFreq.DataBindings.Add("Text", MEMCFG, "Frequency");
             textBoxBGS.DataBindings.Add("Text", MEMCFG, "BGS");
@@ -161,15 +171,33 @@ namespace ZenTimings
             textBoxMRD.DataBindings.Add("Text", MEMCFG, "MRD");
             textBoxMRDPDA.DataBindings.Add("Text", MEMCFG, "MRDPDA");
 
-            // Third column
-            textBoxMCLK.DataBindings.Add("Text", PowerTable, "MCLK");
-            textBoxFCLK.DataBindings.Add("Text", PowerTable, "FCLK");
-            textBoxUCLK.DataBindings.Add("Text", PowerTable, "UCLK");
-            //Binding b = new Binding("Text", PowerTable, "VDDCR_SOC");
-            //b.Format += new ConvertEventHandler(FloatToVoltageString);
-            textBoxVDDCR_SOC.DataBindings.Add("Text", PowerTable, "VDDCR_SOC");
-            textBoxCLDO_VDDP.DataBindings.Add("Text", PowerTable, "CLDO_VDDP");
-            textBoxCLDO_VDDG.DataBindings.Add("Text", PowerTable, "CLDO_VDDG");
+            if (!settings.CompactMode)
+            {
+                // Third column
+                b = new Binding("Text", PowerTable, "MCLK");
+                b.Format += new ConvertEventHandler(FloatToFrequencyString);
+                textBoxMCLK.DataBindings.Add(b);
+
+                b = new Binding("Text", PowerTable, "FCLK");
+                b.Format += new ConvertEventHandler(FloatToFrequencyString);
+                textBoxFCLK.DataBindings.Add(b);
+
+                b = new Binding("Text", PowerTable, "UCLK");
+                b.Format += new ConvertEventHandler(FloatToFrequencyString);
+                textBoxUCLK.DataBindings.Add(b);
+
+                b = new Binding("Text", PowerTable, "VDDCR_SOC");
+                b.Format += new ConvertEventHandler(FloatToVoltageString);
+                textBoxVDDCR_SOC.DataBindings.Add(b);
+
+                b = new Binding("Text", PowerTable, "CLDO_VDDP");
+                b.Format += new ConvertEventHandler(FloatToVoltageString);
+                textBoxCLDO_VDDP.DataBindings.Add(b);
+
+                b = new Binding("Text", PowerTable, "CLDO_VDDG");
+                b.Format += new ConvertEventHandler(FloatToVoltageString);
+                textBoxCLDO_VDDG.DataBindings.Add(b);
+            }
         }
 
         private void ReadMemoryModulesInfo()
@@ -266,7 +294,7 @@ namespace ZenTimings
 
                     for (int i = 0; i < table.Length; ++i)
                     {
-                        NativeMethods.GetPhysLong(dramPtr + (i * 0x4), out data);
+                        NativeMethods.GetPhysLong((UIntPtr)(dramBaseAddress + (i * 0x4)), out data);
                         table[i] = data;
                     }
 
@@ -383,14 +411,14 @@ namespace ZenTimings
                             string[] IDString = (string[])pack.GetPropertyValue("IDString");
                             byte Length = (byte)pack.GetPropertyValue("Length");
 
-                            Debug.WriteLine("----------------------------");
-                            Debug.WriteLine("WMI: BIOS Functions");
-                            Debug.WriteLine("----------------------------");
+                            Console.WriteLine("----------------------------");
+                            Console.WriteLine("WMI: BIOS Functions");
+                            Console.WriteLine("----------------------------");
 
                             for (var i = 0; i < Length; ++i)
                             {
                                 biosFunctions.Add(new BiosACPIFunction(IDString[i], ID[i]));
-                                Debug.WriteLine("{0}: {1:X8}", IDString[i], ID[i]);
+                                Console.WriteLine("{0}: {1:X8}", IDString[i], ID[i]);
                             }
                         }
                     }
@@ -523,9 +551,68 @@ namespace ZenTimings
             MEMCFG.RFC2 = OPS.GetBits(timings23, 11, 11);
             MEMCFG.RFC4 = OPS.GetBits(timings23, 22, 11);
 
+            var configured = MEMCFG.Frequency;
+            var freqFromRatio = OPS.GetBits(umcBase, 0, 7) / 3.0f * 200;
+
             // Fallback to ratio when ConfiguredClockSpeed fails
-            if (MEMCFG.Frequency == 0)
-                MEMCFG.Frequency = OPS.GetBits(umcBase, 0, 7) / 3.0f * 200;
+            if (configured == 0 || freqFromRatio > configured)
+            {
+                MEMCFG.Frequency = freqFromRatio;
+                //PowerTable.ConfiguredClockSpeed = freqFromRatio;
+            }
+        }
+
+        private void SwitchToCompactMode()
+        {
+            tableLayoutPanelValues.Controls.Remove(labelUCLK);
+            tableLayoutPanelValues.Controls.Remove(labelFCLK);
+            tableLayoutPanelValues.Controls.Remove(textBoxUCLK);
+            tableLayoutPanelValues.Controls.Remove(textBoxFCLK);
+            tableLayoutPanelValues.Controls.Remove(labelMCLK);
+            tableLayoutPanelValues.Controls.Remove(textBoxMCLK);
+            tableLayoutPanelValues.Controls.Remove(labelVDDCR_SOC);
+            tableLayoutPanelValues.Controls.Remove(labelCLDO_VDDP);
+            tableLayoutPanelValues.Controls.Remove(labelCLDO_VDDG);
+            tableLayoutPanelValues.Controls.Remove(textBoxCkeSetup);
+            tableLayoutPanelValues.Controls.Remove(textBoxAddrCmdSetup);
+            tableLayoutPanelValues.Controls.Remove(textBoxCsOdtSetup);
+            tableLayoutPanelValues.Controls.Remove(textBoxCkeDrvStren);
+            tableLayoutPanelValues.Controls.Remove(textBoxAddrCmdDrvStren);
+            tableLayoutPanelValues.Controls.Remove(textBoxCsOdtCmdDrvStren);
+            tableLayoutPanelValues.Controls.Remove(textBoxClkDrvStren);
+            tableLayoutPanelValues.Controls.Remove(textBoxRttPark);
+            tableLayoutPanelValues.Controls.Remove(textBoxRttWr);
+            tableLayoutPanelValues.Controls.Remove(textBoxRttNom);
+            tableLayoutPanelValues.Controls.Remove(textBoxProcODT);
+            tableLayoutPanelValues.Controls.Remove(labelCkeSetup);
+            tableLayoutPanelValues.Controls.Remove(labelAddrCmdSetup);
+            tableLayoutPanelValues.Controls.Remove(labelCsOdtSetup);
+            tableLayoutPanelValues.Controls.Remove(labelCkeDrvStren);
+            tableLayoutPanelValues.Controls.Remove(labelAddrCmdDrvStren);
+            tableLayoutPanelValues.Controls.Remove(labelCsOdtCmdDrvStren);
+            tableLayoutPanelValues.Controls.Remove(labelClkDrvStren);
+            tableLayoutPanelValues.Controls.Remove(labelRttPark);
+            tableLayoutPanelValues.Controls.Remove(labelRttWr);
+            tableLayoutPanelValues.Controls.Remove(labelRttNom);
+            tableLayoutPanelValues.Controls.Remove(labelProcODT);
+            tableLayoutPanelValues.Controls.Remove(textBoxVDDCR_SOC);
+            tableLayoutPanelValues.Controls.Remove(textBoxCLDO_VDDP);
+            tableLayoutPanelValues.Controls.Remove(textBoxCLDO_VDDG);
+            tableLayoutPanelValues.Controls.Remove(textBoxVSOC_SVI2);
+            tableLayoutPanelValues.Controls.Remove(labelVSOC_SVI2);
+            Controls.Remove(dividerTop);
+
+            tableLayoutPanelValues.ColumnStyles[7].SizeType = SizeType.Absolute;
+            tableLayoutPanelValues.ColumnStyles[7].Width = 0;
+            tableLayoutPanelValues.ColumnStyles[8].SizeType = SizeType.Absolute;
+            tableLayoutPanelValues.ColumnStyles[8].Width = 0;
+
+            buttonScreenshot.Location = new Point(240, buttonScreenshot.Location.Y);
+            var h = tableLayoutPanel3.Height;
+            Controls.Remove(tableLayoutPanel3);
+
+            Height -= h;
+            Width = 275;
         }
 
         public MainForm()
@@ -544,6 +631,27 @@ namespace ZenTimings
                 InitSystemInfo();
                 InitializeComponent();
                 BindControls();
+                ReadMemoryModulesInfo();
+                ReadTimings();
+
+                if (settings.CompactMode)
+                {
+                    SwitchToCompactMode();
+                } 
+                else 
+                {
+                    ReadMemoryConfig();
+                    ReadSVI();
+
+                    // Get first base address
+                    dramBaseAddress = (uint)(OPS.GetDramBaseAddress() & 0xFFFFFFFF);
+                    if (dramBaseAddress > 0)
+                        ReadPowerConfig();
+                    else
+                        compatMode = true;
+
+                    StartAutoRefresh();
+                }
             }
             catch (ApplicationException ex)
             {
@@ -567,10 +675,10 @@ namespace ZenTimings
 
         private void WaitForPowerTable(object sender, DoWorkEventArgs e)
         {
-            int minimum_retries = 1;
+            int minimum_retries = 2;
 
             // Refresh until table is transferred to DRAM or timeout
-            NativeMethods.GetPhysLong(dramPtr, out uint temp);
+            NativeMethods.GetPhysLong((UIntPtr)dramBaseAddress, out uint temp);
 
             // Already in DRAM and auto-refresh disabled
             if (temp != 0)
@@ -582,17 +690,21 @@ namespace ZenTimings
             Stopwatch timer = new Stopwatch();
             timer.Start();
 
-            while (temp == 0 && timer.Elapsed.TotalMilliseconds < 1000)
-            {
-                NativeMethods.GetPhysLong(dramPtr, out temp);
-            }
+            do
+                NativeMethods.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
+            while (temp == 0 && timer.Elapsed.TotalMilliseconds < 10000);
 
             timer.Stop();
         }
 
         private void WaitForPowerTable_Complete(object sender, RunWorkerCompletedEventArgs e)
         {
-            PowerCfgTimer.Stop();
+            if (settings.AutoRefresh)
+                PowerCfgTimer.Interval = settings.AutoRefreshInterval;
+            else
+                PowerCfgTimer.Stop();
+
+            DisableInactiveControls();
         }
 
         private void StartAutoRefresh()
@@ -602,16 +714,24 @@ namespace ZenTimings
             if (!CheckConfigFileIsPresent())
                 return;
 
-            if (settings.AutoRefresh)
+            backgroundWorker1 = new BackgroundWorker();
+            backgroundWorker1.DoWork += WaitForPowerTable;
+            backgroundWorker1.RunWorkerCompleted += WaitForPowerTable_Complete;
+            backgroundWorker1.RunWorkerAsync();
+        }
+
+        private void DisableInactiveControls()
+        {
+            foreach (Control ctrl in tableLayoutPanelValues.Controls)
             {
-                PowerCfgTimer.Interval = settings.AutoRefreshInterval;
-            }
-            else
-            {
-                backgroundWorker1 = new BackgroundWorker();
-                backgroundWorker1.DoWork += WaitForPowerTable;
-                backgroundWorker1.RunWorkerCompleted += WaitForPowerTable_Complete;
-                backgroundWorker1.RunWorkerAsync();
+                if (ctrl.GetType() == typeof(Label) && ctrl.Text == "N/A")
+                {
+                    var prop = ctrl.Name.Replace("textBox", "");
+                    ctrl.Enabled = false;
+                    var label = tableLayoutPanelValues.Controls[$"label{prop}"];
+                    if (label != null)
+                        label.Enabled = false;
+                }
             }
         }
 
@@ -632,46 +752,8 @@ namespace ZenTimings
             labelCPU.Text = SI.CpuName;
             labelMB.Text = $"{SI.MbName} | BIOS {SI.BiosVersion} | SMU {SI.GetSmuVersionString()}";
 
-            ReadMemoryModulesInfo();
-            ReadTimings();
-            ReadMemoryConfig();
-            ReadSVI();
-
-            // Get first base address
-            dramBaseAddress = (uint)(OPS.GetDramBaseAddress() & 0xFFFFFFFF);
-            if (dramBaseAddress > 0)
-            {
-                dramPtr = new UIntPtr(dramBaseAddress);
-                ReadPowerConfig();
-            }
-            else
-            {
-                compatMode = true;
-            }
-
-            StartAutoRefresh();
-
             if (compatMode)
-            {
                 Text += " (compatibility)";
-
-                /*MessageBox.Show("Running in compatibility mode.",
-                    "Warning",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);*/
-            }
-
-            foreach (Control ctrl in tableLayoutPanelValues.Controls)
-            {
-                if (ctrl.GetType() == typeof(Label) && ctrl.Text == "N/A")
-                {
-                    var prop = ctrl.Name.Replace("textBox", "");
-                    ctrl.Enabled = false;
-                    var label = tableLayoutPanelValues.Controls[$"label{prop}"];
-                    if (label != null)
-                        label.Enabled = false;
-                }
-            }
 #if DEBUG
             foreach (TextWriterTraceListener listener in listeners)
             {

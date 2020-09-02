@@ -1,6 +1,7 @@
-﻿using ZenTimings.Properties;
+﻿
+using ZenTimings.Properties;
 
-namespace ZenTimings.Utils
+namespace ZenTimings
 {
     public sealed class AppSettings
     {
@@ -13,14 +14,17 @@ namespace ZenTimings.Utils
                 settings = Settings.Default;
                 AutoRefresh = settings.AutoRefresh;
                 AutoRefreshInterval = settings.AutoRefreshInterval;
+                CompactMode = settings.CompactMode;
             }
             catch
             {
                 settings = new Settings();
                 AutoRefresh = true;
                 AutoRefreshInterval = 2000;
+                CompactMode = false;
                 settings.AutoRefresh = AutoRefresh;
                 settings.AutoRefreshInterval = AutoRefreshInterval;
+                settings.CompactMode = CompactMode;
             }
         }
 
@@ -38,6 +42,12 @@ namespace ZenTimings.Utils
         {
             get => settings.AutoRefreshInterval;
             set => settings.AutoRefreshInterval = value;
+        }
+
+        public bool CompactMode
+        {
+            get => settings.CompactMode;
+            set => settings.CompactMode = value;
         }
     }
 }

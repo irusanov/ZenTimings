@@ -19,8 +19,17 @@ namespace ZenTimings
         {
             try
             {
-                Mutex.OpenExisting(mutexName);
+                Mutex existingInstane = Mutex.OpenExisting(mutexName);
                 NativeMethods.PostMessage((IntPtr)NativeMethods.HWND_BROADCAST, NativeMethods.WM_SHOWME, IntPtr.Zero, IntPtr.Zero);
+
+                if (Properties.Settings.Default.IsRestarting)
+                {
+                    existingInstane.ReleaseMutex();
+                    Properties.Settings.Default.IsRestarting = true;
+                    Properties.Settings.Default.Save();
+                    throw new Exception("Restart requested, release mutex");
+                }
+                
                 return;
             }
             catch
