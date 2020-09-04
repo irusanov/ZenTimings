@@ -1,0 +1,18 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:ZenTimings.Themes"
+                    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/AdonisUI;component/ColorSchemes/Dark.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/Themes/Base.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+    <BitmapImage x:Key="CameraImage" UriSource="../Resources/camera-light.png"></BitmapImage>
+
+    <SolidColorBrush x:Key="AccentTextColor" Color="#7facff" />
+    <SolidColorBrush x:Key="SeparatorColor" Color="{DynamicResource {x:Static adonisUi:Colors.Layer3BorderColor}}" />
+    <SolidColorBrush x:Key="PanelBackgound" Color="{DynamicResource {x:Static adonisUi:Colors.Layer0BackgroundColor}}" />
+
+    <Color x:Key="{x:Static adonisUi:Colors.ForegroundColor}">#d5d5d5</Color>
+</ResourceDictionary>

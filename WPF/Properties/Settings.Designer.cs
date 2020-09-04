@@ -49,13 +49,13 @@ namespace ZenTimings.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool CompactMode {
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AdvancedMode {
             get {
-                return ((bool)(this["CompactMode"]));
+                return ((bool)(this["AdvancedMode"]));
             }
             set {
-                this["CompactMode"] = value;
+                this["AdvancedMode"] = value;
             }
         }
         
@@ -68,6 +68,18 @@ namespace ZenTimings.Properties {
             }
             set {
                 this["IsRestarting"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool DarkMode {
+            get {
+                return ((bool)(this["DarkMode"]));
+            }
+            set {
+                this["DarkMode"] = value;
             }
         }
     }

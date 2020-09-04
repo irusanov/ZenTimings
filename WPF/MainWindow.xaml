@@ -1,4 +1,4 @@
-﻿<adonisControls:AdonisWindow
+<adonisControls:AdonisWindow
         x:Class="ZenTimings.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -23,12 +23,12 @@
         SizeChanged="AdonisWindow_SizeChanged"
         Activated="AdonisWindow_Activated" Loaded="AdonisWindow_Loaded">
 
+
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style>
-    
 
-    <Border Style="{DynamicResource MainContainerStyles}">
+    <Border>
         <StackPanel adonisExtensions:LayerExtension.Layer="0">
             <Border Style="{DynamicResource MainMenuStyles}">
                 <Grid>
@@ -38,7 +38,7 @@
                     </Grid.ColumnDefinitions>
                     <Menu x:Name="MainMenu" Grid.Column="0" Style="{DynamicResource MenuBackground}">
                         <MenuItem Header="_File">
-                            <MenuItem Header="E_xit" />
+                            <MenuItem Header="E_xit" Click="ExitToolStripMenuItem_Click" />
                         </MenuItem>
                         <MenuItem Header="_Tools">
                             <MenuItem Header="_Options" Click="OptionsToolStripMenuItem_Click" />
@@ -50,7 +50,7 @@
                     </Menu>
                     <Button Grid.Column="1" Width="20" Height="16" BorderThickness="0" Padding="0"
                             Style="{DynamicResource {x:Static adonisUi:Styles.AccentToolbarButton}}" Click="ButtonScreenshot_Click">
-                        <Image  Source="Resources/camera.png" Height="16" Width="16" Stretch="None" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <Image Source="{DynamicResource CameraImage}" Height="16" Width="16" Stretch="None" HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Button>
                 </Grid>
             </Border>
@@ -58,14 +58,15 @@
             <Separator/>
 
             <!-- System Info Panel -->
-            <Border Style="{DynamicResource PanelBackground}">
+            <Border Style="{DynamicResource PanelBackground}"
+                    Visibility="{Binding settings.AdvancedMode, Converter={StaticResource BoolToVis}}">
                 <StackPanel>
-                    <TextBlock x:Name="labelCPU" Text="N/A" Padding="7 5 7 0"/>
-                    <TextBlock x:Name="labelMB" Text="N/A" Padding="7 0 7 5"/>
+                    <TextBlock x:Name="labelCPU" Text="N/A" Padding="12 5 12 0"/>
+                    <TextBlock x:Name="labelMB" Text="N/A" Padding="12 0 12 5"/>
                 </StackPanel>
             </Border>
 
-            <Separator/>
+            <Separator Visibility="{Binding settings.AdvancedMode, Converter={StaticResource BoolToVis}}"/>
 
             <!-- Timings -->
             <Border Style="{DynamicResource TimingsStyles}">
@@ -195,7 +196,7 @@
                     </Grid>
 
                     <!-- Third Column -->
-                    <Grid ShowGridLines="False">
+                    <Grid ShowGridLines="False" Visibility="{Binding settings.AdvancedMode, Converter={StaticResource BoolToVis}}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />

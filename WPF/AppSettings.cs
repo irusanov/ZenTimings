@@ -1,4 +1,7 @@
-﻿using ZenTimings.Properties;
+﻿using AdonisUI;
+using System;
+using System.Windows;
+using ZenTimings.Properties;
 
 namespace ZenTimings
 {
@@ -13,17 +16,19 @@ namespace ZenTimings
                 settings = Settings.Default;
                 AutoRefresh = settings.AutoRefresh;
                 AutoRefreshInterval = settings.AutoRefreshInterval;
-                CompactMode = settings.CompactMode;
+                AdvancedMode = settings.AdvancedMode;
+                DarkMode = settings.DarkMode;
             }
             catch
             {
                 settings = new Settings();
                 AutoRefresh = true;
                 AutoRefreshInterval = 2000;
-                CompactMode = false;
+                AdvancedMode = false;
                 settings.AutoRefresh = AutoRefresh;
                 settings.AutoRefreshInterval = AutoRefreshInterval;
-                settings.CompactMode = CompactMode;
+                settings.AdvancedMode = AdvancedMode;
+                settings.DarkMode = DarkMode;
             }
         }
 
@@ -31,6 +36,19 @@ namespace ZenTimings
         public void Reload() => settings.Reload();
 
         public AppSettings() => Load();
+
+        public void ChangeTheme()
+        {
+            Uri DarkColorScheme = new Uri("pack://application:,,,/ZenTimings;component/Themes/Dark.xaml", UriKind.Absolute);
+            Uri LightColorScheme = new Uri("pack://application:,,,/ZenTimings;component/Themes/Light.xaml", UriKind.Absolute);
+
+            if (DarkMode)
+                ResourceLocator.SetColorScheme(Application.Current.Resources, DarkColorScheme);
+            else
+                ResourceLocator.SetColorScheme(Application.Current.Resources, LightColorScheme);
+
+            //DarkMode = !DarkMode;
+        }
 
         public bool AutoRefresh
         {
@@ -43,10 +61,22 @@ namespace ZenTimings
             set => settings.AutoRefreshInterval = value;
         }
 
-        public bool CompactMode
+        public bool AdvancedMode
         {
-            get => settings.CompactMode;
-            set => settings.CompactMode = value;
+            get => settings.AdvancedMode;
+            set => settings.AdvancedMode = value;
+        }
+
+        public bool DarkMode
+        {
+            get => settings.DarkMode;
+            set => settings.DarkMode = value;
+        }
+
+        public bool IsRestarting
+        {
+            get => settings.IsRestarting;
+            set => settings.IsRestarting = value;
         }
     }
 }

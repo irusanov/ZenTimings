@@ -17,6 +17,8 @@ using System.Security.Permissions;
 using System.Windows.Interop;
 using System.Reflection;
 using System.Drawing;
+using System.Globalization;
+using System.Windows.Data;
 
 namespace ZenTimings
 {
@@ -513,8 +515,6 @@ namespace ZenTimings
 
         public MainWindow()
         {
-            //InitializeComponent();
-
             try
             {
                 PowerTable = new PowerTable(OPS.Smu.SMU_TYPE);
@@ -522,6 +522,9 @@ namespace ZenTimings
 
                 PowerCfgTimer.Interval = TimeSpan.FromMilliseconds(2000);
                 PowerCfgTimer.Tick += new EventHandler(PowerCfgTimer_Tick);
+
+                if (settings.DarkMode)
+                    settings.ChangeTheme();
 
                 InitSystemInfo();
                 InitializeComponent();
@@ -532,14 +535,11 @@ namespace ZenTimings
                 DataContext = new
                 {
                     timings = MEMCFG,
-                    powerTable = PowerTable
+                    powerTable = PowerTable,
+                    settings,
                 };
 
-                if (settings.CompactMode)
-                {
-                    //SwitchToCompactMode();
-                }
-                else
+                if (settings.AdvancedMode)
                 {
                     ReadMemoryConfig();
                     ReadSVI();
@@ -575,11 +575,14 @@ namespace ZenTimings
             NativeMethods.EmptyWorkingSet(Process.GetCurrentProcess().Handle);
         }
 
-        private void Window_Initialized(object sender, EventArgs e)
+        public void SetWindowTitle()
         {
-            var AssemblyTitle = ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(
-                Assembly.GetExecutingAssembly(),
-                typeof(AssemblyTitleAttribute), false)).Title;
+            var AssemblyTitle = "ZT";
+
+            if (settings.AdvancedMode)
+                AssemblyTitle = ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(
+                    Assembly.GetExecutingAssembly(),
+                    typeof(AssemblyTitleAttribute), false)).Title;
 
             var AssemblyVersion = ((AssemblyFileVersionAttribute)Attribute.GetCustomAttribute(
                 Assembly.GetExecutingAssembly(),
@@ -594,11 +597,15 @@ namespace ZenTimings
 #if DEBUG
             Title += " (debug)";
 #endif
+            if (compatMode && settings.AdvancedMode)
+                Title += " (compatibility)";
+        }
+
+        private void Window_Initialized(object sender, EventArgs e)
+        {
+            SetWindowTitle();
             labelCPU.Text = SI.CpuName;
             labelMB.Text = $"{SI.MbName} | BIOS {SI.BiosVersion} | SMU {SI.GetSmuVersionString()}";
-
-            if (compatMode)
-                Title += " (compatibility)";
 #if DEBUG
             /*foreach (TextWriterTraceListener listener in listeners)
             {
@@ -635,10 +642,9 @@ namespace ZenTimings
 
         private void AdonisWindow_SizeChanged(object sender, SizeChangedEventArgs e) => MinimizeFootprint();
 
-        private void AdonisWindow_Activated(object sender, EventArgs e)
-        {
-            MinimizeFootprint();
-        }
+        private void AdonisWindow_Activated(object sender, EventArgs e) => MinimizeFootprint();
+
+        private void ExitToolStripMenuItem_Click(object sender, RoutedEventArgs e) => ExitApplication();
 
         private void AdonisWindow_Loaded(object sender, RoutedEventArgs e)
         {

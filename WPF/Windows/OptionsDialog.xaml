@@ -15,9 +15,9 @@
         <StackPanel Height="auto">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="124"/>
-                    <ColumnDefinition Width="78"/>
                     <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="78"/>
+                    <ColumnDefinition Width="78"/>
                 </Grid.ColumnDefinitions>
 
                 <Grid.RowDefinitions>
@@ -26,41 +26,81 @@
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
 
-                <!--CheckBox Grid.Column="0" Grid.Row="0" Content="Compact Mode" Padding="5" VerticalAlignment="Center" x:Name="checkBoxCompactMode" Click="CheckBoxCompactMode_CheckedChanged"/-->
-                <ToggleButton x:Name="checkBoxCompactMode"
-                              Click="CheckBoxCompactMode_CheckedChanged"
-                              Grid.Column="0"
-                              Grid.Row="1"
-                              Margin="0 5 5 5"
-                              Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
-                              Content="Compact Mode"/>
-                <CheckBox Grid.Column="0" Grid.Row="0" Content="Auto Refresh" Padding="5" VerticalAlignment="Center" x:Name="checkBoxAutoRefresh" Click="CheckBoxAutoRefresh_Click"/>
-                <TextBox Grid.Column="1" Grid.Row="0" Text="2000" Margin="5" x:Name="numericUpDownRefreshInterval" />
+                <CheckBox
+                    x:Name="checkBoxAutoRefresh"
+                    Grid.Column="0"
+                    Grid.Row="0"
+                    Content="Auto Refresh"
+                    Padding="5"
+                    VerticalAlignment="Center"
+                    Click="CheckBoxAutoRefresh_Click"
+                    IsChecked="{Binding AutoRefresh}"
+                />
+
+                <TextBox
+                    x:Name="numericUpDownRefreshInterval"
+                    Grid.Column="1"
+                    Grid.Row="0"
+                    Text="{Binding AutoRefreshInterval}"
+                    IsEnabled="{Binding AutoRefresh}"
+                    Margin="5"
+                 />
+
                 <TextBlock Grid.Column="2" Grid.Row="0" Text="ms" VerticalAlignment="Center" Padding="5 0"/>
-                <!--TextBlock Grid.Column="0" Grid.Row="2" Text="Theme" Padding="5" VerticalAlignment="Center" /-->
-                <!--ComboBox Grid.Column="1" Grid.Row="2" Margin="5" x:Name="comboBoxTheme" SelectionChanged="ComboBoxTheme_SelectionChanged" /-->
-                <ToggleButton x:Name="comboBoxTheme" Grid.Column="0" Grid.Row="2" Margin="0 5 5 5" Click="ComboBoxTheme_SelectionChanged" Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
-                              Content="Dark Mode"/>
+
+                <ToggleButton
+                    x:Name="checkBoxAdvancedMode"
+                    Grid.Column="0"
+                    Grid.Row="1"
+                    Margin="0 5 5 5"
+                    Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
+                    Content="Advanced Mode"
+                    Click="CheckBoxAdvancedMode_CheckedChanged"
+                />
+
+                <ToggleButton 
+                    x:Name="comboBoxTheme"
+                    Grid.Column="0"
+                    Grid.Row="2"
+                    Margin="0 5 5 5"
+                    Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
+                    Content="Dark Mode"
+                    IsChecked="{Binding DarkMode}" Checked="ComboBoxTheme_Checked" Unchecked="ComboBoxTheme_Unchecked"
+                />
             </Grid>
 
             <Separator Margin="0 20 0 0"/>
 
+            <StatusBar x:Name="statusStrip1" Grid.Row="1" Grid.ColumnSpan="3" Visibility="Collapsed" Padding="3" Margin="0 5">
+                <StatusBarItem x:Name="status" Content="Settings Saved." />
+            </StatusBar>
+
             <Grid Margin="0 10 0 0">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
                     <ColumnDefinition />
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
 
-                <Button x:Name="buttonSettingsApply" Grid.Column="1" 
+                <Button x:Name="buttonSettingsRestart"
+                        Grid.Column="0"
+                        Content="Restart"
+                        Visibility="Hidden"
+                        Margin="{adonisUi:Space 0, 0, 1, 0}"
+                        Width="70"
+                        Click="ButtonSettingsRestart_Click"/>
+
+                <Button x:Name="buttonSettingsApply" Grid.Column="2"
                         Content="Apply" 
                         Margin="{adonisUi:Space 0, 0, 1, 0}" 
                         Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
                         Width="70" Click="ButtonSettingsApply_Click"/>
-                <Button x:Name="buttonSettingsCancel" Grid.Column="2" 
+
+                <Button x:Name="buttonSettingsCancel" Grid.Column="3"
                         Content="Close" 
                         IsCancel="True"
-                        Width="70" />
+                        Width="70" Click="ButtonSettingsCancel_Click" />
             </Grid>
         </StackPanel>
     </Border>

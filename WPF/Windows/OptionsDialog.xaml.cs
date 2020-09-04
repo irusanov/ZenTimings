@@ -26,30 +26,22 @@ namespace ZenTimings.Windows
         private const string Caption = "Disabling auto-refresh might lead to inaccurate voltages and frequencies on first launch";
         private readonly AppSettings settingsInstance;
         private readonly DispatcherTimer timerInstance;
+        private bool _DarkMode;
+        private bool _AdvancedMode;
 
         public OptionsDialog(AppSettings settings, DispatcherTimer timer)
         {
             settingsInstance = settings;
             timerInstance = timer;
+            DataContext = settingsInstance;
+            _DarkMode = settingsInstance.DarkMode;
+            _AdvancedMode = settingsInstance.AdvancedMode;
 
             InitializeComponent();
-            InitSettings();
-        }
 
-        private void InitSettings()
-        {
-            /*ToolTip toolTip = new ToolTip();
-            toolTip.SetToolTip(checkBoxAutoRefresh, Caption);
-            toolTip.SetToolTip(numericUpDownRefreshInterval, Caption);*/
-
-            /*comboBoxTheme.Items.Add("Light");
-            comboBoxTheme.Items.Add("Dark");
-            comboBoxTheme.SelectedIndex = 0;*/
-
-            checkBoxCompactMode.IsChecked = settingsInstance.CompactMode;
-            checkBoxAutoRefresh.IsChecked = settingsInstance.AutoRefresh;
-            numericUpDownRefreshInterval.Text = Convert.ToString(settingsInstance.AutoRefreshInterval);
-            numericUpDownRefreshInterval.IsEnabled = (bool)checkBoxAutoRefresh.IsChecked;
+            checkBoxAutoRefresh.IsEnabled = settings.AdvancedMode;
+            checkBoxAdvancedMode.IsChecked = settings.AdvancedMode;
+            numericUpDownRefreshInterval.IsEnabled = settings.AutoRefresh && settings.AdvancedMode;
         }
 
         private void CheckBoxAutoRefresh_Click(object sender, RoutedEventArgs e)
@@ -59,44 +51,68 @@ namespace ZenTimings.Windows
 
         private void ButtonSettingsApply_Click(object sender, RoutedEventArgs e)
         {
-            var currentCompactMode = settingsInstance.CompactMode;
             settingsInstance.AutoRefresh = (bool)checkBoxAutoRefresh.IsChecked;
             settingsInstance.AutoRefreshInterval = Convert.ToInt32(numericUpDownRefreshInterval.Text);
-            settingsInstance.CompactMode = (bool)checkBoxCompactMode.IsChecked;
+            settingsInstance.AdvancedMode = (bool)checkBoxAdvancedMode.IsChecked;
             timerInstance.Interval = TimeSpan.FromMilliseconds(settingsInstance.AutoRefreshInterval);
             settingsInstance.Save();
 
-            if (settingsInstance.AutoRefresh && !timerInstance.IsEnabled)
-                timerInstance.Start();
-            else if (!settingsInstance.AutoRefresh && timerInstance.IsEnabled)
-                timerInstance.Stop();
+            _DarkMode = settingsInstance.DarkMode;
 
-            if (currentCompactMode != settingsInstance.CompactMode)
+            if (checkBoxAutoRefresh.IsEnabled)
             {
-                AdonisUI.Controls.MessageBoxResult result = AdonisUI.Controls.MessageBox.Show("Settings will take effect on next app launch.\nDo you want to restart it now?", "Restart", AdonisUI.Controls.MessageBoxButton.YesNo);
+                if (settingsInstance.AutoRefresh && !timerInstance.IsEnabled)
+                    timerInstance.Start();
+                else if (!settingsInstance.AutoRefresh && timerInstance.IsEnabled)
+                    timerInstance.Stop();
+            }
 
-                if (result == AdonisUI.Controls.MessageBoxResult.Yes)
-                {
-                    Properties.Settings.Default.IsRestarting = true;
-                    Properties.Settings.Default.Save();
-                    System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
-                    Application.Current.Shutdown();
-                }
+            if (_AdvancedMode != settingsInstance.AdvancedMode)
+            {
+                buttonSettingsRestart.Visibility = Visibility.Visible;
+                settingsInstance.IsRestarting = true;
+                settingsInstance.Save();
+                status.Content = "Advanced Mode will be applied on next launch.";
+                statusStrip1.Visibility = Visibility.Visible;
+            }
+
+            //statusStrip1.Visibility = Visibility.Visible;
+        }
+
+        private void CheckBoxAdvancedMode_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+            var main = Owner as MainWindow;
+            checkBoxAutoRefresh.IsEnabled = (bool)checkBoxAdvancedMode.IsChecked;
+            numericUpDownRefreshInterval.IsEnabled = (bool)checkBoxAdvancedMode.IsChecked && (bool)checkBoxAutoRefresh.IsChecked;
+            main.SetWindowTitle();
+        }
+
+        private void ComboBoxTheme_Checked(object sender, RoutedEventArgs e)
+        {
+            settingsInstance.DarkMode = true;
+            settingsInstance.ChangeTheme();
+        }
+
+        private void ComboBoxTheme_Unchecked(object sender, RoutedEventArgs e)
+        {
+            settingsInstance.DarkMode = false;
+            settingsInstance.ChangeTheme();
+        }
+
+        private void ButtonSettingsCancel_Click(object sender, RoutedEventArgs e)
+        {
+            // Restore theme on close if not saved
+            if (settingsInstance.DarkMode != _DarkMode)
+            {
+                settingsInstance.DarkMode = _DarkMode;
+                settingsInstance.ChangeTheme();
             }
         }
 
-        private void CheckBoxCompactMode_CheckedChanged(object sender, RoutedEventArgs e)
+        private void ButtonSettingsRestart_Click(object sender, RoutedEventArgs e)
         {
-            checkBoxAutoRefresh.IsEnabled = !(bool)checkBoxCompactMode.IsChecked;
-            numericUpDownRefreshInterval.IsEnabled = !(bool)checkBoxCompactMode.IsChecked && (bool)checkBoxAutoRefresh.IsChecked;
-        }
-
-        private bool _isDark;
-        private void ComboBoxTheme_SelectionChanged(object sender, RoutedEventArgs e)
-        {
-            ResourceLocator.SetColorScheme(Application.Current.Resources, _isDark ? ResourceLocator.LightColorScheme : ResourceLocator.DarkColorScheme);
-
-            _isDark = !_isDark;
+            System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
+            Application.Current.Shutdown();
         }
     }
 }
