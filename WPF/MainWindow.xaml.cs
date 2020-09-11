@@ -32,10 +32,13 @@ namespace ZenTimings
     public partial class MainWindow : AdonisWindow
     {
         public const uint F17H_M01H_SVI = 0x0005A000;
+        public const uint F17H_M02H_SVI = 0x0006F000; // Renoir only?
         public const uint F17H_M01H_SVI_TEL_PLANE0 = (F17H_M01H_SVI + 0xC);
         public const uint F17H_M01H_SVI_TEL_PLANE1 = (F17H_M01H_SVI + 0x10);
         public const uint F17H_M30H_SVI_TEL_PLANE0 = (F17H_M01H_SVI + 0x14);
         public const uint F17H_M30H_SVI_TEL_PLANE1 = (F17H_M01H_SVI + 0x10);
+        public const uint F17H_M60H_SVI_TEL_PLANE0 = (F17H_M02H_SVI + 0x38);
+        public const uint F17H_M60H_SVI_TEL_PLANE1 = (F17H_M02H_SVI + 0x3C);
         public const uint F17H_M70H_SVI_TEL_PLANE0 = (F17H_M01H_SVI + 0x10);
         public const uint F17H_M70H_SVI_TEL_PLANE1 = (F17H_M01H_SVI + 0xC);
 
@@ -237,7 +240,9 @@ namespace ZenTimings
 
                 // Temprorary skip Renoir. SVI2 PCI address range is empty.
                 case SMU.CPUType.Renoir:
-                    return;
+                    sviCoreaddress = F17H_M60H_SVI_TEL_PLANE0;
+                    sviSocAddress = F17H_M60H_SVI_TEL_PLANE1;
+                    break;
 
                 default:
                     sviCoreaddress = F17H_M01H_SVI_TEL_PLANE0;
