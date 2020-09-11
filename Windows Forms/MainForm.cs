@@ -676,23 +676,21 @@ namespace ZenTimings
         private void WaitForPowerTable(object sender, DoWorkEventArgs e)
         {
             int minimum_retries = 2;
-
-            // Refresh until table is transferred to DRAM or timeout
-            NativeMethods.GetPhysLong((UIntPtr)dramBaseAddress, out uint temp);
-
-            // Already in DRAM and auto-refresh disabled
-            if (temp != 0)
-            {
-                Thread.Sleep(PowerCfgTimer.Interval * minimum_retries);
-                return;
-            }
+            uint temp = 0;
 
             Stopwatch timer = new Stopwatch();
             timer.Start();
 
+            // Refresh until table is transferred to DRAM or timeout
             do
                 NativeMethods.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
             while (temp == 0 && timer.Elapsed.TotalMilliseconds < 10000);
+
+            NativeMethods.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
+
+            // Already in DRAM and auto-refresh disabled
+            if (temp != 0)
+                Thread.Sleep(PowerCfgTimer.Interval * minimum_retries);
 
             timer.Stop();
         }

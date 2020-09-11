@@ -67,7 +67,7 @@ namespace ZenTimings.Utils
         private struct PowerTableCPU2
         {
             [FieldOffset(0x0B4)] public uint VddcrSoc;
-            [FieldOffset(0x0C4)] public uint Fclk;
+            [FieldOffset(0x0C0)] public uint Fclk;
             [FieldOffset(0x0C8)] public uint Uclk;
             [FieldOffset(0x0CC)] public uint Mclk;
             [FieldOffset(0x1F4)] public uint CldoVddp;

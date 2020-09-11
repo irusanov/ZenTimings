@@ -6,7 +6,7 @@
         xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
         xmlns:local="clr-namespace:ZenTimings.Windows"
         mc:Ignorable="d"
-        Title="ZenTimings Screenshot" Height="63.38" Width="239.726" SizeToContent="Height" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+        Title="ZenTimings Screenshot" Height="63.38" Width="239.726" SizeToContent="Height" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" Icon="/ZenTimings;component/Resources/icon-16.png">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />

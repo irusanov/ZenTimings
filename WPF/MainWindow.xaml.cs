@@ -1,4 +1,6 @@
-﻿using System;
+//#define BETA
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -19,6 +21,8 @@ using System.Reflection;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Data;
+using System.Windows.Media.Imaging;
+using System.Windows.Media.Effects;
 
 namespace ZenTimings
 {
@@ -169,7 +173,7 @@ namespace ZenTimings
 
                     for (int i = 0; i < table.Length; ++i)
                     {
-                        NativeMethods.GetPhysLong((UIntPtr)dramBaseAddress + (i * 0x4), out data);
+                        InteropMethods.GetPhysLong((UIntPtr)dramBaseAddress + (i * 0x4), out data);
                         table[i] = data;
                     }
 
@@ -440,23 +444,21 @@ namespace ZenTimings
         private void WaitForPowerTable(object sender, DoWorkEventArgs e)
         {
             int minimum_retries = 2;
-
-            // Refresh until table is transferred to DRAM or timeout
-            NativeMethods.GetPhysLong((UIntPtr)dramBaseAddress, out uint temp);
-
-            // Already in DRAM and auto-refresh disabled
-            if (temp != 0)
-            {
-                Thread.Sleep(Convert.ToInt32(PowerCfgTimer.Interval.TotalMilliseconds) * minimum_retries);
-                return;
-            }
+            uint temp = 0;
 
             Stopwatch timer = new Stopwatch();
             timer.Start();
 
+            // Refresh until table is transferred to DRAM or timeout
             do
-                NativeMethods.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
+                InteropMethods.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
             while (temp == 0 && timer.Elapsed.TotalMilliseconds < 10000);
+
+            InteropMethods.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
+
+            // Already in DRAM and auto-refresh disabled
+            if (temp != 0)
+                Thread.Sleep(Convert.ToInt32(PowerCfgTimer.Interval.TotalMilliseconds) * minimum_retries);
 
             timer.Stop();
         }
@@ -572,7 +574,7 @@ namespace ZenTimings
 
         static void MinimizeFootprint()
         {
-            NativeMethods.EmptyWorkingSet(Process.GetCurrentProcess().Handle);
+            InteropMethods.EmptyWorkingSet(Process.GetCurrentProcess().Handle);
         }
 
         public void SetWindowTitle()
@@ -590,9 +592,9 @@ namespace ZenTimings
 
             Title = $"{AssemblyTitle} {AssemblyVersion.Substring(0, AssemblyVersion.LastIndexOf('.'))}";
 #if BETA
-                Text += " beta 4";
-                MessageBox.Show("This is a BETA version of the application. Some functions might be working incorrectly.\n\n" +
-                    "Please report if something is not working as expected.");
+                Title += " beta";
+                AdonisUI.Controls.MessageBox.Show("This is a BETA version of the application. Some functions might be working incorrectly.\n\n" +
+                    "Please report if something is not working as expected.", "Beta version", AdonisUI.Controls.MessageBoxButton.OK);
 #endif
 #if DEBUG
             Title += " (debug)";
@@ -620,7 +622,7 @@ namespace ZenTimings
 		
 		private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
 		{
-		    if (msg == NativeMethods.WM_SHOWME)
+		    if (msg == InteropMethods.WM_SHOWME)
                 ShowWindow();
 		
 		    return IntPtr.Zero;

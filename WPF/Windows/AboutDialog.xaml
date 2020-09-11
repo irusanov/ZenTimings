@@ -7,7 +7,7 @@
         xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
         adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
         mc:Ignorable="d"
-        Title="About" Height="212.776" Width="304.728" ResizeMode="NoResize" SizeToContent="WidthAndHeight" ShowInTaskbar="False" WindowStartupLocation="CenterOwner">
+        Title="About" Height="212.776" Width="304.728" ResizeMode="NoResize" SizeToContent="WidthAndHeight" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" Icon="/ZenTimings;component/Resources/icon-16.png" BorderThickness="0" SnapsToDevicePixels="True">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
@@ -30,8 +30,8 @@
                 <TextBlock x:Name="labelCopyright" Text="" Padding="0 2 5 2"/>
                 <TextBlock x:Name="labelCompanyName" Text="" Padding="0 2 5 2"/>
                 <TextBlock Padding="0 2 5 2">           
-                    <Hyperlink NavigateUri="http://zentimings.protonrom.com" RequestNavigate="Hyperlink_RequestNavigate">
-                        http://zentimings.protonrom.com
+                    <Hyperlink NavigateUri="https://zentimings.protonrom.com" RequestNavigate="Hyperlink_RequestNavigate">
+                        https://zentimings.protonrom.com
                     </Hyperlink>
                 </TextBlock>
             </StackPanel>

@@ -34,13 +34,13 @@ namespace ZenTimings
                 }
 
                 //app is already running! Exiting the application
-                AdonisUI.Controls.MessageBox.Show("Another instance is already running.", "Error", AdonisUI.Controls.MessageBoxButton.OK);
+                MessageBox.Show("Another instance is already running.", "Error", MessageBoxButton.OK);
                 Application.Current.Shutdown();
             }
 
             GC.KeepAlive(instanceMutex);
 
-            NativeMethods.PostMessage((IntPtr)NativeMethods.HWND_BROADCAST, NativeMethods.WM_SHOWME, IntPtr.Zero, IntPtr.Zero);
+            InteropMethods.PostMessage((IntPtr)InteropMethods.HWND_BROADCAST, InteropMethods.WM_SHOWME, IntPtr.Zero, IntPtr.Zero);
 
             base.OnStartup(e);
         }

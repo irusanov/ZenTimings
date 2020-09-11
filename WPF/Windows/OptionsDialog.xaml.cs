@@ -84,7 +84,7 @@ namespace ZenTimings.Windows
             var main = Owner as MainWindow;
             checkBoxAutoRefresh.IsEnabled = (bool)checkBoxAdvancedMode.IsChecked;
             numericUpDownRefreshInterval.IsEnabled = (bool)checkBoxAdvancedMode.IsChecked && (bool)checkBoxAutoRefresh.IsChecked;
-            main.SetWindowTitle();
+            //main.SetWindowTitle();
         }
 
         private void ComboBoxTheme_Checked(object sender, RoutedEventArgs e)

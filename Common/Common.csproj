@@ -49,7 +49,7 @@
     <Compile Include="BiosMemController.cs" />
     <Compile Include="MemoryConfig.cs" />
     <Compile Include="MemoryModule.cs" />
-    <Compile Include="NativeMethods.cs" />
+    <Compile Include="InteropMethods.cs" />
     <Compile Include="Ols.cs" />
     <Compile Include="Ops.cs" />
     <Compile Include="PowerTable.cs" />

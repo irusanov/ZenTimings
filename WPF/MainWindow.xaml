@@ -16,12 +16,11 @@
         WindowStartupLocation="CenterScreen"
         ResizeMode="CanMinimize"
         SizeToContent="WidthAndHeight"
-        Icon="Resources/icon-16.png"
         FontSize="11"
         Initialized="Window_Initialized"  
         StateChanged="AdonisWindow_StateChanged"
         SizeChanged="AdonisWindow_SizeChanged"
-        Activated="AdonisWindow_Activated" Loaded="AdonisWindow_Loaded">
+        Activated="AdonisWindow_Activated" Loaded="AdonisWindow_Loaded" BorderThickness="0">
 
 
     <Window.Style>
@@ -106,7 +105,7 @@
                         </StackPanel>
 
                         <StackPanel Grid.Column="1">
-                            <TextBlock Text="{Binding timings.Frequency, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.Frequency, FallbackValue='N/A', StringFormat={}{0:F0}}" Style="{StaticResource ValueStyles}"/>
                             <TextBlock Text="{Binding timings.BGS, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
                             <TextBlock Text="{Binding timings.GDM, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
 

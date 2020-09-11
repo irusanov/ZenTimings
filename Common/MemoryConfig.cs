@@ -279,7 +279,7 @@ namespace ZenTimings
                 double rfcValue = Convert.ToDouble(RFC);
                 double trfcns = rfcValue * 2000 / Frequency;
                 if (trfcns > rfcValue) trfcns /= 2;
-                RFCns = $"{trfcns:F4}";
+                RFCns = $"{trfcns:F4}".TrimEnd('0').TrimEnd('.', ',');
             }
         }
 
@@ -314,7 +314,7 @@ namespace ZenTimings
                 double refiValue = Convert.ToDouble(REFI);
                 double trefins = 1000 / Frequency * 2 * refiValue;
                 if (trefins > refiValue) trefins /= 2;
-                REFIns = $"{trefins:F3}";
+                REFIns = $"{trefins:F3}".TrimEnd('0').TrimEnd('.', ',');
             }
         }
 

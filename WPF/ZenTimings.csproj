@@ -37,7 +37,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Resources\ZenStates.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\ZenTimings.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -157,7 +157,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\icon-64.png" />
-    <Resource Include="Resources\ZenStates.ico" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\icon-16.png" />
@@ -171,6 +170,9 @@
   <ItemGroup>
     <Resource Include="Resources\camera-dark.png" />
     <Resource Include="Resources\camera-light.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ZenTimings.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
