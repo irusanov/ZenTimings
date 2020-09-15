@@ -1,5 +1,6 @@
 using OpenLibSys;
 using System;
+using System.Diagnostics;
 using System.Threading;
 
 namespace ZenStates
@@ -18,9 +19,6 @@ namespace ZenStates
             CpuType = GetCPUType(GetPkgType());
             Smu = GetMaintainedSettings.GetByType(CpuType);
             Smu.Version = GetSmuVersion();
-
-            //if (!SendTestMessage())
-            //    throw new ApplicationException("SMU is not responding");
         }
 
         public SMU Smu { get; }
@@ -165,6 +163,124 @@ namespace ZenStates
         {
             Ols.WritePciConfigDword(Smu.SMU_PCI_ADDR, (byte)Smu.SMU_OFFSET_ADDR, value);
             return Ols.ReadPciConfigDword(Smu.SMU_PCI_ADDR, (byte)Smu.SMU_OFFSET_DATA);
+        }
+
+        // Function from OpenHardwareMonitor
+        private void EstimateTimeStampCounterFrequency(out double frequency, out double error)
+        {
+            double f, e;
+
+            // preload the function
+            EstimateTimeStampCounterFrequency(0, out f, out e);
+            EstimateTimeStampCounterFrequency(0, out f, out e);
+
+            // estimate the frequency
+            error = double.MaxValue;
+            frequency = 0;
+            for (int i = 0; i < 5; i++)
+            {
+                EstimateTimeStampCounterFrequency(0.025, out f, out e);
+                if (e < error)
+                {
+                    error = e;
+                    frequency = f;
+                }
+
+                if (error < 1e-4)
+                    break;
+            }
+        }
+
+        private void EstimateTimeStampCounterFrequency(double timeWindow,
+          out double frequency, out double error)
+        {
+            uint eax = 0, edx = 0;
+            uint eax2 = 0, edx2 = 0;
+
+            long ticks = (long)(timeWindow * Stopwatch.Frequency);
+            ulong countBegin, countEnd;
+
+            long timeBegin = Stopwatch.GetTimestamp() + (long)Math.Ceiling(0.001 * ticks);
+            long timeEnd = timeBegin + ticks;
+
+            while (Stopwatch.GetTimestamp() < timeBegin) { }
+            //Ols.Rdtsc(ref eax, ref edx);
+            Ols.RdmsrTx(0x00000010, ref eax, ref edx, (UIntPtr)1);
+            countBegin = eax;
+            long afterBegin = Stopwatch.GetTimestamp();
+
+            while (Stopwatch.GetTimestamp() < timeEnd) { }
+            //Ols.Rdtsc(ref eax, ref edx);
+            Ols.RdmsrTx(0x00000010, ref eax, ref edx, (UIntPtr)1);
+            countEnd = eax;
+            long afterEnd = Stopwatch.GetTimestamp();
+
+            double delta = (timeEnd - timeBegin);
+            frequency = 1e-6 *
+              (((double)(countEnd - countBegin)) * Stopwatch.Frequency) / delta;
+
+            Ols.RdmsrTx(0xc0000104, ref eax2, ref edx2, (UIntPtr)1);
+            frequency *= GetBits(edx2, 0, 6);
+
+            double beginError = (afterBegin - timeBegin) / delta;
+            double endError = (afterEnd - timeEnd) / delta;
+            error = beginError + endError;
+        }
+
+        public double GetTimeStampFrequency()
+        {
+            EstimateTimeStampCounterFrequency(
+                out double estimatedTimeStampCounterFrequency,
+                out double estimatedTimeStampCounterFrequencyError);
+
+            return estimatedTimeStampCounterFrequency;
+        }
+
+        public double GetTimeStampCounterMultiplier()
+        {
+            uint eax = 0, edx = 0;
+            Ols.Rdmsr(0xC0010064, ref eax, ref edx);
+            uint cpuDfsId = (eax >> 8) & 0x3f;
+            uint cpuFid = eax & 0xff;
+            return 2.0 * cpuFid / cpuDfsId;
+        }
+
+        private double GetCoreMulti(int index)
+        {
+            uint eax = default, edx = default;
+            if (Ols.RdmsrTx(0xC0010293, ref eax, ref edx, (UIntPtr)(1 << index)) != 1)
+            {
+                return 0;
+            }
+
+            double multi = 25 * (eax & 0xFF) / (12.5 * (eax >> 8 & 0x3F));
+            return Math.Round(multi * 4, MidpointRounding.ToEven) / 4;
+        }
+
+        public float GetBaseClock()
+        {
+            // uint eax = default, edx = default;
+            float bclk = 0;
+
+            //Ols.RdmsrTx(0xC0010015, ref eax, ref edx, (UIntPtr)1);
+
+            //uint prevBitValue = GetBits(eax, 21, 1);
+            //eax = SetBits(eax, 21, 1, 1);
+
+            //Ols.WrmsrTx(0xC0010015, eax, edx, (UIntPtr)1);
+
+            double timeStampCounterMultiplier = GetCoreMulti(0);
+            double timeStampCounterFrequency = GetTimeStampFrequency();
+            
+            //eax = SetBits(eax, 21, 1, prevBitValue);
+            //Ols.WrmsrTx(0xC0010015, eax, edx, (UIntPtr)1);
+
+            if (timeStampCounterMultiplier > 0)
+            {
+                bclk = (float)(timeStampCounterFrequency / timeStampCounterMultiplier);
+            }
+
+            return bclk;
         }
 
         public SMU.CpuFamily GetCpuFamily()

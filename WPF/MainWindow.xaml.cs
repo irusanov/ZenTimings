@@ -1,4 +1,4 @@
-//#define BETA
+#define BETA
 
 using System;
 using System.Collections.Generic;
@@ -23,6 +23,8 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Effects;
+using System.Windows.Media;
+using System.Windows.Controls.Primitives;
 
 namespace ZenTimings
 {
@@ -83,11 +85,11 @@ namespace ZenTimings
                 Threads = coreCount[1],
                 CCDCount = OPS.GetCCDCount(),
                 CodeName = $"{OPS.CpuType}",
+                CpuFrequency = OPS.GetTimeStampFrequency(),
             };
 
             SI.Model = (SI.CpuId & 0xff) >> 4;
             SI.ExtendedModel = SI.Model + ((SI.CpuId >> 12) & 0xF0);
-
 
             ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_BaseBoard");
             foreach (ManagementObject obj in searcher.Get())
@@ -121,6 +123,9 @@ namespace ZenTimings
                         ulong capacity = 0UL;
                         uint clockSpeed = 0U;
                         string partNumber = "N/A";
+                        string bankLabel = "";
+                        string manufacturer = "";
+                        string deviceLocator = "";
                         object temp;
 
                         temp = WMI.TryGetProperty(queryObject, "Capacity");
@@ -132,8 +137,18 @@ namespace ZenTimings
                         temp = WMI.TryGetProperty(queryObject, "partNumber");
                         if (temp != null) partNumber = (string)temp;
 
-                        modules.Add(new MemoryModule(partNumber, capacity, clockSpeed));
-                        comboBoxPartNumber.Items.Add($"{partNumber}");
+                        temp = WMI.TryGetProperty(queryObject, "BankLabel");
+                        if (temp != null) bankLabel = (string)temp;
+
+                        temp = WMI.TryGetProperty(queryObject, "Manufacturer");
+                        if (temp != null) manufacturer = (string)temp;
+
+                        temp = WMI.TryGetProperty(queryObject, "DeviceLocator");
+                        if (temp != null) deviceLocator = (string)temp;
+
+                        modules.Add(new MemoryModule(partNumber, bankLabel, manufacturer, deviceLocator, capacity, clockSpeed));
+                        string dl = deviceLocator.Length > 0 ? $"#{deviceLocator.Replace("DIMM_", "")}: " : "";
+                        comboBoxPartNumber.Items.Add($"{dl}{partNumber}");
                         comboBoxPartNumber.SelectedIndex = 0;
                     }
 
@@ -317,8 +332,11 @@ namespace ZenTimings
                 BMC.Table = WMI.RunCommand(classInstance, cmd.ID);
                 var allZero = !BMC.Table.Any(v => v != 0);
 
-                if (allZero || BMC.Table == null)
+                if (allZero || BMC.Table == null || BMC.Config.ProcODT < 1)
+                {
+                    BMC.Table = null;
                     throw new Exception();
+                }
 
                 textBoxProcODT.Text = BMC.GetProcODTString(BMC.Config.ProcODT);
 
@@ -338,7 +356,11 @@ namespace ZenTimings
             catch (Exception ex)
             {
                 compatMode = true;
-                AdonisUI.Controls.MessageBox.Show("Failed to read AMD ACPI. Some parameters will be empty.", "Warning", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Warning);
+                AdonisUI.Controls.MessageBox.Show(
+                    "Failed to read AMD ACPI. Some parameters will be empty.",
+                    "Warning",
+                    AdonisUI.Controls.MessageBoxButton.OK,
+                    AdonisUI.Controls.MessageBoxImage.Warning);
                 Console.WriteLine(ex.Message);
             }
         }
@@ -426,6 +448,8 @@ namespace ZenTimings
             MEMCFG.MRDPDA = OPS.GetBits(timings16, 16, 6);
             MEMCFG.MOD = OPS.GetBits(timings16, 8, 6);
             MEMCFG.MRD = OPS.GetBits(timings16, 0, 6);
+
+            Console.WriteLine($"Txp: {OPS.GetBits(timings18, 0, 6)}");
 
             MEMCFG.STAG = OPS.GetBits(timings17, 16, 8);
 
@@ -520,8 +544,26 @@ namespace ZenTimings
                     }
                 }*/
 
+        private ImageSource GetIcon(string iconSource, double width)
+        {
+            var decoder = BitmapDecoder.Create(new Uri(iconSource),
+                BitmapCreateOptions.DelayCreation,
+                BitmapCacheOption.OnDemand);
+
+            var result = decoder.Frames.SingleOrDefault(f => f.Width == width);
+            if (result == default(BitmapFrame))
+            {
+                result = decoder.Frames.OrderBy(f => f.Width).First();
+            }
+
+            return result;
+        }
+
         public MainWindow()
         {
+            // Try to get your icon in the correct size here and assign it.
+            IconSource = GetIcon("pack://application:,,,/ZenTimings;component/Resources/ZenTimings.ico", 16);
+
             try
             {
                 PowerTable = new PowerTable(OPS.Smu.SMU_TYPE);
@@ -538,6 +580,8 @@ namespace ZenTimings
                 //BindCommands();
                 ReadMemoryModulesInfo();
                 ReadTimings();
+
+                //System.Windows.MessageBox.Show(OPS.GetBaseClock().ToString());
 
                 DataContext = new
                 {
@@ -577,7 +621,7 @@ namespace ZenTimings
             WindowState = WindowState.Normal;
         }
 
-        static void MinimizeFootprint()
+        private static void MinimizeFootprint()
         {
             InteropMethods.EmptyWorkingSet(Process.GetCurrentProcess().Handle);
         }
@@ -597,12 +641,14 @@ namespace ZenTimings
 
             Title = $"{AssemblyTitle} {AssemblyVersion.Substring(0, AssemblyVersion.LastIndexOf('.'))}";
 #if BETA
-                Title += " beta";
-                AdonisUI.Controls.MessageBox.Show("This is a BETA version of the application. Some functions might be working incorrectly.\n\n" +
-                    "Please report if something is not working as expected.", "Beta version", AdonisUI.Controls.MessageBoxButton.OK);
-#endif
+            Title = $@"{AssemblyTitle} {AssemblyVersion} beta";
+
+            AdonisUI.Controls.MessageBox.Show("This is a BETA version of the application. Some functions might be working incorrectly.\n\n" +
+                "Please report if something is not working as expected.", "Beta version", AdonisUI.Controls.MessageBoxButton.OK);
+#else
 #if DEBUG
-            Title += " (debug)";
+            Title = $@"{AssemblyTitle} {AssemblyVersion} (debug)";
+#endif
 #endif
             if (compatMode && settings.AdvancedMode)
                 Title += " (compatibility)";

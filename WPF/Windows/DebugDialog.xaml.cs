@@ -136,6 +136,25 @@ namespace ZenTimings.Windows
             result += row + Environment.NewLine;
         }
 
+        private void PrintChannels()
+        {
+            AddHeading("Memory Channels Info");
+            for (var i = 0u; i < 8u; i++)
+            {
+                try
+                {
+                    uint offset = i << 20;
+                    bool enabled = OPS.GetBits(OPS.ReadDword(0x50DF0 + offset), 19, 1) == 0;
+                    AddLine($"Channel{i}: {enabled}");
+                }
+                catch
+                {
+                    AddLine($"Channel{i}: <FAILED>");
+                }
+            }
+            AddLine();
+        }
+
         private void Debug()
         {
             Application.Current.Dispatcher.Invoke(new Action(() => {
@@ -173,9 +192,13 @@ namespace ZenTimings.Windows
 
             foreach (MemoryModule module in modules)
             {
-                AddLine($"{module.PartNumber} {module.Capacity / 1024 / (1024 * 1024)}GB {module.ClockSpeed}MHz");
+                AddLine($"{module.BankLabel} | {module.DeviceLocator}");
+                AddLine($"-- {module.Manufacturer}");
+                AddLine($"-- {module.PartNumber} {module.Capacity / 1024 / (1024 * 1024)}GB {module.ClockSpeed}MHz");
+                AddLine();
             }
-            AddLine();
+
+            PrintChannels();
 
             // Memory timings info
             AddHeading("Memory Config");
@@ -228,6 +251,12 @@ namespace ZenTimings.Windows
             AddHeading("SMU: Power Table Detected Values");
             try
             {
+                /*type = PT.GetType();
+                properties = type.GetProperties();
+
+                foreach (PropertyInfo property in properties)
+                    AddLine(property.Name + ": " + property.GetValue(PT, null));*/
+
                 AddLine($"MCLK: {PT.MCLK}");
                 AddLine($"FCLK: {PT.FCLK}");
                 AddLine($"UCLK: {PT.UCLK}");
@@ -280,11 +309,14 @@ namespace ZenTimings.Windows
             try
             {
                 uint startAddress = 0x0005A000;
-                uint endAddress = 0x0005A0FF;
+                uint endAddress = 0x00070000;
                 while (startAddress <= endAddress)
                 {
                     var data = OPS.ReadDword(startAddress);
-                    AddLine($"0x{startAddress:X8}: 0x{data:X8}");
+                    if (data != 0xFFFFFFFF)
+                    {
+                        AddLine($"0x{startAddress:X8}: 0x{data:X8}");
+                    }
                     startAddress += 4;
                 }
             }

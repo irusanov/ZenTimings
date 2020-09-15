@@ -105,6 +105,8 @@ namespace ZenStates
         public int NumCoresInCCX { get; private set; }
         public bool SMT { get; private set; }
 
+        public double CpuFrequency { get; set; } = 0;
+
         public string GetSmuVersionString()
         {
             return SmuVersionToString(SmuVersion);

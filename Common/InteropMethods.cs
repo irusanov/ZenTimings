@@ -19,11 +19,11 @@ namespace ZenTimings
         [DllImport("psapi.dll")]
         public static extern int EmptyWorkingSet(IntPtr hwProc);
 
-        [DllImport("inpoutx32.dll", EntryPoint = "GetPhysLong", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("inpout32.dll", EntryPoint = "GetPhysLong", CallingConvention = CallingConvention.StdCall)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetPhysLong32(UIntPtr memAddress, out uint data);
 
-        [DllImport("inpoutx64.dll", EntryPoint = "GetPhysLong", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("inpoutx64.dll", EntryPoint = "GetPhysLong", CallingConvention = CallingConvention.StdCall)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetPhysLong64(UIntPtr memAddress, out uint data);
 
@@ -35,11 +35,11 @@ namespace ZenTimings
             return GetPhysLong32(memAddress, out data);
         }
 
-        [DllImport("inpoutx32.dll", EntryPoint = "IsInpOutDriverOpen", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("inpout32.dll", EntryPoint = "IsInpOutDriverOpen", CallingConvention = CallingConvention.StdCall)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool IsInpOutDriverOpen32();
 
-        [DllImport("inpoutx64.dll", EntryPoint = "IsInpOutDriverOpen", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("inpoutx64.dll", EntryPoint = "IsInpOutDriverOpen", CallingConvention = CallingConvention.StdCall)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool IsInpOutDriverOpen64();
 
