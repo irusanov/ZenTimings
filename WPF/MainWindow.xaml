@@ -20,12 +20,18 @@
         Initialized="Window_Initialized"  
         StateChanged="AdonisWindow_StateChanged"
         SizeChanged="AdonisWindow_SizeChanged"
-        Activated="AdonisWindow_Activated" Loaded="AdonisWindow_Loaded" BorderThickness="0">
+        Activated="AdonisWindow_Activated"
+        Loaded="AdonisWindow_Loaded"
+        BorderThickness="0">
 
 
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style>
+
+    <Window.Resources>
+        <local:FloatToVoltage x:Key="FloatToVoltage" />
+    </Window.Resources>
 
     <Border>
         <StackPanel adonisExtensions:LayerExtension.Layer="0">
@@ -236,9 +242,12 @@
                             <TextBlock Text=""/>
 
                             <TextBlock x:Name="textBoxVSOC_SVI2" Text="N/A" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding powerTable.VDDCR_SOC, FallbackValue='N/A', StringFormat='{}{0:F4}V'}" IsEnabled="{Binding powerTable.VDDCR_SOC}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding powerTable.CLDO_VDDP, FallbackValue='N/A', StringFormat='{}{0:F4}V'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding powerTable.CLDO_VDDG, FallbackValue='N/A', StringFormat='{}{0:F4}V'}" Style="{StaticResource ValueStyles}"/>
+                            <TextBlock Text="{Binding powerTable.VDDCR_SOC, Converter={StaticResource FloatToVoltage}}"
+                                       Style="{StaticResource ValueStyles}"/>
+                            <TextBlock Text="{Binding powerTable.CLDO_VDDP, Converter={StaticResource FloatToVoltage}}"
+                                       Style="{StaticResource ValueStyles}"/>
+                            <TextBlock Text="{Binding powerTable.CLDO_VDDG, Converter={StaticResource FloatToVoltage}}"
+                                       Style="{StaticResource ValueStyles}"/>
                             <TextBlock Text=""/>
                             <TextBlock x:Name="textBoxProcODT" Text="N/A" Style="{StaticResource ValueStyles}"/>
                             <TextBlock x:Name="textBoxRttNom" Text="N/A" Style="{StaticResource ValueStyles}"/>

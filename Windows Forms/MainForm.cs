@@ -19,10 +19,13 @@ namespace ZenTimings
     public partial class MainForm : Form
     {
         public const uint F17H_M01H_SVI = 0x0005A000;
+        public const uint F17H_M02H_SVI = 0x0006F000; // Renoir only?
         public const uint F17H_M01H_SVI_TEL_PLANE0 = (F17H_M01H_SVI + 0xC);
         public const uint F17H_M01H_SVI_TEL_PLANE1 = (F17H_M01H_SVI + 0x10);
         public const uint F17H_M30H_SVI_TEL_PLANE0 = (F17H_M01H_SVI + 0x14);
         public const uint F17H_M30H_SVI_TEL_PLANE1 = (F17H_M01H_SVI + 0x10);
+        public const uint F17H_M60H_SVI_TEL_PLANE0 = (F17H_M02H_SVI + 0x38);
+        public const uint F17H_M60H_SVI_TEL_PLANE1 = (F17H_M02H_SVI + 0x3C);
         public const uint F17H_M70H_SVI_TEL_PLANE0 = (F17H_M01H_SVI + 0x10);
         public const uint F17H_M70H_SVI_TEL_PLANE1 = (F17H_M01H_SVI + 0xC);
 
@@ -57,8 +60,8 @@ namespace ZenTimings
             // The method converts only to string type. Test this using the DesiredType.
             if (cevent.DesiredType != typeof(string)) return;
 
-            // Use the ToString method to format the value as float.
-            cevent.Value = $"{(float)cevent.Value:F4}V";
+            float value = (float)cevent.Value;
+            cevent.Value = value != 0 ? $"{(float)cevent.Value:F4}V" : "N/A";
         }
 
         private void FloatToFrequencyString(object sender, ConvertEventArgs cevent)
@@ -66,8 +69,8 @@ namespace ZenTimings
             // The method converts only to string type. Test this using the DesiredType.
             if (cevent.DesiredType != typeof(string)) return;
 
-            // Use the ToString method to format the value as float.
-            cevent.Value = $"{(float)cevent.Value:F2}";
+            float value = (float)cevent.Value;
+            cevent.Value = value != 0 ?  $"{(float)cevent.Value:F2}" : "N/A";
         }
 
 
@@ -86,7 +89,7 @@ namespace ZenTimings
                 CpuId = OPS.GetCpuId(),
                 CpuName = OPS.GetCpuName(),
                 NodesPerProcessor = OPS.GetCpuNodes(),
-                PackageType = OPS.GetPkgType(),
+                PackageType = OPS.GetPackageType(),
                 PatchLevel = OPS.GetPatchLevel(),
                 SmuVersion = OPS.Smu.Version,
                 FusedCoreCount = coreCount[0],
@@ -211,6 +214,9 @@ namespace ZenTimings
                         ulong capacity = 0UL;
                         uint clockSpeed = 0U;
                         string partNumber = "N/A";
+                        string bankLabel = "";
+                        string manufacturer = "";
+                        string deviceLocator = "";
                         object temp;
 
                         temp = WMI.TryGetProperty(queryObject, "Capacity");
@@ -222,8 +228,22 @@ namespace ZenTimings
                         temp = WMI.TryGetProperty(queryObject, "partNumber");
                         if (temp != null) partNumber = (string)temp;
 
-                        modules.Add(new MemoryModule(partNumber, capacity, clockSpeed));
-                        comboBoxPartNumber.Items.Add($"{partNumber}");
+                        temp = WMI.TryGetProperty(queryObject, "BankLabel");
+                        if (temp != null) bankLabel = (string)temp;
+
+                        temp = WMI.TryGetProperty(queryObject, "Manufacturer");
+                        if (temp != null) manufacturer = (string)temp;
+
+                        temp = WMI.TryGetProperty(queryObject, "DeviceLocator");
+                        if (temp != null) deviceLocator = (string)temp;
+
+                        modules.Add(new MemoryModule(partNumber, bankLabel, manufacturer, deviceLocator, capacity, clockSpeed));
+                        //string dl = deviceLocator.Length > 0 ? $"#{deviceLocator.Replace("DIMM_", "")}: " : "";
+                        //comboBoxPartNumber.Items.Add($"{dl}{partNumber}");
+
+                        string bl = bankLabel.Length > 0 ? new String(bankLabel.Where(char.IsDigit).ToArray()) : "";
+                        comboBoxPartNumber.Items.Add($"#{bl}: {partNumber}");
+
                         comboBoxPartNumber.SelectedIndex = 0;
                     }
 
@@ -287,14 +307,17 @@ namespace ZenTimings
             {
                 try
                 {
-                    uint data = 0;
+                    SMU.Status status = OPS.TransferTableToDram();
 
-                    if (OPS.TransferTableToDram() != SMU.Status.OK)
-                        OPS.TransferTableToDram(); // retry
+                    if (status != SMU.Status.OK)
+                        status = OPS.TransferTableToDram(); // retry
+
+                    if (status != SMU.Status.OK)
+                        return;
 
                     for (int i = 0; i < table.Length; ++i)
                     {
-                        NativeMethods.GetPhysLong((UIntPtr)(dramBaseAddress + (i * 0x4)), out data);
+                        InteropMethods.GetPhysLong((UIntPtr)dramBaseAddress + (i * 0x4), out uint data);
                         table[i] = data;
                     }
 
@@ -358,7 +381,9 @@ namespace ZenTimings
 
                 // Temprorary skip Renoir. SVI2 PCI address range is empty.
                 case SMU.CPUType.Renoir:
-                    return;
+                    sviCoreaddress = F17H_M60H_SVI_TEL_PLANE0;
+                    sviSocAddress = F17H_M60H_SVI_TEL_PLANE1;
+                    break;
 
                 default:
                     sviCoreaddress = F17H_M01H_SVI_TEL_PLANE0;
@@ -433,8 +458,11 @@ namespace ZenTimings
                 BMC.Table = WMI.RunCommand(classInstance, cmd.ID);
                 var allZero = !BMC.Table.Any(v => v != 0);
 
-                if (allZero || BMC.Table == null)
+                if (allZero || BMC.Table == null || BMC.Config.ProcODT < 1)
+                {
+                    BMC.Table = null;
                     throw new Exception();
+                }
 
                 textBoxProcODT.Text = BMC.GetProcODTString(BMC.Config.ProcODT);
 
@@ -676,17 +704,16 @@ namespace ZenTimings
         private void WaitForPowerTable(object sender, DoWorkEventArgs e)
         {
             int minimum_retries = 2;
-            uint temp = 0;
-
             Stopwatch timer = new Stopwatch();
             timer.Start();
 
+            uint temp;
             // Refresh until table is transferred to DRAM or timeout
             do
-                NativeMethods.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
+                InteropMethods.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
             while (temp == 0 && timer.Elapsed.TotalMilliseconds < 10000);
 
-            NativeMethods.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
+            InteropMethods.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
 
             // Already in DRAM and auto-refresh disabled
             if (temp != 0)
@@ -794,7 +821,7 @@ namespace ZenTimings
 
         static void MinimizeFootprint()
         {
-            NativeMethods.EmptyWorkingSet(Process.GetCurrentProcess().Handle);
+            InteropMethods.EmptyWorkingSet(Process.GetCurrentProcess().Handle);
         }
 
         private void MainForm_Shown(object sender, EventArgs e)
@@ -812,7 +839,7 @@ namespace ZenTimings
         [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
         protected override void WndProc(ref Message m)
         {
-            if (m.Msg == NativeMethods.WM_SHOWME)
+            if (m.Msg == InteropMethods.WM_SHOWME)
             {
                 ShowWindow();
             }

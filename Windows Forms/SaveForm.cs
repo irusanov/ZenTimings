@@ -15,11 +15,9 @@ namespace ZenTimings
 
         private void SaveToFile(string filename = "ZenTimingsScreenshot.png")
         {
-            // MessageBox.Show($"File saved as {filename}");
             screenshot.Save(filename);
             screenshot.Dispose();
             Close();
-            //Dispose();
         }
 
         private void ButtonSave_Click(object sender, EventArgs e)
@@ -51,6 +49,11 @@ namespace ZenTimings
             Clipboard.SetImage(screenshot);
             statusStrip1.Visible = true;
             toolStripStatusLabel1.Text = "Screenshot copied to clipboard.";
+        }
+        
+                public void Dispose()
+        {
+            ((IDisposable)screenshot).Dispose();
         }
     }
 }

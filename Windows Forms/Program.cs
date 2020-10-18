@@ -20,7 +20,7 @@ namespace ZenTimings
             try
             {
                 Mutex existingInstane = Mutex.OpenExisting(mutexName);
-                NativeMethods.PostMessage((IntPtr)NativeMethods.HWND_BROADCAST, NativeMethods.WM_SHOWME, IntPtr.Zero, IntPtr.Zero);
+                InteropMethods.PostMessage((IntPtr)InteropMethods.HWND_BROADCAST, InteropMethods.WM_SHOWME, IntPtr.Zero, IntPtr.Zero);
 
                 if (Properties.Settings.Default.IsRestarting)
                 {

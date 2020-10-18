@@ -18,6 +18,10 @@
         <Setter Property="MinWidth" Value="50" />
     </Style>
 
+    <Style x:Key="SuccessBackground" TargetType="StatusBar">
+        <Setter Property="Background" Value="{DynamicResource SuccessBackground}" />
+    </Style>
+
     <Style x:Key="MainMenuStyles" TargetType="Border">
         <Setter Property="Background" Value="{DynamicResource PanelBackgound}" />
         <Setter Property="Padding" Value="5 2 7 2" />

@@ -111,7 +111,6 @@ namespace ZenTimings.Utils
                         break;
                 }
 
-                //Type typeOfTable = powerTable.GetType();
                 float bclkCorrection = 1.00f;
 
                 try

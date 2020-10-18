@@ -144,20 +144,12 @@ namespace ZenTimings
                 byte[] cmd = new byte[4];
                 byte[] args = new byte[4];
                 byte[] buffer = new byte[8];
+
                 cmd = BitConverter.GetBytes(commandID);
                 args = BitConverter.GetBytes(commandArgs);
 
-                for (var i = 0; i < cmd.Length; ++i)
-                {
-                    buffer[i] = cmd[i];
-                }
-
-                for (var i = cmd.Length; i < args.Length; ++i)
-                {
-                    buffer[i] = args[i];
-                }
-
-                //buffer[4] = 0x01;
+                Buffer.BlockCopy(cmd, 0, buffer, 0, cmd.Length);
+                Buffer.BlockCopy(args, 0, buffer, cmd.Length, args.Length);
 
                 inParams["Inbuf"] = buffer;
 

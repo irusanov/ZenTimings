@@ -1,4 +1,4 @@
-#define BETA
+//#define BETA
 
 using System;
 using System.Collections.Generic;
@@ -78,14 +78,13 @@ namespace ZenTimings
                 CpuId = OPS.GetCpuId(),
                 CpuName = OPS.GetCpuName(),
                 NodesPerProcessor = OPS.GetCpuNodes(),
-                PackageType = OPS.GetPkgType(),
+                PackageType = OPS.GetPackageType(),
                 PatchLevel = OPS.GetPatchLevel(),
                 SmuVersion = OPS.Smu.Version,
                 FusedCoreCount = coreCount[0],
                 Threads = coreCount[1],
                 CCDCount = OPS.GetCCDCount(),
                 CodeName = $"{OPS.CpuType}",
-                CpuFrequency = OPS.GetTimeStampFrequency(),
             };
 
             SI.Model = (SI.CpuId & 0xff) >> 4;
@@ -147,8 +146,12 @@ namespace ZenTimings
                         if (temp != null) deviceLocator = (string)temp;
 
                         modules.Add(new MemoryModule(partNumber, bankLabel, manufacturer, deviceLocator, capacity, clockSpeed));
-                        string dl = deviceLocator.Length > 0 ? $"#{deviceLocator.Replace("DIMM_", "")}: " : "";
-                        comboBoxPartNumber.Items.Add($"{dl}{partNumber}");
+                        //string dl = deviceLocator.Length > 0 ? $"#{deviceLocator.Replace("DIMM_", "")}: " : "";
+                        //comboBoxPartNumber.Items.Add($"{dl}{partNumber}");
+
+                        string bl = bankLabel.Length > 0 ? new String(bankLabel.Where(char.IsDigit).ToArray()) : "";
+                        comboBoxPartNumber.Items.Add($"#{bl}: {partNumber}");
+
                         comboBoxPartNumber.SelectedIndex = 0;
                     }
 
@@ -184,14 +187,17 @@ namespace ZenTimings
             {
                 try
                 {
-                    uint data = 0;
+                    SMU.Status status = OPS.TransferTableToDram();
 
-                    if (OPS.TransferTableToDram() != SMU.Status.OK)
-                        OPS.TransferTableToDram(); // retry
+                    if (status != SMU.Status.OK)
+                        status = OPS.TransferTableToDram(); // retry
+
+                    if (status != SMU.Status.OK)
+                        return;
 
                     for (int i = 0; i < table.Length; ++i)
                     {
-                        InteropMethods.GetPhysLong((UIntPtr)dramBaseAddress + (i * 0x4), out data);
+                        InteropMethods.GetPhysLong((UIntPtr)dramBaseAddress + (i * 0x4), out uint data);
                         table[i] = data;
                     }
 
@@ -473,11 +479,10 @@ namespace ZenTimings
         private void WaitForPowerTable(object sender, DoWorkEventArgs e)
         {
             int minimum_retries = 2;
-            uint temp = 0;
-
             Stopwatch timer = new Stopwatch();
             timer.Start();
 
+            uint temp;
             // Refresh until table is transferred to DRAM or timeout
             do
                 InteropMethods.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
@@ -511,9 +516,6 @@ namespace ZenTimings
         {
             PowerCfgTimer.Start();
 
-            //if (!CheckConfigFileIsPresent())
-                //return;
-
             backgroundWorker1 = new BackgroundWorker();
             backgroundWorker1.DoWork += WaitForPowerTable;
             backgroundWorker1.RunWorkerCompleted += WaitForPowerTable_Complete;
@@ -522,27 +524,11 @@ namespace ZenTimings
 
         private void PowerCfgTimer_Tick(object sender, EventArgs e)
         {
-            Console.WriteLine("refreshing");
             //ReadTimings();
             //ReadMemoryConfig();
             ReadSVI();
             ReadPowerConfig();
         }
-
-        /*        private void DisableInactiveControls()
-                {
-                    foreach (Control ctrl in tableLayoutPanelValues.Controls)
-                    {
-                        if (ctrl.GetType() == typeof(Label) && ctrl.Text == "N/A")
-                        {
-                            var prop = ctrl.Name.Replace("textBox", "");
-                            ctrl.Enabled = false;
-                            var label = tableLayoutPanelValues.Controls[$"label{prop}"];
-                            if (label != null)
-                                label.Enabled = false;
-                        }
-                    }
-                }*/
 
         private ImageSource GetIcon(string iconSource, double width)
         {
@@ -561,11 +547,10 @@ namespace ZenTimings
 
         public MainWindow()
         {
-            // Try to get your icon in the correct size here and assign it.
-            IconSource = GetIcon("pack://application:,,,/ZenTimings;component/Resources/ZenTimings.ico", 16);
-
             try
             {
+                IconSource = GetIcon("pack://application:,,,/ZenTimings;component/Resources/ZenTimings.ico", 16);
+
                 PowerTable = new PowerTable(OPS.Smu.SMU_TYPE);
                 BMC = new BiosMemController();
 
@@ -577,11 +562,8 @@ namespace ZenTimings
 
                 InitSystemInfo();
                 InitializeComponent();
-                //BindCommands();
                 ReadMemoryModulesInfo();
                 ReadTimings();
-
-                //System.Windows.MessageBox.Show(OPS.GetBaseClock().ToString());
 
                 DataContext = new
                 {
@@ -738,6 +720,21 @@ namespace ZenTimings
                 saveWnd.ShowDialog();
                 screenshot.Dispose();
             }
+        }
+    }
+
+    public class FloatToVoltage : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if ((float)value == 0)
+                return "N/A";
+            return $"{value:F4}V";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return Binding.DoNothing;
         }
     }
 }

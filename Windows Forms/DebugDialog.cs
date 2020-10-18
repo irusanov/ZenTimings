@@ -156,9 +156,29 @@ namespace ZenTimings
             result += row + Environment.NewLine;
         }
 
+        private void PrintChannels()
+        {
+            AddHeading("Memory Channels Info");
+            for (var i = 0u; i < 8u; i++)
+            {
+                try
+                {
+                    uint offset = i << 20;
+                    bool enabled = OPS.GetBits(OPS.ReadDword(0x50DF0 + offset), 19, 1) == 0;
+                    AddLine($"Channel{i}: {enabled}");
+                }
+                catch
+                {
+                    AddLine($"Channel{i}: <FAILED>");
+                }
+            }
+            AddLine();
+        }
+
         private void Debug(object sender, DoWorkEventArgs e)
         {
-            result = $"{Application.ProductName} v{Application.ProductVersion} Debug Report" +
+            result = $"{System.Windows.Forms.Application.ProductName} {System.Windows.Forms.Application.ProductVersion} Debug Report" +
+
                 Environment.NewLine +
                 Environment.NewLine;
 
@@ -189,9 +209,13 @@ namespace ZenTimings
 
             foreach (MemoryModule module in modules)
             {
-                AddLine($"{module.PartNumber} {module.Capacity / 1024 / (1024 * 1024)}GB {module.ClockSpeed}MHz");
+                AddLine($"{module.BankLabel} | {module.DeviceLocator}");
+                AddLine($"-- {module.Manufacturer}");
+                AddLine($"-- {module.PartNumber} {module.Capacity / 1024 / (1024 * 1024)}GB {module.ClockSpeed}MHz");
+                AddLine();
             }
-            AddLine();
+
+            PrintChannels();
 
             // Memory timings info
             AddHeading("Memory Config");
@@ -296,11 +320,14 @@ namespace ZenTimings
             try
             {
                 uint startAddress = 0x0005A000;
-                uint endAddress = 0x0005A0FF;
+                uint endAddress = 0x00070000;
                 while (startAddress <= endAddress)
                 {
                     var data = OPS.ReadDword(startAddress);
+                    if (data != 0xFFFFFFFF)
+                    {
                     AddLine($"0x{startAddress:X8}: 0x{data:X8}");
+                    }
                     startAddress += 4;
                 }
             }
@@ -339,7 +366,7 @@ namespace ZenTimings
             }
 
             System.IO.File.WriteAllText(filename, textBoxDebugOutput.Text);
-            MessageBox.Show($"Debug report saved as {filename}");
+            MessageBox.Show($"Debug report saved as {filename}", saveAs ? "Save As" : "Save");
         }
 
         private void ButtonDebug_Click(object sender, EventArgs e) => RunBackgroundTask(Debug, Scan_WorkerCompleted);

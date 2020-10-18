@@ -1,4 +1,4 @@
-﻿using AdonisUI;
+using AdonisUI;
 using AdonisUI.Controls;
 using System;
 using System.Collections.Generic;
@@ -26,6 +26,7 @@ namespace ZenTimings.Windows
         private const string Caption = "Disabling auto-refresh might lead to inaccurate voltages and frequencies on first launch";
         private readonly AppSettings settingsInstance;
         private readonly DispatcherTimer timerInstance;
+        private DispatcherTimer notificationTimer;
         private bool _DarkMode;
         private bool _AdvancedMode;
 
@@ -59,6 +60,25 @@ namespace ZenTimings.Windows
 
             _DarkMode = settingsInstance.DarkMode;
 
+
+            if (notificationTimer != null)
+            {
+                if (notificationTimer.IsEnabled) notificationTimer.Stop();
+            }
+
+            notificationTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(6000)
+            };
+
+            notificationTimer.Tick += new EventHandler((s, x) =>
+            {
+                notificationTimer.Stop();
+                myPopup.IsOpen = false;
+            });
+
+            notificationTimer.Start();
+
             if (checkBoxAutoRefresh.IsEnabled)
             {
                 if (settingsInstance.AutoRefresh && !timerInstance.IsEnabled)
@@ -67,35 +87,29 @@ namespace ZenTimings.Windows
                     timerInstance.Stop();
             }
 
+            if (notificationTimer.IsEnabled)
+
             if (_AdvancedMode != settingsInstance.AdvancedMode)
             {
                 buttonSettingsRestart.Visibility = Visibility.Visible;
                 settingsInstance.IsRestarting = true;
                 settingsInstance.Save();
-                status.Content = "Advanced Mode will be applied on next launch.";
-                statusStrip1.Visibility = Visibility.Visible;
+                popupText.Text = "Advanced Mode will be applied on next launch.";
             }
 
-            //statusStrip1.Visibility = Visibility.Visible;
+            myPopup.Width = OptionWindowContent.ActualWidth;
+            myPopup.IsOpen = true;
         }
 
         private void CheckBoxAdvancedMode_CheckedChanged(object sender, RoutedEventArgs e)
         {
-            var main = Owner as MainWindow;
             checkBoxAutoRefresh.IsEnabled = (bool)checkBoxAdvancedMode.IsChecked;
             numericUpDownRefreshInterval.IsEnabled = (bool)checkBoxAdvancedMode.IsChecked && (bool)checkBoxAutoRefresh.IsChecked;
-            //main.SetWindowTitle();
         }
 
-        private void ComboBoxTheme_Checked(object sender, RoutedEventArgs e)
+        private void ComboBoxTheme_CheckedChanged(object sender, RoutedEventArgs e)
         {
-            settingsInstance.DarkMode = true;
-            settingsInstance.ChangeTheme();
-        }
-
-        private void ComboBoxTheme_Unchecked(object sender, RoutedEventArgs e)
-        {
-            settingsInstance.DarkMode = false;
+            settingsInstance.DarkMode = (bool)comboBoxTheme.IsChecked;
             settingsInstance.ChangeTheme();
         }
 
@@ -113,6 +127,11 @@ namespace ZenTimings.Windows
         {
             System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
             Application.Current.Shutdown();
+        }
+
+        private void MyPopup_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            myPopup.IsOpen = false;
         }
     }
 }
