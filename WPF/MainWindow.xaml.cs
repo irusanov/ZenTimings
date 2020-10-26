@@ -58,10 +58,7 @@ namespace ZenTimings
         private readonly uint[] table = new uint[PowerTable.tableSize / 4];
         private readonly DispatcherTimer PowerCfgTimer = new DispatcherTimer();
 
-        private static void ExitApplication()
-        {
-            Application.Current.Shutdown();
-        }
+        private static void ExitApplication() => Application.Current.Shutdown();
 
         private void InitSystemInfo()
         {
@@ -254,12 +251,11 @@ namespace ZenTimings
                 //case 0x71: // Zen2 Ryzen
                 case SMU.CPUType.Picasso:
                 case SMU.CPUType.Matisse:
-                    //case SMU.CPUType.Renoir:
                     sviCoreaddress = F17H_M70H_SVI_TEL_PLANE0;
                     sviSocAddress = F17H_M70H_SVI_TEL_PLANE1;
                     break;
 
-                // Temprorary skip Renoir. SVI2 PCI address range is empty.
+                // Renoir
                 case SMU.CPUType.Renoir:
                     sviCoreaddress = F17H_M60H_SVI_TEL_PLANE0;
                     sviSocAddress = F17H_M60H_SVI_TEL_PLANE1;
@@ -499,12 +495,10 @@ namespace ZenTimings
 
         private void WaitForPowerTable_Complete(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (settings.AutoRefresh)
+            if (settings.AutoRefresh && settings.AdvancedMode)
                 PowerCfgTimer.Interval = TimeSpan.FromMilliseconds(settings.AutoRefreshInterval);
             else
                 PowerCfgTimer.Stop();
-
-            //DisableInactiveControls();
         }
 
         public static bool CheckConfigFileIsPresent()
@@ -551,29 +545,22 @@ namespace ZenTimings
             {
                 IconSource = GetIcon("pack://application:,,,/ZenTimings;component/Resources/ZenTimings.ico", 16);
 
-                PowerTable = new PowerTable(OPS.Smu.SMU_TYPE);
-                BMC = new BiosMemController();
-
-                PowerCfgTimer.Interval = TimeSpan.FromMilliseconds(2000);
-                PowerCfgTimer.Tick += new EventHandler(PowerCfgTimer_Tick);
+                InitSystemInfo();
 
                 if (settings.DarkMode)
                     settings.ChangeTheme();
 
-                InitSystemInfo();
                 InitializeComponent();
                 ReadMemoryModulesInfo();
                 ReadTimings();
 
-                DataContext = new
-                {
-                    timings = MEMCFG,
-                    powerTable = PowerTable,
-                    settings,
-                };
-
                 if (settings.AdvancedMode)
                 {
+                    PowerTable = new PowerTable(OPS.Smu.SMU_TYPE);
+                    BMC = new BiosMemController();
+                    PowerCfgTimer.Interval = TimeSpan.FromMilliseconds(2000);
+                    PowerCfgTimer.Tick += new EventHandler(PowerCfgTimer_Tick);
+
                     ReadMemoryConfig();
                     ReadSVI();
 
@@ -586,13 +573,36 @@ namespace ZenTimings
 
                     StartAutoRefresh();
                 }
+
+                DataContext = new
+                {
+                    timings = MEMCFG,
+                    powerTable = PowerTable,
+                    settings,
+                };
             }
             catch (ApplicationException ex)
             {
-                AdonisUI.Controls.MessageBox.Show(ex.Message, "Error", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Error);
+                HandleError(ex.Message);
                 //Dispose();
                 ExitApplication();
             }
+        }
+
+        public void HandleError(string message, string title = "Error")
+        {
+            AdonisUI.Controls.MessageBox.Show(
+                message,
+                title,
+                AdonisUI.Controls.MessageBoxButton.OK,
+                AdonisUI.Controls.MessageBoxImage.Error
+            );
+        }
+
+        private void Restart()
+        {
+            Process.Start(Application.ResourceAssembly.Location);
+            Application.Current.Shutdown();
         }
         
 		private void ShowWindow()
@@ -663,14 +673,36 @@ namespace ZenTimings
 
         private void DebugToolstripItem_Click(object sender, RoutedEventArgs e)
         {
-            var parent = Application.Current.MainWindow;
-            DebugDialog debugWnd = new DebugDialog(dramBaseAddress, modules, MEMCFG, SI, BMC, PowerTable, OPS)
+            if (settings.AdvancedMode)
             {
-                Owner = parent
-            };
-            debugWnd.Width = parent.Width;
-            debugWnd.Height = parent.Height;
-            debugWnd.Show();
+                var parent = Application.Current.MainWindow;
+                DebugDialog debugWnd = new DebugDialog(dramBaseAddress, modules, MEMCFG, SI, BMC, PowerTable, OPS)
+                {
+                    Owner = parent
+                };
+                debugWnd.Width = parent.Width;
+                debugWnd.Height = parent.Height;
+                debugWnd.Show();
+            }
+            else
+            {
+                var messageBox = new AdonisUI.Controls.MessageBoxModel
+                {
+                    Text = "Debug functionality requires Advanced Mode.\n\n" +
+                    "Do you want to enable it now (the application will restart automatically)?",
+                    Caption = "Debug Report",
+                    Buttons = AdonisUI.Controls.MessageBoxButtons.YesNoCancel()
+                };
+
+                AdonisUI.Controls.MessageBox.Show(messageBox);
+
+                if (messageBox.Result == AdonisUI.Controls.MessageBoxResult.Yes)
+                {
+                    settings.AdvancedMode = true;
+                    settings.Save();
+                    Restart();
+                }
+            }
         }
 
         private void AdonisWindow_StateChanged(object sender, EventArgs e) => MinimizeFootprint();

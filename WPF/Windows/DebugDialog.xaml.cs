@@ -46,12 +46,6 @@ namespace ZenTimings.Windows
             OPS = ops;
         }
 
-        private void HandleError(string message, string title = "Error")
-        {
-            //SetStatusText(Resources.Error);
-            AdonisUI.Controls.MessageBox.Show(message, title);
-        }
-
         private void SetControlsState(bool enabled = true)
         {
             buttonDebugCancel.IsEnabled = enabled;
