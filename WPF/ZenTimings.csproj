@@ -187,6 +187,7 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BuildNumberTemplate.cs</LastGenOutput>
     </Content>
+    <SplashScreen Include="Resources\splash.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
