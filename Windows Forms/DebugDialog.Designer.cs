@@ -59,7 +59,7 @@
             this.tableLayoutPanel2.Padding = new System.Windows.Forms.Padding(5);
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(434, 39);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(424, 39);
             this.tableLayoutPanel2.TabIndex = 1;
             // 
             // buttonDebug
@@ -85,7 +85,7 @@
             // 
             // buttonDebugCancel
             // 
-            this.buttonDebugCancel.Location = new System.Drawing.Point(351, 8);
+            this.buttonDebugCancel.Location = new System.Drawing.Point(341, 8);
             this.buttonDebugCancel.Name = "buttonDebugCancel";
             this.buttonDebugCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonDebugCancel.TabIndex = 2;
@@ -114,7 +114,7 @@
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(434, 475);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(424, 475);
             this.tableLayoutPanel1.TabIndex = 2;
             // 
             // textBoxDebugOutput
@@ -128,7 +128,7 @@
             this.textBoxDebugOutput.Name = "textBoxDebugOutput";
             this.textBoxDebugOutput.ReadOnly = true;
             this.textBoxDebugOutput.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxDebugOutput.Size = new System.Drawing.Size(428, 469);
+            this.textBoxDebugOutput.Size = new System.Drawing.Size(418, 469);
             this.textBoxDebugOutput.TabIndex = 3;
             this.textBoxDebugOutput.Text = "Click on Debug button to generate a report.";
             // 
@@ -136,7 +136,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(434, 514);
+            this.ClientSize = new System.Drawing.Size(424, 514);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.tableLayoutPanel2);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;

@@ -1,6 +1,5 @@
 using System;
 using System.Windows.Forms;
-using ZenTimings.Utils;
 
 namespace ZenTimings
 {
@@ -29,7 +28,7 @@ namespace ZenTimings
             checkBoxAutoRefresh.Checked = settingsInstance.AutoRefresh;
             checkBoxAutoRefresh.Enabled = settingsInstance.AdvancedMode;
             numericUpDownRefreshInterval.Value = settingsInstance.AutoRefreshInterval;
-            numericUpDownRefreshInterval.Enabled = checkBoxAutoRefresh.Checked;
+            numericUpDownRefreshInterval.Enabled = checkBoxAutoRefresh.Enabled && checkBoxAutoRefresh.Checked;
         }
 
         private void ButtonSettingsCancel_Click(object sender, EventArgs e) => Close();
@@ -55,7 +54,7 @@ namespace ZenTimings
 
             if (currentAdvancedMode != settingsInstance.AdvancedMode)
             {
-                DialogResult result = MessageBox.Show("Settings will take effect on next app launch.\nDo you want to restart it now?", "Restart",  MessageBoxButtons.YesNo);
+                DialogResult result = MessageBox.Show("Settings will take effect on next app launch.\nDo you want to restart it now?", "Restart", MessageBoxButtons.YesNo);
 
                 if (result == DialogResult.Yes)
                 {
@@ -69,7 +68,7 @@ namespace ZenTimings
         private void CheckBoxAdvancedMode_CheckedChanged(object sender, EventArgs e)
         {
             checkBoxAutoRefresh.Enabled = checkBoxAdvancedMode.Checked;
-            numericUpDownRefreshInterval.Enabled = checkBoxAdvancedMode.Checked && checkBoxAutoRefresh.Checked;
+            numericUpDownRefreshInterval.Enabled = checkBoxAutoRefresh.Enabled && checkBoxAutoRefresh.Checked;
         }
     }
 }

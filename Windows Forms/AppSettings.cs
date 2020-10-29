@@ -49,5 +49,11 @@ namespace ZenTimings
             get => settings.AdvancedMode;
             set => settings.AdvancedMode = value;
         }
+
+        public bool IsRestarting
+        {
+            get => settings.IsRestarting;
+            set => settings.IsRestarting = value;
+        }
     }
 }

@@ -50,8 +50,8 @@ namespace ZenTimings
             statusStrip1.Visible = true;
             toolStripStatusLabel1.Text = "Screenshot copied to clipboard.";
         }
-        
-                public void Dispose()
+
+        public void Dispose()
         {
             ((IDisposable)screenshot).Dispose();
         }

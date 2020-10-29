@@ -70,7 +70,7 @@ namespace ZenTimings
             if (cevent.DesiredType != typeof(string)) return;
 
             float value = (float)cevent.Value;
-            cevent.Value = value != 0 ?  $"{(float)cevent.Value:F2}" : "N/A";
+            cevent.Value = value != 0 ? $"{(float)cevent.Value:F2}" : "N/A";
         }
 
 
@@ -173,7 +173,7 @@ namespace ZenTimings
             textBoxMRDPDA.DataBindings.Add("Text", MEMCFG, "MRDPDA");
         }
 
-        private void BindAdvancedControls() 
+        private void BindAdvancedControls()
         {
             if (settings.AdvancedMode)
             {
@@ -648,7 +648,7 @@ namespace ZenTimings
         {
             try
             {
-                
+
 #if BETA
                 MessageBox.Show("This is a BETA version of the application. Some functions might be working incorrectly.\n\n" +
                     "Please report if something is not working as expected.");
@@ -665,8 +665,8 @@ namespace ZenTimings
                 if (!settings.AdvancedMode)
                 {
                     SwitchToCompactMode();
-                } 
-                else 
+                }
+                else
                 {
                     PowerTable = new PowerTable(OPS.Smu.SMU_TYPE);
                     BMC = new BiosMemController();
@@ -815,6 +815,13 @@ namespace ZenTimings
             }
         }
 
+        private void Restart()
+        {
+            settings.IsRestarting = true;
+            settings.Save();
+            Application.Restart();
+        }
+
         private void ShowWindow()
         {
             Show();
@@ -870,8 +877,25 @@ namespace ZenTimings
 
         private void DebugToolstripItem_Click(object sender, EventArgs e)
         {
-            Form debugWnd = new DebugDialog(dramBaseAddress, modules, MEMCFG, SI, BMC, PowerTable, OPS);
-            debugWnd.ShowDialog();
+            if (settings.AdvancedMode)
+            {
+                Form debugWnd = new DebugDialog(dramBaseAddress, modules, MEMCFG, SI, BMC, PowerTable, OPS);
+                debugWnd.ShowDialog();
+            }
+            else
+            {
+                DialogResult result = MessageBox.Show(
+                    "Debug functionality requires Advanced Mode.\n\n" +
+                    "Do you want to enable it now (the application will restart automatically)?",
+                    "Debug Report",
+                    MessageBoxButtons.YesNoCancel);
+
+                if (result == DialogResult.Yes)
+                {
+                    settings.AdvancedMode = true;
+                    Restart();
+                }
+            }
         }
     }
 }

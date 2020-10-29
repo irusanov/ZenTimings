@@ -29,7 +29,7 @@ namespace ZenTimings
                     Properties.Settings.Default.Save();
                     throw new Exception("Restart requested, release mutex");
                 }
-                
+
                 return;
             }
             catch

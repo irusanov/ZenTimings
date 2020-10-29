@@ -187,10 +187,10 @@ namespace ZenTimings
             this.tableLayoutPanelValues.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 5F));
             this.tableLayoutPanelValues.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanelValues.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanelValues.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+            this.tableLayoutPanelValues.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 5F));
             this.tableLayoutPanelValues.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanelValues.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanelValues.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+            this.tableLayoutPanelValues.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 5F));
             this.tableLayoutPanelValues.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanelValues.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanelValues.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 5F));
@@ -344,7 +344,7 @@ namespace ZenTimings
             this.tableLayoutPanelValues.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 18F));
             this.tableLayoutPanelValues.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 18F));
             this.tableLayoutPanelValues.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanelValues.Size = new System.Drawing.Size(434, 404);
+            this.tableLayoutPanelValues.Size = new System.Drawing.Size(424, 404);
             this.tableLayoutPanelValues.TabIndex = 0;
             this.tableLayoutPanelValues.CellPaint += new System.Windows.Forms.TableLayoutCellPaintEventHandler(this.TableLayoutPanel1_CellPaint);
             // 
@@ -354,7 +354,7 @@ namespace ZenTimings
             this.textBoxMRDPDA.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxMRDPDA.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxMRDPDA.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxMRDPDA.Location = new System.Drawing.Point(212, 382);
+            this.textBoxMRDPDA.Location = new System.Drawing.Point(207, 382);
             this.textBoxMRDPDA.Name = "textBoxMRDPDA";
             this.textBoxMRDPDA.Size = new System.Drawing.Size(52, 18);
             this.textBoxMRDPDA.TabIndex = 81;
@@ -381,7 +381,7 @@ namespace ZenTimings
             this.labelMRDPDA.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelMRDPDA.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelMRDPDA.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelMRDPDA.Location = new System.Drawing.Point(141, 382);
+            this.labelMRDPDA.Location = new System.Drawing.Point(136, 382);
             this.labelMRDPDA.Name = "labelMRDPDA";
             this.labelMRDPDA.Size = new System.Drawing.Size(65, 18);
             this.labelMRDPDA.TabIndex = 78;
@@ -409,7 +409,7 @@ namespace ZenTimings
             this.label38.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label38.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label38.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.label38.Location = new System.Drawing.Point(141, 364);
+            this.label38.Location = new System.Drawing.Point(136, 364);
             this.label38.Name = "label38";
             this.label38.Size = new System.Drawing.Size(65, 18);
             this.label38.TabIndex = 85;
@@ -437,7 +437,7 @@ namespace ZenTimings
             this.label36.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label36.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label36.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.label36.Location = new System.Drawing.Point(141, 328);
+            this.label36.Location = new System.Drawing.Point(136, 328);
             this.label36.Name = "label36";
             this.label36.Size = new System.Drawing.Size(65, 18);
             this.label36.TabIndex = 83;
@@ -451,7 +451,7 @@ namespace ZenTimings
             this.label35.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label35.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label35.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.label35.Location = new System.Drawing.Point(141, 310);
+            this.label35.Location = new System.Drawing.Point(136, 310);
             this.label35.Name = "label35";
             this.label35.Size = new System.Drawing.Size(65, 18);
             this.label35.TabIndex = 82;
@@ -464,7 +464,7 @@ namespace ZenTimings
             this.textBoxMRD.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxMRD.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxMRD.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxMRD.Location = new System.Drawing.Point(212, 364);
+            this.textBoxMRD.Location = new System.Drawing.Point(207, 364);
             this.textBoxMRD.Name = "textBoxMRD";
             this.textBoxMRD.Size = new System.Drawing.Size(52, 18);
             this.textBoxMRD.TabIndex = 81;
@@ -490,7 +490,7 @@ namespace ZenTimings
             this.textBoxREFIns.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxREFIns.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxREFIns.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxREFIns.Location = new System.Drawing.Point(212, 328);
+            this.textBoxREFIns.Location = new System.Drawing.Point(207, 328);
             this.textBoxREFIns.Name = "textBoxREFIns";
             this.textBoxREFIns.Size = new System.Drawing.Size(52, 18);
             this.textBoxREFIns.TabIndex = 79;
@@ -503,7 +503,7 @@ namespace ZenTimings
             this.textBoxREFI.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxREFI.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxREFI.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxREFI.Location = new System.Drawing.Point(212, 310);
+            this.textBoxREFI.Location = new System.Drawing.Point(207, 310);
             this.textBoxREFI.Name = "textBoxREFI";
             this.textBoxREFI.Size = new System.Drawing.Size(52, 18);
             this.textBoxREFI.TabIndex = 78;
@@ -516,7 +516,7 @@ namespace ZenTimings
             this.textBoxSTAG.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxSTAG.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxSTAG.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxSTAG.Location = new System.Drawing.Point(212, 346);
+            this.textBoxSTAG.Location = new System.Drawing.Point(207, 346);
             this.textBoxSTAG.Name = "textBoxSTAG";
             this.textBoxSTAG.Size = new System.Drawing.Size(52, 18);
             this.textBoxSTAG.TabIndex = 77;
@@ -530,7 +530,7 @@ namespace ZenTimings
             this.label34.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label34.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label34.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.label34.Location = new System.Drawing.Point(141, 346);
+            this.label34.Location = new System.Drawing.Point(136, 346);
             this.label34.Name = "label34";
             this.label34.Size = new System.Drawing.Size(65, 18);
             this.label34.TabIndex = 76;
@@ -921,7 +921,7 @@ namespace ZenTimings
             this.textBoxCWL.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxCWL.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCWL.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxCWL.Location = new System.Drawing.Point(212, 112);
+            this.textBoxCWL.Location = new System.Drawing.Point(207, 112);
             this.textBoxCWL.Name = "textBoxCWL";
             this.textBoxCWL.Size = new System.Drawing.Size(52, 18);
             this.textBoxCWL.TabIndex = 36;
@@ -934,7 +934,7 @@ namespace ZenTimings
             this.textBoxRTP.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxRTP.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRTP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxRTP.Location = new System.Drawing.Point(212, 130);
+            this.textBoxRTP.Location = new System.Drawing.Point(207, 130);
             this.textBoxRTP.Name = "textBoxRTP";
             this.textBoxRTP.Size = new System.Drawing.Size(52, 18);
             this.textBoxRTP.TabIndex = 37;
@@ -947,7 +947,7 @@ namespace ZenTimings
             this.textBoxRDWR.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxRDWR.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRDWR.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxRDWR.Location = new System.Drawing.Point(212, 148);
+            this.textBoxRDWR.Location = new System.Drawing.Point(207, 148);
             this.textBoxRDWR.Name = "textBoxRDWR";
             this.textBoxRDWR.Size = new System.Drawing.Size(52, 18);
             this.textBoxRDWR.TabIndex = 38;
@@ -960,7 +960,7 @@ namespace ZenTimings
             this.textBoxWRRD.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxWRRD.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxWRRD.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxWRRD.Location = new System.Drawing.Point(212, 166);
+            this.textBoxWRRD.Location = new System.Drawing.Point(207, 166);
             this.textBoxWRRD.Name = "textBoxWRRD";
             this.textBoxWRRD.Size = new System.Drawing.Size(52, 18);
             this.textBoxWRRD.TabIndex = 39;
@@ -973,7 +973,7 @@ namespace ZenTimings
             this.textBoxRDRDSC.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxRDRDSC.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRDRDSC.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxRDRDSC.Location = new System.Drawing.Point(212, 184);
+            this.textBoxRDRDSC.Location = new System.Drawing.Point(207, 184);
             this.textBoxRDRDSC.Name = "textBoxRDRDSC";
             this.textBoxRDRDSC.Size = new System.Drawing.Size(52, 18);
             this.textBoxRDRDSC.TabIndex = 40;
@@ -986,7 +986,7 @@ namespace ZenTimings
             this.textBoxRDRDSD.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxRDRDSD.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRDRDSD.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxRDRDSD.Location = new System.Drawing.Point(212, 202);
+            this.textBoxRDRDSD.Location = new System.Drawing.Point(207, 202);
             this.textBoxRDRDSD.Name = "textBoxRDRDSD";
             this.textBoxRDRDSD.Size = new System.Drawing.Size(52, 18);
             this.textBoxRDRDSD.TabIndex = 41;
@@ -999,7 +999,7 @@ namespace ZenTimings
             this.textBoxRDRDDD.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxRDRDDD.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRDRDDD.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxRDRDDD.Location = new System.Drawing.Point(212, 220);
+            this.textBoxRDRDDD.Location = new System.Drawing.Point(207, 220);
             this.textBoxRDRDDD.Name = "textBoxRDRDDD";
             this.textBoxRDRDDD.Size = new System.Drawing.Size(52, 18);
             this.textBoxRDRDDD.TabIndex = 50;
@@ -1012,7 +1012,7 @@ namespace ZenTimings
             this.textBoxWRWRSC.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxWRWRSC.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxWRWRSC.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxWRWRSC.Location = new System.Drawing.Point(212, 238);
+            this.textBoxWRWRSC.Location = new System.Drawing.Point(207, 238);
             this.textBoxWRWRSC.Name = "textBoxWRWRSC";
             this.textBoxWRWRSC.Size = new System.Drawing.Size(52, 18);
             this.textBoxWRWRSC.TabIndex = 51;
@@ -1025,7 +1025,7 @@ namespace ZenTimings
             this.textBoxWRWRSD.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxWRWRSD.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxWRWRSD.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxWRWRSD.Location = new System.Drawing.Point(212, 256);
+            this.textBoxWRWRSD.Location = new System.Drawing.Point(207, 256);
             this.textBoxWRWRSD.Name = "textBoxWRWRSD";
             this.textBoxWRWRSD.Size = new System.Drawing.Size(52, 18);
             this.textBoxWRWRSD.TabIndex = 52;
@@ -1038,7 +1038,7 @@ namespace ZenTimings
             this.textBoxWRWRDD.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxWRWRDD.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxWRWRDD.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxWRWRDD.Location = new System.Drawing.Point(212, 274);
+            this.textBoxWRWRDD.Location = new System.Drawing.Point(207, 274);
             this.textBoxWRWRDD.Name = "textBoxWRWRDD";
             this.textBoxWRWRDD.Size = new System.Drawing.Size(52, 18);
             this.textBoxWRWRDD.TabIndex = 53;
@@ -1051,7 +1051,7 @@ namespace ZenTimings
             this.textBoxCKE.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxCKE.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCKE.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxCKE.Location = new System.Drawing.Point(212, 292);
+            this.textBoxCKE.Location = new System.Drawing.Point(207, 292);
             this.textBoxCKE.Name = "textBoxCKE";
             this.textBoxCKE.Size = new System.Drawing.Size(52, 18);
             this.textBoxCKE.TabIndex = 54;
@@ -1065,7 +1065,7 @@ namespace ZenTimings
             this.label16.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label16.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label16.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.label16.Location = new System.Drawing.Point(141, 112);
+            this.label16.Location = new System.Drawing.Point(136, 112);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(65, 18);
             this.label16.TabIndex = 25;
@@ -1079,7 +1079,7 @@ namespace ZenTimings
             this.label17.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label17.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label17.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.label17.Location = new System.Drawing.Point(141, 130);
+            this.label17.Location = new System.Drawing.Point(136, 130);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(65, 18);
             this.label17.TabIndex = 26;
@@ -1093,7 +1093,7 @@ namespace ZenTimings
             this.label18.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label18.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label18.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.label18.Location = new System.Drawing.Point(141, 148);
+            this.label18.Location = new System.Drawing.Point(136, 148);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(65, 18);
             this.label18.TabIndex = 27;
@@ -1107,7 +1107,7 @@ namespace ZenTimings
             this.labelWRRD.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelWRRD.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelWRRD.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelWRRD.Location = new System.Drawing.Point(141, 166);
+            this.labelWRRD.Location = new System.Drawing.Point(136, 166);
             this.labelWRRD.Name = "labelWRRD";
             this.labelWRRD.Size = new System.Drawing.Size(65, 18);
             this.labelWRRD.TabIndex = 28;
@@ -1121,7 +1121,7 @@ namespace ZenTimings
             this.label20.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label20.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label20.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.label20.Location = new System.Drawing.Point(141, 184);
+            this.label20.Location = new System.Drawing.Point(136, 184);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(65, 18);
             this.label20.TabIndex = 29;
@@ -1135,7 +1135,7 @@ namespace ZenTimings
             this.label21.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label21.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label21.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.label21.Location = new System.Drawing.Point(141, 202);
+            this.label21.Location = new System.Drawing.Point(136, 202);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(65, 18);
             this.label21.TabIndex = 30;
@@ -1149,7 +1149,7 @@ namespace ZenTimings
             this.label19.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label19.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label19.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.label19.Location = new System.Drawing.Point(141, 220);
+            this.label19.Location = new System.Drawing.Point(136, 220);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(65, 18);
             this.label19.TabIndex = 42;
@@ -1163,7 +1163,7 @@ namespace ZenTimings
             this.label22.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label22.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label22.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.label22.Location = new System.Drawing.Point(141, 238);
+            this.label22.Location = new System.Drawing.Point(136, 238);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(65, 18);
             this.label22.TabIndex = 43;
@@ -1177,7 +1177,7 @@ namespace ZenTimings
             this.label23.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label23.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label23.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.label23.Location = new System.Drawing.Point(141, 256);
+            this.label23.Location = new System.Drawing.Point(136, 256);
             this.label23.Name = "label23";
             this.label23.Size = new System.Drawing.Size(65, 18);
             this.label23.TabIndex = 44;
@@ -1191,7 +1191,7 @@ namespace ZenTimings
             this.label24.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label24.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label24.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.label24.Location = new System.Drawing.Point(141, 274);
+            this.label24.Location = new System.Drawing.Point(136, 274);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(65, 18);
             this.label24.TabIndex = 45;
@@ -1205,7 +1205,7 @@ namespace ZenTimings
             this.label25.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label25.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label25.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.label25.Location = new System.Drawing.Point(141, 292);
+            this.label25.Location = new System.Drawing.Point(136, 292);
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(65, 18);
             this.label25.TabIndex = 46;
@@ -1218,7 +1218,7 @@ namespace ZenTimings
             this.textBoxWRWRSCL.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxWRWRSCL.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxWRWRSCL.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxWRWRSCL.Location = new System.Drawing.Point(212, 94);
+            this.textBoxWRWRSCL.Location = new System.Drawing.Point(207, 94);
             this.textBoxWRWRSCL.Name = "textBoxWRWRSCL";
             this.textBoxWRWRSCL.Size = new System.Drawing.Size(52, 18);
             this.textBoxWRWRSCL.TabIndex = 34;
@@ -1232,7 +1232,7 @@ namespace ZenTimings
             this.label14.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label14.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label14.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.label14.Location = new System.Drawing.Point(141, 94);
+            this.label14.Location = new System.Drawing.Point(136, 94);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(65, 18);
             this.label14.TabIndex = 23;
@@ -1246,7 +1246,7 @@ namespace ZenTimings
             this.label13.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label13.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label13.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.label13.Location = new System.Drawing.Point(141, 76);
+            this.label13.Location = new System.Drawing.Point(136, 76);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(65, 18);
             this.label13.TabIndex = 22;
@@ -1259,7 +1259,7 @@ namespace ZenTimings
             this.textBoxRDRDSCL.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxRDRDSCL.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRDRDSCL.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxRDRDSCL.Location = new System.Drawing.Point(212, 76);
+            this.textBoxRDRDSCL.Location = new System.Drawing.Point(207, 76);
             this.textBoxRDRDSCL.Name = "textBoxRDRDSCL";
             this.textBoxRDRDSCL.Size = new System.Drawing.Size(52, 18);
             this.textBoxRDRDSCL.TabIndex = 33;
@@ -1313,7 +1313,7 @@ namespace ZenTimings
             this.textBoxBGSAlt.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxBGSAlt.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxBGSAlt.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxBGSAlt.Location = new System.Drawing.Point(212, 22);
+            this.textBoxBGSAlt.Location = new System.Drawing.Point(207, 22);
             this.textBoxBGSAlt.Name = "textBoxBGSAlt";
             this.textBoxBGSAlt.Size = new System.Drawing.Size(52, 18);
             this.textBoxBGSAlt.TabIndex = 61;
@@ -1326,7 +1326,7 @@ namespace ZenTimings
             this.textBoxCmd2T.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxCmd2T.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCmd2T.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxCmd2T.Location = new System.Drawing.Point(212, 40);
+            this.textBoxCmd2T.Location = new System.Drawing.Point(207, 40);
             this.textBoxCmd2T.Name = "textBoxCmd2T";
             this.textBoxCmd2T.Size = new System.Drawing.Size(52, 18);
             this.textBoxCmd2T.TabIndex = 62;
@@ -1340,7 +1340,7 @@ namespace ZenTimings
             this.labelBGSAlt.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelBGSAlt.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelBGSAlt.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelBGSAlt.Location = new System.Drawing.Point(141, 22);
+            this.labelBGSAlt.Location = new System.Drawing.Point(136, 22);
             this.labelBGSAlt.Name = "labelBGSAlt";
             this.labelBGSAlt.Size = new System.Drawing.Size(65, 18);
             this.labelBGSAlt.TabIndex = 56;
@@ -1354,7 +1354,7 @@ namespace ZenTimings
             this.labelCmd2T.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelCmd2T.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelCmd2T.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelCmd2T.Location = new System.Drawing.Point(141, 40);
+            this.labelCmd2T.Location = new System.Drawing.Point(136, 40);
             this.labelCmd2T.Name = "labelCmd2T";
             this.labelCmd2T.Size = new System.Drawing.Size(65, 18);
             this.labelCmd2T.TabIndex = 58;
@@ -1396,7 +1396,7 @@ namespace ZenTimings
             this.textBoxCapacity.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxCapacity.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCapacity.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxCapacity.Location = new System.Drawing.Point(212, 4);
+            this.textBoxCapacity.Location = new System.Drawing.Point(207, 4);
             this.textBoxCapacity.Name = "textBoxCapacity";
             this.textBoxCapacity.Size = new System.Drawing.Size(52, 18);
             this.textBoxCapacity.TabIndex = 65;
@@ -1410,7 +1410,7 @@ namespace ZenTimings
             this.label29.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label29.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label29.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.label29.Location = new System.Drawing.Point(141, 4);
+            this.label29.Location = new System.Drawing.Point(136, 4);
             this.label29.Name = "label29";
             this.label29.Size = new System.Drawing.Size(65, 18);
             this.label29.TabIndex = 66;
@@ -1424,7 +1424,7 @@ namespace ZenTimings
             this.labelUCLK.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelUCLK.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelUCLK.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelUCLK.Location = new System.Drawing.Point(280, 40);
+            this.labelUCLK.Location = new System.Drawing.Point(270, 40);
             this.labelUCLK.Name = "labelUCLK";
             this.labelUCLK.Size = new System.Drawing.Size(86, 18);
             this.labelUCLK.TabIndex = 109;
@@ -1438,7 +1438,7 @@ namespace ZenTimings
             this.labelFCLK.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelFCLK.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelFCLK.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelFCLK.Location = new System.Drawing.Point(280, 22);
+            this.labelFCLK.Location = new System.Drawing.Point(270, 22);
             this.labelFCLK.Name = "labelFCLK";
             this.labelFCLK.Size = new System.Drawing.Size(86, 18);
             this.labelFCLK.TabIndex = 108;
@@ -1451,7 +1451,7 @@ namespace ZenTimings
             this.textBoxUCLK.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxUCLK.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxUCLK.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxUCLK.Location = new System.Drawing.Point(372, 40);
+            this.textBoxUCLK.Location = new System.Drawing.Point(362, 40);
             this.textBoxUCLK.Name = "textBoxUCLK";
             this.textBoxUCLK.Size = new System.Drawing.Size(52, 18);
             this.textBoxUCLK.TabIndex = 108;
@@ -1464,7 +1464,7 @@ namespace ZenTimings
             this.textBoxFCLK.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxFCLK.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxFCLK.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxFCLK.Location = new System.Drawing.Point(372, 22);
+            this.textBoxFCLK.Location = new System.Drawing.Point(362, 22);
             this.textBoxFCLK.Name = "textBoxFCLK";
             this.textBoxFCLK.Size = new System.Drawing.Size(52, 18);
             this.textBoxFCLK.TabIndex = 114;
@@ -1478,7 +1478,7 @@ namespace ZenTimings
             this.labelMCLK.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelMCLK.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelMCLK.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelMCLK.Location = new System.Drawing.Point(280, 4);
+            this.labelMCLK.Location = new System.Drawing.Point(270, 4);
             this.labelMCLK.Name = "labelMCLK";
             this.labelMCLK.Size = new System.Drawing.Size(86, 18);
             this.labelMCLK.TabIndex = 110;
@@ -1491,7 +1491,7 @@ namespace ZenTimings
             this.textBoxMCLK.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxMCLK.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxMCLK.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxMCLK.Location = new System.Drawing.Point(372, 4);
+            this.textBoxMCLK.Location = new System.Drawing.Point(362, 4);
             this.textBoxMCLK.Name = "textBoxMCLK";
             this.textBoxMCLK.Size = new System.Drawing.Size(52, 18);
             this.textBoxMCLK.TabIndex = 115;
@@ -1505,7 +1505,7 @@ namespace ZenTimings
             this.labelVDDCR_SOC.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelVDDCR_SOC.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelVDDCR_SOC.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelVDDCR_SOC.Location = new System.Drawing.Point(280, 94);
+            this.labelVDDCR_SOC.Location = new System.Drawing.Point(270, 94);
             this.labelVDDCR_SOC.Name = "labelVDDCR_SOC";
             this.labelVDDCR_SOC.Size = new System.Drawing.Size(86, 18);
             this.labelVDDCR_SOC.TabIndex = 111;
@@ -1519,7 +1519,7 @@ namespace ZenTimings
             this.labelCLDO_VDDP.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelCLDO_VDDP.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelCLDO_VDDP.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelCLDO_VDDP.Location = new System.Drawing.Point(280, 112);
+            this.labelCLDO_VDDP.Location = new System.Drawing.Point(270, 112);
             this.labelCLDO_VDDP.Name = "labelCLDO_VDDP";
             this.labelCLDO_VDDP.Size = new System.Drawing.Size(86, 18);
             this.labelCLDO_VDDP.TabIndex = 112;
@@ -1533,7 +1533,7 @@ namespace ZenTimings
             this.labelCLDO_VDDG.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelCLDO_VDDG.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelCLDO_VDDG.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelCLDO_VDDG.Location = new System.Drawing.Point(280, 130);
+            this.labelCLDO_VDDG.Location = new System.Drawing.Point(270, 130);
             this.labelCLDO_VDDG.Name = "labelCLDO_VDDG";
             this.labelCLDO_VDDG.Size = new System.Drawing.Size(86, 18);
             this.labelCLDO_VDDG.TabIndex = 113;
@@ -1546,7 +1546,7 @@ namespace ZenTimings
             this.textBoxCkeSetup.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxCkeSetup.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCkeSetup.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxCkeSetup.Location = new System.Drawing.Point(372, 382);
+            this.textBoxCkeSetup.Location = new System.Drawing.Point(362, 382);
             this.textBoxCkeSetup.Name = "textBoxCkeSetup";
             this.textBoxCkeSetup.Size = new System.Drawing.Size(52, 18);
             this.textBoxCkeSetup.TabIndex = 107;
@@ -1559,7 +1559,7 @@ namespace ZenTimings
             this.textBoxAddrCmdSetup.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxAddrCmdSetup.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxAddrCmdSetup.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxAddrCmdSetup.Location = new System.Drawing.Point(372, 346);
+            this.textBoxAddrCmdSetup.Location = new System.Drawing.Point(362, 346);
             this.textBoxAddrCmdSetup.Name = "textBoxAddrCmdSetup";
             this.textBoxAddrCmdSetup.Size = new System.Drawing.Size(52, 18);
             this.textBoxAddrCmdSetup.TabIndex = 106;
@@ -1572,7 +1572,7 @@ namespace ZenTimings
             this.textBoxCsOdtSetup.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxCsOdtSetup.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCsOdtSetup.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxCsOdtSetup.Location = new System.Drawing.Point(372, 364);
+            this.textBoxCsOdtSetup.Location = new System.Drawing.Point(362, 364);
             this.textBoxCsOdtSetup.Name = "textBoxCsOdtSetup";
             this.textBoxCsOdtSetup.Size = new System.Drawing.Size(52, 18);
             this.textBoxCsOdtSetup.TabIndex = 105;
@@ -1585,7 +1585,7 @@ namespace ZenTimings
             this.textBoxCkeDrvStren.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxCkeDrvStren.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCkeDrvStren.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxCkeDrvStren.Location = new System.Drawing.Point(372, 310);
+            this.textBoxCkeDrvStren.Location = new System.Drawing.Point(362, 310);
             this.textBoxCkeDrvStren.Name = "textBoxCkeDrvStren";
             this.textBoxCkeDrvStren.Size = new System.Drawing.Size(52, 18);
             this.textBoxCkeDrvStren.TabIndex = 104;
@@ -1598,7 +1598,7 @@ namespace ZenTimings
             this.textBoxAddrCmdDrvStren.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxAddrCmdDrvStren.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxAddrCmdDrvStren.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxAddrCmdDrvStren.Location = new System.Drawing.Point(372, 274);
+            this.textBoxAddrCmdDrvStren.Location = new System.Drawing.Point(362, 274);
             this.textBoxAddrCmdDrvStren.Name = "textBoxAddrCmdDrvStren";
             this.textBoxAddrCmdDrvStren.Size = new System.Drawing.Size(52, 18);
             this.textBoxAddrCmdDrvStren.TabIndex = 103;
@@ -1611,7 +1611,7 @@ namespace ZenTimings
             this.textBoxCsOdtCmdDrvStren.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxCsOdtCmdDrvStren.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCsOdtCmdDrvStren.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxCsOdtCmdDrvStren.Location = new System.Drawing.Point(372, 292);
+            this.textBoxCsOdtCmdDrvStren.Location = new System.Drawing.Point(362, 292);
             this.textBoxCsOdtCmdDrvStren.Name = "textBoxCsOdtCmdDrvStren";
             this.textBoxCsOdtCmdDrvStren.Size = new System.Drawing.Size(52, 18);
             this.textBoxCsOdtCmdDrvStren.TabIndex = 102;
@@ -1624,7 +1624,7 @@ namespace ZenTimings
             this.textBoxClkDrvStren.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxClkDrvStren.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxClkDrvStren.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxClkDrvStren.Location = new System.Drawing.Point(372, 256);
+            this.textBoxClkDrvStren.Location = new System.Drawing.Point(362, 256);
             this.textBoxClkDrvStren.Name = "textBoxClkDrvStren";
             this.textBoxClkDrvStren.Size = new System.Drawing.Size(52, 18);
             this.textBoxClkDrvStren.TabIndex = 101;
@@ -1637,7 +1637,7 @@ namespace ZenTimings
             this.textBoxRttPark.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxRttPark.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRttPark.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxRttPark.Location = new System.Drawing.Point(372, 220);
+            this.textBoxRttPark.Location = new System.Drawing.Point(362, 220);
             this.textBoxRttPark.Name = "textBoxRttPark";
             this.textBoxRttPark.Size = new System.Drawing.Size(52, 18);
             this.textBoxRttPark.TabIndex = 100;
@@ -1650,7 +1650,7 @@ namespace ZenTimings
             this.textBoxRttWr.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxRttWr.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRttWr.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxRttWr.Location = new System.Drawing.Point(372, 202);
+            this.textBoxRttWr.Location = new System.Drawing.Point(362, 202);
             this.textBoxRttWr.Name = "textBoxRttWr";
             this.textBoxRttWr.Size = new System.Drawing.Size(52, 18);
             this.textBoxRttWr.TabIndex = 99;
@@ -1663,7 +1663,7 @@ namespace ZenTimings
             this.textBoxRttNom.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxRttNom.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxRttNom.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxRttNom.Location = new System.Drawing.Point(372, 184);
+            this.textBoxRttNom.Location = new System.Drawing.Point(362, 184);
             this.textBoxRttNom.Name = "textBoxRttNom";
             this.textBoxRttNom.Size = new System.Drawing.Size(52, 18);
             this.textBoxRttNom.TabIndex = 98;
@@ -1676,7 +1676,7 @@ namespace ZenTimings
             this.textBoxProcODT.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxProcODT.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxProcODT.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxProcODT.Location = new System.Drawing.Point(372, 166);
+            this.textBoxProcODT.Location = new System.Drawing.Point(362, 166);
             this.textBoxProcODT.Name = "textBoxProcODT";
             this.textBoxProcODT.Size = new System.Drawing.Size(52, 18);
             this.textBoxProcODT.TabIndex = 97;
@@ -1690,7 +1690,7 @@ namespace ZenTimings
             this.labelCkeSetup.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelCkeSetup.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelCkeSetup.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelCkeSetup.Location = new System.Drawing.Point(280, 382);
+            this.labelCkeSetup.Location = new System.Drawing.Point(270, 382);
             this.labelCkeSetup.Name = "labelCkeSetup";
             this.labelCkeSetup.Size = new System.Drawing.Size(86, 18);
             this.labelCkeSetup.TabIndex = 93;
@@ -1704,7 +1704,7 @@ namespace ZenTimings
             this.labelAddrCmdSetup.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelAddrCmdSetup.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelAddrCmdSetup.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelAddrCmdSetup.Location = new System.Drawing.Point(280, 346);
+            this.labelAddrCmdSetup.Location = new System.Drawing.Point(270, 346);
             this.labelAddrCmdSetup.Name = "labelAddrCmdSetup";
             this.labelAddrCmdSetup.Size = new System.Drawing.Size(86, 18);
             this.labelAddrCmdSetup.TabIndex = 91;
@@ -1718,7 +1718,7 @@ namespace ZenTimings
             this.labelCsOdtSetup.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelCsOdtSetup.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelCsOdtSetup.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelCsOdtSetup.Location = new System.Drawing.Point(280, 364);
+            this.labelCsOdtSetup.Location = new System.Drawing.Point(270, 364);
             this.labelCsOdtSetup.Name = "labelCsOdtSetup";
             this.labelCsOdtSetup.Size = new System.Drawing.Size(86, 18);
             this.labelCsOdtSetup.TabIndex = 92;
@@ -1732,7 +1732,7 @@ namespace ZenTimings
             this.labelCkeDrvStren.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelCkeDrvStren.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelCkeDrvStren.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelCkeDrvStren.Location = new System.Drawing.Point(280, 310);
+            this.labelCkeDrvStren.Location = new System.Drawing.Point(270, 310);
             this.labelCkeDrvStren.Name = "labelCkeDrvStren";
             this.labelCkeDrvStren.Size = new System.Drawing.Size(86, 18);
             this.labelCkeDrvStren.TabIndex = 90;
@@ -1746,7 +1746,7 @@ namespace ZenTimings
             this.labelAddrCmdDrvStren.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelAddrCmdDrvStren.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelAddrCmdDrvStren.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelAddrCmdDrvStren.Location = new System.Drawing.Point(280, 274);
+            this.labelAddrCmdDrvStren.Location = new System.Drawing.Point(270, 274);
             this.labelAddrCmdDrvStren.Name = "labelAddrCmdDrvStren";
             this.labelAddrCmdDrvStren.Size = new System.Drawing.Size(86, 18);
             this.labelAddrCmdDrvStren.TabIndex = 88;
@@ -1760,7 +1760,7 @@ namespace ZenTimings
             this.labelCsOdtCmdDrvStren.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelCsOdtCmdDrvStren.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelCsOdtCmdDrvStren.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelCsOdtCmdDrvStren.Location = new System.Drawing.Point(280, 292);
+            this.labelCsOdtCmdDrvStren.Location = new System.Drawing.Point(270, 292);
             this.labelCsOdtCmdDrvStren.Name = "labelCsOdtCmdDrvStren";
             this.labelCsOdtCmdDrvStren.Size = new System.Drawing.Size(86, 18);
             this.labelCsOdtCmdDrvStren.TabIndex = 89;
@@ -1774,7 +1774,7 @@ namespace ZenTimings
             this.labelClkDrvStren.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelClkDrvStren.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelClkDrvStren.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelClkDrvStren.Location = new System.Drawing.Point(280, 256);
+            this.labelClkDrvStren.Location = new System.Drawing.Point(270, 256);
             this.labelClkDrvStren.Name = "labelClkDrvStren";
             this.labelClkDrvStren.Size = new System.Drawing.Size(86, 18);
             this.labelClkDrvStren.TabIndex = 87;
@@ -1788,7 +1788,7 @@ namespace ZenTimings
             this.labelRttPark.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelRttPark.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelRttPark.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelRttPark.Location = new System.Drawing.Point(280, 220);
+            this.labelRttPark.Location = new System.Drawing.Point(270, 220);
             this.labelRttPark.Name = "labelRttPark";
             this.labelRttPark.Size = new System.Drawing.Size(86, 18);
             this.labelRttPark.TabIndex = 96;
@@ -1802,7 +1802,7 @@ namespace ZenTimings
             this.labelRttWr.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelRttWr.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelRttWr.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelRttWr.Location = new System.Drawing.Point(280, 202);
+            this.labelRttWr.Location = new System.Drawing.Point(270, 202);
             this.labelRttWr.Name = "labelRttWr";
             this.labelRttWr.Size = new System.Drawing.Size(86, 18);
             this.labelRttWr.TabIndex = 95;
@@ -1816,7 +1816,7 @@ namespace ZenTimings
             this.labelRttNom.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelRttNom.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelRttNom.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelRttNom.Location = new System.Drawing.Point(280, 184);
+            this.labelRttNom.Location = new System.Drawing.Point(270, 184);
             this.labelRttNom.Name = "labelRttNom";
             this.labelRttNom.Size = new System.Drawing.Size(86, 18);
             this.labelRttNom.TabIndex = 94;
@@ -1830,7 +1830,7 @@ namespace ZenTimings
             this.labelProcODT.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelProcODT.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelProcODT.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelProcODT.Location = new System.Drawing.Point(280, 166);
+            this.labelProcODT.Location = new System.Drawing.Point(270, 166);
             this.labelProcODT.Name = "labelProcODT";
             this.labelProcODT.Size = new System.Drawing.Size(86, 18);
             this.labelProcODT.TabIndex = 86;
@@ -1843,7 +1843,7 @@ namespace ZenTimings
             this.textBoxVDDCR_SOC.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxVDDCR_SOC.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxVDDCR_SOC.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxVDDCR_SOC.Location = new System.Drawing.Point(372, 94);
+            this.textBoxVDDCR_SOC.Location = new System.Drawing.Point(362, 94);
             this.textBoxVDDCR_SOC.Name = "textBoxVDDCR_SOC";
             this.textBoxVDDCR_SOC.Size = new System.Drawing.Size(52, 18);
             this.textBoxVDDCR_SOC.TabIndex = 116;
@@ -1856,7 +1856,7 @@ namespace ZenTimings
             this.textBoxCLDO_VDDP.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxCLDO_VDDP.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCLDO_VDDP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxCLDO_VDDP.Location = new System.Drawing.Point(372, 112);
+            this.textBoxCLDO_VDDP.Location = new System.Drawing.Point(362, 112);
             this.textBoxCLDO_VDDP.Name = "textBoxCLDO_VDDP";
             this.textBoxCLDO_VDDP.Size = new System.Drawing.Size(52, 18);
             this.textBoxCLDO_VDDP.TabIndex = 117;
@@ -1869,7 +1869,7 @@ namespace ZenTimings
             this.textBoxCLDO_VDDG.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxCLDO_VDDG.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCLDO_VDDG.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxCLDO_VDDG.Location = new System.Drawing.Point(372, 130);
+            this.textBoxCLDO_VDDG.Location = new System.Drawing.Point(362, 130);
             this.textBoxCLDO_VDDG.Name = "textBoxCLDO_VDDG";
             this.textBoxCLDO_VDDG.Size = new System.Drawing.Size(52, 18);
             this.textBoxCLDO_VDDG.TabIndex = 118;
@@ -1882,7 +1882,7 @@ namespace ZenTimings
             this.textBoxVSOC_SVI2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxVSOC_SVI2.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxVSOC_SVI2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxVSOC_SVI2.Location = new System.Drawing.Point(372, 76);
+            this.textBoxVSOC_SVI2.Location = new System.Drawing.Point(362, 76);
             this.textBoxVSOC_SVI2.Name = "textBoxVSOC_SVI2";
             this.textBoxVSOC_SVI2.Size = new System.Drawing.Size(52, 18);
             this.textBoxVSOC_SVI2.TabIndex = 117;
@@ -1896,7 +1896,7 @@ namespace ZenTimings
             this.labelVSOC_SVI2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelVSOC_SVI2.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelVSOC_SVI2.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelVSOC_SVI2.Location = new System.Drawing.Point(280, 76);
+            this.labelVSOC_SVI2.Location = new System.Drawing.Point(270, 76);
             this.labelVSOC_SVI2.Name = "labelVSOC_SVI2";
             this.labelVSOC_SVI2.Size = new System.Drawing.Size(86, 18);
             this.labelVSOC_SVI2.TabIndex = 112;
@@ -1993,7 +1993,7 @@ namespace ZenTimings
             this.tableLayoutPanel2.Padding = new System.Windows.Forms.Padding(0, 4, 0, 4);
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(434, 35);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(424, 35);
             this.tableLayoutPanel2.TabIndex = 1;
             // 
             // comboBoxPartNumber
@@ -2026,7 +2026,7 @@ namespace ZenTimings
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 18F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 18F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(434, 48);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(424, 48);
             this.tableLayoutPanel3.TabIndex = 2;
             // 
             // labelCPU
@@ -2037,7 +2037,7 @@ namespace ZenTimings
             this.labelCPU.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelCPU.Location = new System.Drawing.Point(8, 4);
             this.labelCPU.Name = "labelCPU";
-            this.labelCPU.Size = new System.Drawing.Size(418, 18);
+            this.labelCPU.Size = new System.Drawing.Size(408, 18);
             this.labelCPU.TabIndex = 3;
             this.labelCPU.Text = "N/A";
             this.labelCPU.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -2050,7 +2050,7 @@ namespace ZenTimings
             this.labelMB.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelMB.Location = new System.Drawing.Point(8, 22);
             this.labelMB.Name = "labelMB";
-            this.labelMB.Size = new System.Drawing.Size(418, 18);
+            this.labelMB.Size = new System.Drawing.Size(408, 18);
             this.labelMB.TabIndex = 4;
             this.labelMB.Text = "N/A";
             this.labelMB.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -2061,7 +2061,7 @@ namespace ZenTimings
             this.dividerTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.dividerTop.Location = new System.Drawing.Point(0, 73);
             this.dividerTop.Name = "dividerTop";
-            this.dividerTop.Size = new System.Drawing.Size(434, 1);
+            this.dividerTop.Size = new System.Drawing.Size(424, 1);
             this.dividerTop.TabIndex = 3;
             // 
             // dividerBottom
@@ -2070,7 +2070,7 @@ namespace ZenTimings
             this.dividerBottom.Dock = System.Windows.Forms.DockStyle.Top;
             this.dividerBottom.Location = new System.Drawing.Point(0, 478);
             this.dividerBottom.Name = "dividerBottom";
-            this.dividerBottom.Size = new System.Drawing.Size(434, 1);
+            this.dividerBottom.Size = new System.Drawing.Size(424, 1);
             this.dividerBottom.TabIndex = 4;
             // 
             // menuStrip1
@@ -2084,7 +2084,7 @@ namespace ZenTimings
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(434, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(424, 24);
             this.menuStrip1.TabIndex = 5;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -2147,7 +2147,7 @@ namespace ZenTimings
             this.dividerTopMenu.Dock = System.Windows.Forms.DockStyle.Top;
             this.dividerTopMenu.Location = new System.Drawing.Point(0, 24);
             this.dividerTopMenu.Name = "dividerTopMenu";
-            this.dividerTopMenu.Size = new System.Drawing.Size(434, 1);
+            this.dividerTopMenu.Size = new System.Drawing.Size(424, 1);
             this.dividerTopMenu.TabIndex = 4;
             // 
             // buttonScreenshot
@@ -2157,7 +2157,7 @@ namespace ZenTimings
             this.buttonScreenshot.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.buttonScreenshot.FlatAppearance.BorderSize = 0;
             this.buttonScreenshot.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonScreenshot.Location = new System.Drawing.Point(404, 4);
+            this.buttonScreenshot.Location = new System.Drawing.Point(397, 4);
             this.buttonScreenshot.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
             this.buttonScreenshot.Name = "buttonScreenshot";
             this.buttonScreenshot.Size = new System.Drawing.Size(22, 18);
@@ -2171,7 +2171,7 @@ namespace ZenTimings
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(434, 514);
+            this.ClientSize = new System.Drawing.Size(424, 514);
             this.Controls.Add(this.buttonScreenshot);
             this.Controls.Add(this.tableLayoutPanel2);
             this.Controls.Add(this.dividerBottom);
