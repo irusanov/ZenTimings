@@ -125,8 +125,6 @@ namespace ZenTimings
 
         private void BindControls()
         {
-            Binding b;
-
             // First column
             textBoxFreq.DataBindings.Add("Text", MEMCFG, "Frequency");
             textBoxBGS.DataBindings.Add("Text", MEMCFG, "BGS");
@@ -173,9 +171,13 @@ namespace ZenTimings
             textBoxSTAG.DataBindings.Add("Text", MEMCFG, "STAG");
             textBoxMRD.DataBindings.Add("Text", MEMCFG, "MRD");
             textBoxMRDPDA.DataBindings.Add("Text", MEMCFG, "MRDPDA");
+        }
 
-            if (!settings.CompactMode)
+        private void BindAdvancedControls() 
+        {
+            if (settings.AdvancedMode)
             {
+                Binding b;
                 // Third column
                 b = new Binding("Text", PowerTable, "MCLK");
                 b.Format += new ConvertEventHandler(FloatToFrequencyString);
@@ -374,12 +376,11 @@ namespace ZenTimings
                 //case 0x71: // Zen2 Ryzen
                 case SMU.CPUType.Picasso:
                 case SMU.CPUType.Matisse:
-                //case SMU.CPUType.Renoir:
                     sviCoreaddress = F17H_M70H_SVI_TEL_PLANE0;
                     sviSocAddress = F17H_M70H_SVI_TEL_PLANE1;
                     break;
 
-                // Temprorary skip Renoir. SVI2 PCI address range is empty.
+                // Renoir
                 case SMU.CPUType.Renoir:
                     sviCoreaddress = F17H_M60H_SVI_TEL_PLANE0;
                     sviSocAddress = F17H_M60H_SVI_TEL_PLANE1;
@@ -647,8 +648,7 @@ namespace ZenTimings
         {
             try
             {
-                PowerTable = new PowerTable(OPS.Smu.SMU_TYPE);
-                BMC = new BiosMemController();
+                
 #if BETA
                 MessageBox.Show("This is a BETA version of the application. Some functions might be working incorrectly.\n\n" +
                     "Please report if something is not working as expected.");
@@ -662,12 +662,16 @@ namespace ZenTimings
                 ReadMemoryModulesInfo();
                 ReadTimings();
 
-                if (settings.CompactMode)
+                if (!settings.AdvancedMode)
                 {
                     SwitchToCompactMode();
                 } 
                 else 
                 {
+                    PowerTable = new PowerTable(OPS.Smu.SMU_TYPE);
+                    BMC = new BiosMemController();
+
+                    BindAdvancedControls();
                     ReadMemoryConfig();
                     ReadSVI();
 
@@ -724,7 +728,7 @@ namespace ZenTimings
 
         private void WaitForPowerTable_Complete(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (settings.AutoRefresh)
+            if (settings.AutoRefresh && settings.AdvancedMode)
                 PowerCfgTimer.Interval = settings.AutoRefreshInterval;
             else
                 PowerCfgTimer.Stop();
@@ -767,7 +771,7 @@ namespace ZenTimings
         /// <param name="e"></param>
         private void MainForm_Load(object sender, EventArgs e)
         {
-            Text = $"{Application.ProductName} {Application.ProductVersion.Substring(0, Application.ProductVersion.LastIndexOf('.'))}";
+            Text = $"{Application.ProductName} {Application.ProductVersion.Substring(0, Application.ProductVersion.LastIndexOf('.'))} L";
 #if BETA
             Text += " beta 4";
 #endif

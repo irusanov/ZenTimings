@@ -13,17 +13,18 @@ namespace ZenTimings
                 settings = Settings.Default;
                 AutoRefresh = settings.AutoRefresh;
                 AutoRefreshInterval = settings.AutoRefreshInterval;
-                CompactMode = settings.CompactMode;
+                AdvancedMode = settings.AdvancedMode;
             }
             catch
             {
                 settings = new Settings();
                 AutoRefresh = true;
                 AutoRefreshInterval = 2000;
-                CompactMode = false;
+                AdvancedMode = false;
                 settings.AutoRefresh = AutoRefresh;
                 settings.AutoRefreshInterval = AutoRefreshInterval;
-                settings.CompactMode = CompactMode;
+                settings.AdvancedMode = AdvancedMode;
+
             }
         }
 
@@ -43,10 +44,10 @@ namespace ZenTimings
             set => settings.AutoRefreshInterval = value;
         }
 
-        public bool CompactMode
+        public bool AdvancedMode
         {
-            get => settings.CompactMode;
-            set => settings.CompactMode = value;
+            get => settings.AdvancedMode;
+            set => settings.AdvancedMode = value;
         }
     }
 }

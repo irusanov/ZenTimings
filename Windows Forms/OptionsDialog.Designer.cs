@@ -32,7 +32,7 @@ namespace ZenTimings
             this.checkBoxAutoRefresh = new System.Windows.Forms.CheckBox();
             this.numericUpDownRefreshInterval = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
-            this.checkBoxCompactMode = new System.Windows.Forms.CheckBox();
+            this.checkBoxAdvancedMode = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.buttonSettingsCancel = new System.Windows.Forms.Button();
             this.buttonSettingsApply = new System.Windows.Forms.Button();
@@ -51,7 +51,7 @@ namespace ZenTimings
             this.tableLayoutPanel1.Controls.Add(this.checkBoxAutoRefresh, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.numericUpDownRefreshInterval, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.label1, 2, 1);
-            this.tableLayoutPanel1.Controls.Add(this.checkBoxCompactMode, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.checkBoxAdvancedMode, 0, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -113,19 +113,19 @@ namespace ZenTimings
             this.label1.Text = "ms";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // checkBoxCompactMode
+            // checkBoxAdvancedMode
             // 
-            this.checkBoxCompactMode.AutoSize = true;
-            this.tableLayoutPanel1.SetColumnSpan(this.checkBoxCompactMode, 3);
-            this.checkBoxCompactMode.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.checkBoxCompactMode.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxCompactMode.Location = new System.Drawing.Point(13, 13);
-            this.checkBoxCompactMode.Name = "checkBoxCompactMode";
-            this.checkBoxCompactMode.Size = new System.Drawing.Size(271, 19);
-            this.checkBoxCompactMode.TabIndex = 3;
-            this.checkBoxCompactMode.Text = "Compact Mode";
-            this.checkBoxCompactMode.UseVisualStyleBackColor = true;
-            this.checkBoxCompactMode.CheckedChanged += new System.EventHandler(this.CheckBoxCompactMode_CheckedChanged);
+            this.checkBoxAdvancedMode.AutoSize = true;
+            this.tableLayoutPanel1.SetColumnSpan(this.checkBoxAdvancedMode, 3);
+            this.checkBoxAdvancedMode.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.checkBoxAdvancedMode.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBoxAdvancedMode.Location = new System.Drawing.Point(13, 13);
+            this.checkBoxAdvancedMode.Name = "checkBoxAdvancedMode";
+            this.checkBoxAdvancedMode.Size = new System.Drawing.Size(271, 19);
+            this.checkBoxAdvancedMode.TabIndex = 3;
+            this.checkBoxAdvancedMode.Text = "Advanced Mode";
+            this.checkBoxAdvancedMode.UseVisualStyleBackColor = true;
+            this.checkBoxAdvancedMode.CheckedChanged += new System.EventHandler(this.CheckBoxAdvancedMode_CheckedChanged);
             // 
             // tableLayoutPanel2
             // 
@@ -200,6 +200,6 @@ namespace ZenTimings
         private System.Windows.Forms.Button buttonSettingsApply;
         private System.Windows.Forms.NumericUpDown numericUpDownRefreshInterval;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.CheckBox checkBoxCompactMode;
+        private System.Windows.Forms.CheckBox checkBoxAdvancedMode;
     }
 }

@@ -25,8 +25,9 @@ namespace ZenTimings
             toolTip.SetToolTip(checkBoxAutoRefresh, Caption);
             toolTip.SetToolTip(numericUpDownRefreshInterval, Caption);
 
-            checkBoxCompactMode.Checked = settingsInstance.CompactMode;
+            checkBoxAdvancedMode.Checked = settingsInstance.AdvancedMode;
             checkBoxAutoRefresh.Checked = settingsInstance.AutoRefresh;
+            checkBoxAutoRefresh.Enabled = settingsInstance.AdvancedMode;
             numericUpDownRefreshInterval.Value = settingsInstance.AutoRefreshInterval;
             numericUpDownRefreshInterval.Enabled = checkBoxAutoRefresh.Checked;
         }
@@ -40,10 +41,10 @@ namespace ZenTimings
 
         private void ButtonSettingsApply_Click(object sender, EventArgs e)
         {
-            var currentCompactMode = settingsInstance.CompactMode;
+            var currentAdvancedMode = settingsInstance.AdvancedMode;
             settingsInstance.AutoRefresh = checkBoxAutoRefresh.Checked;
             settingsInstance.AutoRefreshInterval = (int)numericUpDownRefreshInterval.Value;
-            settingsInstance.CompactMode = checkBoxCompactMode.Checked;
+            settingsInstance.AdvancedMode = checkBoxAdvancedMode.Checked;
             timerInstance.Interval = settingsInstance.AutoRefreshInterval;
             settingsInstance.Save();
 
@@ -52,7 +53,7 @@ namespace ZenTimings
             else if (!settingsInstance.AutoRefresh && timerInstance.Enabled)
                 timerInstance.Stop();
 
-            if (currentCompactMode != settingsInstance.CompactMode)
+            if (currentAdvancedMode != settingsInstance.AdvancedMode)
             {
                 DialogResult result = MessageBox.Show("Settings will take effect on next app launch.\nDo you want to restart it now?", "Restart",  MessageBoxButtons.YesNo);
 
@@ -65,10 +66,10 @@ namespace ZenTimings
             }
         }
 
-        private void CheckBoxCompactMode_CheckedChanged(object sender, EventArgs e)
+        private void CheckBoxAdvancedMode_CheckedChanged(object sender, EventArgs e)
         {
-            checkBoxAutoRefresh.Enabled = !checkBoxCompactMode.Checked;
-            numericUpDownRefreshInterval.Enabled = !checkBoxCompactMode.Checked && checkBoxAutoRefresh.Checked;
+            checkBoxAutoRefresh.Enabled = checkBoxAdvancedMode.Checked;
+            numericUpDownRefreshInterval.Enabled = checkBoxAdvancedMode.Checked && checkBoxAutoRefresh.Checked;
         }
     }
 }
