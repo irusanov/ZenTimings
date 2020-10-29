@@ -303,7 +303,14 @@ namespace ZenTimings.Windows
             try
             {
                 uint startAddress = 0x0005A000;
-                uint endAddress = 0x00070000;
+                uint endAddress = 0x0005A0FF;
+
+                if (OPS.Smu.SMU_TYPE == SMU.SmuType.TYPE_APU1)
+                {
+                    startAddress = 0x0006F000;
+                    endAddress = 0x0006F0FF;
+                }
+
                 while (startAddress <= endAddress)
                 {
                     var data = OPS.ReadDword(startAddress);
