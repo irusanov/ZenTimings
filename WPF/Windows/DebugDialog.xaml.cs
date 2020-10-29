@@ -7,7 +7,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using ZenStates;
-using ZenTimings;
 using ZenTimings.Utils;
 
 namespace ZenTimings.Windows
@@ -151,7 +150,8 @@ namespace ZenTimings.Windows
 
         private void Debug()
         {
-            Application.Current.Dispatcher.Invoke(new Action(() => {
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
                 SetControlsState(false);
             }));
 
@@ -326,7 +326,8 @@ namespace ZenTimings.Windows
                 AddLine("<FAILED>");
             }
 
-            Application.Current.Dispatcher.Invoke(new Action(() => { 
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
                 textBoxDebugOutput.Text = result;
                 SetControlsState();
             }));
@@ -355,7 +356,7 @@ namespace ZenTimings.Windows
             }
 
             System.IO.File.WriteAllText(filename, textBoxDebugOutput.Text);
-            AdonisUI.Controls.MessageBox.Show($"Debug report saved as {filename}", saveAs ? "Save As" : "Save" , AdonisUI.Controls.MessageBoxButton.OK);
+            AdonisUI.Controls.MessageBox.Show($"Debug report saved as {filename}", saveAs ? "Save As" : "Save", AdonisUI.Controls.MessageBoxButton.OK);
         }
 
         private async void ButtonDebug_Click(object sender, RoutedEventArgs e) => await Task.Run(() => Debug());

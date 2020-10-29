@@ -1,30 +1,25 @@
 //#define BETA
 
+using AdonisUI.Controls;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Windows;
-using ZenTimings;
-using System.Management;
 using System.Diagnostics;
-using System.Threading;
+using System.Drawing;
 using System.IO;
+using System.Linq;
+using System.Management;
+using System.Reflection;
+using System.Threading;
+using System.Windows;
+using System.Windows.Data;
+using System.Windows.Interop;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using ZenStates;
 using ZenTimings.Utils;
-using AdonisUI.Controls;
 using ZenTimings.Windows;
-using System.Security.Permissions;
-using System.Windows.Interop;
-using System.Reflection;
-using System.Drawing;
-using System.Globalization;
-using System.Windows.Data;
-using System.Windows.Media.Imaging;
-using System.Windows.Media.Effects;
-using System.Windows.Media;
-using System.Windows.Controls.Primitives;
 
 namespace ZenTimings
 {
@@ -606,8 +601,8 @@ namespace ZenTimings
             Process.Start(Application.ResourceAssembly.Location);
             Application.Current.Shutdown();
         }
-        
-		private void ShowWindow()
+
+        private void ShowWindow()
         {
             Show();
             Activate();
@@ -664,14 +659,14 @@ namespace ZenTimings
 
             MinimizeFootprint();
         }
-		
-		private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
-		{
-		    if (msg == InteropMethods.WM_SHOWME)
+
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            if (msg == InteropMethods.WM_SHOWME)
                 ShowWindow();
-		
-		    return IntPtr.Zero;
-		}
+
+            return IntPtr.Zero;
+        }
 
         private void DebugToolstripItem_Click(object sender, RoutedEventArgs e)
         {
