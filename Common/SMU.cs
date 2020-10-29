@@ -38,7 +38,9 @@ namespace ZenStates
             Matisse,
             CastlePeak,
             Rome,
-            Renoir
+            Renoir,
+            Vermeer,
+            Genesis
         };
 
         public enum PackageType : int
@@ -234,6 +236,15 @@ namespace ZenStates
         }
     }
 
+    // Ryzen 5000 (Vermeer, Genesis) - Addresses unknown ywt
+    public class Zen3Settings : SMU
+    {
+        public Zen3Settings()
+        {
+            SMU_TYPE = SmuType.TYPE_CPU2;
+        }
+    }
+
     // RavenRidge, RavenRidge 2, Fenghuang, Picasso
     public class APUSettings0 : SMU
     {
@@ -294,6 +305,10 @@ namespace ZenStates
             { SMU.CPUType.Matisse, new Zen2Settings() },
             { SMU.CPUType.CastlePeak, new Zen2Settings() },
             { SMU.CPUType.Rome, new RomeSettings() },
+
+            // Zen3
+            { SMU.CPUType.Vermeer, new Zen3Settings() },
+            { SMU.CPUType.Genesis, new Zen3Settings() },
 
             // APU
             { SMU.CPUType.RavenRidge, new APUSettings0() },

@@ -237,6 +237,14 @@ namespace ZenStates
                 case 0x00860F01: // APU \ Renoir
                     cpuType = SMU.CPUType.Renoir;
                     break;
+                case 0x00A20F00: // CPU \ Vermeer
+                case 0x00A20F01:
+                    cpuType = SMU.CPUType.Vermeer;
+                    break;
+                case 0x00A00F00: // CPU \ Genesis
+                case 0x00A00F01:
+                    cpuType = SMU.CPUType.Genesis;
+                    break;
                 default:
                     cpuType = SMU.CPUType.Unsupported;
                     break;
