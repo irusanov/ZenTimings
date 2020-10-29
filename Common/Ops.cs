@@ -1,6 +1,5 @@
 using OpenLibSys;
 using System;
-using System.Diagnostics;
 using System.Threading;
 
 namespace ZenStates
@@ -324,7 +323,7 @@ namespace ZenStates
             }
 
             if (!SmuReadReg(reg1, ref value1) ||
-                !SmuReadReg(reg2, ref value2) || 
+                !SmuReadReg(reg2, ref value2) ||
                 !SmuReadReg(reg3, ref value3))
                 return ccdCount;
 
@@ -338,7 +337,8 @@ namespace ZenStates
                 ccdCount += 1;
 
             int i = 0;
-            do {
+            do
+            {
                 if ((value1 & (1 << i)) == 1 && (value4 & (1 << i)) == 0)
                     ccdCount += 1;
             } while (++i < 8);

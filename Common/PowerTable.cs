@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using ZenStates;
@@ -119,7 +119,7 @@ namespace ZenTimings.Utils
                     float mclkFreq = BitConverter.ToSingle(bytes, 0);
 
                     // Compensate for lack of BCLK detection, based on configuredClockSpeed
-                    var dramFreq = ConfiguredClockSpeed / 2;
+                    float dramFreq = ConfiguredClockSpeed / 2;
                     //if ((dramFreq + 1) / mclkFreq > 1 && dramFreq % mclkFreq > 1)
                     bclkCorrection = dramFreq / mclkFreq;
 

@@ -13,7 +13,7 @@ namespace ZenTimings
 
         public MemoryModule() { }
 
-        public MemoryModule(string partNumber, string bankLabel, string manufacturer, 
+        public MemoryModule(string partNumber, string bankLabel, string manufacturer,
             string deviceLocator, ulong capacity, uint clockSpeed)
         {
             PartNumber = partNumber;
