@@ -15,7 +15,7 @@ namespace ZenTimings
     /// </summary>
     public partial class App : Application
     {
-        private const string mutexName = "{GUID}";
+        private const string mutexName = "Global\\ZenTimings";
         private static Mutex instanceMutex = null;
 
         protected override void OnStartup(StartupEventArgs e)
@@ -24,25 +24,15 @@ namespace ZenTimings
 
             if (!createdNew)
             {
-                if (Settings.Default.IsRestarting)
-                {
-                    instanceMutex.ReleaseMutex();
-                    Settings.Default.IsRestarting = true;
-                    Settings.Default.Save();
-                    instanceMutex = new Mutex(true, mutexName, out _);
-                    return;
-                }
-
-                //app is already running! Exiting the application
-                MessageBox.Show("Another instance is already running.", "Error", MessageBoxButton.OK);
-                Application.Current.Shutdown();
+                // App is already running! Exit the application and show the other window.
+                Current.Shutdown();
+                InteropMethods.PostMessage((IntPtr)InteropMethods.HWND_BROADCAST, InteropMethods.WM_SHOWME, IntPtr.Zero, IntPtr.Zero);
             }
-
-            GC.KeepAlive(instanceMutex);
-
-            InteropMethods.PostMessage((IntPtr)InteropMethods.HWND_BROADCAST, InteropMethods.WM_SHOWME, IntPtr.Zero, IntPtr.Zero);
-
-            base.OnStartup(e);
+            else
+            {
+                GC.KeepAlive(instanceMutex);
+                base.OnStartup(e);
+            }
         }
     }
 }

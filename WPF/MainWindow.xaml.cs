@@ -601,6 +601,8 @@ namespace ZenTimings
 
         private void Restart()
         {
+            settings.IsRestarting = true;
+            settings.Save();
             Process.Start(Application.ResourceAssembly.Location);
             Application.Current.Shutdown();
         }
@@ -699,7 +701,6 @@ namespace ZenTimings
                 if (messageBox.Result == AdonisUI.Controls.MessageBoxResult.Yes)
                 {
                     settings.AdvancedMode = true;
-                    settings.Save();
                     Restart();
                 }
             }
