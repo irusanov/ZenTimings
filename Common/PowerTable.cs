@@ -84,7 +84,7 @@ namespace ZenTimings.Utils
             GCHandle handle = GCHandle.Alloc(pt, GCHandleType.Pinned);
             try
             {
-                dynamic powerTable;
+                dynamic powerTable = null;
                 byte[] bytes = new byte[4];
 
                 switch (SmuType)
@@ -100,6 +100,9 @@ namespace ZenTimings.Utils
                     default:
                     case SMU.SmuType.TYPE_CPU2:
                         powerTable = (PowerTableCPU2)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(PowerTableCPU2));
+                        break;
+
+                    case SMU.SmuType.TYPE_CPU3:
                         break;
 
                     case SMU.SmuType.TYPE_APU0:

@@ -28,6 +28,8 @@ namespace ZenTimings
         public const uint F17H_M60H_SVI_TEL_PLANE1 = (F17H_M02H_SVI + 0x3C);
         public const uint F17H_M70H_SVI_TEL_PLANE0 = (F17H_M01H_SVI + 0x10);
         public const uint F17H_M70H_SVI_TEL_PLANE1 = (F17H_M01H_SVI + 0xC);
+        public const uint F19H_M21H_SVI_TEL_PLANE0 = (F17H_M01H_SVI + 0x10);
+        public const uint F19H_M21H_SVI_TEL_PLANE1 = (F17H_M01H_SVI + 0xC);
 
         private readonly List<MemoryModule> modules = new List<MemoryModule>();
         private readonly List<BiosACPIFunction> biosFunctions = new List<BiosACPIFunction>();
@@ -384,6 +386,12 @@ namespace ZenTimings
                 case SMU.CPUType.Renoir:
                     sviCoreaddress = F17H_M60H_SVI_TEL_PLANE0;
                     sviSocAddress = F17H_M60H_SVI_TEL_PLANE1;
+                    break;
+
+                case SMU.CPUType.Vermeer:
+                case SMU.CPUType.Genesis:
+                    sviCoreaddress = F19H_M21H_SVI_TEL_PLANE0;
+                    sviSocAddress = F19H_M21H_SVI_TEL_PLANE1;
                     break;
 
                 default:

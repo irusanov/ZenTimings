@@ -19,6 +19,7 @@ namespace ZenStates
             TYPE_CPU0 = 0x0,
             TYPE_CPU1 = 0x1,
             TYPE_CPU2 = 0x2,
+            TYPE_CPU3 = 0x3,
             TYPE_APU0 = 0x10,
             TYPE_APU1 = 0x11,
         };
@@ -241,7 +242,7 @@ namespace ZenStates
     {
         public Zen3Settings()
         {
-            SMU_TYPE = SmuType.TYPE_CPU2;
+            SMU_TYPE = SmuType.TYPE_CPU3;
         }
     }
 

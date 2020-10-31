@@ -9,7 +9,7 @@ namespace ZenTimings
     /// </summary>
     public partial class App : Application
     {
-        private const string mutexName = "Global\\ZenTimings";
+        private const string mutexName = "Local\\ZenTimings";
         private static Mutex instanceMutex = null;
 
         protected override void OnStartup(StartupEventArgs e)
