@@ -9,7 +9,7 @@ namespace ZenTimings
         /// <summary>
         /// Name of our mutex
         /// </summary>
-        private const string mutexName = "Local\\ZenTimings";
+        private const string mutexName = "Local\\ZenTimingsLegacy";
 
         /// <summary>
         /// The main entry point for the application.
