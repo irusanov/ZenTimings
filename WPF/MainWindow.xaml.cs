@@ -337,6 +337,8 @@ namespace ZenTimings
                 BMC.Table = WMI.RunCommand(classInstance, cmd.ID);
                 var allZero = !BMC.Table.Any(v => v != 0);
 
+                // When ProcODT is 0, then all other resistance values are 0
+                // Happens when one DIMM installed in B2 slot
                 if (allZero || BMC.Table == null || BMC.Config.ProcODT < 1)
                 {
                     BMC.Table = null;
@@ -376,12 +378,15 @@ namespace ZenTimings
             bool enabled = false;
 
             // Get the offset by probing the IMC0 to IMC7
-            // Reading from first one that matches should be sufficient,
-            // because no bios allows setting different timings for the different channels.
-            for (var i = 0u; i < 8u && !enabled; i++)
+            // It appears that offsets 0x80 and 0x84 are DIMM config registers
+            // When a DIMM is installed, bit 0 is set to 1
+            for (var i = 0; i < 8 && !enabled; i++)
             {
-                offset = i << 20;
-                enabled = OPS.GetBits(OPS.ReadDword(0x50DF0 + offset), 19, 1) == 0;
+                offset = (uint)i << 20;
+                bool channel = OPS.GetBits(OPS.ReadDword(0x50DF0 + offset), 19, 1) == 0;
+                bool dimm1 = OPS.GetBits(OPS.ReadDword(0x50080 + offset), 0, 1) == 1;
+                bool dimm2 = OPS.GetBits(OPS.ReadDword(0x50084 + offset), 0, 1) == 1;
+                enabled = channel && (dimm1 || dimm2);
             }
 
             uint umcBase = OPS.ReadDword(0x50200 + offset);
