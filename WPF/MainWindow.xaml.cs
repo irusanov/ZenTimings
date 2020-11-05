@@ -380,39 +380,44 @@ namespace ZenTimings
 
             // Get the offset by probing the IMC0 to IMC7
             // It appears that offsets 0x80 and 0x84 are DIMM config registers
-            // When a DIMM is installed, bit 0 is set to 1
+            // When a DIMM is DR, bit 0 is set to 1
+            // 0x50000
+            // offset 0, bit 0 when set to 1 means DIMM1 is installed
+            // offset 8, bit 0 when set to 1 means DIMM2 is installed
             for (var i = 0; i < 8 && !enabled; i++)
             {
                 offset = (uint)i << 20;
-                bool channel = OPS.GetBits(OPS.ReadDword(0x50DF0 + offset), 19, 1) == 0;
-                bool dimm1 = OPS.GetBits(OPS.ReadDword(0x50080 + offset), 0, 1) == 1;
-                bool dimm2 = OPS.GetBits(OPS.ReadDword(0x50084 + offset), 0, 1) == 1;
+                bool channel = OPS.GetBits(OPS.ReadDword(offset | 0x50DF0), 19, 1) == 0;
+                bool dimm1 = OPS.GetBits(OPS.ReadDword(offset | 0x50000), 0, 1) == 1;
+                bool dimm2 = OPS.GetBits(OPS.ReadDword(offset | 0x50008), 0, 1) == 1;
                 enabled = channel && (dimm1 || dimm2);
             }
 
-            uint umcBase = OPS.ReadDword(0x50200 + offset);
-            uint bgsa0 = OPS.ReadDword(0x500D0 + offset);
-            uint bgsa1 = OPS.ReadDword(0x500D4 + offset);
-            uint bgs0 = OPS.ReadDword(0x50050 + offset);
-            uint bgs1 = OPS.ReadDword(0x50058 + offset);
-            uint timings5 = OPS.ReadDword(0x50204 + offset);
-            uint timings6 = OPS.ReadDword(0x50208 + offset);
-            uint timings7 = OPS.ReadDword(0x5020C + offset);
-            uint timings8 = OPS.ReadDword(0x50210 + offset);
-            uint timings9 = OPS.ReadDword(0x50214 + offset);
-            uint timings10 = OPS.ReadDword(0x50218 + offset);
-            uint timings11 = OPS.ReadDword(0x5021C + offset);
-            uint timings12 = OPS.ReadDword(0x50220 + offset);
-            uint timings13 = OPS.ReadDword(0x50224 + offset);
-            uint timings14 = OPS.ReadDword(0x50228 + offset);
-            uint timings15 = OPS.ReadDword(0x50230 + offset);
-            uint timings16 = OPS.ReadDword(0x50234 + offset);
-            uint timings17 = OPS.ReadDword(0x50250 + offset);
-            uint timings18 = OPS.ReadDword(0x50254 + offset);
-            uint timings19 = OPS.ReadDword(0x50258 + offset);
-            uint timings20 = OPS.ReadDword(0x50260 + offset);
-            uint timings21 = OPS.ReadDword(0x50264 + offset);
-            uint timings22 = OPS.ReadDword(0x5028C + offset);
+            if (!enabled) offset = 0;
+
+            uint umcBase = OPS.ReadDword(offset | 0x50200);
+            uint bgsa0 = OPS.ReadDword(offset | 0x500D0);
+            uint bgsa1 = OPS.ReadDword(offset | 0x500D4);
+            uint bgs0 = OPS.ReadDword(offset | 0x50050);
+            uint bgs1 = OPS.ReadDword(offset | 0x50058);
+            uint timings5 = OPS.ReadDword(offset | 0x50204);
+            uint timings6 = OPS.ReadDword(offset | 0x50208);
+            uint timings7 = OPS.ReadDword(offset | 0x5020C);
+            uint timings8 = OPS.ReadDword(offset | 0x50210);
+            uint timings9 = OPS.ReadDword(offset | 0x50214);
+            uint timings10 = OPS.ReadDword(offset | 0x50218);
+            uint timings11 = OPS.ReadDword(offset | 0x5021C);
+            uint timings12 = OPS.ReadDword(offset | 0x50220);
+            uint timings13 = OPS.ReadDword(offset | 0x50224);
+            uint timings14 = OPS.ReadDword(offset | 0x50228);
+            uint timings15 = OPS.ReadDword(offset | 0x50230);
+            uint timings16 = OPS.ReadDword(offset | 0x50234);
+            uint timings17 = OPS.ReadDword(offset | 0x50250);
+            uint timings18 = OPS.ReadDword(offset | 0x50254);
+            uint timings19 = OPS.ReadDword(offset | 0x50258);
+            uint timings20 = OPS.ReadDword(offset | 0x50260);
+            uint timings21 = OPS.ReadDword(offset | 0x50264);
+            uint timings22 = OPS.ReadDword(offset | 0x5028C);
             uint timings23 = timings20 != timings21 ? (timings20 != 0x21060138 ? timings20 : timings21) : timings20;
 
             MEMCFG.BGS = (bgs0 == 0x87654321 && bgs1 == 0x87654321) ? "Disabled" : "Enabled";
