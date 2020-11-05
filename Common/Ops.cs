@@ -237,13 +237,13 @@ namespace ZenStates
                     cpuType = SMU.CPUType.Renoir;
                     break;
                 case 0x00A20F00: // CPU \ Vermeer
-                case 0x00A20F01:
+                case 0x00A20F10:
                     cpuType = SMU.CPUType.Vermeer;
                     break;
-                case 0x00A00F00: // CPU \ Genesis
-                case 0x00A00F01:
-                    cpuType = SMU.CPUType.Genesis;
-                    break;
+                //case 0x00A00F00: // CPU \ Genesis
+                //case 0x00A00F10:
+                    //cpuType = SMU.CPUType.Genesis;
+                    //break;
                 default:
                     cpuType = SMU.CPUType.Unsupported;
                     break;
@@ -378,6 +378,17 @@ namespace ZenStates
             return model.Trim();
         }
 
+        public int GetThreadsPerCore()
+        {
+            uint eax = 0, ebx = 0, ecx = 0, edx = 0;
+
+            if (Ols.Cpuid(0x8000001E, ref eax, ref ebx, ref ecx, ref edx) == 1)
+            {
+                return Convert.ToInt16(GetBits(ebx, 8, 8)) + 1; 
+            }
+            return 1;
+        }
+
         public uint GetSmuVersion()
         {
             uint[] args = new uint[6];
@@ -450,7 +461,7 @@ namespace ZenStates
 
             switch (Smu.SMU_TYPE)
             {
-                // SummitRidge, PinnacleRidge
+                // SummitRidge, PinnacleRidge, Colfax
                 case SMU.SmuType.TYPE_CPU0:
                 case SMU.SmuType.TYPE_CPU1:
                     args[0] = 0;
@@ -470,12 +481,12 @@ namespace ZenStates
                         return 0;
                     break;
 
-                // Matisse, CastlePeak, Rome
+                // Matisse, CastlePeak, Rome, Vermeer
                 case SMU.SmuType.TYPE_CPU2:
                     status = SendSmuCommand(Smu.SMU_MSG_GetDramBaseAddress, ref args);
                     if (status != SMU.Status.OK)
                         return 0;
-                    address = args[0];
+                    address = args[0] | ((ulong)args[1] << 32);
                     break;
 
                 // Renoir

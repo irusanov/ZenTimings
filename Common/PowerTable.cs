@@ -102,9 +102,6 @@ namespace ZenTimings.Utils
                         powerTable = (PowerTableCPU2)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(PowerTableCPU2));
                         break;
 
-                    case SMU.SmuType.TYPE_CPU3:
-                        break;
-
                     case SMU.SmuType.TYPE_APU0:
                         powerTable = (PowerTableAPU0)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(PowerTableAPU0));
                         break;

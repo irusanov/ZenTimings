@@ -19,7 +19,6 @@ namespace ZenStates
             TYPE_CPU0 = 0x0,
             TYPE_CPU1 = 0x1,
             TYPE_CPU2 = 0x2,
-            TYPE_CPU3 = 0x3,
             TYPE_APU0 = 0x10,
             TYPE_APU1 = 0x11,
         };
@@ -193,6 +192,7 @@ namespace ZenStates
     }
 
     // Ryzen 3000 (Matisse), TR 3000 (Castle Peak)
+    // Ryzen 5000 (Vermeer), TR 5000 (Genesis)?
     public class Zen2Settings : SMU
     {
         public Zen2Settings()
@@ -218,7 +218,7 @@ namespace ZenStates
         }
     }
 
-    // Epyc 2 (Rome)
+    // Epyc 2 (Rome) ES
     public class RomeSettings : SMU
     {
         public RomeSettings()
@@ -234,15 +234,6 @@ namespace ZenStates
             SMU_MSG_SetOverclockFrequencyAllCores = 0x18;
             // SMU_MSG_SetOverclockFrequencyPerCore = 0x19;
             SMU_MSG_SetOverclockCpuVid = 0x12;
-        }
-    }
-
-    // Ryzen 5000 (Vermeer, Genesis) - Addresses unknown ywt
-    public class Zen3Settings : SMU
-    {
-        public Zen3Settings()
-        {
-            SMU_TYPE = SmuType.TYPE_CPU3;
         }
     }
 
@@ -308,8 +299,8 @@ namespace ZenStates
             { SMU.CPUType.Rome, new RomeSettings() },
 
             // Zen3
-            { SMU.CPUType.Vermeer, new Zen3Settings() },
-            { SMU.CPUType.Genesis, new Zen3Settings() },
+            { SMU.CPUType.Vermeer, new Zen2Settings() },
+            { SMU.CPUType.Genesis, new Zen2Settings() },
 
             // APU
             { SMU.CPUType.RavenRidge, new APUSettings0() },
