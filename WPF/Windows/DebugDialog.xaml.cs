@@ -1,4 +1,5 @@
 ﻿using AdonisUI.Controls;
+using Microsoft.VisualBasic.Devices;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -137,7 +138,7 @@ namespace ZenTimings.Windows
                 try
                 {
                     uint offset = i << 20;
-                    bool enabled = OPS.GetBits(OPS.ReadDword(0x50DF0 + offset), 19, 1) == 0;
+                    bool enabled = OPS.GetBits(OPS.ReadDword(offset | 0x50DF0), 19, 1) == 0;
                     AddLine($"Channel{i}: {enabled}");
                 }
                 catch
@@ -165,6 +166,8 @@ namespace ZenTimings.Windows
             AddHeading("System Info");
             try
             {
+                AddLine("OS: " + new ComputerInfo().OSFullName);
+
                 foreach (PropertyInfo property in properties)
                 {
                     if (property.Name == "CpuId" || property.Name == "PatchLevel")

@@ -98,6 +98,7 @@ namespace ZenTimings
                 Threads = coreCount[1],
                 CCDCount = OPS.GetCCDCount(),
                 CodeName = $"{OPS.CpuType}",
+                SMT = OPS.GetThreadsPerCore() > 1,
             };
 
             SI.Model = (SI.CpuId & 0xff) >> 4;
@@ -468,7 +469,7 @@ namespace ZenTimings
                 var allZero = !BMC.Table.Any(v => v != 0);
 
                 // When ProcODT is 0, then all other resistance values are 0
-                // Happens when one DIMM installed in B2 slot
+                // Happens when one DIMM installed in A1 or A2 slot
                 if (allZero || BMC.Table == null || BMC.Config.ProcODT < 1)
                 {
                     BMC.Table = null;

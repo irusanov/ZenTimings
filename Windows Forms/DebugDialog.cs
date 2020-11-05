@@ -164,7 +164,7 @@ namespace ZenTimings
                 try
                 {
                     uint offset = i << 20;
-                    bool enabled = OPS.GetBits(OPS.ReadDword(0x50DF0 + offset), 19, 1) == 0;
+                    bool enabled = OPS.GetBits(OPS.ReadDword(offset | 0x50DF0), 19, 1) == 0;
                     AddLine($"Channel{i}: {enabled}");
                 }
                 catch

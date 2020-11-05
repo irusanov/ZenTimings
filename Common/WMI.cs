@@ -158,7 +158,7 @@ namespace ZenTimings
 
                 // return outParam
                 ManagementBaseObject pack = (ManagementBaseObject)outParams.Properties["Outbuf"].Value;
-                return (byte[])pack.GetPropertyValue("result");
+                return (byte[])pack.GetPropertyValue("Result");
             }
             catch (ManagementException err)
             {

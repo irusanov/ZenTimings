@@ -56,31 +56,18 @@ namespace ZenStates
             PatchLevel = patchLevel;
         }
 
+        public string CpuName { get; set; }
+        public string CodeName { get; set; }
         public uint CpuId { get; set; }
         public uint Model { get; set; }
         public uint ExtendedModel { get; set; }
-        public int NodesPerProcessor { get; set; }
         public uint PackageType { get; set; }
-        public string MbVendor { get; set; }
-        public string MbName { get; set; }
-        public string CpuName { get; set; }
-        public string CodeName { get; set; }
-        public string BiosVersion { get; set; }
-        public uint SmuVersion { get; set; }
         public int FusedCoreCount { get; set; }
-
-        public int Threads
-        {
-            get { return threads; }
-            set
-            {
-                threads = value;
-                SMT = value > FusedCoreCount;
-            }
-        }
-
-        public uint PatchLevel { get; set; }
         public int PhysicalCoreCount { get; private set; }
+        public int NodesPerProcessor { get; set; }
+        public int Threads { get; set; }
+        public bool SMT { get; set; }
+
         public int CCDCount
         {
             get => ccdCount;
@@ -103,7 +90,11 @@ namespace ZenStates
         }
         public int CCXCount { get; private set; }
         public int NumCoresInCCX { get; private set; }
-        public bool SMT { get; private set; }
+        public string MbVendor { get; set; }
+        public string MbName { get; set; }
+        public string BiosVersion { get; set; }
+        public uint SmuVersion { get; set; }
+        public uint PatchLevel { get; set; }
 
         public string GetSmuVersionString()
         {

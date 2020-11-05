@@ -337,9 +337,9 @@ namespace ZenStates
                 ccdCount += 1;
 
             int i = 0;
-            do
-            {
-                if ((value1 & (1 << i)) == 1 && (value4 & (1 << i)) == 0)
+            do {
+                uint mask = 1u << i;
+                if ((value1 & mask) == 1 && (value4 & mask) == 0)
                     ccdCount += 1;
             } while (++i < 8);
 
