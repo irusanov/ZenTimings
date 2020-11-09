@@ -337,7 +337,7 @@ namespace ZenTimings
                     var data = OPS.ReadDword(startAddress);
                     if (data != 0xFFFFFFFF)
                     {
-                    AddLine($"0x{startAddress:X8}: 0x{data:X8}");
+                        AddLine($"0x{startAddress:X8}: 0x{data:X8}");
                     }
                     startAddress += 4;
                 }

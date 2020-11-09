@@ -297,6 +297,7 @@ namespace ZenStates
                 if (Ols.Cpuid(0x8000001E, ref eax, ref ebx, ref ecx, ref edx) == 1)
                     threadsPerCore = Convert.ToInt32(ebx >> 8 & 0xF) + 1;
             }
+
             if (threadsPerCore == 0)
                 count[0] = logicalCores;
             else

@@ -525,7 +525,7 @@ namespace ZenTimings
                     Thread.Sleep(Convert.ToInt32(PowerCfgTimer.Interval.TotalMilliseconds) * minimum_retries);
 
                 timer.Stop();
-            } 
+            }
             else
             {
                 HandleError("InpOut driver is not responding or not loaded.");

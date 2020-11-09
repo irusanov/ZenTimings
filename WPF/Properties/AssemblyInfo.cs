@@ -7,7 +7,7 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("ZenTimings")]
-[assembly: AssemblyDescription("Ivan Rusanov")]
+[assembly: AssemblyDescription("Author: Ivan Rusanov")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ZenTimings")]
 [assembly: AssemblyProduct("ZenTimings")]

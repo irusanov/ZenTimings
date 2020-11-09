@@ -6,7 +6,6 @@ namespace ZenStates
     public class SystemInfo
     {
         private int ccdCount;
-        private int threads;
 
         private static string SmuVersionToString(uint version)
         {
