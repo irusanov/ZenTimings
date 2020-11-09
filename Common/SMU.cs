@@ -19,8 +19,10 @@ namespace ZenStates
             TYPE_CPU0 = 0x0,
             TYPE_CPU1 = 0x1,
             TYPE_CPU2 = 0x2,
+            TYPE_CPU3 = 0x3,
             TYPE_APU0 = 0x10,
             TYPE_APU1 = 0x11,
+            TYPE_UNSUPPORTED = 0xFF,
         };
 
         public enum CPUType : int
@@ -68,8 +70,8 @@ namespace ZenStates
             SMU_TYPE = SmuType.TYPE_CPU0;
 
             SMU_PCI_ADDR = 0x00000000;
-            SMU_OFFSET_ADDR = 0xB8;
-            SMU_OFFSET_DATA = 0xBC;
+            SMU_OFFSET_ADDR = 0x60;
+            SMU_OFFSET_DATA = 0x64;
 
             SMU_ADDR_MSG = 0x03B10528;
             SMU_ADDR_RSP = 0x03B10564;
@@ -192,7 +194,6 @@ namespace ZenStates
     }
 
     // Ryzen 3000 (Matisse), TR 3000 (Castle Peak)
-    // Ryzen 5000 (Vermeer), TR 5000 (Genesis)?
     public class Zen2Settings : SMU
     {
         public Zen2Settings()
@@ -215,6 +216,15 @@ namespace ZenStates
             SMU_MSG_SetEDCLimit = 0x55;
             SMU_MSG_SetPBOScalar = 0x58;
             SMU_MSG_GetPBOScalar = 0x6C;
+        }
+    }
+
+    // Ryzen 5000 (Vermeer), TR 5000 (Genesis)?
+    public class Zen3Settings : Zen2Settings
+    {
+        public Zen3Settings()
+        {
+            SMU_TYPE = SmuType.TYPE_CPU3;
         }
     }
 
@@ -299,8 +309,8 @@ namespace ZenStates
             { SMU.CPUType.Rome, new RomeSettings() },
 
             // Zen3
-            { SMU.CPUType.Vermeer, new Zen2Settings() },
-            { SMU.CPUType.Genesis, new Zen2Settings() },
+            { SMU.CPUType.Vermeer, new Zen3Settings() },
+            { SMU.CPUType.Genesis, new Zen3Settings() },
 
             // APU
             { SMU.CPUType.RavenRidge, new APUSettings0() },

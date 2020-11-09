@@ -483,6 +483,7 @@ namespace ZenStates
 
                 // Matisse, CastlePeak, Rome, Vermeer
                 case SMU.SmuType.TYPE_CPU2:
+                case SMU.SmuType.TYPE_CPU3:
                     status = SendSmuCommand(Smu.SMU_MSG_GetDramBaseAddress, ref args);
                     if (status != SMU.Status.OK)
                         return 0;

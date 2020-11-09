@@ -1,4 +1,4 @@
-//#define BETA
+#define BETA
 
 using AdonisUI.Controls;
 using System;
@@ -62,7 +62,7 @@ namespace ZenTimings
             var cpufamily = OPS.GetCpuFamily();
             if (cpufamily != SMU.CpuFamily.FAMILY_17H && cpufamily != SMU.CpuFamily.FAMILY_19H)
             {
-                AdonisUI.Controls.MessageBox.Show("CPU is not supported.", "Error", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Error);
+                HandleError("CPU is not supported.");
                 ExitApplication();
             }
 
@@ -141,10 +141,10 @@ namespace ZenTimings
                         if (temp != null) deviceLocator = (string)temp;
 
                         modules.Add(new MemoryModule(partNumber, bankLabel, manufacturer, deviceLocator, capacity, clockSpeed));
-                        //string dl = deviceLocator.Length > 0 ? $"#{deviceLocator.Replace("DIMM_", "")}: " : "";
-                        //comboBoxPartNumber.Items.Add($"{dl}{partNumber}");
 
-                        string bl = bankLabel.Length > 0 ? new String(bankLabel.Where(char.IsDigit).ToArray()) : "";
+                        string bl = bankLabel.Length > 0 ? new string(bankLabel.Where(char.IsDigit).ToArray()) : "";
+                        //string dl = deviceLocator.Length > 0 ? new string(deviceLocator.Where(char.IsDigit).ToArray()) : "";
+
                         comboBoxPartNumber.Items.Add($"#{bl}: {partNumber}");
 
                         comboBoxPartNumber.SelectedIndex = 0;
@@ -393,6 +393,8 @@ namespace ZenTimings
                 enabled = channel && (dimm1 || dimm2);
             }
 
+            // Reset here in case no enabled channel is detected
+            // Try and read from the first IMC (IMC0);
             if (!enabled) offset = 0;
 
             uint umcBase = OPS.ReadDword(offset | 0x50200);
@@ -486,8 +488,26 @@ namespace ZenTimings
             }
         }
 
+        private bool WaitForDriverLoad()
+        {
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
+
+            bool temp;
+            // Refresh until driver is opened
+            do
+                temp = InteropMethods.IsInpOutDriverOpen();
+            while (!temp && timer.Elapsed.TotalMilliseconds < 10000);
+
+            timer.Stop();
+
+            return temp;
+        }
+
         private void WaitForPowerTable(object sender, DoWorkEventArgs e)
         {
+            if (WaitForDriverLoad())
+            {
             int minimum_retries = 2;
             Stopwatch timer = new Stopwatch();
             timer.Start();
@@ -505,6 +525,11 @@ namespace ZenTimings
                 Thread.Sleep(Convert.ToInt32(PowerCfgTimer.Interval.TotalMilliseconds) * minimum_retries);
 
             timer.Stop();
+            } 
+            else
+            {
+                HandleError("InpOut driver is not responding or not loaded.");
+            }
         }
 
         private void WaitForPowerTable_Complete(object sender, RunWorkerCompletedEventArgs e)

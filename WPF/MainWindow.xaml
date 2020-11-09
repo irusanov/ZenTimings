@@ -214,10 +214,11 @@
 
                             <TextBlock Text=""/>
 
-                            <TextBlock Text="VSOC (SVI2)" TextAlignment="Right"/>
-                            <TextBlock Text="VSOC (SMU)" TextAlignment="Right"/>
+                            <TextBlock Text="VSOC" TextAlignment="Right"/>
+                            <!-- " TextBlock Text="VSOC (SMU)" TextAlignment="Right"/ -->
                             <TextBlock Text="CLDO VDDP" TextAlignment="Right"/>
-                            <TextBlock Text="CLDO VDDG" TextAlignment="Right"/>
+                            <TextBlock Text="VDDG IOD" TextAlignment="Right"/>
+                            <TextBlock Text="VDDG CCD" TextAlignment="Right"/>
                             <TextBlock Text="" TextAlignment="Right"/>
                             <TextBlock Text="ProcODT" TextAlignment="Right"/>
                             <TextBlock Text="RttNom" TextAlignment="Right"/>
@@ -242,11 +243,13 @@
                             <TextBlock Text=""/>
 
                             <TextBlock x:Name="textBoxVSOC_SVI2" Text="N/A" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding powerTable.VDDCR_SOC, Converter={StaticResource FloatToVoltage}}"
-                                       Style="{StaticResource ValueStyles}"/>
+                            <!-- " TextBlock Text="{Binding powerTable.VDDCR_SOC, Converter={StaticResource FloatToVoltage}}"
+                                       Style="{StaticResource ValueStyles}"/ -->
                             <TextBlock Text="{Binding powerTable.CLDO_VDDP, Converter={StaticResource FloatToVoltage}}"
                                        Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding powerTable.CLDO_VDDG, Converter={StaticResource FloatToVoltage}}"
+                            <TextBlock Text="{Binding powerTable.CLDO_VDDG_IOD, Converter={StaticResource FloatToVoltage}}"
+                                       Style="{StaticResource ValueStyles}"/>
+                            <TextBlock Text="{Binding powerTable.CLDO_VDDG_CCD, Converter={StaticResource FloatToVoltage}}"
                                        Style="{StaticResource ValueStyles}"/>
                             <TextBlock Text=""/>
                             <TextBlock x:Name="textBoxProcODT" Text="N/A" Style="{StaticResource ValueStyles}"/>

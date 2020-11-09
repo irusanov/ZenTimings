@@ -71,7 +71,20 @@ namespace ZenTimings.Utils
             [FieldOffset(0x0C8)] public uint Uclk;
             [FieldOffset(0x0CC)] public uint Mclk;
             [FieldOffset(0x1F4)] public uint CldoVddp;
-            [FieldOffset(0x1F8)] public uint CldoVddg;
+            [FieldOffset(0x1F8)] public uint CldoVddgIod;
+        };
+
+        [Serializable]
+        [StructLayout(LayoutKind.Explicit)]
+        private struct PowerTableCPU3
+        {
+            [FieldOffset(0x0B4)] public uint VddcrSoc;
+            [FieldOffset(0x0C0)] public uint Fclk;
+            [FieldOffset(0x0C8)] public uint Uclk;
+            [FieldOffset(0x0CC)] public uint Mclk;
+            [FieldOffset(0x224)] public uint CldoVddp;
+            [FieldOffset(0x228)] public uint CldoVddgIod;
+            [FieldOffset(0x22C)] public uint CldoVddgCcd;
         };
 
         public PowerTable(SMU.SmuType smutype) => SmuType = smutype;
@@ -97,9 +110,12 @@ namespace ZenTimings.Utils
                         powerTable = (PowerTableCPU1)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(PowerTableCPU1));
                         break;
 
-                    default:
                     case SMU.SmuType.TYPE_CPU2:
                         powerTable = (PowerTableCPU2)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(PowerTableCPU2));
+                        break;
+
+                    case SMU.SmuType.TYPE_CPU3:
+                        powerTable = (PowerTableCPU3)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(PowerTableCPU3));
                         break;
 
                     case SMU.SmuType.TYPE_APU0:
@@ -109,6 +125,9 @@ namespace ZenTimings.Utils
                     case SMU.SmuType.TYPE_APU1:
                         powerTable = (PowerTableAPU1)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(PowerTableAPU1));
                         break;
+
+                    default:
+                        return;
                 }
 
                 float bclkCorrection = 1.00f;
@@ -159,8 +178,15 @@ namespace ZenTimings.Utils
 
                 try
                 {
-                    bytes = BitConverter.GetBytes(powerTable.CldoVddg);
-                    CLDO_VDDG = BitConverter.ToSingle(bytes, 0);
+                    bytes = BitConverter.GetBytes(powerTable.CldoVddgIod);
+                    CLDO_VDDG_IOD = BitConverter.ToSingle(bytes, 0);
+                }
+                catch { }
+
+                try
+                {
+                    bytes = BitConverter.GetBytes(powerTable.CldoVddgCcd);
+                    CLDO_VDDG_CCD = BitConverter.ToSingle(bytes, 0);
                 }
                 catch { }
             }
@@ -219,12 +245,20 @@ namespace ZenTimings.Utils
             set => SetProperty(ref cldo_vddp, value, InternalEventArgsCache.CLDO_VDDP);
         }
 
-        float cldo_vddg;
-        public float CLDO_VDDG
+        float cldo_vddg_iod;
+        public float CLDO_VDDG_IOD
         {
-            get => cldo_vddg;
-            set => SetProperty(ref cldo_vddg, value, InternalEventArgsCache.CLDO_VDDG);
+            get => cldo_vddg_iod;
+            set => SetProperty(ref cldo_vddg_iod, value, InternalEventArgsCache.CLDO_VDDG_IOD);
         }
+
+        float cldo_vddg_ccd;
+        public float CLDO_VDDG_CCD
+        {
+            get => cldo_vddg_ccd;
+            set => SetProperty(ref cldo_vddg_ccd, value, InternalEventArgsCache.CLDO_VDDG_CCD);
+        }
+
         protected void OnPropertyChanged(PropertyChangedEventArgs eventArgs)
         {
             PropertyChanged?.Invoke(this, eventArgs);
@@ -241,6 +275,7 @@ namespace ZenTimings.Utils
 
         internal static PropertyChangedEventArgs VDDCR_SOC = new PropertyChangedEventArgs("VDDCR_SOC");
         internal static PropertyChangedEventArgs CLDO_VDDP = new PropertyChangedEventArgs("CLDO_VDDP");
-        internal static PropertyChangedEventArgs CLDO_VDDG = new PropertyChangedEventArgs("CLDO_VDDG");
+        internal static PropertyChangedEventArgs CLDO_VDDG_IOD = new PropertyChangedEventArgs("CLDO_VDDG_IOD");
+        internal static PropertyChangedEventArgs CLDO_VDDG_CCD = new PropertyChangedEventArgs("CLDO_VDDG_CCD");
     }
 }

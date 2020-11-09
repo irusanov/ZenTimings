@@ -36,19 +36,19 @@ namespace ZenTimings
         }
 
         [DllImport("inpout32.dll", EntryPoint = "IsInpOutDriverOpen", CallingConvention = CallingConvention.StdCall)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool IsInpOutDriverOpen32();
+        [return: MarshalAs(UnmanagedType.U4)]
+        public static extern uint IsInpOutDriverOpen32();
 
         [DllImport("inpoutx64.dll", EntryPoint = "IsInpOutDriverOpen", CallingConvention = CallingConvention.StdCall)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool IsInpOutDriverOpen64();
+        [return: MarshalAs(UnmanagedType.U4)]
+        public static extern uint IsInpOutDriverOpen64();
 
         public static bool IsInpOutDriverOpen()
         {
             if (Environment.Is64BitProcess)
-                return IsInpOutDriverOpen64();
+                return IsInpOutDriverOpen64() != 0;
 
-            return IsInpOutDriverOpen32();
+            return IsInpOutDriverOpen32() != 0;
         }
 
     }
