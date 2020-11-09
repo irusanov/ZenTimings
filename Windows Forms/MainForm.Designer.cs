@@ -34,6 +34,7 @@ namespace ZenTimings
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.tableLayoutPanelValues = new System.Windows.Forms.TableLayoutPanel();
+            this.textBoxCLDO_VDDG_CCD = new System.Windows.Forms.Label();
             this.textBoxMRDPDA = new System.Windows.Forms.Label();
             this.textBoxMODPDA = new System.Windows.Forms.Label();
             this.labelMRDPDA = new System.Windows.Forms.Label();
@@ -119,9 +120,8 @@ namespace ZenTimings
             this.textBoxFCLK = new System.Windows.Forms.Label();
             this.labelMCLK = new System.Windows.Forms.Label();
             this.textBoxMCLK = new System.Windows.Forms.Label();
-            this.labelVDDCR_SOC = new System.Windows.Forms.Label();
             this.labelCLDO_VDDP = new System.Windows.Forms.Label();
-            this.labelCLDO_VDDG = new System.Windows.Forms.Label();
+            this.labelCLDO_VDDG_IOD = new System.Windows.Forms.Label();
             this.textBoxCkeSetup = new System.Windows.Forms.Label();
             this.textBoxAddrCmdSetup = new System.Windows.Forms.Label();
             this.textBoxCsOdtSetup = new System.Windows.Forms.Label();
@@ -144,16 +144,16 @@ namespace ZenTimings
             this.labelRttWr = new System.Windows.Forms.Label();
             this.labelRttNom = new System.Windows.Forms.Label();
             this.labelProcODT = new System.Windows.Forms.Label();
-            this.textBoxVDDCR_SOC = new System.Windows.Forms.Label();
             this.textBoxCLDO_VDDP = new System.Windows.Forms.Label();
-            this.textBoxCLDO_VDDG = new System.Windows.Forms.Label();
-            this.textBoxVSOC_SVI2 = new System.Windows.Forms.Label();
-            this.labelVSOC_SVI2 = new System.Windows.Forms.Label();
+            this.textBoxCLDO_VDDG_IOD = new System.Windows.Forms.Label();
+            this.textBoxVSOC = new System.Windows.Forms.Label();
+            this.labelVSOC = new System.Windows.Forms.Label();
             this.label31 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.textBoxRFC = new System.Windows.Forms.Label();
             this.textBoxRFCns = new System.Windows.Forms.Label();
             this.textBoxFreq = new System.Windows.Forms.Label();
+            this.labelCLDO_VDDG_CCD = new System.Windows.Forms.Label();
             this.PowerCfgTimer = new System.Windows.Forms.Timer(this.components);
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.comboBoxPartNumber = new System.Windows.Forms.ComboBox();
@@ -195,6 +195,7 @@ namespace ZenTimings
             this.tableLayoutPanelValues.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanelValues.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 5F));
             this.tableLayoutPanelValues.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanelValues.Controls.Add(this.textBoxCLDO_VDDG_CCD, 8, 7);
             this.tableLayoutPanelValues.Controls.Add(this.textBoxMRDPDA, 5, 21);
             this.tableLayoutPanelValues.Controls.Add(this.textBoxMODPDA, 2, 21);
             this.tableLayoutPanelValues.Controls.Add(this.labelMRDPDA, 4, 21);
@@ -280,9 +281,8 @@ namespace ZenTimings
             this.tableLayoutPanelValues.Controls.Add(this.textBoxFCLK, 8, 1);
             this.tableLayoutPanelValues.Controls.Add(this.labelMCLK, 7, 0);
             this.tableLayoutPanelValues.Controls.Add(this.textBoxMCLK, 8, 0);
-            this.tableLayoutPanelValues.Controls.Add(this.labelVDDCR_SOC, 7, 5);
-            this.tableLayoutPanelValues.Controls.Add(this.labelCLDO_VDDP, 7, 6);
-            this.tableLayoutPanelValues.Controls.Add(this.labelCLDO_VDDG, 7, 7);
+            this.tableLayoutPanelValues.Controls.Add(this.labelCLDO_VDDP, 7, 5);
+            this.tableLayoutPanelValues.Controls.Add(this.labelCLDO_VDDG_IOD, 7, 6);
             this.tableLayoutPanelValues.Controls.Add(this.textBoxCkeSetup, 8, 21);
             this.tableLayoutPanelValues.Controls.Add(this.textBoxAddrCmdSetup, 8, 19);
             this.tableLayoutPanelValues.Controls.Add(this.textBoxCsOdtSetup, 8, 20);
@@ -305,16 +305,16 @@ namespace ZenTimings
             this.tableLayoutPanelValues.Controls.Add(this.labelRttWr, 7, 11);
             this.tableLayoutPanelValues.Controls.Add(this.labelRttNom, 7, 10);
             this.tableLayoutPanelValues.Controls.Add(this.labelProcODT, 7, 9);
-            this.tableLayoutPanelValues.Controls.Add(this.textBoxVDDCR_SOC, 8, 5);
-            this.tableLayoutPanelValues.Controls.Add(this.textBoxCLDO_VDDP, 8, 6);
-            this.tableLayoutPanelValues.Controls.Add(this.textBoxCLDO_VDDG, 8, 7);
-            this.tableLayoutPanelValues.Controls.Add(this.textBoxVSOC_SVI2, 8, 4);
-            this.tableLayoutPanelValues.Controls.Add(this.labelVSOC_SVI2, 7, 4);
+            this.tableLayoutPanelValues.Controls.Add(this.textBoxCLDO_VDDP, 8, 5);
+            this.tableLayoutPanelValues.Controls.Add(this.textBoxCLDO_VDDG_IOD, 8, 6);
+            this.tableLayoutPanelValues.Controls.Add(this.textBoxVSOC, 8, 4);
+            this.tableLayoutPanelValues.Controls.Add(this.labelVSOC, 7, 4);
             this.tableLayoutPanelValues.Controls.Add(this.label31, 1, 16);
             this.tableLayoutPanelValues.Controls.Add(this.label15, 1, 17);
             this.tableLayoutPanelValues.Controls.Add(this.textBoxRFC, 2, 17);
             this.tableLayoutPanelValues.Controls.Add(this.textBoxRFCns, 2, 16);
             this.tableLayoutPanelValues.Controls.Add(this.textBoxFreq, 2, 0);
+            this.tableLayoutPanelValues.Controls.Add(this.labelCLDO_VDDG_CCD, 7, 7);
             this.tableLayoutPanelValues.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanelValues.Location = new System.Drawing.Point(0, 74);
             this.tableLayoutPanelValues.Margin = new System.Windows.Forms.Padding(0);
@@ -347,6 +347,19 @@ namespace ZenTimings
             this.tableLayoutPanelValues.Size = new System.Drawing.Size(424, 404);
             this.tableLayoutPanelValues.TabIndex = 0;
             this.tableLayoutPanelValues.CellPaint += new System.Windows.Forms.TableLayoutCellPaintEventHandler(this.TableLayoutPanel1_CellPaint);
+            // 
+            // textBoxCLDO_VDDG_CCD
+            // 
+            this.textBoxCLDO_VDDG_CCD.BackColor = System.Drawing.Color.Transparent;
+            this.textBoxCLDO_VDDG_CCD.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxCLDO_VDDG_CCD.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxCLDO_VDDG_CCD.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
+            this.textBoxCLDO_VDDG_CCD.Location = new System.Drawing.Point(362, 130);
+            this.textBoxCLDO_VDDG_CCD.Name = "textBoxCLDO_VDDG_CCD";
+            this.textBoxCLDO_VDDG_CCD.Size = new System.Drawing.Size(52, 18);
+            this.textBoxCLDO_VDDG_CCD.TabIndex = 119;
+            this.textBoxCLDO_VDDG_CCD.Text = "N/A";
+            this.textBoxCLDO_VDDG_CCD.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // textBoxMRDPDA
             // 
@@ -1498,20 +1511,6 @@ namespace ZenTimings
             this.textBoxMCLK.Text = "N/A";
             this.textBoxMCLK.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // labelVDDCR_SOC
-            // 
-            this.labelVDDCR_SOC.AutoSize = true;
-            this.labelVDDCR_SOC.BackColor = System.Drawing.Color.Transparent;
-            this.labelVDDCR_SOC.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelVDDCR_SOC.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelVDDCR_SOC.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelVDDCR_SOC.Location = new System.Drawing.Point(270, 94);
-            this.labelVDDCR_SOC.Name = "labelVDDCR_SOC";
-            this.labelVDDCR_SOC.Size = new System.Drawing.Size(86, 18);
-            this.labelVDDCR_SOC.TabIndex = 111;
-            this.labelVDDCR_SOC.Text = "VSOC (SMU)";
-            this.labelVDDCR_SOC.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
             // labelCLDO_VDDP
             // 
             this.labelCLDO_VDDP.AutoSize = true;
@@ -1519,26 +1518,26 @@ namespace ZenTimings
             this.labelCLDO_VDDP.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelCLDO_VDDP.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelCLDO_VDDP.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelCLDO_VDDP.Location = new System.Drawing.Point(270, 112);
+            this.labelCLDO_VDDP.Location = new System.Drawing.Point(270, 94);
             this.labelCLDO_VDDP.Name = "labelCLDO_VDDP";
             this.labelCLDO_VDDP.Size = new System.Drawing.Size(86, 18);
             this.labelCLDO_VDDP.TabIndex = 112;
             this.labelCLDO_VDDP.Text = "CLDO VDDP";
             this.labelCLDO_VDDP.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // labelCLDO_VDDG
+            // labelCLDO_VDDG_IOD
             // 
-            this.labelCLDO_VDDG.AutoSize = true;
-            this.labelCLDO_VDDG.BackColor = System.Drawing.Color.Transparent;
-            this.labelCLDO_VDDG.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelCLDO_VDDG.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelCLDO_VDDG.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelCLDO_VDDG.Location = new System.Drawing.Point(270, 130);
-            this.labelCLDO_VDDG.Name = "labelCLDO_VDDG";
-            this.labelCLDO_VDDG.Size = new System.Drawing.Size(86, 18);
-            this.labelCLDO_VDDG.TabIndex = 113;
-            this.labelCLDO_VDDG.Text = "CLDO VDDG";
-            this.labelCLDO_VDDG.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.labelCLDO_VDDG_IOD.AutoSize = true;
+            this.labelCLDO_VDDG_IOD.BackColor = System.Drawing.Color.Transparent;
+            this.labelCLDO_VDDG_IOD.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelCLDO_VDDG_IOD.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelCLDO_VDDG_IOD.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.labelCLDO_VDDG_IOD.Location = new System.Drawing.Point(270, 112);
+            this.labelCLDO_VDDG_IOD.Name = "labelCLDO_VDDG_IOD";
+            this.labelCLDO_VDDG_IOD.Size = new System.Drawing.Size(86, 18);
+            this.labelCLDO_VDDG_IOD.TabIndex = 113;
+            this.labelCLDO_VDDG_IOD.Text = "VDDG IOD";
+            this.labelCLDO_VDDG_IOD.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // textBoxCkeSetup
             // 
@@ -1837,71 +1836,57 @@ namespace ZenTimings
             this.labelProcODT.Text = "ProcODT";
             this.labelProcODT.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // textBoxVDDCR_SOC
-            // 
-            this.textBoxVDDCR_SOC.BackColor = System.Drawing.Color.Transparent;
-            this.textBoxVDDCR_SOC.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBoxVDDCR_SOC.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxVDDCR_SOC.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxVDDCR_SOC.Location = new System.Drawing.Point(362, 94);
-            this.textBoxVDDCR_SOC.Name = "textBoxVDDCR_SOC";
-            this.textBoxVDDCR_SOC.Size = new System.Drawing.Size(52, 18);
-            this.textBoxVDDCR_SOC.TabIndex = 116;
-            this.textBoxVDDCR_SOC.Text = "N/A";
-            this.textBoxVDDCR_SOC.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // textBoxCLDO_VDDP
             // 
             this.textBoxCLDO_VDDP.BackColor = System.Drawing.Color.Transparent;
             this.textBoxCLDO_VDDP.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxCLDO_VDDP.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxCLDO_VDDP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxCLDO_VDDP.Location = new System.Drawing.Point(362, 112);
+            this.textBoxCLDO_VDDP.Location = new System.Drawing.Point(362, 94);
             this.textBoxCLDO_VDDP.Name = "textBoxCLDO_VDDP";
             this.textBoxCLDO_VDDP.Size = new System.Drawing.Size(52, 18);
             this.textBoxCLDO_VDDP.TabIndex = 117;
             this.textBoxCLDO_VDDP.Text = "N/A";
             this.textBoxCLDO_VDDP.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // textBoxCLDO_VDDG
+            // textBoxCLDO_VDDG_IOD
             // 
-            this.textBoxCLDO_VDDG.BackColor = System.Drawing.Color.Transparent;
-            this.textBoxCLDO_VDDG.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBoxCLDO_VDDG.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxCLDO_VDDG.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxCLDO_VDDG.Location = new System.Drawing.Point(362, 130);
-            this.textBoxCLDO_VDDG.Name = "textBoxCLDO_VDDG";
-            this.textBoxCLDO_VDDG.Size = new System.Drawing.Size(52, 18);
-            this.textBoxCLDO_VDDG.TabIndex = 118;
-            this.textBoxCLDO_VDDG.Text = "N/A";
-            this.textBoxCLDO_VDDG.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.textBoxCLDO_VDDG_IOD.BackColor = System.Drawing.Color.Transparent;
+            this.textBoxCLDO_VDDG_IOD.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxCLDO_VDDG_IOD.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
+            this.textBoxCLDO_VDDG_IOD.Location = new System.Drawing.Point(362, 112);
+            this.textBoxCLDO_VDDG_IOD.Name = "textBoxCLDO_VDDG_IOD";
+            this.textBoxCLDO_VDDG_IOD.Size = new System.Drawing.Size(52, 18);
+            this.textBoxCLDO_VDDG_IOD.TabIndex = 118;
+            this.textBoxCLDO_VDDG_IOD.Text = "N/A";
+            this.textBoxCLDO_VDDG_IOD.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // textBoxVSOC_SVI2
+            // textBoxVSOC
             // 
-            this.textBoxVSOC_SVI2.BackColor = System.Drawing.Color.Transparent;
-            this.textBoxVSOC_SVI2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBoxVSOC_SVI2.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxVSOC_SVI2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.textBoxVSOC_SVI2.Location = new System.Drawing.Point(362, 76);
-            this.textBoxVSOC_SVI2.Name = "textBoxVSOC_SVI2";
-            this.textBoxVSOC_SVI2.Size = new System.Drawing.Size(52, 18);
-            this.textBoxVSOC_SVI2.TabIndex = 117;
-            this.textBoxVSOC_SVI2.Text = "N/A";
-            this.textBoxVSOC_SVI2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.textBoxVSOC.BackColor = System.Drawing.Color.Transparent;
+            this.textBoxVSOC.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxVSOC.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxVSOC.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
+            this.textBoxVSOC.Location = new System.Drawing.Point(362, 76);
+            this.textBoxVSOC.Name = "textBoxVSOC";
+            this.textBoxVSOC.Size = new System.Drawing.Size(52, 18);
+            this.textBoxVSOC.TabIndex = 117;
+            this.textBoxVSOC.Text = "N/A";
+            this.textBoxVSOC.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // labelVSOC_SVI2
+            // labelVSOC
             // 
-            this.labelVSOC_SVI2.AutoSize = true;
-            this.labelVSOC_SVI2.BackColor = System.Drawing.Color.Transparent;
-            this.labelVSOC_SVI2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelVSOC_SVI2.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelVSOC_SVI2.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.labelVSOC_SVI2.Location = new System.Drawing.Point(270, 76);
-            this.labelVSOC_SVI2.Name = "labelVSOC_SVI2";
-            this.labelVSOC_SVI2.Size = new System.Drawing.Size(86, 18);
-            this.labelVSOC_SVI2.TabIndex = 112;
-            this.labelVSOC_SVI2.Text = "VSOC (SVI2)";
-            this.labelVSOC_SVI2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.labelVSOC.AutoSize = true;
+            this.labelVSOC.BackColor = System.Drawing.Color.Transparent;
+            this.labelVSOC.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelVSOC.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelVSOC.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.labelVSOC.Location = new System.Drawing.Point(270, 76);
+            this.labelVSOC.Name = "labelVSOC";
+            this.labelVSOC.Size = new System.Drawing.Size(86, 18);
+            this.labelVSOC.TabIndex = 112;
+            this.labelVSOC.Text = "VSOC";
+            this.labelVSOC.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // label31
             // 
@@ -1970,6 +1955,19 @@ namespace ZenTimings
             this.textBoxFreq.TabIndex = 119;
             this.textBoxFreq.Text = "N/A";
             this.textBoxFreq.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelCLDO_VDDG_CCD
+            // 
+            this.labelCLDO_VDDG_CCD.AutoSize = true;
+            this.labelCLDO_VDDG_CCD.BackColor = System.Drawing.Color.Transparent;
+            this.labelCLDO_VDDG_CCD.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelCLDO_VDDG_CCD.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelCLDO_VDDG_CCD.Location = new System.Drawing.Point(270, 130);
+            this.labelCLDO_VDDG_CCD.Name = "labelCLDO_VDDG_CCD";
+            this.labelCLDO_VDDG_CCD.Size = new System.Drawing.Size(86, 18);
+            this.labelCLDO_VDDG_CCD.TabIndex = 120;
+            this.labelCLDO_VDDG_CCD.Text = "VDDG CCD";
+            this.labelCLDO_VDDG_CCD.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // PowerCfgTimer
             // 
@@ -2311,14 +2309,12 @@ namespace ZenTimings
         private System.Windows.Forms.Label labelFCLK;
         private System.Windows.Forms.Label labelUCLK;
         private System.Windows.Forms.Label labelMCLK;
-        private System.Windows.Forms.Label labelVDDCR_SOC;
         private System.Windows.Forms.Label labelCLDO_VDDP;
-        private System.Windows.Forms.Label labelCLDO_VDDG;
+        private System.Windows.Forms.Label labelCLDO_VDDG_IOD;
         private System.Windows.Forms.Label textBoxFCLK;
         private System.Windows.Forms.Label textBoxMCLK;
-        private System.Windows.Forms.Label textBoxVDDCR_SOC;
         private System.Windows.Forms.Label textBoxCLDO_VDDP;
-        private System.Windows.Forms.Label textBoxCLDO_VDDG;
+        private System.Windows.Forms.Label textBoxCLDO_VDDG_IOD;
         private System.Windows.Forms.Timer PowerCfgTimer;
         private System.Windows.Forms.Label textBoxFreq;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
@@ -2337,13 +2333,15 @@ namespace ZenTimings
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.Panel dividerTopMenu;
-        private System.Windows.Forms.Label textBoxVSOC_SVI2;
-        private System.Windows.Forms.Label labelVSOC_SVI2;
+        private System.Windows.Forms.Label textBoxVSOC;
+        private System.Windows.Forms.Label labelVSOC;
         private System.Windows.Forms.Label textBoxMRDPDA;
         private System.Windows.Forms.Label textBoxMODPDA;
         private System.Windows.Forms.Label labelMRDPDA;
         private System.Windows.Forms.Label labelMODPDA;
         private System.Windows.Forms.Button buttonScreenshot;
+        private System.Windows.Forms.Label textBoxCLDO_VDDG_CCD;
+        private System.Windows.Forms.Label labelCLDO_VDDG_CCD;
     }
 }
 

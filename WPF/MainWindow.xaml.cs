@@ -1,4 +1,4 @@
-#define BETA
+//#define BETA
 
 using AdonisUI.Controls;
 using System;
@@ -508,23 +508,23 @@ namespace ZenTimings
         {
             if (WaitForDriverLoad())
             {
-            int minimum_retries = 2;
-            Stopwatch timer = new Stopwatch();
-            timer.Start();
+                int minimum_retries = 2;
+                Stopwatch timer = new Stopwatch();
+                timer.Start();
 
-            uint temp;
-            // Refresh until table is transferred to DRAM or timeout
-            do
+                uint temp;
+                // Refresh until table is transferred to DRAM or timeout
+                do
+                    InteropMethods.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
+                while (temp == 0 && timer.Elapsed.TotalMilliseconds < 10000);
+
                 InteropMethods.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
-            while (temp == 0 && timer.Elapsed.TotalMilliseconds < 10000);
 
-            InteropMethods.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
+                // Already in DRAM and auto-refresh disabled
+                if (temp != 0)
+                    Thread.Sleep(Convert.ToInt32(PowerCfgTimer.Interval.TotalMilliseconds) * minimum_retries);
 
-            // Already in DRAM and auto-refresh disabled
-            if (temp != 0)
-                Thread.Sleep(Convert.ToInt32(PowerCfgTimer.Interval.TotalMilliseconds) * minimum_retries);
-
-            timer.Stop();
+                timer.Stop();
             } 
             else
             {

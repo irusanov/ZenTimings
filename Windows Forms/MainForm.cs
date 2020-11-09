@@ -81,7 +81,7 @@ namespace ZenTimings
             var cpufamily = OPS.GetCpuFamily();
             if (cpufamily != SMU.CpuFamily.FAMILY_17H && cpufamily != SMU.CpuFamily.FAMILY_19H)
             {
-                MessageBox.Show("CPU is not supported.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                HandleError("CPU is not supported.");
                 ExitApplication();
             }
 
@@ -194,17 +194,17 @@ namespace ZenTimings
                 b.Format += new ConvertEventHandler(FloatToFrequencyString);
                 textBoxUCLK.DataBindings.Add(b);
 
-                b = new Binding("Text", PowerTable, "VDDCR_SOC");
-                b.Format += new ConvertEventHandler(FloatToVoltageString);
-                textBoxVDDCR_SOC.DataBindings.Add(b);
-
                 b = new Binding("Text", PowerTable, "CLDO_VDDP");
                 b.Format += new ConvertEventHandler(FloatToVoltageString);
                 textBoxCLDO_VDDP.DataBindings.Add(b);
 
-                b = new Binding("Text", PowerTable, "CLDO_VDDG");
+                b = new Binding("Text", PowerTable, "CLDO_VDDG_IOD");
                 b.Format += new ConvertEventHandler(FloatToVoltageString);
-                textBoxCLDO_VDDG.DataBindings.Add(b);
+                textBoxCLDO_VDDG_IOD.DataBindings.Add(b);
+
+                b = new Binding("Text", PowerTable, "CLDO_VDDG_CCD");
+                b.Format += new ConvertEventHandler(FloatToVoltageString);
+                textBoxCLDO_VDDG_CCD.DataBindings.Add(b);
             }
         }
 
@@ -243,10 +243,10 @@ namespace ZenTimings
                         if (temp != null) deviceLocator = (string)temp;
 
                         modules.Add(new MemoryModule(partNumber, bankLabel, manufacturer, deviceLocator, capacity, clockSpeed));
-                        //string dl = deviceLocator.Length > 0 ? $"#{deviceLocator.Replace("DIMM_", "")}: " : "";
-                        //comboBoxPartNumber.Items.Add($"{dl}{partNumber}");
 
-                        string bl = bankLabel.Length > 0 ? new String(bankLabel.Where(char.IsDigit).ToArray()) : "";
+                        string bl = bankLabel.Length > 0 ? new string(bankLabel.Where(char.IsDigit).ToArray()) : "";
+                        //string dl = deviceLocator.Length > 0 ? new string(deviceLocator.Where(char.IsDigit).ToArray()) : "";
+
                         comboBoxPartNumber.Items.Add($"#{bl}: {partNumber}");
 
                         comboBoxPartNumber.SelectedIndex = 0;
@@ -404,7 +404,7 @@ namespace ZenTimings
             uint vddcr_soc = (OPS.ReadDword(sviSocAddress) >> 16) & 0xFF;
             //uint vcore = (ops.ReadDword(sviCoreaddress) >> 16) & 0xFF;
 
-            textBoxVSOC_SVI2.Text = $"{OPS.VidToVoltage(vddcr_soc):F4}V";
+            textBoxVSOC.Text = $"{OPS.VidToVoltage(vddcr_soc):F4}V";
         }
 
         private void ReadMemoryConfig()
@@ -519,6 +519,8 @@ namespace ZenTimings
                 enabled = channel && (dimm1 || dimm2);
             }
 
+            // Reset here in case no enabled channel is detected
+            // Try and read from the first IMC (IMC0);
             if (!enabled) offset = 0;
 
             uint umcBase = OPS.ReadDword(offset | 0x50200);
@@ -618,9 +620,9 @@ namespace ZenTimings
             tableLayoutPanelValues.Controls.Remove(textBoxFCLK);
             tableLayoutPanelValues.Controls.Remove(labelMCLK);
             tableLayoutPanelValues.Controls.Remove(textBoxMCLK);
-            tableLayoutPanelValues.Controls.Remove(labelVDDCR_SOC);
             tableLayoutPanelValues.Controls.Remove(labelCLDO_VDDP);
-            tableLayoutPanelValues.Controls.Remove(labelCLDO_VDDG);
+            tableLayoutPanelValues.Controls.Remove(labelCLDO_VDDG_IOD);
+            tableLayoutPanelValues.Controls.Remove(labelCLDO_VDDG_CCD);
             tableLayoutPanelValues.Controls.Remove(textBoxCkeSetup);
             tableLayoutPanelValues.Controls.Remove(textBoxAddrCmdSetup);
             tableLayoutPanelValues.Controls.Remove(textBoxCsOdtSetup);
@@ -643,11 +645,11 @@ namespace ZenTimings
             tableLayoutPanelValues.Controls.Remove(labelRttWr);
             tableLayoutPanelValues.Controls.Remove(labelRttNom);
             tableLayoutPanelValues.Controls.Remove(labelProcODT);
-            tableLayoutPanelValues.Controls.Remove(textBoxVDDCR_SOC);
             tableLayoutPanelValues.Controls.Remove(textBoxCLDO_VDDP);
-            tableLayoutPanelValues.Controls.Remove(textBoxCLDO_VDDG);
-            tableLayoutPanelValues.Controls.Remove(textBoxVSOC_SVI2);
-            tableLayoutPanelValues.Controls.Remove(labelVSOC_SVI2);
+            tableLayoutPanelValues.Controls.Remove(textBoxCLDO_VDDG_IOD);
+            tableLayoutPanelValues.Controls.Remove(textBoxCLDO_VDDG_CCD);
+            tableLayoutPanelValues.Controls.Remove(textBoxVSOC);
+            tableLayoutPanelValues.Controls.Remove(labelVSOC);
             Controls.Remove(dividerTop);
 
             tableLayoutPanelValues.ColumnStyles[7].SizeType = SizeType.Absolute;
@@ -724,25 +726,48 @@ namespace ZenTimings
             }
         }
 
-        private void WaitForPowerTable(object sender, DoWorkEventArgs e)
+        private bool WaitForDriverLoad()
         {
-            int minimum_retries = 2;
             Stopwatch timer = new Stopwatch();
             timer.Start();
 
-            uint temp;
-            // Refresh until table is transferred to DRAM or timeout
+            bool temp;
+            // Refresh until driver is opened
             do
-                InteropMethods.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
-            while (temp == 0 && timer.Elapsed.TotalMilliseconds < 10000);
-
-            InteropMethods.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
-
-            // Already in DRAM and auto-refresh disabled
-            if (temp != 0)
-                Thread.Sleep(PowerCfgTimer.Interval * minimum_retries);
+                temp = InteropMethods.IsInpOutDriverOpen();
+            while (!temp && timer.Elapsed.TotalMilliseconds < 10000);
 
             timer.Stop();
+
+            return temp;
+        }
+
+        private void WaitForPowerTable(object sender, DoWorkEventArgs e)
+        {
+            if (WaitForDriverLoad())
+            {
+                int minimum_retries = 2;
+                Stopwatch timer = new Stopwatch();
+                timer.Start();
+
+                uint temp;
+                // Refresh until table is transferred to DRAM or timeout
+                do
+                    InteropMethods.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
+                while (temp == 0 && timer.Elapsed.TotalMilliseconds < 10000);
+
+                InteropMethods.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
+
+                // Already in DRAM and auto-refresh disabled
+                if (temp != 0)
+                    Thread.Sleep(PowerCfgTimer.Interval * minimum_retries);
+
+                timer.Stop();
+            }
+            else
+            {
+                HandleError("InpOut driver is not responding or not loaded.");
+            }
         }
 
         private void WaitForPowerTable_Complete(object sender, RunWorkerCompletedEventArgs e)
@@ -832,6 +857,11 @@ namespace ZenTimings
                     e.Graphics.FillRectangle(brush, e.CellBounds);
                 }
             }
+        }
+
+        public void HandleError(string message, string title = "Error")
+        {
+            MessageBox.Show(message, title);
         }
 
         private void Restart()

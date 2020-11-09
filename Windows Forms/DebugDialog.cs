@@ -1,3 +1,4 @@
+using Microsoft.VisualBasic.Devices;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -188,6 +189,8 @@ namespace ZenTimings
             AddHeading("System Info");
             try
             {
+                AddLine("OS: " + new ComputerInfo().OSFullName);
+
                 foreach (PropertyInfo property in properties)
                 {
                     if (property.Name == "CpuId" || property.Name == "PatchLevel")
@@ -273,7 +276,8 @@ namespace ZenTimings
                 AddLine($"UCLK: {PT.UCLK}");
                 AddLine($"VSOC_SMU: {PT.VDDCR_SOC}");
                 AddLine($"CLDO_VDDP: {PT.CLDO_VDDP}");
-                AddLine($"CLDO_VDDG: {PT.CLDO_VDDG}");
+                AddLine($"CLDO_VDDG: {PT.CLDO_VDDG_IOD}");
+                AddLine($"CLDO_VDDG: {PT.CLDO_VDDG_CCD}");
             }
             catch
             {
