@@ -136,9 +136,25 @@ namespace ZenTimings.Windows
             {
                 try
                 {
-                    uint offset = i << 20;
-                    bool enabled = OPS.GetBits(OPS.ReadDword(offset | 0x50DF0), 19, 1) == 0;
+                    uint offset = (uint)i << 20;
+                    bool channel = CPU.utils.GetBits(CPU.ReadDword(offset | 0x50DF0), 19, 1) == 0;
+                    bool dimm1 = CPU.utils.GetBits(CPU.ReadDword(offset | 0x50000), 0, 1) == 1;
+                    bool dimm2 = CPU.utils.GetBits(CPU.ReadDword(offset | 0x50008), 0, 1) == 1;
+                    bool enabled = channel && (dimm1 || dimm2);
+
                     AddLine($"Channel{i}: {enabled}");
+                    if (enabled)
+                    {
+                        AddLine("-- UMC Registers");
+                        uint startReg = offset | 0x50000;
+                        uint endReg = offset | 0x50300;
+                        while (startReg <= endReg)
+                        {
+                            uint data = CPU.ReadDword(startReg);
+                            AddLine($"   0x{startReg:X8}: 0x{data:X8}");
+                            startReg += 4;
+                        }
+                    }
                 }
                 catch
                 {

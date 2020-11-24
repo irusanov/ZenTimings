@@ -47,13 +47,24 @@
         <Setter Property="Padding" Value="5" />
         <Setter Property="Background" Value="{DynamicResource ContentBackground}" />
         <Style.Resources>
-            <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlockStyles}" />
+            <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlockStyles}">
+                <Style.Triggers>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Foreground" Value="{DynamicResource DisabledColor}" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
         </Style.Resources>
     </Style>
 
     <Style x:Key="ValueStyles" TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlockStyles}">
         <Setter Property="TextAlignment" Value="Center" />
         <Setter Property="Foreground" Value="{DynamicResource AccentTextColor}" />
+        <Style.Triggers>
+            <Trigger Property="Text" Value="N/A">
+                <Setter Property="Foreground" Value="{DynamicResource DisabledColor}" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style TargetType="Separator">

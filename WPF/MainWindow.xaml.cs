@@ -615,6 +615,7 @@ namespace ZenTimings
                 {
                     timings = MEMCFG,
                     powerTable = PowerTable,
+                    WMIPresent = !compatMode,
                     settings,
                 };
             }
@@ -793,13 +794,28 @@ namespace ZenTimings
         }
     }
 
-    public class FloatToVoltage : IValueConverter
+    public class FloatToVoltageConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             if ((float)value == 0)
                 return "N/A";
             return $"{value:F4}V";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return Binding.DoNothing;
+        }
+    }
+
+    public class FloatToBoolConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if ((float)value == 0)
+                return false;
+            return true;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

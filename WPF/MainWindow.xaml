@@ -30,7 +30,9 @@
     </Window.Style>
 
     <Window.Resources>
-        <local:FloatToVoltage x:Key="FloatToVoltage" />
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <local:FloatToVoltageConverter x:Key="FloatToVoltage" />
+        <local:FloatToBoolConverter x:Key="FloatToBool" />
     </Window.Resources>
 
     <Border>
@@ -208,31 +210,37 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="MCLK" TextAlignment="Right"/>
-                            <TextBlock Text="FCLK" TextAlignment="Right"/>
-                            <TextBlock Text="UCLK" TextAlignment="Right"/>
+                            <TextBlock Text="MCLK" TextAlignment="Right"
+                                       IsEnabled="{Binding powerTable.MCLK, Converter={StaticResource FloatToBool}}" />
+                            <TextBlock Text="FCLK" TextAlignment="Right"
+                                       IsEnabled="{Binding powerTable.FCLK, Converter={StaticResource FloatToBool}}" />
+                            <TextBlock Text="UCLK" TextAlignment="Right"
+                                       IsEnabled="{Binding powerTable.UCLK, Converter={StaticResource FloatToBool}}" />
 
                             <TextBlock Text=""/>
 
                             <TextBlock Text="VSOC" TextAlignment="Right"/>
                             <!-- " TextBlock Text="VSOC (SMU)" TextAlignment="Right"/ -->
-                            <TextBlock Text="CLDO VDDP" TextAlignment="Right"/>
-                            <TextBlock Text="VDDG IOD" TextAlignment="Right"/>
-                            <TextBlock Text="VDDG CCD" TextAlignment="Right"/>
+                            <TextBlock Text="CLDO VDDP" TextAlignment="Right"
+                                       IsEnabled="{Binding powerTable.CLDO_VDDP, Converter={StaticResource FloatToBool}}"/>
+                            <TextBlock Text="VDDG CCD" TextAlignment="Right"
+                                       IsEnabled="{Binding powerTable.CLDO_VDDG_CCD, Converter={StaticResource FloatToBool}}" />
+                            <TextBlock Text="VDDG IOD" TextAlignment="Right"
+                                       IsEnabled="{Binding powerTable.CLDO_VDDG_IOD, Converter={StaticResource FloatToBool}}" />
                             <TextBlock Text="" TextAlignment="Right"/>
-                            <TextBlock Text="ProcODT" TextAlignment="Right"/>
-                            <TextBlock Text="RttNom" TextAlignment="Right"/>
-                            <TextBlock Text="RttWr" TextAlignment="Right"/>
-                            <TextBlock Text="RttPark" TextAlignment="Right"/>
+                            <TextBlock Text="ProcODT" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
+                            <TextBlock Text="RttNom" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
+                            <TextBlock Text="RttWr" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
+                            <TextBlock Text="RttPark" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
+                            <TextBlock Text="" TextAlignment="Right" />
+                            <TextBlock Text="ClkDrvStr" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
+                            <TextBlock Text="AddrCmdDrvStr" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
+                            <TextBlock Text="CsOdtDrvStr" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
+                            <TextBlock Text="CkeDrvStr" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
                             <TextBlock Text="" TextAlignment="Right"/>
-                            <TextBlock Text="ClkDrvStr" TextAlignment="Right"/>
-                            <TextBlock Text="AddrCmdDrvStr" TextAlignment="Right"/>
-                            <TextBlock Text="CsOdtDrvStr" TextAlignment="Right"/>
-                            <TextBlock Text="CkeDrvStr" TextAlignment="Right"/>
-                            <TextBlock Text="" TextAlignment="Right"/>
-                            <TextBlock Text="AddrCmdSetup" TextAlignment="Right"/>
-                            <TextBlock Text="CsOdtSetup" TextAlignment="Right"/>
-                            <TextBlock Text="CkeSetup" TextAlignment="Right"/>
+                            <TextBlock Text="AddrCmdSetup" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
+                            <TextBlock Text="CsOdtSetup" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
+                            <TextBlock Text="CkeSetup" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
                         </StackPanel>
 
                         <StackPanel Grid.Column="1">
@@ -245,11 +253,11 @@
                             <TextBlock x:Name="textBoxVSOC_SVI2" Text="N/A" Style="{StaticResource ValueStyles}"/>
                             <!-- " TextBlock Text="{Binding powerTable.VDDCR_SOC, Converter={StaticResource FloatToVoltage}}"
                                        Style="{StaticResource ValueStyles}"/ -->
-                            <TextBlock Text="{Binding powerTable.CLDO_VDDP, Converter={StaticResource FloatToVoltage}}"
+                            <TextBlock Text="{Binding powerTable.CLDO_VDDP, FallbackValue='N/A', Converter={StaticResource FloatToVoltage}}"
                                        Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding powerTable.CLDO_VDDG_IOD, Converter={StaticResource FloatToVoltage}}"
+                            <TextBlock Text="{Binding powerTable.CLDO_VDDG_CCD, FallbackValue='N/A', Converter={StaticResource FloatToVoltage}}"
                                        Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding powerTable.CLDO_VDDG_CCD, Converter={StaticResource FloatToVoltage}}"
+                            <TextBlock Text="{Binding powerTable.CLDO_VDDG_IOD, FallbackValue='N/A', Converter={StaticResource FloatToVoltage}}"
                                        Style="{StaticResource ValueStyles}"/>
                             <TextBlock Text=""/>
                             <TextBlock x:Name="textBoxProcODT" Text="N/A" Style="{StaticResource ValueStyles}"/>
