@@ -48,16 +48,11 @@
   <ItemGroup>
     <Compile Include="BiosACPIFunction.cs" />
     <Compile Include="BiosMemController.cs" />
+    <Compile Include="InteropMethods.cs" />
     <Compile Include="MemoryConfig.cs" />
     <Compile Include="MemoryModule.cs" />
-    <Compile Include="InteropMethods.cs" />
-    <Compile Include="Ols.cs" />
-    <Compile Include="Ops.cs" />
-    <Compile Include="PowerTable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Screenshot.cs" />
-    <Compile Include="SMU.cs" />
-    <Compile Include="SystemInfo.cs" />
     <Compile Include="WMI.cs" />
   </ItemGroup>
   <ItemGroup>

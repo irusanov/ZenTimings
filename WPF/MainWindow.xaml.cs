@@ -17,8 +17,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using ZenStates;
-using ZenTimings.Utils;
+using ZenStates.Core;
 using ZenTimings.Windows;
 
 namespace ZenTimings
@@ -43,7 +42,7 @@ namespace ZenTimings
 
         private readonly List<MemoryModule> modules = new List<MemoryModule>();
         private readonly List<BiosACPIFunction> biosFunctions = new List<BiosACPIFunction>();
-        private readonly Ops OPS = new Ops();
+        private readonly Cpu cpu = new Cpu();
         private readonly MemoryConfig MEMCFG = new MemoryConfig();
         private readonly BiosMemController BMC;
         private readonly PowerTable PowerTable;
@@ -59,31 +58,30 @@ namespace ZenTimings
 
         private void InitSystemInfo()
         {
-            var cpufamily = OPS.GetCpuFamily();
-            if (cpufamily != SMU.CpuFamily.FAMILY_17H && cpufamily != SMU.CpuFamily.FAMILY_19H)
+            if (cpu.info.family != Cpu.Family.FAMILY_17H && cpu.info.family != Cpu.Family.FAMILY_19H)
             {
                 HandleError("CPU is not supported.");
                 ExitApplication();
             }
 
-            int[] coreCount = OPS.GetCoreCount();
             SI = new SystemInfo
             {
-                CpuId = OPS.GetCpuId(),
-                CpuName = OPS.GetCpuName(),
-                NodesPerProcessor = OPS.GetCpuNodes(),
-                PackageType = OPS.GetPackageType(),
-                PatchLevel = OPS.GetPatchLevel(),
-                SmuVersion = OPS.Smu.Version,
-                FusedCoreCount = coreCount[0],
-                Threads = coreCount[1],
-                CCDCount = OPS.GetCCDCount(),
-                CodeName = $"{OPS.CpuType}",
-                SMT = OPS.GetThreadsPerCore() > 1,
+                CpuId = cpu.info.cpuid,
+                CpuName = cpu.info.cpuName,
+                NodesPerProcessor = cpu.GetCpuNodes(),
+                PackageType = cpu.info.packageType,
+                PatchLevel = cpu.info.patchLevel,
+                SmuVersion = cpu.smu.Version,
+                FusedCoreCount = (int)cpu.info.cores,
+                Threads = (int)cpu.info.logicalCores,
+                CCDCount = (int)cpu.info.ccds,
+                CCXCount = (int)cpu.info.ccxs,
+                NumCoresInCCX = (int)cpu.info.coresPerCcx,
+                CodeName = $"{cpu.info.codeName}",
+                SMT = (int)cpu.info.threadsPerCore > 1,
+                Model = cpu.info.model,
+                ExtendedModel = cpu.info.extModel,
             };
-
-            SI.Model = (SI.CpuId & 0xff) >> 4;
-            SI.ExtendedModel = SI.Model + ((SI.CpuId >> 12) & 0xF0);
 
             ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_BaseBoard");
             foreach (ManagementObject obj in searcher.Get())
@@ -182,10 +180,10 @@ namespace ZenTimings
             {
                 try
                 {
-                    SMU.Status status = OPS.TransferTableToDram();
+                    SMU.Status status = cpu.TransferTableToDram();
 
                     if (status != SMU.Status.OK)
-                        status = OPS.TransferTableToDram(); // retry
+                        status = cpu.TransferTableToDram(); // retry
 
                     if (status != SMU.Status.OK)
                         return;
@@ -217,29 +215,29 @@ namespace ZenTimings
         {
             uint sviSocAddress, sviCoreaddress;
             // SVI2 interface
-            switch (OPS.CpuType/*si.ExtendedModel*/)
+            switch (cpu.info.codeName/*si.ExtendedModel*/)
             {
                 //case 0x1:  // Zen
                 //case 0x8:  // Zen+
                 //case 0x11: // Zen APU
-                case SMU.CPUType.SummitRidge:
-                case SMU.CPUType.PinnacleRidge:
-                case SMU.CPUType.RavenRidge:
-                case SMU.CPUType.Fenghuang:
+                case Cpu.CodeName.SummitRidge:
+                case Cpu.CodeName.PinnacleRidge:
+                case Cpu.CodeName.RavenRidge:
+                case Cpu.CodeName.Fenghuang:
                     sviCoreaddress = F17H_M01H_SVI_TEL_PLANE0;
                     sviSocAddress = F17H_M01H_SVI_TEL_PLANE1;
                     break;
 
-                case SMU.CPUType.Threadripper:
-                case SMU.CPUType.Naples:
-                case SMU.CPUType.Colfax:
+                case Cpu.CodeName.Threadripper:
+                case Cpu.CodeName.Naples:
+                case Cpu.CodeName.Colfax:
                     sviCoreaddress = F17H_M01H_SVI_TEL_PLANE1;
                     sviSocAddress = F17H_M01H_SVI_TEL_PLANE0;
                     break;
 
                 //case 0x31: // Zen2 Threadripper/EPYC
-                case SMU.CPUType.CastlePeak:
-                case SMU.CPUType.Rome:
+                case Cpu.CodeName.CastlePeak:
+                case Cpu.CodeName.Rome:
                     sviCoreaddress = F17H_M30H_SVI_TEL_PLANE0;
                     sviSocAddress = F17H_M30H_SVI_TEL_PLANE1;
                     break;
@@ -247,20 +245,20 @@ namespace ZenTimings
                 //case 0x18: // Zen+ APU
                 //case 0x60: // Zen2 APU
                 //case 0x71: // Zen2 Ryzen
-                case SMU.CPUType.Picasso:
-                case SMU.CPUType.Matisse:
+                case Cpu.CodeName.Picasso:
+                case Cpu.CodeName.Matisse:
                     sviCoreaddress = F17H_M70H_SVI_TEL_PLANE0;
                     sviSocAddress = F17H_M70H_SVI_TEL_PLANE1;
                     break;
 
                 // Renoir
-                case SMU.CPUType.Renoir:
+                case Cpu.CodeName.Renoir:
                     sviCoreaddress = F17H_M60H_SVI_TEL_PLANE0;
                     sviSocAddress = F17H_M60H_SVI_TEL_PLANE1;
                     break;
 
-                case SMU.CPUType.Vermeer:
-                case SMU.CPUType.Genesis:
+                case Cpu.CodeName.Vermeer:
+                case Cpu.CodeName.Genesis:
                     sviCoreaddress = F19H_M21H_SVI_TEL_PLANE0;
                     sviSocAddress = F19H_M21H_SVI_TEL_PLANE1;
                     break;
@@ -271,10 +269,10 @@ namespace ZenTimings
                     break;
             }
 
-            uint vddcr_soc = (OPS.ReadDword(sviSocAddress) >> 16) & 0xFF;
+            uint vddcr_soc = (cpu.ReadDword(sviSocAddress) >> 16) & 0xFF;
             //uint vcore = (ops.ReadDword(sviCoreaddress) >> 16) & 0xFF;
 
-            textBoxVSOC_SVI2.Text = $"{OPS.VidToVoltage(vddcr_soc):F4}V";
+            textBoxVSOC_SVI2.Text = $"{cpu.utils.VidToVoltage(vddcr_soc):F4}V";
         }
 
         private void ReadMemoryConfig()
@@ -387,9 +385,9 @@ namespace ZenTimings
             for (var i = 0; i < 8 && !enabled; i++)
             {
                 offset = (uint)i << 20;
-                bool channel = OPS.GetBits(OPS.ReadDword(offset | 0x50DF0), 19, 1) == 0;
-                bool dimm1 = OPS.GetBits(OPS.ReadDword(offset | 0x50000), 0, 1) == 1;
-                bool dimm2 = OPS.GetBits(OPS.ReadDword(offset | 0x50008), 0, 1) == 1;
+                bool channel = cpu.utils.GetBits(cpu.ReadDword(offset | 0x50DF0), 19, 1) == 0;
+                bool dimm1 = cpu.utils.GetBits(cpu.ReadDword(offset | 0x50000), 0, 1) == 1;
+                bool dimm2 = cpu.utils.GetBits(cpu.ReadDword(offset | 0x50008), 0, 1) == 1;
                 enabled = channel && (dimm1 || dimm2);
             }
 
@@ -397,88 +395,88 @@ namespace ZenTimings
             // Try and read from the first IMC (IMC0);
             if (!enabled) offset = 0;
 
-            uint umcBase = OPS.ReadDword(offset | 0x50200);
-            uint bgsa0 = OPS.ReadDword(offset | 0x500D0);
-            uint bgsa1 = OPS.ReadDword(offset | 0x500D4);
-            uint bgs0 = OPS.ReadDword(offset | 0x50050);
-            uint bgs1 = OPS.ReadDword(offset | 0x50058);
-            uint timings5 = OPS.ReadDword(offset | 0x50204);
-            uint timings6 = OPS.ReadDword(offset | 0x50208);
-            uint timings7 = OPS.ReadDword(offset | 0x5020C);
-            uint timings8 = OPS.ReadDword(offset | 0x50210);
-            uint timings9 = OPS.ReadDword(offset | 0x50214);
-            uint timings10 = OPS.ReadDword(offset | 0x50218);
-            uint timings11 = OPS.ReadDword(offset | 0x5021C);
-            uint timings12 = OPS.ReadDword(offset | 0x50220);
-            uint timings13 = OPS.ReadDword(offset | 0x50224);
-            uint timings14 = OPS.ReadDword(offset | 0x50228);
-            uint timings15 = OPS.ReadDword(offset | 0x50230);
-            uint timings16 = OPS.ReadDword(offset | 0x50234);
-            uint timings17 = OPS.ReadDword(offset | 0x50250);
-            uint timings18 = OPS.ReadDword(offset | 0x50254);
-            uint timings19 = OPS.ReadDword(offset | 0x50258);
-            uint timings20 = OPS.ReadDword(offset | 0x50260);
-            uint timings21 = OPS.ReadDword(offset | 0x50264);
-            uint timings22 = OPS.ReadDword(offset | 0x5028C);
+            uint umcBase = cpu.ReadDword(offset | 0x50200);
+            uint bgsa0 = cpu.ReadDword(offset | 0x500D0);
+            uint bgsa1 = cpu.ReadDword(offset | 0x500D4);
+            uint bgs0 = cpu.ReadDword(offset | 0x50050);
+            uint bgs1 = cpu.ReadDword(offset | 0x50058);
+            uint timings5 = cpu.ReadDword(offset | 0x50204);
+            uint timings6 = cpu.ReadDword(offset | 0x50208);
+            uint timings7 = cpu.ReadDword(offset | 0x5020C);
+            uint timings8 = cpu.ReadDword(offset | 0x50210);
+            uint timings9 = cpu.ReadDword(offset | 0x50214);
+            uint timings10 = cpu.ReadDword(offset | 0x50218);
+            uint timings11 = cpu.ReadDword(offset | 0x5021C);
+            uint timings12 = cpu.ReadDword(offset | 0x50220);
+            uint timings13 = cpu.ReadDword(offset | 0x50224);
+            uint timings14 = cpu.ReadDword(offset | 0x50228);
+            uint timings15 = cpu.ReadDword(offset | 0x50230);
+            uint timings16 = cpu.ReadDword(offset | 0x50234);
+            uint timings17 = cpu.ReadDword(offset | 0x50250);
+            uint timings18 = cpu.ReadDword(offset | 0x50254);
+            uint timings19 = cpu.ReadDword(offset | 0x50258);
+            uint timings20 = cpu.ReadDword(offset | 0x50260);
+            uint timings21 = cpu.ReadDword(offset | 0x50264);
+            uint timings22 = cpu.ReadDword(offset | 0x5028C);
             uint timings23 = timings20 != timings21 ? (timings20 != 0x21060138 ? timings20 : timings21) : timings20;
 
             MEMCFG.BGS = (bgs0 == 0x87654321 && bgs1 == 0x87654321) ? "Disabled" : "Enabled";
-            MEMCFG.BGSAlt = OPS.GetBits(bgsa0, 4, 7) > 0 || OPS.GetBits(bgsa1, 4, 7) > 0 ? "Enabled" : "Disabled";
-            MEMCFG.GDM = OPS.GetBits(umcBase, 11, 1) > 0 ? "Enabled" : "Disabled";
-            MEMCFG.Cmd2T = OPS.GetBits(umcBase, 10, 1) > 0 ? "2T" : "1T";
+            MEMCFG.BGSAlt = cpu.utils.GetBits(bgsa0, 4, 7) > 0 || cpu.utils.GetBits(bgsa1, 4, 7) > 0 ? "Enabled" : "Disabled";
+            MEMCFG.GDM = cpu.utils.GetBits(umcBase, 11, 1) > 0 ? "Enabled" : "Disabled";
+            MEMCFG.Cmd2T = cpu.utils.GetBits(umcBase, 10, 1) > 0 ? "2T" : "1T";
 
-            MEMCFG.CL = OPS.GetBits(timings5, 0, 6);
-            MEMCFG.RAS = OPS.GetBits(timings5, 8, 7);
-            MEMCFG.RCDRD = OPS.GetBits(timings5, 16, 6);
-            MEMCFG.RCDWR = OPS.GetBits(timings5, 24, 6);
+            MEMCFG.CL = cpu.utils.GetBits(timings5, 0, 6);
+            MEMCFG.RAS = cpu.utils.GetBits(timings5, 8, 7);
+            MEMCFG.RCDRD = cpu.utils.GetBits(timings5, 16, 6);
+            MEMCFG.RCDWR = cpu.utils.GetBits(timings5, 24, 6);
 
-            MEMCFG.RC = OPS.GetBits(timings6, 0, 8);
-            MEMCFG.RP = OPS.GetBits(timings6, 16, 6);
+            MEMCFG.RC = cpu.utils.GetBits(timings6, 0, 8);
+            MEMCFG.RP = cpu.utils.GetBits(timings6, 16, 6);
 
-            MEMCFG.RRDS = OPS.GetBits(timings7, 0, 5);
-            MEMCFG.RRDL = OPS.GetBits(timings7, 8, 5);
-            MEMCFG.RTP = OPS.GetBits(timings7, 24, 5);
+            MEMCFG.RRDS = cpu.utils.GetBits(timings7, 0, 5);
+            MEMCFG.RRDL = cpu.utils.GetBits(timings7, 8, 5);
+            MEMCFG.RTP = cpu.utils.GetBits(timings7, 24, 5);
 
-            MEMCFG.FAW = OPS.GetBits(timings8, 0, 8);
+            MEMCFG.FAW = cpu.utils.GetBits(timings8, 0, 8);
 
-            MEMCFG.CWL = OPS.GetBits(timings9, 0, 6);
-            MEMCFG.WTRS = OPS.GetBits(timings9, 8, 5);
-            MEMCFG.WTRL = OPS.GetBits(timings9, 16, 7);
+            MEMCFG.CWL = cpu.utils.GetBits(timings9, 0, 6);
+            MEMCFG.WTRS = cpu.utils.GetBits(timings9, 8, 5);
+            MEMCFG.WTRL = cpu.utils.GetBits(timings9, 16, 7);
 
-            MEMCFG.WR = OPS.GetBits(timings10, 0, 8);
+            MEMCFG.WR = cpu.utils.GetBits(timings10, 0, 8);
 
-            MEMCFG.RDRDDD = OPS.GetBits(timings12, 0, 4);
-            MEMCFG.RDRDSD = OPS.GetBits(timings12, 8, 4);
-            MEMCFG.RDRDSC = OPS.GetBits(timings12, 16, 4);
-            MEMCFG.RDRDSCL = OPS.GetBits(timings12, 24, 6);
+            MEMCFG.RDRDDD = cpu.utils.GetBits(timings12, 0, 4);
+            MEMCFG.RDRDSD = cpu.utils.GetBits(timings12, 8, 4);
+            MEMCFG.RDRDSC = cpu.utils.GetBits(timings12, 16, 4);
+            MEMCFG.RDRDSCL = cpu.utils.GetBits(timings12, 24, 6);
 
-            MEMCFG.WRWRDD = OPS.GetBits(timings13, 0, 4);
-            MEMCFG.WRWRSD = OPS.GetBits(timings13, 8, 4);
-            MEMCFG.WRWRSC = OPS.GetBits(timings13, 16, 4);
-            MEMCFG.WRWRSCL = OPS.GetBits(timings13, 24, 6);
+            MEMCFG.WRWRDD = cpu.utils.GetBits(timings13, 0, 4);
+            MEMCFG.WRWRSD = cpu.utils.GetBits(timings13, 8, 4);
+            MEMCFG.WRWRSC = cpu.utils.GetBits(timings13, 16, 4);
+            MEMCFG.WRWRSCL = cpu.utils.GetBits(timings13, 24, 6);
 
-            MEMCFG.RDWR = OPS.GetBits(timings14, 8, 5);
-            MEMCFG.WRRD = OPS.GetBits(timings14, 0, 4);
+            MEMCFG.RDWR = cpu.utils.GetBits(timings14, 8, 5);
+            MEMCFG.WRRD = cpu.utils.GetBits(timings14, 0, 4);
 
-            MEMCFG.REFI = OPS.GetBits(timings15, 0, 16);
+            MEMCFG.REFI = cpu.utils.GetBits(timings15, 0, 16);
 
-            MEMCFG.MODPDA = OPS.GetBits(timings16, 24, 6);
-            MEMCFG.MRDPDA = OPS.GetBits(timings16, 16, 6);
-            MEMCFG.MOD = OPS.GetBits(timings16, 8, 6);
-            MEMCFG.MRD = OPS.GetBits(timings16, 0, 6);
+            MEMCFG.MODPDA = cpu.utils.GetBits(timings16, 24, 6);
+            MEMCFG.MRDPDA = cpu.utils.GetBits(timings16, 16, 6);
+            MEMCFG.MOD = cpu.utils.GetBits(timings16, 8, 6);
+            MEMCFG.MRD = cpu.utils.GetBits(timings16, 0, 6);
 
-            Console.WriteLine($"Txp: {OPS.GetBits(timings18, 0, 6)}");
+            Console.WriteLine($"Txp: {cpu.utils.GetBits(timings18, 0, 6)}");
 
-            MEMCFG.STAG = OPS.GetBits(timings17, 16, 8);
+            MEMCFG.STAG = cpu.utils.GetBits(timings17, 16, 8);
 
-            MEMCFG.CKE = OPS.GetBits(timings18, 24, 5);
+            MEMCFG.CKE = cpu.utils.GetBits(timings18, 24, 5);
 
-            MEMCFG.RFC = OPS.GetBits(timings23, 0, 11);
-            MEMCFG.RFC2 = OPS.GetBits(timings23, 11, 11);
-            MEMCFG.RFC4 = OPS.GetBits(timings23, 22, 11);
+            MEMCFG.RFC = cpu.utils.GetBits(timings23, 0, 11);
+            MEMCFG.RFC2 = cpu.utils.GetBits(timings23, 11, 11);
+            MEMCFG.RFC4 = cpu.utils.GetBits(timings23, 22, 11);
 
             var configured = MEMCFG.Frequency;
-            var freqFromRatio = OPS.GetBits(umcBase, 0, 7) / 3.0f * 200;
+            var freqFromRatio = cpu.utils.GetBits(umcBase, 0, 7) / 3.0f * 200;
 
             // Fallback to ratio when ConfiguredClockSpeed fails
             if (configured == 0 || freqFromRatio > configured)
@@ -595,7 +593,7 @@ namespace ZenTimings
 
                 if (settings.AdvancedMode)
                 {
-                    PowerTable = new PowerTable(OPS.Smu.SMU_TYPE);
+                    PowerTable = new PowerTable(cpu.smu.SMU_TYPE);
                     BMC = new BiosMemController();
                     PowerCfgTimer.Interval = TimeSpan.FromMilliseconds(2000);
                     PowerCfgTimer.Tick += new EventHandler(PowerCfgTimer_Tick);
@@ -604,7 +602,7 @@ namespace ZenTimings
                     ReadSVI();
 
                     // Get first base address
-                    dramBaseAddress = (uint)(OPS.GetDramBaseAddress() & 0xFFFFFFFF);
+                    dramBaseAddress = (uint)(cpu.GetDramBaseAddress() & 0xFFFFFFFF);
                     if (dramBaseAddress > 0)
                         ReadPowerConfig();
                     else
@@ -717,7 +715,7 @@ namespace ZenTimings
             if (settings.AdvancedMode)
             {
                 var parent = Application.Current.MainWindow;
-                DebugDialog debugWnd = new DebugDialog(dramBaseAddress, modules, MEMCFG, SI, BMC, PowerTable, OPS)
+                DebugDialog debugWnd = new DebugDialog(dramBaseAddress, modules, MEMCFG, SI, BMC, PowerTable, cpu)
                 {
                     Owner = parent
                 };

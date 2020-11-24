@@ -1,4 +1,4 @@
-﻿using AdonisUI.Controls;
+using AdonisUI.Controls;
 using Microsoft.VisualBasic.Devices;
 using Microsoft.Win32;
 using System;
@@ -7,8 +7,7 @@ using System.Management;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
-using ZenStates;
-using ZenTimings.Utils;
+using ZenStates.Core;
 
 namespace ZenTimings.Windows
 {
@@ -26,7 +25,7 @@ namespace ZenTimings.Windows
         private readonly BiosMemController BMC;
         private readonly string wmiScope = "root\\wmi";
         private readonly string wmiAMDACPI = "AMD_ACPI";
-        private readonly Ops OPS;
+        private readonly Cpu CPU;
         private ManagementBaseObject pack;
         private string instanceName;
         ManagementObject classInstance;
@@ -34,7 +33,7 @@ namespace ZenTimings.Windows
         public DebugDialog(uint dramBaseAddr, List<MemoryModule> memModules,
             MemoryConfig memCfg, SystemInfo systemInfo,
             BiosMemController biosMemCtrl, PowerTable powerTable,
-            Ops ops)
+            Cpu cpu)
         {
             InitializeComponent();
             baseAddress = dramBaseAddr;
@@ -43,7 +42,7 @@ namespace ZenTimings.Windows
             MEMCFG = memCfg;
             PT = powerTable;
             BMC = biosMemCtrl;
-            OPS = ops;
+            CPU = cpu;
         }
 
         private void SetControlsState(bool enabled = true)
@@ -204,7 +203,6 @@ namespace ZenTimings.Windows
 
             try
             {
-
                 AddLine($"DRAM Base Address: {baseAddress:X8}");
                 foreach (PropertyInfo property in properties)
                     AddLine(property.Name + ": " + property.GetValue(MEMCFG, null));
@@ -309,7 +307,7 @@ namespace ZenTimings.Windows
                 uint startAddress = 0x0005A000;
                 uint endAddress = 0x0005A0FF;
 
-                if (OPS.Smu.SMU_TYPE == SMU.SmuType.TYPE_APU1)
+                if (CPU.smu.SMU_TYPE == SMU.SmuType.TYPE_APU1)
                 {
                     startAddress = 0x0006F000;
                     endAddress = 0x0006F0FF;
@@ -317,7 +315,7 @@ namespace ZenTimings.Windows
 
                 while (startAddress <= endAddress)
                 {
-                    var data = OPS.ReadDword(startAddress);
+                    var data = CPU.ReadDword(startAddress);
                     if (data != 0xFFFFFFFF)
                     {
                         AddLine($"0x{startAddress:X8}: 0x{data:X8}");
