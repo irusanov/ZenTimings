@@ -226,6 +226,13 @@ namespace ZenTimings
             set => SetProperty(ref wrwrdd, value, InternalEventArgsCache.WRWRDD);
         }
 
+        uint trcpage;
+        public uint TRCPAGE
+        {
+            get => trcpage;
+            set => SetProperty(ref trcpage, value, InternalEventArgsCache.TRCPAGE);
+        }
+
         uint cke;
         public uint CKE
         {
@@ -325,6 +332,41 @@ namespace ZenTimings
             set => SetProperty(ref refins, value, InternalEventArgsCache.REFIns);
         }
 
+        uint xp;
+        public uint XP
+        {
+            get => xp;
+            set => SetProperty(ref xp, value, InternalEventArgsCache.XP);
+        }
+
+        string powerdown;
+        public string PowerDown
+        {
+            get => powerdown;
+            set => SetProperty(ref powerdown, value, InternalEventArgsCache.PowerDown);
+        }
+
+        uint phywrd;
+        public uint PHYWRD
+        {
+            get => phywrd;
+            set => SetProperty(ref phywrd, value, InternalEventArgsCache.PHYWRD);
+        }
+
+        uint phywrl;
+        public uint PHYWRL
+        {
+            get => phywrl;
+            set => SetProperty(ref phywrl, value, InternalEventArgsCache.PHYWRL);
+        }
+
+        uint phyrdl;
+        public uint PHYRDL
+        {
+            get => phyrdl;
+            set => SetProperty(ref phyrdl, value, InternalEventArgsCache.PHYRDL);
+        }
+
         protected void OnPropertyChanged(PropertyChangedEventArgs eventArgs)
         {
             PropertyChanged?.Invoke(this, eventArgs);
@@ -363,6 +405,7 @@ namespace ZenTimings
         internal static PropertyChangedEventArgs WRWRSC = new PropertyChangedEventArgs("WRWRSC");
         internal static PropertyChangedEventArgs WRWRSD = new PropertyChangedEventArgs("WRWRSD");
         internal static PropertyChangedEventArgs WRWRDD = new PropertyChangedEventArgs("WRWRDD");
+        internal static PropertyChangedEventArgs TRCPAGE = new PropertyChangedEventArgs("TRCPAGE");
         internal static PropertyChangedEventArgs CKE = new PropertyChangedEventArgs("CKE");
         internal static PropertyChangedEventArgs STAG = new PropertyChangedEventArgs("STAG");
         internal static PropertyChangedEventArgs MOD = new PropertyChangedEventArgs("MOD");
@@ -375,5 +418,10 @@ namespace ZenTimings
         internal static PropertyChangedEventArgs REFI = new PropertyChangedEventArgs("REFI");
         internal static PropertyChangedEventArgs RFCns = new PropertyChangedEventArgs("RFCns");
         internal static PropertyChangedEventArgs REFIns = new PropertyChangedEventArgs("REFIns");
+        internal static PropertyChangedEventArgs XP = new PropertyChangedEventArgs("XP");
+        internal static PropertyChangedEventArgs PowerDown = new PropertyChangedEventArgs("PowerDown");
+        internal static PropertyChangedEventArgs PHYWRD = new PropertyChangedEventArgs("PHYWRD");
+        internal static PropertyChangedEventArgs PHYWRL = new PropertyChangedEventArgs("PHYWRL");
+        internal static PropertyChangedEventArgs PHYRDL = new PropertyChangedEventArgs("PHYRDL");
     }
 }

@@ -11,8 +11,8 @@
         adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
         mc:Ignorable="d"
         Title="ZenTimings"
-        Height="539.855"
-        Width="379.518"
+        Height="540"
+        Width="380"
         WindowStartupLocation="CenterScreen"
         ResizeMode="CanMinimize"
         SizeToContent="WidthAndHeight"
@@ -23,7 +23,6 @@
         Activated="AdonisWindow_Activated"
         Loaded="AdonisWindow_Loaded"
         BorderThickness="0">
-
 
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
@@ -110,6 +109,8 @@
                             <TextBlock Text="tRFC4" TextAlignment="Right"/>
                             <TextBlock Text="tMOD" TextAlignment="Right"/>
                             <TextBlock Text="tMODPDA" TextAlignment="Right"/>
+                            <TextBlock Text="tPHYWRD" TextAlignment="Right"/>
+                            <TextBlock Text="tPHYWRL" TextAlignment="Right"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="1">
@@ -137,6 +138,8 @@
                             <TextBlock Text="{Binding timings.RFC4, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
                             <TextBlock Text="{Binding timings.MOD, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
                             <TextBlock Text="{Binding timings.MODPDA, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.PHYWRD, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.PHYWRL, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
                         </StackPanel>
                     </Grid>
 
@@ -172,6 +175,8 @@
                             <TextBlock Text="tSTAG" TextAlignment="Right"/>
                             <TextBlock Text="tMRD" TextAlignment="Right"/>
                             <TextBlock Text="tMRDPDA" TextAlignment="Right"/>
+                            <TextBlock Text="tPHYRDL" TextAlignment="Right"/>
+                            <TextBlock Text="PowerDown" TextAlignment="Right"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="1">
@@ -199,6 +204,8 @@
                             <TextBlock Text="{Binding timings.STAG, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
                             <TextBlock Text="{Binding timings.MRD, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
                             <TextBlock Text="{Binding timings.MRDPDA, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.PHYRDL, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.PowerDown, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
                         </StackPanel>
                     </Grid>
 
@@ -227,6 +234,10 @@
                                        IsEnabled="{Binding powerTable.CLDO_VDDG_CCD, Converter={StaticResource FloatToBool}}" />
                             <TextBlock Text="VDDG IOD" TextAlignment="Right"
                                        IsEnabled="{Binding powerTable.CLDO_VDDG_IOD, Converter={StaticResource FloatToBool}}" />
+
+                            <TextBlock x:Name="labelMemVddio" Text="VDIMM" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
+                            <TextBlock x:Name="labelMemVtt" Text="MEM VTT" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
+
                             <TextBlock Text="" TextAlignment="Right"/>
                             <TextBlock Text="ProcODT" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
                             <TextBlock Text="RttNom" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
@@ -237,7 +248,7 @@
                             <TextBlock Text="AddrCmdDrvStr" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
                             <TextBlock Text="CsOdtDrvStr" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
                             <TextBlock Text="CkeDrvStr" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
-                            <TextBlock Text="" TextAlignment="Right"/>
+                            <TextBlock Text="" TextAlignment="Right" />
                             <TextBlock Text="AddrCmdSetup" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
                             <TextBlock Text="CsOdtSetup" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
                             <TextBlock Text="CkeSetup" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
@@ -259,6 +270,9 @@
                                        Style="{StaticResource ValueStyles}"/>
                             <TextBlock Text="{Binding powerTable.CLDO_VDDG_IOD, FallbackValue='N/A', Converter={StaticResource FloatToVoltage}}"
                                        Style="{StaticResource ValueStyles}"/>
+                            <TextBlock x:Name="textBoxMemVddio" Text="N/A" Style="{StaticResource ValueStyles}"/>
+                            <TextBlock x:Name="textBoxMemVtt" Text="N/A" Style="{StaticResource ValueStyles}"/>
+
                             <TextBlock Text=""/>
                             <TextBlock x:Name="textBoxProcODT" Text="N/A" Style="{StaticResource ValueStyles}"/>
                             <TextBlock x:Name="textBoxRttNom" Text="N/A" Style="{StaticResource ValueStyles}"/>

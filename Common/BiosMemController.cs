@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace ZenTimings
 {
-    public class BiosMemController
+    public class BiosMemController: IDisposable
     {
         private void ParseTable(byte[] table)
         {
@@ -92,6 +92,8 @@ namespace ZenTimings
         [StructLayout(LayoutKind.Explicit)]
         public struct Resistances
         {
+            [FieldOffset(27)] public ushort MemVddio;
+            [FieldOffset(29)] public ushort MemVtt;
             [FieldOffset(33)] public byte ProcODT;
             [FieldOffset(65)] public byte RttNom;
             [FieldOffset(66)] public byte RttWr;
@@ -106,6 +108,8 @@ namespace ZenTimings
         };
 
         byte[] table;
+        private bool disposedValue;
+
         public byte[] Table
         {
             get => table;
@@ -126,5 +130,21 @@ namespace ZenTimings
         public string GetRttString(int key) => GetByKey(RttDict, key);
         public string GetRttWrString(int key) => GetByKey(RttWrDict, key);
         public string GetSetupString(byte value) => $"{value / 32}/{value % 32}";
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                Table = null;
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
     }
 }

@@ -1,4 +1,4 @@
-//#define BETA
+#define BETA
 
 using AdonisUI.Controls;
 using System;
@@ -314,10 +314,6 @@ namespace ZenTimings
                             string[] IDString = (string[])pack.GetPropertyValue("IDString");
                             byte Length = (byte)pack.GetPropertyValue("Length");
 
-                            Debug.WriteLine("----------------------------");
-                            Debug.WriteLine("WMI: BIOS Functions");
-                            Debug.WriteLine("----------------------------");
-
                             for (var i = 0; i < Length; ++i)
                             {
                                 biosFunctions.Add(new BiosACPIFunction(IDString[i], ID[i]));
@@ -332,17 +328,45 @@ namespace ZenTimings
                 BiosACPIFunction cmd = GetFunctionByIdString("Get APCB Config");
                 if (cmd == null)
                     throw new Exception();
+                
+                byte[] apcbConfig = WMI.RunCommand(classInstance, cmd.ID);
 
-                BMC.Table = WMI.RunCommand(classInstance, cmd.ID);
-                var allZero = !BMC.Table.Any(v => v != 0);
+                cmd = GetFunctionByIdString("Get memory voltages");
+                if (cmd != null)
+                {
+                    byte[] voltages = WMI.RunCommand(classInstance, cmd.ID);
+
+                    // MEM_VDDIO is ushort, offset 27
+                    // MEM_VTT is ushort, offset 29
+                    for (var i = 27; i <= 30; i++)
+                    {
+                        byte value = voltages[i];
+                        if (value > 0)
+                            apcbConfig[i] = value;
+                    }
+                }
+
+                BMC.Table = apcbConfig;
+                bool allZero = !BMC.Table.Any(v => v != 0);
 
                 // When ProcODT is 0, then all other resistance values are 0
                 // Happens when one DIMM installed in A1 or A2 slot
                 if (allZero || BMC.Table == null || BMC.Config.ProcODT < 1)
                 {
-                    BMC.Table = null;
                     throw new Exception();
                 }
+
+                float vdimm = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVddio) / 1000);
+                if (vdimm > 0)
+                    textBoxMemVddio.Text = $"{vdimm:F4}V";
+                else
+                    labelMemVddio.IsEnabled = false;
+
+                float vtt = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVtt) / 1000);
+                if (vtt > 0)
+                    textBoxMemVtt.Text = $"{vtt:F4}V";
+                else
+                    labelMemVtt.IsEnabled = false;
 
                 textBoxProcODT.Text = BMC.GetProcODTString(BMC.Config.ProcODT);
 
@@ -362,6 +386,7 @@ namespace ZenTimings
             catch (Exception ex)
             {
                 compatMode = true;
+
                 AdonisUI.Controls.MessageBox.Show(
                     "Failed to read AMD ACPI. Some parameters will be empty.",
                     "Warning",
@@ -369,6 +394,8 @@ namespace ZenTimings
                     AdonisUI.Controls.MessageBoxImage.Warning);
                 Console.WriteLine(ex.Message);
             }
+
+            BMC.Dispose();
         }
 
         private void ReadTimings()
@@ -395,6 +422,7 @@ namespace ZenTimings
             // Try and read from the first IMC (IMC0);
             if (!enabled) offset = 0;
 
+            uint powerDown = cpu.ReadDword(offset | 0x5012C);
             uint umcBase = cpu.ReadDword(offset | 0x50200);
             uint bgsa0 = cpu.ReadDword(offset | 0x500D0);
             uint bgsa1 = cpu.ReadDword(offset | 0x500D4);
@@ -445,6 +473,8 @@ namespace ZenTimings
 
             MEMCFG.WR = cpu.utils.GetBits(timings10, 0, 8);
 
+            MEMCFG.TRCPAGE = cpu.utils.GetBits(timings11, 20, 12);
+
             MEMCFG.RDRDDD = cpu.utils.GetBits(timings12, 0, 4);
             MEMCFG.RDRDSD = cpu.utils.GetBits(timings12, 8, 4);
             MEMCFG.RDRDSC = cpu.utils.GetBits(timings12, 16, 4);
@@ -465,15 +495,20 @@ namespace ZenTimings
             MEMCFG.MOD = cpu.utils.GetBits(timings16, 8, 6);
             MEMCFG.MRD = cpu.utils.GetBits(timings16, 0, 6);
 
-            Console.WriteLine($"Txp: {cpu.utils.GetBits(timings18, 0, 6)}");
-
             MEMCFG.STAG = cpu.utils.GetBits(timings17, 16, 8);
 
+            MEMCFG.XP = cpu.utils.GetBits(timings18, 0, 6);
             MEMCFG.CKE = cpu.utils.GetBits(timings18, 24, 5);
 
+            MEMCFG.PHYWRL = cpu.utils.GetBits(timings19, 8, 5);
+            MEMCFG.PHYRDL = cpu.utils.GetBits(timings19, 16, 6);
+            MEMCFG.PHYWRD = cpu.utils.GetBits(timings19, 24, 3);
+            
             MEMCFG.RFC = cpu.utils.GetBits(timings23, 0, 11);
             MEMCFG.RFC2 = cpu.utils.GetBits(timings23, 11, 11);
             MEMCFG.RFC4 = cpu.utils.GetBits(timings23, 22, 11);
+
+            MEMCFG.PowerDown = cpu.utils.GetBits(powerDown, 28, 1) == 1 ? "Enabled" : "Disabled";
 
             var configured = MEMCFG.Frequency;
             var freqFromRatio = cpu.utils.GetBits(umcBase, 0, 7) / 3.0f * 200;
@@ -651,6 +686,7 @@ namespace ZenTimings
             Activate();
             BringIntoView();
             WindowState = WindowState.Normal;
+            MinimizeFootprint();
         }
 
         private static void MinimizeFootprint()

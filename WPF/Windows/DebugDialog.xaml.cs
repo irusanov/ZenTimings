@@ -28,7 +28,7 @@ namespace ZenTimings.Windows
         private readonly Cpu CPU;
         private ManagementBaseObject pack;
         private string instanceName;
-        ManagementObject classInstance;
+        private ManagementObject classInstance;
 
         public DebugDialog(uint dramBaseAddr, List<MemoryModule> memModules,
             MemoryConfig memCfg, SystemInfo systemInfo,
@@ -262,19 +262,22 @@ namespace ZenTimings.Windows
             AddHeading("SMU: Power Table Detected Values");
             try
             {
-                /*type = PT.GetType();
+                type = PT.GetType();
                 properties = type.GetProperties();
 
                 foreach (PropertyInfo property in properties)
-                    AddLine(property.Name + ": " + property.GetValue(PT, null));*/
+                {
+                    if (property.Name != "Table")
+                        AddLine(property.Name + ": " + property.GetValue(PT, null));
+                }
 
-                AddLine($"MCLK: {PT.MCLK}");
+                /*AddLine($"MCLK: {PT.MCLK}");
                 AddLine($"FCLK: {PT.FCLK}");
                 AddLine($"UCLK: {PT.UCLK}");
                 AddLine($"VSOC_SMU: {PT.VDDCR_SOC}");
                 AddLine($"CLDO_VDDP: {PT.CLDO_VDDP}");
                 AddLine($"CLDO_VDDG: {PT.CLDO_VDDG_IOD}");
-                AddLine($"CLDO_VDDG: {PT.CLDO_VDDG_CCD}");
+                AddLine($"CLDO_VDDG: {PT.CLDO_VDDG_CCD}");*/
             }
             catch
             {

@@ -31,11 +31,13 @@ namespace ZenTimings.Windows
             checkBoxAutoRefresh.IsEnabled = settings.AdvancedMode;
             checkBoxAdvancedMode.IsChecked = settings.AdvancedMode;
             numericUpDownRefreshInterval.IsEnabled = settings.AutoRefresh && settings.AdvancedMode;
+            msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
         }
 
         private void CheckBoxAutoRefresh_Click(object sender, RoutedEventArgs e)
         {
             numericUpDownRefreshInterval.IsEnabled = (bool)checkBoxAutoRefresh.IsChecked;
+            msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
         }
 
         private void ButtonSettingsApply_Click(object sender, RoutedEventArgs e)
@@ -91,6 +93,7 @@ namespace ZenTimings.Windows
         {
             checkBoxAutoRefresh.IsEnabled = (bool)checkBoxAdvancedMode.IsChecked;
             numericUpDownRefreshInterval.IsEnabled = (bool)checkBoxAdvancedMode.IsChecked && (bool)checkBoxAutoRefresh.IsChecked;
+            msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
         }
 
         private void ComboBoxTheme_CheckedChanged(object sender, RoutedEventArgs e)
