@@ -11,8 +11,8 @@
         adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
         mc:Ignorable="d"
         Title="ZenTimings"
-        Height="575"
-        Width="385"
+        Height="564"
+        Width="386"
         WindowStartupLocation="CenterScreen"
         ResizeMode="CanMinimize"
         SizeToContent="WidthAndHeight"
@@ -22,11 +22,13 @@
         SizeChanged="AdonisWindow_SizeChanged"
         Activated="AdonisWindow_Activated"
         Loaded="AdonisWindow_Loaded"
-        BorderThickness="0">
+        BorderThickness="1"
+        UseLayoutRounding="False"
+        BorderBrush="{DynamicResource WindowBorderColor}">
 
-    <Window.Style>
+    <!--Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
-    </Window.Style>
+    </Window.Style -->
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
@@ -54,9 +56,19 @@
                             <MenuItem Header="_About" Click="AboutToolStripMenuItem_Click" />
                         </MenuItem>
                     </Menu>
-                    <Button Grid.Column="1" Width="20" Height="16" BorderThickness="0" Padding="0"
-                            Style="{DynamicResource {x:Static adonisUi:Styles.AccentToolbarButton}}" Click="ButtonScreenshot_Click">
-                        <Image Source="{DynamicResource CameraImage}" Height="16" Width="16" Stretch="None" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <Button Grid.Column="1"
+                            Width="20"
+                            Height="16"
+                            BorderThickness="0"
+                            Padding="0"
+                            Style="{DynamicResource {x:Static adonisUi:Styles.AccentToolbarButton}}"
+                            Click="ButtonScreenshot_Click">
+                        <Image Source="{DynamicResource CameraImage}"
+                               Height="16"
+                               Width="16"
+                               Stretch="None"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center" />
                     </Button>
                 </Grid>
             </Border>
@@ -89,7 +101,7 @@
                             <TextBlock Text="BGS" TextAlignment="Right"/>
                             <TextBlock Text="GDM" TextAlignment="Right"/>
 
-                            <TextBlock Text=""/>
+                            <TextBlock Text="" Style="{StaticResource DividerTextBlock}"/>
                             
                             <TextBlock Text="tCL" TextAlignment="Right"/>
                             <TextBlock Text="tRCDWR" TextAlignment="Right"/>
@@ -118,7 +130,7 @@
                             <TextBlock Text="{Binding timings.BGS, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
                             <TextBlock Text="{Binding timings.GDM, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
 
-                            <TextBlock Text=""/>
+                            <TextBlock Text="" Style="{StaticResource DividerTextBlock}"/>
 
                             <TextBlock Text="{Binding timings.CL, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
                             <TextBlock Text="{Binding timings.RCDWR, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
@@ -155,7 +167,7 @@
                             <TextBlock Text="BGS Alt" TextAlignment="Right"/>
                             <TextBlock Text="Cmd2T" TextAlignment="Right"/>
 
-                            <TextBlock Text=""/>
+                            <TextBlock Text="" Style="{StaticResource DividerTextBlock}"/>
 
                             <TextBlock Text="tRDRDSCL" TextAlignment="Right"/>
                             <TextBlock Text="tWRWRSCL" TextAlignment="Right"/>
@@ -184,7 +196,7 @@
                             <TextBlock Text="{Binding timings.BGSAlt, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
                             <TextBlock Text="{Binding timings.Cmd2T, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
 
-                            <TextBlock Text=""/>
+                            <TextBlock Text="" Style="{StaticResource DividerTextBlock}"/>
 
                             <TextBlock Text="{Binding timings.RDRDSCL, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
                             <TextBlock Text="{Binding timings.WRWRSCL, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
@@ -224,7 +236,7 @@
                             <TextBlock Text="UCLK" TextAlignment="Right"
                                        IsEnabled="{Binding powerTable.UCLK, Converter={StaticResource FloatToBool}}" />
 
-                            <TextBlock Text=""/>
+                            <TextBlock Text="" Style="{StaticResource DividerTextBlock}"/>
 
                             <TextBlock Text="VSOC" TextAlignment="Right"/>
                             <!-- " TextBlock Text="VSOC (SMU)" TextAlignment="Right"/ -->
@@ -259,7 +271,7 @@
                             <TextBlock Text="{Binding powerTable.FCLK, FallbackValue='N/A', StringFormat='{}{0:F2}'}" Style="{StaticResource ValueStyles}"/>
                             <TextBlock Text="{Binding powerTable.UCLK, FallbackValue='N/A', StringFormat='{}{0:F2}'}" Style="{StaticResource ValueStyles}"/>
 
-                            <TextBlock Text=""/>
+                            <TextBlock Text="" Style="{StaticResource DividerTextBlock}"/>
 
                             <TextBlock x:Name="textBoxVSOC_SVI2" Text="N/A" Style="{StaticResource ValueStyles}"/>
                             <!-- " TextBlock Text="{Binding powerTable.VDDCR_SOC, Converter={StaticResource FloatToVoltage}}"
@@ -271,6 +283,7 @@
                             <TextBlock Text="{Binding powerTable.CLDO_VDDG_IOD, FallbackValue='N/A', Converter={StaticResource FloatToVoltage}}"
                                        Style="{StaticResource ValueStyles}"/>
                             <TextBlock x:Name="textBoxMemVddio" Text="N/A" Style="{StaticResource ValueStyles}"/>
+                            <!-- TextBox x:Name="textBoxMemVddio" Text="N/A" Style="{StaticResource TextBoxValueStyles}"/-->
                             <TextBlock x:Name="textBoxMemVtt" Text="N/A" Style="{StaticResource ValueStyles}"/>
 
                             <TextBlock Text=""/>

@@ -1,12 +1,21 @@
-﻿<adonisControls:AdonisWindow x:Class="ZenTimings.Windows.SaveWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
-        xmlns:local="clr-namespace:ZenTimings.Windows"
-        mc:Ignorable="d"
-        Title="ZenTimings Screenshot" Height="63.38" Width="239.726" SizeToContent="Height" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" Icon="/ZenTimings;component/Resources/icon-16.png">
+﻿<adonisControls:AdonisWindow
+    x:Class="ZenTimings.Windows.SaveWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+    xmlns:local="clr-namespace:ZenTimings.Windows"
+    mc:Ignorable="d"
+    Title="ZenTimings Screenshot"
+    Height="64"
+    Width="240"
+    SizeToContent="Height"
+    ResizeMode="NoResize"
+    WindowStartupLocation="CenterOwner"
+    Icon="/ZenTimings;component/Resources/icon-16.png"
+    BorderThickness="1"
+    BorderBrush="{DynamicResource WindowBorderColor}">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />

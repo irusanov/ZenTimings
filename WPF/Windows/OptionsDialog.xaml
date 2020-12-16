@@ -11,13 +11,15 @@
     mc:Ignorable="d"
     x:Name="OptionsWindow"
     Title="Options"
-    Height="199.195"
-    Width="303.822"
+    Height="198"
+    Width="304"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterOwner"
     Icon="/ZenTimings;component/Resources/icon-16.png"
     SizeToContent="WidthAndHeight"
-    ShowInTaskbar="False">
+    ShowInTaskbar="False"
+    BorderThickness="1"
+    BorderBrush="{DynamicResource WindowBorderColor}">
 
     <StackPanel>
         <Popup
