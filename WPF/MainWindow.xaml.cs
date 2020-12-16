@@ -56,49 +56,6 @@ namespace ZenTimings
 
         private static void ExitApplication() => Application.Current.Shutdown();
 
-        private void InitSystemInfo()
-        {
-            if (cpu.info.family != Cpu.Family.FAMILY_17H && cpu.info.family != Cpu.Family.FAMILY_19H)
-            {
-                HandleError("CPU is not supported.");
-                ExitApplication();
-            }
-
-            SI = new SystemInfo
-            {
-                CpuId = cpu.info.cpuid,
-                CpuName = cpu.info.cpuName,
-                NodesPerProcessor = cpu.GetCpuNodes(),
-                PackageType = cpu.info.packageType,
-                PatchLevel = cpu.info.patchLevel,
-                SmuVersion = cpu.smu.Version,
-                FusedCoreCount = (int)cpu.info.cores,
-                Threads = (int)cpu.info.logicalCores,
-                CCDCount = (int)cpu.info.ccds,
-                CCXCount = (int)cpu.info.ccxs,
-                NumCoresInCCX = (int)cpu.info.coresPerCcx,
-                CodeName = $"{cpu.info.codeName}",
-                SMT = (int)cpu.info.threadsPerCore > 1,
-                Model = cpu.info.model,
-                ExtendedModel = cpu.info.extModel,
-            };
-
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_BaseBoard");
-            foreach (ManagementObject obj in searcher.Get())
-            {
-                SI.MbVendor = ((string)obj["Manufacturer"]).Trim();
-                SI.MbName = ((string)obj["Product"]).Trim();
-            }
-            if (searcher != null) searcher.Dispose();
-
-            searcher = new ManagementObjectSearcher("SELECT * FROM Win32_BIOS");
-            foreach (ManagementObject obj in searcher.Get())
-            {
-                SI.BiosVersion = ((string)obj["SMBIOSBIOSVersion"]).Trim();
-            }
-            if (searcher != null) searcher.Dispose();
-        }
-
         private BiosACPIFunction GetFunctionByIdString(string name)
         {
             return biosFunctions.Find(x => x.IDString == name);
@@ -182,15 +139,15 @@ namespace ZenTimings
                 {
                     SMU.Status status = cpu.TransferTableToDram();
 
-                    if (status != SMU.Status.OK)
-                        status = cpu.TransferTableToDram(); // retry
+                    //if (status != SMU.Status.OK)
+                    //    status = cpu.TransferTableToDram(); // retry
 
                     if (status != SMU.Status.OK)
                         return;
 
                     for (int i = 0; i < table.Length; ++i)
                     {
-                        InteropMethods.GetPhysLong((UIntPtr)dramBaseAddress + (i * 0x4), out uint data);
+                        InteropMethods.GetPhysLong((UIntPtr)(dramBaseAddress + (i * 4)), out uint data);
                         table[i] = data;
                     }
 
@@ -521,6 +478,7 @@ namespace ZenTimings
             }
         }
 
+        /*
         private bool WaitForDriverLoad()
         {
             Stopwatch timer = new Stopwatch();
@@ -536,10 +494,11 @@ namespace ZenTimings
 
             return temp;
         }
+        */
 
         private void WaitForPowerTable(object sender, DoWorkEventArgs e)
         {
-            if (WaitForDriverLoad())
+            if (cpu.WinIoStatus == Cpu.LibStatus.OK)
             {
                 int minimum_retries = 2;
                 Stopwatch timer = new Stopwatch();
@@ -551,7 +510,7 @@ namespace ZenTimings
                     InteropMethods.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
                 while (temp == 0 && timer.Elapsed.TotalMilliseconds < 10000);
 
-                InteropMethods.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
+                // InteropMethods.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
 
                 // Already in DRAM and auto-refresh disabled
                 if (temp != 0)
@@ -561,7 +520,7 @@ namespace ZenTimings
             }
             else
             {
-                HandleError("InpOut driver is not responding or not loaded.");
+                HandleError("WinIo driver is not responding or not loaded.");
             }
         }
 
@@ -617,7 +576,13 @@ namespace ZenTimings
             {
                 IconSource = GetIcon("pack://application:,,,/ZenTimings;component/Resources/ZenTimings.ico", 16);
 
-                InitSystemInfo();
+                if (cpu.info.family != Cpu.Family.FAMILY_17H && cpu.info.family != Cpu.Family.FAMILY_19H)
+                {
+                    HandleError("CPU is not supported.");
+                    ExitApplication();
+                }
+
+                SI = new SystemInfo(cpu);
 
                 if (settings.DarkMode)
                     settings.ChangeTheme();
