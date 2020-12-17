@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Windows;
 using ZenStates.Core;
+using ZenTimings.Windows;
 
 namespace ZenTimings
 {
@@ -27,6 +28,7 @@ namespace ZenTimings
             {
                 GC.KeepAlive(instanceMutex);
                 base.OnStartup(e);
+                SplashWindow.Start();
             }
         }
     }

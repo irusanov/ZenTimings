@@ -49,7 +49,6 @@ namespace ZenTimings
         private SystemInfo SI;
         private readonly uint dramBaseAddress = 0;
         private bool compatMode = false;
-        private BackgroundWorker backgroundWorker1;
         private readonly AppSettings settings = new AppSettings();
         private readonly uint[] table = new uint[PowerTable.tableSize / 4];
         private readonly DispatcherTimer PowerCfgTimer = new DispatcherTimer();
@@ -495,11 +494,10 @@ namespace ZenTimings
             return temp;
         }
 
-        private void WaitForPowerTable(object sender, DoWorkEventArgs e)
+        private bool WaitForPowerTable()
         {
             if (WaitForDriverLoad() && cpu.WinIoStatus == Cpu.LibStatus.OK)
             {
-                int minimum_retries = 2;
                 Stopwatch timer = new Stopwatch();
                 timer.Start();
 
@@ -507,28 +505,20 @@ namespace ZenTimings
                 // Refresh until table is transferred to DRAM or timeout
                 do
                     InteropMethods.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
-                while (temp == 0 && timer.Elapsed.TotalMilliseconds < 10000);
-
-                // InteropMethods.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
-
-                // Already in DRAM and auto-refresh disabled
-                if (temp != 0)
-                    Thread.Sleep(Convert.ToInt32(PowerCfgTimer.Interval.TotalMilliseconds) * minimum_retries);
+                while (temp == 0 && timer.Elapsed.TotalMilliseconds < 20000);
 
                 timer.Stop();
+
+                if (temp == 0)
+                    HandleError("Could not read power table.");
+
+                return temp != 0;
             }
             else
             {
-                HandleError("WinIo driver is not responding or not loaded.");
+                HandleError("Driver is not responding or not loaded.");
+                return false;
             }
-        }
-
-        private void WaitForPowerTable_Complete(object sender, RunWorkerCompletedEventArgs e)
-        {
-            if (settings.AutoRefresh && settings.AdvancedMode)
-                PowerCfgTimer.Interval = TimeSpan.FromMilliseconds(settings.AutoRefreshInterval);
-            else
-                PowerCfgTimer.Stop();
         }
 
         public static bool CheckConfigFileIsPresent()
@@ -538,12 +528,11 @@ namespace ZenTimings
 
         private void StartAutoRefresh()
         {
-            PowerCfgTimer.Start();
-
-            backgroundWorker1 = new BackgroundWorker();
-            backgroundWorker1.DoWork += WaitForPowerTable;
-            backgroundWorker1.RunWorkerCompleted += WaitForPowerTable_Complete;
-            backgroundWorker1.RunWorkerAsync();
+            if (settings.AutoRefresh && settings.AdvancedMode)
+            {
+                PowerCfgTimer.Interval = TimeSpan.FromMilliseconds(settings.AutoRefreshInterval);
+                PowerCfgTimer.Start();
+            }
         }
 
         private void PowerCfgTimer_Tick(object sender, EventArgs e)
@@ -573,6 +562,8 @@ namespace ZenTimings
         {
             try
             {
+                SplashWindow.Loading("CPU");
+
                 IconSource = GetIcon("pack://application:,,,/ZenTimings;component/Resources/ZenTimings.ico", 16);
 
                 if (cpu.info.family != Cpu.Family.FAMILY_17H && cpu.info.family != Cpu.Family.FAMILY_19H)
@@ -587,7 +578,9 @@ namespace ZenTimings
                     settings.ChangeTheme();
 
                 InitializeComponent();
+                SplashWindow.Loading("Memory modules");
                 ReadMemoryModulesInfo();
+                SplashWindow.Loading("Timings");
                 ReadTimings();
 
                 if (settings.AdvancedMode)
@@ -599,11 +592,27 @@ namespace ZenTimings
                     PowerCfgTimer.Interval = TimeSpan.FromMilliseconds(2000);
                     PowerCfgTimer.Tick += new EventHandler(PowerCfgTimer_Tick);
 
+                    SplashWindow.Loading("Memory controller");
                     ReadMemoryConfig();
+
+                    SplashWindow.Loading("SVI2");
                     ReadSVI();
-                    ReadPowerConfig();
+
+                    SplashWindow.Loading("Waiting for power table");
+                    if (WaitForPowerTable())
+                    {
+                        SplashWindow.Loading("Reading power table");
+                        ReadPowerConfig();
+                    } 
+                    else
+                    {
+                        SplashWindow.Loading("Power table timeout!");
+                    }
+                    
                     StartAutoRefresh();
                 }
+
+                SplashWindow.Loading("Done");
 
                 DataContext = new
                 {
@@ -755,6 +764,7 @@ namespace ZenTimings
 
             var source = HwndSource.FromHwnd(handle);
             source.AddHook(WndProc);
+            SplashWindow.Stop();
         }
 
         private void OptionsToolStripMenuItem_Click(object sender, RoutedEventArgs e)
