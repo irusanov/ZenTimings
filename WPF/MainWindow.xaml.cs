@@ -1,4 +1,4 @@
-#define BETA
+//#define BETA
 
 using AdonisUI.Controls;
 using System;
@@ -478,7 +478,7 @@ namespace ZenTimings
             }
         }
 
-        /*
+
         private bool WaitForDriverLoad()
         {
             Stopwatch timer = new Stopwatch();
@@ -494,11 +494,10 @@ namespace ZenTimings
 
             return temp;
         }
-        */
 
         private void WaitForPowerTable(object sender, DoWorkEventArgs e)
         {
-            if (cpu.WinIoStatus == Cpu.LibStatus.OK)
+            if (WaitForDriverLoad() && cpu.WinIoStatus == Cpu.LibStatus.OK)
             {
                 int minimum_retries = 2;
                 Stopwatch timer = new Stopwatch();
@@ -593,6 +592,8 @@ namespace ZenTimings
 
                 if (settings.AdvancedMode)
                 {
+                    // Get first base address
+                    dramBaseAddress = (uint)(cpu.GetDramBaseAddress() & 0xFFFFFFFF);
                     PowerTable = new PowerTable(cpu.smu.SMU_TYPE);
                     BMC = new BiosMemController();
                     PowerCfgTimer.Interval = TimeSpan.FromMilliseconds(2000);
@@ -600,14 +601,7 @@ namespace ZenTimings
 
                     ReadMemoryConfig();
                     ReadSVI();
-
-                    // Get first base address
-                    dramBaseAddress = (uint)(cpu.GetDramBaseAddress() & 0xFFFFFFFF);
-                    if (dramBaseAddress > 0)
-                        ReadPowerConfig();
-                    else
-                        compatMode = true;
-
+                    ReadPowerConfig();
                     StartAutoRefresh();
                 }
 
