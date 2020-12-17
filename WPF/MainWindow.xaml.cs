@@ -502,15 +502,20 @@ namespace ZenTimings
                 timer.Start();
 
                 uint temp;
+                SMU.Status status;
+
                 // Refresh until table is transferred to DRAM or timeout
                 do
+                {
+                    status = cpu.TransferTableToDram();
                     InteropMethods.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
-                while (temp == 0 && timer.Elapsed.TotalMilliseconds < 20000);
+                }
+                while (temp == 0 && status != SMU.Status.OK && timer.Elapsed.TotalMilliseconds < 20000);
 
                 timer.Stop();
 
                 if (temp == 0)
-                    HandleError("Could not read power table.");
+                    HandleError("Could not read power table.\nClose the application and try again.");
 
                 return temp != 0;
             }
@@ -758,13 +763,16 @@ namespace ZenTimings
 
         private void AdonisWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            SplashWindow.Stop();
+
+            Application.Current.MainWindow = this;
+
             var handle = new WindowInteropHelper(Application.Current.MainWindow).Handle;
             if (handle == null)
                 return;
 
             var source = HwndSource.FromHwnd(handle);
             source.AddHook(WndProc);
-            SplashWindow.Stop();
         }
 
         private void OptionsToolStripMenuItem_Click(object sender, RoutedEventArgs e)
