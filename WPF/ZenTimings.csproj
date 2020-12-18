@@ -83,6 +83,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AppSettings.cs" />
+    <Compile Include="Modules\BiosACPIFunction.cs" />
+    <Compile Include="Modules\BiosMemController.cs" />
+    <Compile Include="Modules\MemoryConfig.cs" />
+    <Compile Include="Modules\MemoryModule.cs" />
+    <Compile Include="Modules\Screenshot.cs" />
+    <Compile Include="Modules\WMI.cs" />
     <Compile Include="Properties\BuildNumberTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -179,12 +185,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\icon-16.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{39c55831-97a2-498d-a9dd-27bf677e579a}</Project>
-      <Name>Common</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\camera-dark.png" />

@@ -267,9 +267,12 @@
                         </StackPanel>
 
                         <StackPanel Grid.Column="1">
-                            <TextBlock Text="{Binding powerTable.MCLK, FallbackValue='N/A', StringFormat='{}{0:F2}'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding powerTable.FCLK, FallbackValue='N/A', StringFormat='{}{0:F2}'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding powerTable.UCLK, FallbackValue='N/A', StringFormat='{}{0:F2}'}" Style="{StaticResource ValueStyles}"/>
+                            <TextBlock Text="{Binding powerTable.MCLK, FallbackValue='N/A', StringFormat='{}{0:F2}'}"
+                                       Style="{StaticResource ValueStyles}"/>
+                            <TextBlock Text="{Binding powerTable.FCLK, FallbackValue='N/A', StringFormat='{}{0:F2}'}"
+                                       Style="{StaticResource ValueStyles}"/>
+                            <TextBlock Text="{Binding powerTable.UCLK, FallbackValue='N/A', StringFormat='{}{0:F2}'}"
+                                       Style="{StaticResource ValueStyles}"/>
 
                             <TextBlock Text="" Style="{StaticResource DividerTextBlock}"/>
 

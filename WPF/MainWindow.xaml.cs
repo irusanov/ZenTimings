@@ -130,6 +130,24 @@ namespace ZenTimings
             }
         }
 
+        private void ReadPowerTable()
+        {
+            if (dramBaseAddress > 0)
+            {
+                for (int i = 0; i < table.Length; ++i)
+                {
+                    InteropMethods.GetPhysLong((UIntPtr)(dramBaseAddress + (i * 4)), out uint data);
+                    table[i] = data;
+                }
+
+                if (table.Any(v => v != 0))
+                {
+                    PowerTable.ConfiguredClockSpeed = MEMCFG.Frequency;
+                    PowerTable.Table = table;
+                }
+            }
+        }
+
         private void ReadPowerConfig()
         {
             if (dramBaseAddress > 0)
@@ -144,17 +162,7 @@ namespace ZenTimings
                     if (status != SMU.Status.OK)
                         return;
 
-                    for (int i = 0; i < table.Length; ++i)
-                    {
-                        InteropMethods.GetPhysLong((UIntPtr)(dramBaseAddress + (i * 4)), out uint data);
-                        table[i] = data;
-                    }
-
-                    if (table.Any(v => v != 0))
-                    {
-                        PowerTable.ConfiguredClockSpeed = MEMCFG.Frequency;
-                        PowerTable.Table = table;
-                    }
+                    ReadPowerTable();
                 }
                 catch (EntryPointNotFoundException ex)
                 {
@@ -225,10 +233,13 @@ namespace ZenTimings
                     break;
             }
 
-            uint vddcr_soc = (cpu.ReadDword(sviSocAddress) >> 16) & 0xFF;
+            uint plane1_value = cpu.ReadDword(sviSocAddress);
+            if (plane1_value > 0)
+            {
+                uint vddcr_soc = (plane1_value >> 16) & 0xFF;
+                textBoxVSOC_SVI2.Text = $"{cpu.utils.VidToVoltage(vddcr_soc):F4}V";
+            }
             //uint vcore = (ops.ReadDword(sviCoreaddress) >> 16) & 0xFF;
-
-            textBoxVSOC_SVI2.Text = $"{cpu.utils.VidToVoltage(vddcr_soc):F4}V";
         }
 
         private void ReadMemoryConfig()
@@ -515,7 +526,7 @@ namespace ZenTimings
                 timer.Stop();
 
                 if (temp == 0)
-                    HandleError("Could not read power table.\nClose the application and try again.");
+                    HandleError("Could not get power table.\nClose the application and try again.");
 
                 return temp != 0;
             }
@@ -607,7 +618,7 @@ namespace ZenTimings
                     if (WaitForPowerTable())
                     {
                         SplashWindow.Loading("Reading power table");
-                        ReadPowerConfig();
+                        ReadPowerTable();
                     } 
                     else
                     {
