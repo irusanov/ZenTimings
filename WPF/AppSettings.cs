@@ -1,41 +1,56 @@
 ﻿using AdonisUI;
 using System;
+using System.IO;
 using System.Windows;
-using ZenTimings.Properties;
+using System.Xml.Serialization;
 
 namespace ZenTimings
 {
+    [Serializable]
     public sealed class AppSettings
     {
-        private Settings settings;
+        private const int VERSION_MAJOR = 1;
+        private const int VERSION_MINOR = 0;
 
-        private void Load()
+        private const string filename = "settings.xml";
+
+        public AppSettings Create()
         {
-            try
+            AutoRefresh = true;
+            AutoRefreshInterval = 2000;
+            AdvancedMode = true;
+            DarkMode = false;
+            IsRestarting = false;
+
+            Save();
+            
+            return this;
+        }
+
+        public AppSettings Load()
+        {
+            if (File.Exists(filename))
             {
-                settings = Settings.Default;
-                AutoRefresh = settings.AutoRefresh;
-                AutoRefreshInterval = settings.AutoRefreshInterval;
-                AdvancedMode = settings.AdvancedMode;
-                DarkMode = settings.DarkMode;
+                using (StreamReader sw = new StreamReader(filename))
+                {
+                    XmlSerializer xmls = new XmlSerializer(typeof(AppSettings));
+                    return xmls.Deserialize(sw) as AppSettings;
+                }
             }
-            catch
+            else
             {
-                settings = new Settings();
-                AutoRefresh = true;
-                AutoRefreshInterval = 2000;
-                AdvancedMode = false;
-                settings.AutoRefresh = AutoRefresh;
-                settings.AutoRefreshInterval = AutoRefreshInterval;
-                settings.AdvancedMode = AdvancedMode;
-                settings.DarkMode = DarkMode;
+                return Create();
             }
         }
 
-        public void Save() => settings.Save();
-        public void Reload() => settings.Reload();
-
-        public AppSettings() => Load();
+        public void Save()
+        {
+            using (StreamWriter sw = new StreamWriter(filename))
+            {
+                XmlSerializer xmls = new XmlSerializer(typeof(AppSettings));
+                xmls.Serialize(sw, this);
+            }
+        }
 
         public void ChangeTheme()
         {
@@ -50,33 +65,10 @@ namespace ZenTimings
             //DarkMode = !DarkMode;
         }
 
-        public bool AutoRefresh
-        {
-            get => settings.AutoRefresh;
-            set => settings.AutoRefresh = value;
-        }
-        public int AutoRefreshInterval
-        {
-            get => settings.AutoRefreshInterval;
-            set => settings.AutoRefreshInterval = value;
-        }
-
-        public bool AdvancedMode
-        {
-            get => settings.AdvancedMode;
-            set => settings.AdvancedMode = value;
-        }
-
-        public bool DarkMode
-        {
-            get => settings.DarkMode;
-            set => settings.DarkMode = value;
-        }
-
-        public bool IsRestarting
-        {
-            get => settings.IsRestarting;
-            set => settings.IsRestarting = value;
-        }
+        public bool AutoRefresh { get; set; }
+        public int AutoRefreshInterval { get; set; }
+        public bool AdvancedMode { get; set; }
+        public bool DarkMode { get; set; }
+        public bool IsRestarting { get; set; }
     }
 }

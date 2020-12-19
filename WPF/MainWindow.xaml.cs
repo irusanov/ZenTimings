@@ -49,7 +49,7 @@ namespace ZenTimings
         private SystemInfo SI;
         private readonly uint dramBaseAddress = 0;
         private bool compatMode = false;
-        private readonly AppSettings settings = new AppSettings();
+        private readonly AppSettings settings = new AppSettings().Load();
         private readonly uint[] table = new uint[PowerTable.tableSize / 4];
         private readonly DispatcherTimer PowerCfgTimer = new DispatcherTimer();
 
