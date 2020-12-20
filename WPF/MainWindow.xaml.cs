@@ -233,8 +233,13 @@ namespace ZenTimings
                     break;
             }
 
-            uint plane1_value = cpu.ReadDword(sviSocAddress);
-            if (plane1_value > 0)
+            ushort timeout = 20;
+            uint plane1_value;
+            do
+                plane1_value = cpu.ReadDword(sviSocAddress);
+            while ((plane1_value & 0xFF00) != 0 && --timeout > 0);
+
+            if (timeout > 0)
             {
                 uint vddcr_soc = (plane1_value >> 16) & 0xFF;
                 textBoxVSOC_SVI2.Text = $"{cpu.utils.VidToVoltage(vddcr_soc):F4}V";
