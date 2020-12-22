@@ -516,6 +516,7 @@ namespace ZenTimings
             {
                 Stopwatch timer = new Stopwatch();
                 timer.Start();
+                short timeout = 10000;
 
                 uint temp;
                 SMU.Status status;
@@ -526,7 +527,7 @@ namespace ZenTimings
                     status = cpu.TransferTableToDram();
                     InteropMethods.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
                 }
-                while (temp == 0 && status != SMU.Status.OK && timer.Elapsed.TotalMilliseconds < 20000);
+                while ((temp == 0 || status != SMU.Status.OK) && timer.Elapsed.TotalMilliseconds < timeout);
 
                 timer.Stop();
 
