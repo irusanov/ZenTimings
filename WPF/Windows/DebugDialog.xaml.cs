@@ -185,7 +185,7 @@ namespace ZenTimings.Windows
 
                 foreach (PropertyInfo property in properties)
                 {
-                    if (property.Name == "CpuId" || property.Name == "PatchLevel")
+                    if (property.Name == "CpuId" || property.Name == "PatchLevel" || property.Name == "SmuTableVersion")
                         AddLine(property.Name + ": " + $"{property.GetValue(SI, null):X8}");
                     else if (property.Name == "SmuVersion")
                         AddLine(property.Name + ": " + SI.GetSmuVersionString());

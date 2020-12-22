@@ -10,11 +10,12 @@
     Title="ZenTimings Screenshot"
     Height="64"
     Width="240"
-    SizeToContent="Height"
+    SizeToContent="WidthAndHeight"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterOwner"
     Icon="/ZenTimings;component/Resources/icon-16.png"
     BorderThickness="1"
+    UseLayoutRounding="True"
     BorderBrush="{DynamicResource WindowBorderColor}">
     <Grid>
         <Grid.ColumnDefinitions>

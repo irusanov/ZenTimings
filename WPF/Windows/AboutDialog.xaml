@@ -17,6 +17,7 @@
     WindowStartupLocation="CenterOwner"
     Icon="/ZenTimings;component/Resources/icon-16.png"
     BorderThickness="1"
+    UseLayoutRounding="True"
     BorderBrush="{DynamicResource WindowBorderColor}">
     <Grid>
         <Grid.ColumnDefinitions>

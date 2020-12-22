@@ -16,6 +16,7 @@
     ResizeMode="CanMinimize"
     WindowStartupLocation="CenterOwner"
     BorderThickness="1"
+    UseLayoutRounding="True"
     BorderBrush="{DynamicResource WindowBorderColor}">
     <Grid>
         <Grid.ColumnDefinitions>

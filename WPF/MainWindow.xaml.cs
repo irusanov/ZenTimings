@@ -46,7 +46,7 @@ namespace ZenTimings
         private readonly MemoryConfig MEMCFG = new MemoryConfig();
         private readonly BiosMemController BMC;
         private readonly PowerTable PowerTable;
-        private SystemInfo SI;
+        private readonly SystemInfo SI;
         private readonly uint dramBaseAddress = 0;
         private bool compatMode = false;
         private readonly AppSettings settings = new AppSettings().Load();
@@ -748,7 +748,7 @@ namespace ZenTimings
                 };
                 debugWnd.Width = parent.Width;
                 debugWnd.Height = parent.Height;
-                debugWnd.Show();
+                debugWnd.ShowDialog();
             }
             else
             {
@@ -843,9 +843,7 @@ namespace ZenTimings
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            if ((float)value == 0)
-                return false;
-            return true;
+            return (float)value != 0;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

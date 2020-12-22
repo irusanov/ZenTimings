@@ -2,10 +2,6 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI">
 
-    <Style x:Key="WindowStyles" TargetType="Window" BasedOn="{StaticResource {x:Type Window}}">
-        <Setter Property="BorderBrush" Value="{DynamicResource SeparatorColor}" />
-    </Style>
-
     <Style x:Key="MainContainerStyles" TargetType="Border">
         <Setter Property="BorderBrush" Value="{DynamicResource SeparatorColor}" />
         <Setter Property="Padding" Value="5" />
@@ -101,5 +97,18 @@
 
     <Style TargetType="Window">
         <Setter Property="Background" Value="{DynamicResource WindowBorderColor}" />
+    </Style>
+
+    <Style x:Key="CameraButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid Background="{TemplateBinding Background}">
+                        <ContentPresenter />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 </ResourceDictionary>

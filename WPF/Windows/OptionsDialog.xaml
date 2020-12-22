@@ -19,6 +19,7 @@
     SizeToContent="WidthAndHeight"
     ShowInTaskbar="False"
     BorderThickness="1"
+    UseLayoutRounding="True"
     BorderBrush="{DynamicResource WindowBorderColor}">
 
     <StackPanel>
