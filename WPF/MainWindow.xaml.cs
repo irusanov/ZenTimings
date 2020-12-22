@@ -136,7 +136,7 @@ namespace ZenTimings
             {
                 for (int i = 0; i < table.Length; ++i)
                 {
-                    InteropMethods.GetPhysLong((UIntPtr)(dramBaseAddress + (i * 4)), out uint data);
+                    cpu.utils.GetPhysLong((UIntPtr)(dramBaseAddress + (i * 4)), out uint data);
                     table[i] = data;
                 }
 
@@ -502,7 +502,7 @@ namespace ZenTimings
             bool temp;
             // Refresh until driver is opened
             do
-                temp = InteropMethods.IsInpOutDriverOpen();
+                temp = cpu.utils.IsInpOutDriverOpen();
             while (!temp && timer.Elapsed.TotalMilliseconds < 10000);
 
             timer.Stop();
@@ -512,7 +512,7 @@ namespace ZenTimings
 
         private bool WaitForPowerTable()
         {
-            if (WaitForDriverLoad() && cpu.WinIoStatus == Cpu.LibStatus.OK)
+            if (WaitForDriverLoad() && cpu.utils.WinIoStatus == Utils.LibStatus.OK)
             {
                 Stopwatch timer = new Stopwatch();
                 timer.Start();
@@ -525,7 +525,7 @@ namespace ZenTimings
                 do
                 {
                     status = cpu.TransferTableToDram();
-                    InteropMethods.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
+                    cpu.utils.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
                 }
                 while ((temp == 0 || status != SMU.Status.OK) && timer.Elapsed.TotalMilliseconds < timeout);
 
