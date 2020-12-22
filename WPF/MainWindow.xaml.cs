@@ -493,7 +493,6 @@ namespace ZenTimings
             }
         }
 
-
         private bool WaitForDriverLoad()
         {
             Stopwatch timer = new Stopwatch();

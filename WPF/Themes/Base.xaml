@@ -95,10 +95,6 @@
         <Setter Property="Background" Value="{DynamicResource PanelBackgound}" />
     </Style>
 
-    <Style TargetType="Window">
-        <Setter Property="Background" Value="{DynamicResource WindowBorderColor}" />
-    </Style>
-
     <Style x:Key="CameraButtonStyle" TargetType="Button">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Template">

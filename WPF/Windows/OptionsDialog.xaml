@@ -67,8 +67,7 @@
                         Content="Auto Refresh"
                         Margin="0 5 5 5"
                         Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
-                        Click="CheckBoxAutoRefresh_Click"
-                        IsChecked="{Binding AutoRefresh}" />
+                        Click="CheckBoxAutoRefresh_Click" />
 
                     <TextBox
                         x:Name="numericUpDownRefreshInterval"
@@ -91,8 +90,7 @@
                         Grid.Row="1"
                         Margin="0 5 5 5"
                         Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
-                        Content="Advanced Mode"
-                        Click="CheckBoxAdvancedMode_CheckedChanged" />
+                        Content="Advanced Mode" />
 
                     <ToggleButton
                         x:Name="comboBoxTheme"
