@@ -5,8 +5,7 @@ using System.ComponentModel;
 using System.Management;
 using System.Reflection;
 using System.Windows.Forms;
-using ZenStates;
-using ZenTimings.Utils;
+using ZenStates.Core;
 
 namespace ZenTimings
 {
@@ -21,16 +20,16 @@ namespace ZenTimings
         private readonly BiosMemController BMC;
         private readonly string wmiScope = "root\\wmi";
         private readonly string wmiAMDACPI = "AMD_ACPI";
-        private readonly Ops OPS;
+        private readonly Cpu CPU;
         private ManagementBaseObject pack;
         private string instanceName;
-        ManagementObject classInstance;
+        private ManagementObject classInstance;
         private BackgroundWorker backgroundWorker1;
 
         public DebugDialog(uint dramBaseAddr, List<MemoryModule> memModules,
             MemoryConfig memCfg, SystemInfo systemInfo,
             BiosMemController biosMemCtrl, PowerTable powerTable,
-            Ops ops)
+            Cpu cpu)
         {
             InitializeComponent();
             baseAddress = dramBaseAddr;
@@ -39,7 +38,7 @@ namespace ZenTimings
             MEMCFG = memCfg;
             PT = powerTable;
             BMC = biosMemCtrl;
-            OPS = ops;
+            CPU = cpu;
         }
 
         private void HandleError(string message, string title = "Error")
@@ -164,9 +163,25 @@ namespace ZenTimings
             {
                 try
                 {
-                    uint offset = i << 20;
-                    bool enabled = OPS.GetBits(OPS.ReadDword(offset | 0x50DF0), 19, 1) == 0;
+                    uint offset = (uint)i << 20;
+                    bool channel = CPU.utils.GetBits(CPU.ReadDword(offset | 0x50DF0), 19, 1) == 0;
+                    bool dimm1 = CPU.utils.GetBits(CPU.ReadDword(offset | 0x50000), 0, 1) == 1;
+                    bool dimm2 = CPU.utils.GetBits(CPU.ReadDword(offset | 0x50008), 0, 1) == 1;
+                    bool enabled = channel && (dimm1 || dimm2);
+
                     AddLine($"Channel{i}: {enabled}");
+                    if (enabled)
+                    {
+                        AddLine("-- UMC Registers");
+                        uint startReg = offset | 0x50000;
+                        uint endReg = offset | 0x50300;
+                        while (startReg <= endReg)
+                        {
+                            uint data = CPU.ReadDword(startReg);
+                            AddLine($"   0x{startReg:X8}: 0x{data:X8}");
+                            startReg += 4;
+                        }
+                    }
                 }
                 catch
                 {
@@ -193,7 +208,7 @@ namespace ZenTimings
 
                 foreach (PropertyInfo property in properties)
                 {
-                    if (property.Name == "CpuId" || property.Name == "PatchLevel")
+                    if (property.Name == "CpuId" || property.Name == "PatchLevel" || property.Name == "SmuTableVersion")
                         AddLine(property.Name + ": " + $"{property.GetValue(SI, null):X8}");
                     else if (property.Name == "SmuVersion")
                         AddLine(property.Name + ": " + SI.GetSmuVersionString());
@@ -271,13 +286,22 @@ namespace ZenTimings
             AddHeading("SMU: Power Table Detected Values");
             try
             {
-                AddLine($"MCLK: {PT.MCLK}");
+                type = PT.GetType();
+                properties = type.GetProperties();
+
+                foreach (PropertyInfo property in properties)
+                {
+                    if (property.Name != "Table")
+                        AddLine(property.Name + ": " + property.GetValue(PT, null));
+                }
+
+                /*AddLine($"MCLK: {PT.MCLK}");
                 AddLine($"FCLK: {PT.FCLK}");
                 AddLine($"UCLK: {PT.UCLK}");
                 AddLine($"VSOC_SMU: {PT.VDDCR_SOC}");
                 AddLine($"CLDO_VDDP: {PT.CLDO_VDDP}");
                 AddLine($"CLDO_VDDG: {PT.CLDO_VDDG_IOD}");
-                AddLine($"CLDO_VDDG: {PT.CLDO_VDDG_CCD}");
+                AddLine($"CLDO_VDDG: {PT.CLDO_VDDG_CCD}");*/
             }
             catch
             {
@@ -326,7 +350,7 @@ namespace ZenTimings
                 uint startAddress = 0x0005A000;
                 uint endAddress = 0x0005A0FF;
 
-                if (OPS.Smu.SMU_TYPE == SMU.SmuType.TYPE_APU1)
+                if (CPU.smu.SMU_TYPE == SMU.SmuType.TYPE_APU1)
                 {
                     startAddress = 0x0006F000;
                     endAddress = 0x0006F0FF;
@@ -334,7 +358,7 @@ namespace ZenTimings
 
                 while (startAddress <= endAddress)
                 {
-                    var data = OPS.ReadDword(startAddress);
+                    var data = CPU.ReadDword(startAddress);
                     if (data != 0xFFFFFFFF)
                     {
                         AddLine($"0x{startAddress:X8}: 0x{data:X8}");
