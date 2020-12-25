@@ -608,7 +608,7 @@ namespace ZenTimings
                 {
                     // Get first base address
                     dramBaseAddress = (uint)(cpu.GetDramBaseAddress() & 0xFFFFFFFF);
-                    PowerTable = new PowerTable(cpu.smu.SMU_TYPE);
+                    PowerTable = new PowerTable(cpu.smu.TableVersion, cpu.smu.SMU_TYPE);
                     BMC = new BiosMemController();
                     PowerCfgTimer.Interval = TimeSpan.FromMilliseconds(2000);
                     PowerCfgTimer.Tick += new EventHandler(PowerCfgTimer_Tick);
