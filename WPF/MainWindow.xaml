@@ -75,7 +75,7 @@
                 </Grid>
             </Border>
 
-            <Separator/>
+            <Border Style="{DynamicResource Separator}" />
 
             <!-- System Info Panel -->
             <Border Style="{DynamicResource PanelBackground}"
@@ -86,7 +86,7 @@
                 </StackPanel>
             </Border>
 
-            <Separator Visibility="{Binding settings.AdvancedMode, Converter={StaticResource BoolToVis}}"/>
+            <Border Style="{DynamicResource Separator}" Visibility="{Binding settings.AdvancedMode, Converter={StaticResource BoolToVis}}"/>
 
             <!-- Timings -->
             <Border Style="{DynamicResource TimingsStyles}">
@@ -310,7 +310,7 @@
                 </StackPanel>
             </Border>
 
-            <Separator/>
+            <Border Style="{DynamicResource Separator}" />
 
             <Border Style="{DynamicResource BottomPanelStyles}">
                 <Grid>

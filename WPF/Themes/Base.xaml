@@ -84,9 +84,11 @@
         </Style.Triggers>
     </Style>
 
-    <Style TargetType="Separator">
+    <Style x:Key="Separator" TargetType="Border">
         <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="0" />
         <Setter Property="Height" Value="1" />
+        <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Background" Value="{DynamicResource SeparatorColor}" />
     </Style>
 
