@@ -52,12 +52,43 @@ namespace ZenTimings
         private readonly uint[] table = new uint[PowerTable.tableSize / 4];
         private readonly DispatcherTimer PowerCfgTimer = new DispatcherTimer();
         private bool compatMode = false;
+        private uint offset = 0;
 
         private static void ExitApplication() => Application.Current.Shutdown();
 
         private BiosACPIFunction GetFunctionByIdString(string name)
         {
             return biosFunctions.Find(x => x.IDString == name);
+        }
+
+        private void ReadChannelsInfo()
+        {
+            int dimmIndex = 0;
+
+            // Get the offset by probing the IMC0 to IMC7
+            // It appears that offsets 0x80 and 0x84 are DIMM config registers
+            // When a DIMM is DR, bit 0 is set to 1
+            // 0x50000
+            // offset 0, bit 0 when set to 1 means DIMM1 is installed
+            // offset 8, bit 0 when set to 1 means DIMM2 is installed
+            for (var i = 0; i < 8; i++)
+            {
+                uint channelOffset = (uint)i << 20;
+                bool channel = cpu.utils.GetBits(cpu.ReadDword(channelOffset | 0x50DF0), 19, 1) == 0;
+                bool dimm1 = cpu.utils.GetBits(cpu.ReadDword(channelOffset | 0x50000), 0, 1) == 1;
+                bool dimm2 = cpu.utils.GetBits(cpu.ReadDword(channelOffset | 0x50008), 0, 1) == 1;
+
+                if (channel && (dimm1 || dimm2))
+                {
+                    offset = channelOffset;
+
+                    if (dimm1)
+                        modules[dimmIndex++].Slot = $"{Convert.ToChar(i + 65)}1";
+
+                    if (dimm2)
+                        modules[dimmIndex++].Slot = $"{Convert.ToChar(i + 65)}2";
+                }
+            }
         }
 
         private void ReadMemoryModulesInfo()
@@ -96,13 +127,14 @@ namespace ZenTimings
 
                         modules.Add(new MemoryModule(partNumber, bankLabel, manufacturer, deviceLocator, capacity, clockSpeed));
 
-                        string bl = bankLabel.Length > 0 ? new string(bankLabel.Where(char.IsDigit).ToArray()) : "";
+                        //string bl = bankLabel.Length > 0 ? new string(bankLabel.Where(char.IsDigit).ToArray()) : "";
                         //string dl = deviceLocator.Length > 0 ? new string(deviceLocator.Where(char.IsDigit).ToArray()) : "";
 
-                        comboBoxPartNumber.Items.Add($"#{bl}: {partNumber}");
-
-                        comboBoxPartNumber.SelectedIndex = 0;
+                        //comboBoxPartNumber.Items.Add($"#{bl}: {partNumber}");
+                        //comboBoxPartNumber.SelectedIndex = 0;
                     }
+
+                    ReadChannelsInfo();
 
                     if (modules.Count > 0)
                     {
@@ -111,6 +143,7 @@ namespace ZenTimings
                         foreach (var module in modules)
                         {
                             totalCapacity += module.Capacity;
+                            comboBoxPartNumber.Items.Add($"{module.Slot}: {module.PartNumber}");
                         }
 
                         if (modules.FirstOrDefault().ClockSpeed != 0)
@@ -118,6 +151,8 @@ namespace ZenTimings
 
                         if (totalCapacity != 0)
                             MEMCFG.TotalCapacity = $"{totalCapacity / 1024 / (1024 * 1024)}GB";
+
+                        comboBoxPartNumber.SelectedIndex = 0;
                     }
                 }
                 catch
@@ -388,28 +423,6 @@ namespace ZenTimings
 
         private void ReadTimings()
         {
-            uint offset = 0;
-            bool enabled = false;
-
-            // Get the offset by probing the IMC0 to IMC7
-            // It appears that offsets 0x80 and 0x84 are DIMM config registers
-            // When a DIMM is DR, bit 0 is set to 1
-            // 0x50000
-            // offset 0, bit 0 when set to 1 means DIMM1 is installed
-            // offset 8, bit 0 when set to 1 means DIMM2 is installed
-            for (var i = 0; i < 8 && !enabled; i++)
-            {
-                offset = (uint)i << 20;
-                bool channel = cpu.utils.GetBits(cpu.ReadDword(offset | 0x50DF0), 19, 1) == 0;
-                bool dimm1 = cpu.utils.GetBits(cpu.ReadDword(offset | 0x50000), 0, 1) == 1;
-                bool dimm2 = cpu.utils.GetBits(cpu.ReadDword(offset | 0x50008), 0, 1) == 1;
-                enabled = channel && (dimm1 || dimm2);
-            }
-
-            // Reset here in case no enabled channel is detected
-            // Try and read from the first IMC (IMC0);
-            if (!enabled) offset = 0;
-
             uint powerDown = cpu.ReadDword(offset | 0x5012C);
             uint umcBase = cpu.ReadDword(offset | 0x50200);
             uint bgsa0 = cpu.ReadDword(offset | 0x500D0);

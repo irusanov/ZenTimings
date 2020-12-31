@@ -19,7 +19,7 @@ namespace ZenTimings.Windows
         private string result = "";
         private readonly List<MemoryModule> modules;
         private readonly MemoryConfig MEMCFG;
-        private readonly uint baseAddress;
+        //private readonly uint baseAddress;
         private readonly SystemInfo SI;
         private readonly PowerTable PT;
         private readonly BiosMemController BMC;
@@ -36,7 +36,7 @@ namespace ZenTimings.Windows
             Cpu cpu)
         {
             InitializeComponent();
-            baseAddress = dramBaseAddr;
+            //baseAddress = dramBaseAddr;
             modules = memModules;
             SI = systemInfo;
             MEMCFG = memCfg;
@@ -136,7 +136,7 @@ namespace ZenTimings.Windows
             {
                 try
                 {
-                    uint offset = (uint)i << 20;
+                    uint offset = i << 20;
                     bool channel = CPU.utils.GetBits(CPU.ReadDword(offset | 0x50DF0), 19, 1) == 0;
                     bool dimm1 = CPU.utils.GetBits(CPU.ReadDword(offset | 0x50000), 0, 1) == 1;
                     bool dimm2 = CPU.utils.GetBits(CPU.ReadDword(offset | 0x50008), 0, 1) == 1;
@@ -205,7 +205,8 @@ namespace ZenTimings.Windows
             foreach (MemoryModule module in modules)
             {
                 AddLine($"{module.BankLabel} | {module.DeviceLocator}");
-                AddLine($"-- {module.Manufacturer}");
+                AddLine($"-- Slot: {module.Slot}");
+                AddLine($"-- Manufacturer: {module.Manufacturer}");
                 AddLine($"-- {module.PartNumber} {module.Capacity / 1024 / (1024 * 1024)}GB {module.ClockSpeed}MHz");
                 AddLine();
             }
@@ -219,7 +220,7 @@ namespace ZenTimings.Windows
 
             try
             {
-                AddLine($"DRAM Base Address: {baseAddress:X8}");
+                // AddLine($"DRAM Base Address: {baseAddress:X8}");
                 foreach (PropertyInfo property in properties)
                     AddLine(property.Name + ": " + property.GetValue(MEMCFG, null));
             }
@@ -267,7 +268,9 @@ namespace ZenTimings.Windows
 
                 foreach (PropertyInfo property in properties)
                 {
-                    if (property.Name != "Table")
+                    if (property.Name == "TableVersion")
+                        AddLine(property.Name + ": " + $"{property.GetValue(PT, null):X8}");
+                    else if (property.Name != "Table")
                         AddLine(property.Name + ": " + property.GetValue(PT, null));
                 }
 
