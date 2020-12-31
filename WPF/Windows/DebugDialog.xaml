@@ -54,25 +54,33 @@
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
 
-                <Button x:Name="buttonDebug" Grid.Column="0" 
+                <Button x:Name="buttonDebug"
+                		Grid.Column="0" 
                         Content="Debug" 
                         Margin="{adonisUi:Space 0, 0, 1, 0}"
                         Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
-                        Width="70" Click="ButtonDebug_Click"/>
-                <Button x:Name="buttonDebugSave" Grid.Column="1" 
+                        Width="70"
+                        Click="ButtonDebug_Click"/>
+                <Button x:Name="buttonDebugSave"
+                		Grid.Column="1" 
                         Content="Save" 
                         Margin="{adonisUi:Space 0, 0, 1, 0}" 
                         IsEnabled="False"
-                        Width="70" Click="ButtonDebugSave_Click"/>
-                <Button x:Name="buttonDebugSaveAs" Grid.Column="2" 
+                        Width="70"
+                        Click="ButtonDebugSave_Click"/>
+                <Button x:Name="buttonDebugSaveAs"
+                		Grid.Column="2" 
                         Content="Save As..." 
                         Margin="{adonisUi:Space 0, 0, 1, 0}" 
                         IsEnabled="False"
-                        Width="70" Click="ButtonDebugSaveAs_Click"/>
-                <Button x:Name="buttonDebugCancel" Grid.Column="4" 
+                        Width="70"
+                        Click="ButtonDebugSaveAs_Click"/>
+                <Button x:Name="buttonDebugCancel"
+                		Grid.Column="4" 
                         Content="Close" 
                         IsCancel="True"
-                        Width="70" Click="ButtonDebugCancel_Click" />
+                        Width="70"
+                        Click="ButtonDebugCancel_Click" />
             </Grid>
         </Border>
     </Grid>

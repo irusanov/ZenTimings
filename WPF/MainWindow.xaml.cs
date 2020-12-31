@@ -3,14 +3,12 @@
 using AdonisUI.Controls;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Management;
 using System.Reflection;
-using System.Threading;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Interop;
@@ -267,7 +265,7 @@ namespace ZenTimings
                 BiosACPIFunction cmd = GetFunctionByIdString("Get APCB Config");
                 if (cmd == null)
                     throw new Exception();
-                
+
                 byte[] apcbConfig = WMI.RunCommand(classInstance, cmd.ID);
 
                 cmd = GetFunctionByIdString("Get memory voltages");
@@ -420,7 +418,7 @@ namespace ZenTimings
             MEMCFG.PHYWRL = cpu.utils.GetBits(timings19, 8, 5);
             MEMCFG.PHYRDL = cpu.utils.GetBits(timings19, 16, 6);
             MEMCFG.PHYWRD = cpu.utils.GetBits(timings19, 24, 3);
-            
+
             MEMCFG.RFC = cpu.utils.GetBits(timings23, 0, 11);
             MEMCFG.RFC2 = cpu.utils.GetBits(timings23, 11, 11);
             MEMCFG.RFC4 = cpu.utils.GetBits(timings23, 22, 11);

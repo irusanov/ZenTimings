@@ -23,7 +23,7 @@ namespace ZenTimings
             IsRestarting = false;
 
             Save();
-            
+
             return this;
         }
 

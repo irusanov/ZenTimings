@@ -9,7 +9,7 @@
     mc:Ignorable="d"
     Title="ZenTimings Screenshot"
     Height="64"
-    Width="240"
+    Width="230"
     SizeToContent="WidthAndHeight"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterOwner"
