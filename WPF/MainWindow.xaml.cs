@@ -27,19 +27,6 @@ namespace ZenTimings
     /// </summary>
     public partial class MainWindow : AdonisWindow
     {
-        public const uint F17H_M01H_SVI = 0x0005A000;
-        public const uint F17H_M60H_SVI = 0x0006F000; // Renoir only?
-        public const uint F17H_M01H_SVI_TEL_PLANE0 = (F17H_M01H_SVI + 0xC);
-        public const uint F17H_M01H_SVI_TEL_PLANE1 = (F17H_M01H_SVI + 0x10);
-        public const uint F17H_M30H_SVI_TEL_PLANE0 = (F17H_M01H_SVI + 0x14);
-        public const uint F17H_M30H_SVI_TEL_PLANE1 = (F17H_M01H_SVI + 0x10);
-        public const uint F17H_M60H_SVI_TEL_PLANE0 = (F17H_M60H_SVI + 0x38);
-        public const uint F17H_M60H_SVI_TEL_PLANE1 = (F17H_M60H_SVI + 0x3C);
-        public const uint F17H_M70H_SVI_TEL_PLANE0 = (F17H_M01H_SVI + 0x10);
-        public const uint F17H_M70H_SVI_TEL_PLANE1 = (F17H_M01H_SVI + 0xC);
-        public const uint F19H_M21H_SVI_TEL_PLANE0 = (F17H_M01H_SVI + 0x10);
-        public const uint F19H_M21H_SVI_TEL_PLANE1 = (F17H_M01H_SVI + 0xC);
-
         private readonly List<MemoryModule> modules = new List<MemoryModule>();
         private readonly List<BiosACPIFunction> biosFunctions = new List<BiosACPIFunction>();
         private readonly Cpu cpu = new Cpu();
@@ -157,7 +144,8 @@ namespace ZenTimings
                 }
                 catch
                 {
-                    AdonisUI.Controls.MessageBox.Show("Failed to get installed memory parameters. Corresponding fields will be empty.",
+                    AdonisUI.Controls.MessageBox.Show(
+                        "Failed to get installed memory parameters. Corresponding fields will be empty.",
                         "Warning",
                         AdonisUI.Controls.MessageBoxButton.OK,
                         AdonisUI.Controls.MessageBoxImage.Warning);
@@ -212,82 +200,10 @@ namespace ZenTimings
 
         private void ReadSVI()
         {
-            uint sviSocAddress, sviCoreaddress;
-
-            // SVI2 interface
-            switch (cpu.info.codeName)
-            {
-                //Zen, Zen+
-                case Cpu.CodeName.SummitRidge:
-                case Cpu.CodeName.PinnacleRidge:
-                case Cpu.CodeName.RavenRidge:
-                case Cpu.CodeName.Fenghuang:
-                case Cpu.CodeName.Dali:
-                    sviCoreaddress = F17H_M01H_SVI_TEL_PLANE0;
-                    sviSocAddress = F17H_M01H_SVI_TEL_PLANE1;
-                    break;
-
-                // Zen Threadripper/EPYC
-                case Cpu.CodeName.Whitehaven:
-                case Cpu.CodeName.Naples:
-                case Cpu.CodeName.Colfax:
-                    sviCoreaddress = F17H_M01H_SVI_TEL_PLANE1;
-                    sviSocAddress = F17H_M01H_SVI_TEL_PLANE0;
-                    break;
-
-                // Zen2 Threadripper/EPYC
-                case Cpu.CodeName.CastlePeak:
-                case Cpu.CodeName.Rome:
-                    sviCoreaddress = F17H_M30H_SVI_TEL_PLANE0;
-                    sviSocAddress = F17H_M30H_SVI_TEL_PLANE1;
-                    break;
-
-                // Picasso
-                case Cpu.CodeName.Picasso:
-                    if ((cpu.smu.Version & 0xFF000000) > 0)
-                    {
-                        sviCoreaddress = F17H_M01H_SVI_TEL_PLANE0;
-                        sviSocAddress = F17H_M01H_SVI_TEL_PLANE1;
-                    }
-                    else
-                    {
-                        sviCoreaddress = F17H_M01H_SVI_TEL_PLANE1;
-                        sviSocAddress = F17H_M01H_SVI_TEL_PLANE0;
-                    }
-                    break;
-
-                // Zen2
-                case Cpu.CodeName.Matisse:
-                    sviCoreaddress = F17H_M70H_SVI_TEL_PLANE0;
-                    sviSocAddress = F17H_M70H_SVI_TEL_PLANE1;
-                    break;
-
-                // Zen2 APU, Zen3 APU ?
-                case Cpu.CodeName.Renoir:
-                //case Cpu.CodeName.VanGogh:
-                //case Cpu.CodeName.Cezanne:
-                    sviCoreaddress = F17H_M60H_SVI_TEL_PLANE0;
-                    sviSocAddress = F17H_M60H_SVI_TEL_PLANE1;
-                    break;
-
-                // Zen3, Zen3 Threadripper/EPYC ?
-                case Cpu.CodeName.Vermeer:
-                //case Cpu.CodeName.GenesisPeak:
-                //case Cpu.CodeName.Milan:
-                    sviCoreaddress = F19H_M21H_SVI_TEL_PLANE0;
-                    sviSocAddress = F19H_M21H_SVI_TEL_PLANE1;
-                    break;
-
-                default:
-                    sviCoreaddress = F17H_M01H_SVI_TEL_PLANE0;
-                    sviSocAddress = F17H_M01H_SVI_TEL_PLANE1;
-                    break;
-            }
-
             ushort timeout = 20;
             uint plane1_value;
             do
-                plane1_value = cpu.ReadDword(sviSocAddress);
+                plane1_value = cpu.ReadDword(cpu.info.SVI2.SocAddress);
             while ((plane1_value & 0xFF00) != 0 && --timeout > 0);
 
             if (timeout > 0)
@@ -295,7 +211,7 @@ namespace ZenTimings
                 uint vddcr_soc = (plane1_value >> 16) & 0xFF;
                 textBoxVSOC_SVI2.Text = $"{cpu.utils.VidToVoltage(vddcr_soc):F4}V";
             }
-            //uint vcore = (ops.ReadDword(sviCoreaddress) >> 16) & 0xFF;
+            //uint vcore = (ops.ReadDword(cpu.info.SVI2.CoreAddress) >> 16) & 0xFF;
         }
 
         private void ReadMemoryConfig()
@@ -566,7 +482,7 @@ namespace ZenTimings
             }
             else
             {
-                HandleError("Driver is not responding or not loaded.");
+                HandleError("I/O driver is not responding or not loaded.");
                 return false;
             }
         }
@@ -660,6 +576,7 @@ namespace ZenTimings
                         else
                         {
                             SplashWindow.Loading("Power table timeout!");
+                            HandleError("Power table timeout!");
                         }
 
                         StartAutoRefresh();
