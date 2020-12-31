@@ -17,7 +17,7 @@ namespace ZenTimings
         {
             if (disposing && (components != null))
             {
-                OPS.Ols.Dispose();
+                cpu.Dispose();
                 components.Dispose();
             }
             base.Dispose(disposing);

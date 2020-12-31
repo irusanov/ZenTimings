@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace ZenTimings
 {
-    public class BiosMemController: IDisposable
+    public class BiosMemController : IDisposable
     {
         private void ParseTable(byte[] table)
         {

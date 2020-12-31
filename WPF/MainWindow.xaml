@@ -11,8 +11,8 @@
         adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
         mc:Ignorable="d"
         Title="ZenTimings"
-        Height="539.855"
-        Width="379.518"
+        Height="564"
+        Width="386"
         WindowStartupLocation="CenterScreen"
         ResizeMode="CanMinimize"
         SizeToContent="WidthAndHeight"
@@ -22,15 +22,18 @@
         SizeChanged="AdonisWindow_SizeChanged"
         Activated="AdonisWindow_Activated"
         Loaded="AdonisWindow_Loaded"
-        BorderThickness="0">
+        BorderThickness="1"
+        UseLayoutRounding="True"
+        BorderBrush="{DynamicResource WindowBorderColor}">
 
-
-    <Window.Style>
+    <!--Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
-    </Window.Style>
+    </Window.Style -->
 
     <Window.Resources>
-        <local:FloatToVoltage x:Key="FloatToVoltage" />
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <local:FloatToVoltageConverter x:Key="FloatToVoltage" />
+        <local:FloatToBoolConverter x:Key="FloatToBool" />
     </Window.Resources>
 
     <Border>
@@ -53,14 +56,26 @@
                             <MenuItem Header="_About" Click="AboutToolStripMenuItem_Click" />
                         </MenuItem>
                     </Menu>
-                    <Button Grid.Column="1" Width="20" Height="16" BorderThickness="0" Padding="0"
-                            Style="{DynamicResource {x:Static adonisUi:Styles.AccentToolbarButton}}" Click="ButtonScreenshot_Click">
-                        <Image Source="{DynamicResource CameraImage}" Height="16" Width="16" Stretch="None" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <Button Grid.Column="1"
+                            Width="20"
+                            Height="16"
+                            BorderThickness="0"
+                            Padding="0"
+                            Style="{DynamicResource CameraButtonStyle}"
+                            Click="ButtonScreenshot_Click"
+                            ForceCursor="True"
+                            Cursor="Hand">
+                        <Image Source="{DynamicResource CameraImage}"
+                               Height="16"
+                               Width="16"
+                               Stretch="None"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center" />
                     </Button>
                 </Grid>
             </Border>
 
-            <Separator/>
+            <Border Style="{DynamicResource Separator}" />
 
             <!-- System Info Panel -->
             <Border Style="{DynamicResource PanelBackground}"
@@ -71,7 +86,7 @@
                 </StackPanel>
             </Border>
 
-            <Separator Visibility="{Binding settings.AdvancedMode, Converter={StaticResource BoolToVis}}"/>
+            <Border Style="{DynamicResource Separator}" Visibility="{Binding settings.AdvancedMode, Converter={StaticResource BoolToVis}}"/>
 
             <!-- Timings -->
             <Border Style="{DynamicResource TimingsStyles}">
@@ -88,7 +103,7 @@
                             <TextBlock Text="BGS" TextAlignment="Right"/>
                             <TextBlock Text="GDM" TextAlignment="Right"/>
 
-                            <TextBlock Text=""/>
+                            <TextBlock Text="" Style="{DynamicResource DividerTextBlock}"/>
                             
                             <TextBlock Text="tCL" TextAlignment="Right"/>
                             <TextBlock Text="tRCDWR" TextAlignment="Right"/>
@@ -108,33 +123,37 @@
                             <TextBlock Text="tRFC4" TextAlignment="Right"/>
                             <TextBlock Text="tMOD" TextAlignment="Right"/>
                             <TextBlock Text="tMODPDA" TextAlignment="Right"/>
+                            <TextBlock Text="tPHYWRD" TextAlignment="Right"/>
+                            <TextBlock Text="tPHYWRL" TextAlignment="Right"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="1">
-                            <TextBlock Text="{Binding timings.Frequency, FallbackValue='N/A', StringFormat={}{0:F0}}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.BGS, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.GDM, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.Frequency, FallbackValue='N/A', StringFormat={}{0:F0}}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.BGS, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.GDM, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
 
-                            <TextBlock Text=""/>
+                            <TextBlock Text="" Style="{DynamicResource DividerTextBlock}"/>
 
-                            <TextBlock Text="{Binding timings.CL, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.RCDWR, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.RCDRD, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.RP, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.RAS, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.RC, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.RRDS, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.RRDL, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.FAW, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.WTRS, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.WTRL, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.WR, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.RFCns, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.RFC, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.RFC2, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.RFC4, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.MOD, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.MODPDA, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.CL, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.RCDWR, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.RCDRD, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.RP, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.RAS, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.RC, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.RRDS, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.RRDL, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.FAW, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.WTRS, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.WTRL, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.WR, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.RFCns, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.RFC, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.RFC2, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.RFC4, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.MOD, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.MODPDA, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.PHYWRD, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.PHYWRL, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
                         </StackPanel>
                     </Grid>
 
@@ -150,7 +169,7 @@
                             <TextBlock Text="BGS Alt" TextAlignment="Right"/>
                             <TextBlock Text="Cmd2T" TextAlignment="Right"/>
 
-                            <TextBlock Text=""/>
+                            <TextBlock Text="" Style="{DynamicResource DividerTextBlock}"/>
 
                             <TextBlock Text="tRDRDSCL" TextAlignment="Right"/>
                             <TextBlock Text="tWRWRSCL" TextAlignment="Right"/>
@@ -170,33 +189,37 @@
                             <TextBlock Text="tSTAG" TextAlignment="Right"/>
                             <TextBlock Text="tMRD" TextAlignment="Right"/>
                             <TextBlock Text="tMRDPDA" TextAlignment="Right"/>
+                            <TextBlock Text="tPHYRDL" TextAlignment="Right"/>
+                            <TextBlock Text="PowerDown" TextAlignment="Right"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="1">
-                            <TextBlock Text="{Binding timings.TotalCapacity, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.BGSAlt, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.Cmd2T, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.TotalCapacity, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.BGSAlt, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.Cmd2T, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
 
-                            <TextBlock Text=""/>
+                            <TextBlock Text="" Style="{DynamicResource DividerTextBlock}"/>
 
-                            <TextBlock Text="{Binding timings.RDRDSCL, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.WRWRSCL, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.CWL, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.RTP, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.RDWR, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.WRRD, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.RDRDSC, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.RDRDSD, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.RDRDDD, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.WRWRSC, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.WRWRSD, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.WRWRDD, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.CKE, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.REFI, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.REFIns, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.STAG, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.MRD, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding timings.MRDPDA, FallbackValue='N/A'}" Style="{StaticResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.RDRDSCL, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.WRWRSCL, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.CWL, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.RTP, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.RDWR, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.WRRD, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.RDRDSC, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.RDRDSD, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.RDRDDD, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.WRWRSC, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.WRWRSD, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.WRWRDD, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.CKE, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.REFI, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.REFIns, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.STAG, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.MRD, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.MRDPDA, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.PHYRDL, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding timings.PowerDown, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}"/>
                         </StackPanel>
                     </Grid>
 
@@ -208,71 +231,88 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="MCLK" TextAlignment="Right"/>
-                            <TextBlock Text="FCLK" TextAlignment="Right"/>
-                            <TextBlock Text="UCLK" TextAlignment="Right"/>
+                            <TextBlock Text="MCLK" TextAlignment="Right"
+                                       IsEnabled="{Binding powerTable.MCLK, Converter={StaticResource FloatToBool}}" />
+                            <TextBlock Text="FCLK" TextAlignment="Right"
+                                       IsEnabled="{Binding powerTable.FCLK, Converter={StaticResource FloatToBool}}" />
+                            <TextBlock Text="UCLK" TextAlignment="Right"
+                                       IsEnabled="{Binding powerTable.UCLK, Converter={StaticResource FloatToBool}}" />
 
-                            <TextBlock Text=""/>
+                            <TextBlock Text="" Style="{DynamicResource DividerTextBlock}"/>
 
                             <TextBlock Text="VSOC" TextAlignment="Right"/>
                             <!-- " TextBlock Text="VSOC (SMU)" TextAlignment="Right"/ -->
-                            <TextBlock Text="CLDO VDDP" TextAlignment="Right"/>
-                            <TextBlock Text="VDDG IOD" TextAlignment="Right"/>
-                            <TextBlock Text="VDDG CCD" TextAlignment="Right"/>
+                            <TextBlock Text="CLDO VDDP" TextAlignment="Right"
+                                       IsEnabled="{Binding powerTable.CLDO_VDDP, Converter={StaticResource FloatToBool}}"/>
+                            <TextBlock Text="VDDG CCD" TextAlignment="Right"
+                                       IsEnabled="{Binding powerTable.CLDO_VDDG_CCD, Converter={StaticResource FloatToBool}}" />
+                            <TextBlock Text="VDDG IOD" TextAlignment="Right"
+                                       IsEnabled="{Binding powerTable.CLDO_VDDG_IOD, Converter={StaticResource FloatToBool}}" />
+
+                            <TextBlock x:Name="labelMemVddio" Text="VDIMM" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
+                            <TextBlock x:Name="labelMemVtt" Text="MEM VTT" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
+
                             <TextBlock Text="" TextAlignment="Right"/>
-                            <TextBlock Text="ProcODT" TextAlignment="Right"/>
-                            <TextBlock Text="RttNom" TextAlignment="Right"/>
-                            <TextBlock Text="RttWr" TextAlignment="Right"/>
-                            <TextBlock Text="RttPark" TextAlignment="Right"/>
-                            <TextBlock Text="" TextAlignment="Right"/>
-                            <TextBlock Text="ClkDrvStr" TextAlignment="Right"/>
-                            <TextBlock Text="AddrCmdDrvStr" TextAlignment="Right"/>
-                            <TextBlock Text="CsOdtDrvStr" TextAlignment="Right"/>
-                            <TextBlock Text="CkeDrvStr" TextAlignment="Right"/>
-                            <TextBlock Text="" TextAlignment="Right"/>
-                            <TextBlock Text="AddrCmdSetup" TextAlignment="Right"/>
-                            <TextBlock Text="CsOdtSetup" TextAlignment="Right"/>
-                            <TextBlock Text="CkeSetup" TextAlignment="Right"/>
+                            <TextBlock Text="ProcODT" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
+                            <TextBlock Text="RttNom" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
+                            <TextBlock Text="RttWr" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
+                            <TextBlock Text="RttPark" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
+                            <TextBlock Text="" TextAlignment="Right" />
+                            <TextBlock Text="ClkDrvStr" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
+                            <TextBlock Text="AddrCmdDrvStr" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
+                            <TextBlock Text="CsOdtDrvStr" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
+                            <TextBlock Text="CkeDrvStr" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
+                            <TextBlock Text="" TextAlignment="Right" />
+                            <TextBlock Text="AddrCmdSetup" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
+                            <TextBlock Text="CsOdtSetup" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
+                            <TextBlock Text="CkeSetup" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
                         </StackPanel>
 
                         <StackPanel Grid.Column="1">
-                            <TextBlock Text="{Binding powerTable.MCLK, FallbackValue='N/A', StringFormat='{}{0:F2}'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding powerTable.FCLK, FallbackValue='N/A', StringFormat='{}{0:F2}'}" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding powerTable.UCLK, FallbackValue='N/A', StringFormat='{}{0:F2}'}" Style="{StaticResource ValueStyles}"/>
+                            <TextBlock Text="{Binding powerTable.MCLK, FallbackValue='N/A', StringFormat='{}{0:F2}'}"
+                                       Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding powerTable.FCLK, FallbackValue='N/A', StringFormat='{}{0:F2}'}"
+                                       Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding powerTable.UCLK, FallbackValue='N/A', StringFormat='{}{0:F2}'}"
+                                       Style="{DynamicResource ValueStyles}"/>
 
-                            <TextBlock Text=""/>
+                            <TextBlock Text="" Style="{DynamicResource DividerTextBlock}"/>
 
-                            <TextBlock x:Name="textBoxVSOC_SVI2" Text="N/A" Style="{StaticResource ValueStyles}"/>
+                            <TextBlock x:Name="textBoxVSOC_SVI2" Text="N/A" Style="{DynamicResource ValueStyles}"/>
                             <!-- " TextBlock Text="{Binding powerTable.VDDCR_SOC, Converter={StaticResource FloatToVoltage}}"
-                                       Style="{StaticResource ValueStyles}"/ -->
-                            <TextBlock Text="{Binding powerTable.CLDO_VDDP, Converter={StaticResource FloatToVoltage}}"
-                                       Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding powerTable.CLDO_VDDG_IOD, Converter={StaticResource FloatToVoltage}}"
-                                       Style="{StaticResource ValueStyles}"/>
-                            <TextBlock Text="{Binding powerTable.CLDO_VDDG_CCD, Converter={StaticResource FloatToVoltage}}"
-                                       Style="{StaticResource ValueStyles}"/>
+                                       Style="{DynamicResource ValueStyles}"/ -->
+                            <TextBlock Text="{Binding powerTable.CLDO_VDDP, FallbackValue='N/A', Converter={StaticResource FloatToVoltage}}"
+                                       Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding powerTable.CLDO_VDDG_CCD, FallbackValue='N/A', Converter={StaticResource FloatToVoltage}}"
+                                       Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock Text="{Binding powerTable.CLDO_VDDG_IOD, FallbackValue='N/A', Converter={StaticResource FloatToVoltage}}"
+                                       Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock x:Name="textBoxMemVddio" Text="N/A" Style="{DynamicResource ValueStyles}"/>
+                            <!-- TextBox x:Name="textBoxMemVddio" Text="N/A" Style="{StaticResource TextBoxValueStyles}"/-->
+                            <TextBlock x:Name="textBoxMemVtt" Text="N/A" Style="{DynamicResource ValueStyles}"/>
+
                             <TextBlock Text=""/>
-                            <TextBlock x:Name="textBoxProcODT" Text="N/A" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock x:Name="textBoxRttNom" Text="N/A" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock x:Name="textBoxRttWr" Text="N/A" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock x:Name="textBoxRttPark" Text="N/A" Style="{StaticResource ValueStyles}"/>
+                            <TextBlock x:Name="textBoxProcODT" Text="N/A" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock x:Name="textBoxRttNom" Text="N/A" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock x:Name="textBoxRttWr" Text="N/A" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock x:Name="textBoxRttPark" Text="N/A" Style="{DynamicResource ValueStyles}"/>
                             <TextBlock Text=""/>
-                            <TextBlock x:Name="textBoxClkDrvStren" Text="N/A" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock x:Name="textBoxAddrCmdDrvStren" Text="N/A" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock x:Name="textBoxCsOdtCmdDrvStren" Text="N/A" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock x:Name="textBoxCkeDrvStren" Text="N/A" Style="{StaticResource ValueStyles}"/>
+                            <TextBlock x:Name="textBoxClkDrvStren" Text="N/A" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock x:Name="textBoxAddrCmdDrvStren" Text="N/A" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock x:Name="textBoxCsOdtCmdDrvStren" Text="N/A" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock x:Name="textBoxCkeDrvStren" Text="N/A" Style="{DynamicResource ValueStyles}"/>
                             <TextBlock Text=""/>
-                            <TextBlock x:Name="textBoxAddrCmdSetup" Text="N/A" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock x:Name="textBoxCsOdtSetup" Text="N/A" Style="{StaticResource ValueStyles}"/>
-                            <TextBlock x:Name="textBoxCkeSetup" Text="N/A" Style="{StaticResource ValueStyles}"/>
+                            <TextBlock x:Name="textBoxAddrCmdSetup" Text="N/A" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock x:Name="textBoxCsOdtSetup" Text="N/A" Style="{DynamicResource ValueStyles}"/>
+                            <TextBlock x:Name="textBoxCkeSetup" Text="N/A" Style="{DynamicResource ValueStyles}"/>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
             </Border>
 
-            <Separator/>
+            <Border Style="{DynamicResource Separator}" />
 
-            <Border Style="{StaticResource BottomPanelStyles}">
+            <Border Style="{DynamicResource BottomPanelStyles}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="240"/>

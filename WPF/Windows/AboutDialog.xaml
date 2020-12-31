@@ -1,13 +1,24 @@
-﻿<adonisControls:AdonisWindow x:Class="ZenTimings.Windows.AboutDialog"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
-        xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-        adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
-        mc:Ignorable="d"
-        Title="About" Height="212.776" Width="304.728" ResizeMode="NoResize" SizeToContent="WidthAndHeight" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" Icon="/ZenTimings;component/Resources/icon-16.png" BorderThickness="0" SnapsToDevicePixels="True">
+﻿<adonisControls:AdonisWindow 
+    x:Class="ZenTimings.Windows.AboutDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+    xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+    adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
+    mc:Ignorable="d"
+    Title="About"
+    Height="212"
+    Width="304"
+    ResizeMode="NoResize"
+    SizeToContent="WidthAndHeight"
+    ShowInTaskbar="False"
+    WindowStartupLocation="CenterOwner"
+    Icon="/ZenTimings;component/Resources/icon-16.png"
+    BorderThickness="1"
+    UseLayoutRounding="True"
+    BorderBrush="{DynamicResource WindowBorderColor}">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>

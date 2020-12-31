@@ -23,19 +23,23 @@ namespace ZenTimings.Windows
             settingsInstance = settings;
             timerInstance = timer;
             DataContext = settingsInstance;
+
             _DarkMode = settingsInstance.DarkMode;
             _AdvancedMode = settingsInstance.AdvancedMode;
 
             InitializeComponent();
 
+            checkBoxAutoRefresh.IsChecked = settings.AutoRefresh;
             checkBoxAutoRefresh.IsEnabled = settings.AdvancedMode;
             checkBoxAdvancedMode.IsChecked = settings.AdvancedMode;
             numericUpDownRefreshInterval.IsEnabled = settings.AutoRefresh && settings.AdvancedMode;
+            msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
         }
 
         private void CheckBoxAutoRefresh_Click(object sender, RoutedEventArgs e)
         {
             numericUpDownRefreshInterval.IsEnabled = (bool)checkBoxAutoRefresh.IsChecked;
+            msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
         }
 
         private void ButtonSettingsApply_Click(object sender, RoutedEventArgs e)
@@ -43,11 +47,11 @@ namespace ZenTimings.Windows
             settingsInstance.AutoRefresh = (bool)checkBoxAutoRefresh.IsChecked;
             settingsInstance.AutoRefreshInterval = Convert.ToInt32(numericUpDownRefreshInterval.Text);
             settingsInstance.AdvancedMode = (bool)checkBoxAdvancedMode.IsChecked;
-            timerInstance.Interval = TimeSpan.FromMilliseconds(settingsInstance.AutoRefreshInterval);
+
             settingsInstance.Save();
 
+            timerInstance.Interval = TimeSpan.FromMilliseconds(settingsInstance.AutoRefreshInterval);
             _DarkMode = settingsInstance.DarkMode;
-
 
             if (notificationTimer != null)
             {
@@ -85,12 +89,6 @@ namespace ZenTimings.Windows
 
             myPopup.Width = OptionWindowContent.ActualWidth;
             myPopup.IsOpen = true;
-        }
-
-        private void CheckBoxAdvancedMode_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-            checkBoxAutoRefresh.IsEnabled = (bool)checkBoxAdvancedMode.IsChecked;
-            numericUpDownRefreshInterval.IsEnabled = (bool)checkBoxAdvancedMode.IsChecked && (bool)checkBoxAutoRefresh.IsChecked;
         }
 
         private void ComboBoxTheme_CheckedChanged(object sender, RoutedEventArgs e)

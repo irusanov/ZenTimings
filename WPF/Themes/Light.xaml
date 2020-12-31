@@ -15,6 +15,8 @@
     <SolidColorBrush x:Key="PanelBackgound" Color="#f3f3f3" />
     <SolidColorBrush x:Key="ContentBackground" Color="#f7f7f7" />
     <SolidColorBrush x:Key="SuccessBackground" Color="#d4edda" />
+    <SolidColorBrush x:Key="DisabledColor" Color="#a0a0a0" />
+    <SolidColorBrush x:Key="WindowBorderColor" Color="#c4c4c4" />
 
     <!-- Window background color -->
     <Color x:Key="{x:Static adonisUi:Colors.Layer0BackgroundColor}">#f3f3f3</Color>

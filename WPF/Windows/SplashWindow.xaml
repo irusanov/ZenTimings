@@ -1,0 +1,13 @@
+﻿<Window x:Class="ZenTimings.Windows.SplashWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ZenTimings.Windows"
+        mc:Ignorable="d"
+        Title="SplashWindow" Height="95" Width="229" ShowInTaskbar="False" WindowStartupLocation="CenterScreen" Topmost="True" ResizeMode="NoResize" Focusable="False" WindowStyle="None" Margin="0" MaxWidth="229" MaxHeight="95" BorderThickness="0" ScrollViewer.VerticalScrollBarVisibility="Disabled" VerticalContentAlignment="Center" ScrollViewer.CanContentScroll="True" SnapsToDevicePixels="True" Padding="0" UseLayoutRounding="False" Background="#FF2A2B34">
+    <Grid>
+        <Image HorizontalAlignment="Left" Height="95" Width="229" Source="/ZenTimings;component/Resources/splash.png" VerticalAlignment="Top"/>
+        <Label Name="status" Height="24" FontSize="11" Content="Initializing..." FontWeight="Normal" Foreground="#cdcdcd" Margin="12,66,10,0" VerticalContentAlignment="Center" Panel.ZIndex="1" Width="206" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+    </Grid>
+</Window>

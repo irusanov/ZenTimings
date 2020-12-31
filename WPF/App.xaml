@@ -10,8 +10,6 @@
                 <ResourceDictionary Source="pack://application:,,,/Themes/Light.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/Resources.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            
-            <BooleanToVisibilityConverter x:Key="BoolToVis" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>
