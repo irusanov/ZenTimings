@@ -10,6 +10,8 @@ namespace ZenTimings
         public string DeviceLocator { get; set; } = "";
         public ulong Capacity { get; set; } = 0;
         public uint ClockSpeed { get; set; } = 0;
+        public bool DualRank { get; set; } = false;
+        public string Slot { get; set; } = "";
 
         public MemoryModule() { }
 
