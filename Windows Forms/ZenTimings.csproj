@@ -89,10 +89,28 @@
     <Reference Include="WindowsBase" />
     <Reference Include="ZenStates-Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ZenStates.Core\bin\Debug\ZenStates-Core.dll</HintPath>
+      <HintPath>..\Common\ZenStates-Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Common\BiosACPIFunction.cs">
+      <Link>Common\BiosACPIFunction.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\BiosMemController.cs">
+      <Link>Common\BiosMemController.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\MemoryConfig.cs">
+      <Link>Common\MemoryConfig.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\MemoryModule.cs">
+      <Link>Common\MemoryModule.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Screenshot.cs">
+      <Link>Common\Screenshot.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\WMI.cs">
+      <Link>Common\WMI.cs</Link>
+    </Compile>
     <Compile Include="AboutBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -192,12 +210,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\camera.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{39c55831-97a2-498d-a9dd-27bf677e579a}</Project>
-      <Name>Common</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

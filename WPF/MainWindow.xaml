@@ -34,6 +34,7 @@
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
         <local:FloatToVoltageConverter x:Key="FloatToVoltage" />
         <local:FloatToBoolConverter x:Key="FloatToBool" />
+        <local:FloatToNAConverter x:Key="FloatToNA" />
     </Window.Resources>
 
     <Border>
@@ -240,7 +241,7 @@
 
                             <TextBlock Text="" Style="{DynamicResource DividerTextBlock}"/>
 
-                            <TextBlock Text="VSOC" TextAlignment="Right"/>
+                            <TextBlock Text="VSOC (SVI2)" TextAlignment="Right"/>
                             <!-- " TextBlock Text="VSOC (SMU)" TextAlignment="Right"/ -->
                             <TextBlock Text="CLDO VDDP" TextAlignment="Right"
                                        IsEnabled="{Binding powerTable.CLDO_VDDP, Converter={StaticResource FloatToBool}}"/>
@@ -269,11 +270,11 @@
                         </StackPanel>
 
                         <StackPanel Grid.Column="1">
-                            <TextBlock Text="{Binding powerTable.MCLK, FallbackValue='N/A', StringFormat='{}{0:F2}'}"
+                            <TextBlock Text="{Binding powerTable.MCLK, FallbackValue='N/A', StringFormat='{}{0:F2}', Converter={StaticResource FloatToNA}}"
                                        Style="{DynamicResource ValueStyles}"/>
-                            <TextBlock Text="{Binding powerTable.FCLK, FallbackValue='N/A', StringFormat='{}{0:F2}'}"
+                            <TextBlock Text="{Binding powerTable.FCLK, FallbackValue='N/A', StringFormat='{}{0:F2}', Converter={StaticResource FloatToNA}}"
                                        Style="{DynamicResource ValueStyles}"/>
-                            <TextBlock Text="{Binding powerTable.UCLK, FallbackValue='N/A', StringFormat='{}{0:F2}'}"
+                            <TextBlock Text="{Binding powerTable.UCLK, FallbackValue='N/A', StringFormat='{}{0:F2}', Converter={StaticResource FloatToNA}}"
                                        Style="{DynamicResource ValueStyles}"/>
 
                             <TextBlock Text="" Style="{DynamicResource DividerTextBlock}"/>

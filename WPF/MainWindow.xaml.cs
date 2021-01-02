@@ -454,6 +454,12 @@ namespace ZenTimings
 
         private bool WaitForPowerTable()
         {
+            if (dramBaseAddress == 0)
+            {
+                HandleError("Could not get DRAM base address.\nClose the application and try again.");
+                return false;
+            }
+
             if (WaitForDriverLoad() && cpu.utils.WinIoStatus == Utils.LibStatus.OK)
             {
                 Stopwatch timer = new Stopwatch();
@@ -474,7 +480,7 @@ namespace ZenTimings
                 timer.Stop();
 
                 if (temp == 0)
-                    HandleError("Could not get power table.\nClose the application and try again.");
+                    HandleError("Could not get power table.\nSkipping power table.");
 
                 return temp != 0;
             }
@@ -573,8 +579,7 @@ namespace ZenTimings
                         }
                         else
                         {
-                            SplashWindow.Loading("Power table timeout!");
-                            HandleError("Power table timeout!");
+                            SplashWindow.Loading("Power table error!");
                         }
 
                         StartAutoRefresh();
@@ -776,6 +781,21 @@ namespace ZenTimings
                 saveWnd.ShowDialog();
                 screenshot.Dispose();
             }
+        }
+    }
+
+    public class FloatToNAConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if ((float)value == 0)
+                return "N/A";
+            return value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return Binding.DoNothing;
         }
     }
 

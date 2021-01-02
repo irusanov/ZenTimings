@@ -37,7 +37,7 @@ namespace ZenTimings.Windows
 
             //this.Title = string.Format("About {0}", AssemblyTitle);
             this.labelProductName.Content = AssemblyProduct;
-            this.labelVersion.Text = string.Format("Version {0}", AssemblyVersion);
+            this.labelVersion.Text = string.Format("Version {0}L", AssemblyVersion);
             this.labelCopyright.Text = AssemblyCopyright;
             this.labelCompanyName.Text = AssemblyDescription;
         }

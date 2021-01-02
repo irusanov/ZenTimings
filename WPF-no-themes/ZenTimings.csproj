@@ -68,7 +68,7 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="ZenStates-Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ZenStates.Core\bin\Debug\ZenStates-Core.dll</HintPath>
+      <HintPath>..\Common\ZenStates-Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -76,13 +76,25 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="..\Common\BiosACPIFunction.cs">
+      <Link>Common\BiosACPIFunction.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\BiosMemController.cs">
+      <Link>Common\BiosMemController.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\MemoryConfig.cs">
+      <Link>Common\MemoryConfig.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\MemoryModule.cs">
+      <Link>Common\MemoryModule.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Screenshot.cs">
+      <Link>Common\Screenshot.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\WMI.cs">
+      <Link>Common\WMI.cs</Link>
+    </Compile>
     <Compile Include="AppSettings.cs" />
-    <Compile Include="Modules\BiosACPIFunction.cs" />
-    <Compile Include="Modules\BiosMemController.cs" />
-    <Compile Include="Modules\MemoryConfig.cs" />
-    <Compile Include="Modules\MemoryModule.cs" />
-    <Compile Include="Modules\Screenshot.cs" />
-    <Compile Include="Modules\WMI.cs" />
     <Compile Include="Properties\BuildNumberTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
