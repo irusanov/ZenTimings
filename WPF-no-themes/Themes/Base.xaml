@@ -1,0 +1,110 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style x:Key="MainContainerStyles" TargetType="Border">
+        <Setter Property="BorderBrush" Value="{DynamicResource SeparatorColor}" />
+        <Setter Property="Padding" Value="5" />
+    </Style>
+
+    <Style x:Key="DefaultTextBlockStyles" TargetType="TextBlock">
+        <Setter Property="Padding" Value="4 2" />
+        <Setter Property="Height" Value="18" />
+        <Setter Property="LineHeight" Value="16" />
+        <Setter Property="MinWidth" Value="50" />
+    </Style>
+
+    <Style x:Key="DividerTextBlock" TargetType="TextBlock">
+        <Setter Property="Height" Value="10" />
+    </Style>
+
+    <Style x:Key="SuccessBackground" TargetType="StatusBar">
+        <Setter Property="Background" Value="{DynamicResource SuccessBackground}" />
+    </Style>
+
+    <Style x:Key="MainMenuStyles" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource PanelBackgound}" />
+        <Setter Property="Padding" Value="5 2 7 2" />
+    </Style>
+
+    <Style x:Key="MenuBackground" TargetType="Menu">
+        <Setter Property="Background" Value="{DynamicResource PanelBackgound}" />
+    </Style>
+
+    <Style x:Key="PanelBackground" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource PanelBackgound}" />
+    </Style>
+
+    <Style x:Key="StackPanelBackground" TargetType="StackPanel">
+        <Setter Property="Background" Value="{DynamicResource PanelBackgound}" />
+    </Style>
+
+    <Style x:Key="TimingsStackPanelStyles" TargetType="StackPanel">
+        <Setter Property="Orientation" Value="Horizontal" />
+    </Style>
+
+    <Style x:Key="TimingsStyles" TargetType="Border">
+        <Setter Property="Padding" Value="6 5" />
+        <Setter Property="Background" Value="{DynamicResource ContentBackground}" />
+        <Style.Resources>
+            <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlockStyles}">
+                <Style.Triggers>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Foreground" Value="{DynamicResource DisabledColor}" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </Style.Resources>
+    </Style>
+
+    <Style x:Key="ValueStyles" TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlockStyles}">
+        <Setter Property="TextAlignment" Value="Center" />
+        <Setter Property="Foreground" Value="{DynamicResource AccentTextColor}" />
+        <Setter Property="MinWidth" Value="55"/>
+        <Style.Triggers>
+            <Trigger Property="Text" Value="N/A">
+                <Setter Property="Foreground" Value="{DynamicResource DisabledColor}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="TextBoxValueStyles" TargetType="TextBox">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Padding" Value="4 2" />
+        <Setter Property="Height" Value="18" />
+        <Setter Property="MinWidth" Value="50" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="TextAlignment" Value="Center" />
+        <Setter Property="Foreground" Value="{DynamicResource AccentTextColor}" />
+        <Setter Property="MinWidth" Value="55"/>
+        <Style.Triggers>
+            <Trigger Property="Text" Value="N/A">
+                <Setter Property="Foreground" Value="{DynamicResource DisabledColor}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="Separator" TargetType="Border">
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Height" Value="1" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Background" Value="{DynamicResource SeparatorColor}" />
+    </Style>
+
+    <Style x:Key="BottomPanelStyles" TargetType="Border">
+        <Setter Property="Padding" Value="5" />
+        <Setter Property="Background" Value="{DynamicResource PanelBackgound}" />
+    </Style>
+    
+    <Style x:Key="CameraButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid Background="{TemplateBinding Background}">
+                        <ContentPresenter />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>
