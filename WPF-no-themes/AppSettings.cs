@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Windows;
 using System.Xml.Serialization;
 
 namespace ZenTimings
@@ -31,8 +32,21 @@ namespace ZenTimings
             {
                 using (StreamReader sw = new StreamReader(filename))
                 {
-                    XmlSerializer xmls = new XmlSerializer(typeof(AppSettings));
-                    return xmls.Deserialize(sw) as AppSettings;
+                    try
+                    {
+                        XmlSerializer xmls = new XmlSerializer(typeof(AppSettings));
+                        return xmls.Deserialize(sw) as AppSettings;
+                    }
+                    catch (InvalidOperationException e)
+                    {
+                        sw.Close();
+                        MessageBox.Show(
+                            "Invalid settings file!\nSettings will be reset to defaults.",
+                            "Error",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Error);
+                        return Create();
+                    }
                 }
             }
             else

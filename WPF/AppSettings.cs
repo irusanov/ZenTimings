@@ -33,8 +33,21 @@ namespace ZenTimings
             {
                 using (StreamReader sw = new StreamReader(filename))
                 {
+                    try
+                    {
                     XmlSerializer xmls = new XmlSerializer(typeof(AppSettings));
                     return xmls.Deserialize(sw) as AppSettings;
+                }
+                    catch (InvalidOperationException e)
+                    {
+                        sw.Close();
+                        AdonisUI.Controls.MessageBox.Show(
+                            "Invalid settings file!\nSettings will be reset to defaults.",
+                            "Error",
+                            AdonisUI.Controls.MessageBoxButton.OK,
+                            AdonisUI.Controls.MessageBoxImage.Error);
+                        return Create();
+                    }
                 }
             }
             else
