@@ -120,7 +120,7 @@ namespace ZenTimings
 
                     if (modules.Count > 0)
                     {
-                        var totalCapacity = 0UL;
+                        ulong totalCapacity = 0UL;
 
                         foreach (var module in modules)
                         {
@@ -359,6 +359,15 @@ namespace ZenTimings
             uint timings22 = cpu.ReadDword(offset | 0x5028C);
             uint timings23 = timings20 != timings21 ? (timings20 != 0x21060138 ? timings20 : timings21) : timings20;
 
+            float configured = MEMCFG.Frequency;
+            float freqFromRatio = cpu.utils.GetBits(umcBase, 0, 7) / 3.0f * 200;
+
+            // Fallback to ratio when ConfiguredClockSpeed fails
+            if (configured == 0.0f || freqFromRatio > configured)
+            {
+                MEMCFG.Frequency = freqFromRatio;
+            }
+
             MEMCFG.BGS = (bgs0 == 0x87654321 && bgs1 == 0x87654321) ? "Disabled" : "Enabled";
             MEMCFG.BGSAlt = cpu.utils.GetBits(bgsa0, 4, 7) > 0 || cpu.utils.GetBits(bgsa1, 4, 7) > 0 ? "Enabled" : "Disabled";
             MEMCFG.GDM = cpu.utils.GetBits(umcBase, 11, 1) > 0 ? "Enabled" : "Disabled";
@@ -420,16 +429,6 @@ namespace ZenTimings
             MEMCFG.RFC4 = cpu.utils.GetBits(timings23, 22, 11);
 
             MEMCFG.PowerDown = cpu.utils.GetBits(powerDown, 28, 1) == 1 ? "Enabled" : "Disabled";
-
-            var configured = MEMCFG.Frequency;
-            var freqFromRatio = cpu.utils.GetBits(umcBase, 0, 7) / 3.0f * 200;
-
-            // Fallback to ratio when ConfiguredClockSpeed fails
-            if (configured == 0 || freqFromRatio > configured)
-            {
-                MEMCFG.Frequency = freqFromRatio;
-                //PowerTable.ConfiguredClockSpeed = freqFromRatio;
-            }
         }
 
 
