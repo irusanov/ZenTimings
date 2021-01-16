@@ -10,3 +10,4 @@
 [zenpower (github)](https://github.com/ocerman/zenpower)  
 [Linux kernel (github)](https://github.com/torvalds/linux)  
 [AMD's public documentation](https://www.amd.com/en/support/tech-docs)  
+[Open Hardware Monitor](https://github.com/openhardwaremonitor/openhardwaremonitor)  
