@@ -9,7 +9,9 @@ using System.IO;
 using System.Linq;
 using System.Management;
 using System.Reflection;
+using System.Threading;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -36,7 +38,6 @@ namespace ZenTimings
         private readonly uint[] table;
         private readonly DispatcherTimer PowerCfgTimer = new DispatcherTimer();
         private bool compatMode = false;
-        private uint offset = 0;
 
         private static void ExitApplication() => Application.Current.Shutdown();
 
@@ -64,13 +65,21 @@ namespace ZenTimings
 
                 if (channel && (dimm1 || dimm2))
                 {
-                    offset = channelOffset;
-
                     if (dimm1)
-                        modules[dimmIndex++].Slot = $"{Convert.ToChar(i + 65)}1";
+                    {
+                        MemoryModule module = modules[dimmIndex++];
+                        module.Slot = $"{Convert.ToChar(i + 65)}1";
+                        module.DctOffset = channelOffset;
+                        module.DualRank = cpu.utils.GetBits(cpu.ReadDword(channelOffset | 0x50080), 0, 1) == 1;
+                    }
 
                     if (dimm2)
-                        modules[dimmIndex++].Slot = $"{Convert.ToChar(i + 65)}2";
+                    {
+                        MemoryModule module = modules[dimmIndex++];
+                        module.Slot = $"{Convert.ToChar(i + 65)}2";
+                        module.DctOffset = channelOffset;
+                        module.DualRank = cpu.utils.GetBits(cpu.ReadDword(channelOffset | 0x50084), 0, 1) == 1;
+                    }
                 }
             }
         }
@@ -126,8 +135,9 @@ namespace ZenTimings
 
                         foreach (var module in modules)
                         {
+                            string rank = module.DualRank ? "DR" : "SR";
                             totalCapacity += module.Capacity;
-                            comboBoxPartNumber.Items.Add($"{module.Slot}: {module.PartNumber}");
+                            comboBoxPartNumber.Items.Add($"{module.Slot}: {module.PartNumber} ({module.Capacity / 1024 / (1024 * 1024)}GB - {rank})");
                         }
 
                         if (modules.FirstOrDefault().ClockSpeed != 0)
@@ -137,6 +147,7 @@ namespace ZenTimings
                             MEMCFG.TotalCapacity = $"{totalCapacity / 1024 / (1024 * 1024)}GB";
 
                         comboBoxPartNumber.SelectedIndex = 0;
+                        comboBoxPartNumber.SelectionChanged += new SelectionChangedEventHandler(ComboBoxPartNumber_SelectionChanged);
                     }
                 }
                 catch
@@ -335,7 +346,7 @@ namespace ZenTimings
             BMC.Dispose();
         }
 
-        private void ReadTimings()
+        private void ReadTimings(uint offset = 0)
         {
             uint powerDown = cpu.ReadDword(offset | 0x5012C);
             uint umcBase = cpu.ReadDword(offset | 0x50200);
@@ -556,7 +567,8 @@ namespace ZenTimings
                 SplashWindow.Loading("Memory modules");
                 ReadMemoryModulesInfo();
                 SplashWindow.Loading("Timings");
-                ReadTimings();
+                // Read from first enabled DCT
+                ReadTimings(modules[0].DctOffset);
 
                 if (settings.AdvancedMode)
                 {
@@ -783,6 +795,12 @@ namespace ZenTimings
                 saveWnd.ShowDialog();
                 screenshot.Dispose();
             }
+        }
+
+        private void ComboBoxPartNumber_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            ComboBox combo = sender as ComboBox;
+            ReadTimings(modules[combo.SelectedIndex].DctOffset);
         }
     }
 

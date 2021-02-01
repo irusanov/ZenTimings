@@ -12,6 +12,7 @@ namespace ZenTimings
         public uint ClockSpeed { get; set; } = 0;
         public bool DualRank { get; set; } = false;
         public string Slot { get; set; } = "";
+        public uint DctOffset { get; set; } = 0;
 
         public MemoryModule() { }
 
