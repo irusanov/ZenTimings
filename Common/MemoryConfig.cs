@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 
 namespace ZenTimings
@@ -21,6 +21,13 @@ namespace ZenTimings
         {
             get => frequency;
             set => SetProperty(ref frequency, value, InternalEventArgsCache.Frequency);
+        }
+
+        float ratio;
+        public float Ratio
+        {
+            get => ratio;
+            set => SetProperty(ref ratio, value, InternalEventArgsCache.Ratio);
         }
 
         string totalCapacity;
@@ -377,6 +384,7 @@ namespace ZenTimings
     {
         internal static PropertyChangedEventArgs TotalCapacity = new PropertyChangedEventArgs("TotalCapacity");
         internal static PropertyChangedEventArgs Frequency = new PropertyChangedEventArgs("Frequency");
+        internal static PropertyChangedEventArgs Ratio = new PropertyChangedEventArgs("Ratio");
         internal static PropertyChangedEventArgs BGS = new PropertyChangedEventArgs("BGS");
         internal static PropertyChangedEventArgs BGSAlt = new PropertyChangedEventArgs("BGSAlt");
         internal static PropertyChangedEventArgs GDM = new PropertyChangedEventArgs("GDM");

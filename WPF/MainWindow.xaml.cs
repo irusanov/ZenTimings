@@ -31,10 +31,9 @@ namespace ZenTimings
         private readonly MemoryConfig MEMCFG = new MemoryConfig();
         private readonly BiosMemController BMC;
         private readonly PowerTable PowerTable;
-        private readonly SystemInfo SI;
         private readonly uint dramBaseAddress = 0;
         private readonly AppSettings settings = new AppSettings().Load();
-        private readonly uint[] table = new uint[PowerTable.tableSize / 4];
+        private readonly uint[] table;
         private readonly DispatcherTimer PowerCfgTimer = new DispatcherTimer();
         private bool compatMode = false;
         private uint offset = 0;
@@ -164,6 +163,7 @@ namespace ZenTimings
                 if (table.Any(v => v != 0))
                 {
                     PowerTable.ConfiguredClockSpeed = MEMCFG.Frequency;
+                    PowerTable.MemRatio = MEMCFG.Ratio;
                     PowerTable.Table = table;
                 }
             }
@@ -364,7 +364,10 @@ namespace ZenTimings
             uint timings23 = timings20 != timings21 ? (timings20 != 0x21060138 ? timings20 : timings21) : timings20;
 
             float configured = MEMCFG.Frequency;
-            float freqFromRatio = cpu.utils.GetBits(umcBase, 0, 7) / 3.0f * 200;
+            float ratio = cpu.utils.GetBits(umcBase, 0, 7) / 3.0f;
+            float freqFromRatio = ratio * 200;
+
+            MEMCFG.Ratio = ratio;
 
             // Fallback to ratio when ConfiguredClockSpeed fails
             if (configured == 0.0f || freqFromRatio > configured)
@@ -546,8 +549,6 @@ namespace ZenTimings
                         "Please run a debug report and send to the developer.");
                 }
 
-                SI = new SystemInfo(cpu);
-
                 if (settings.DarkMode)
                     settings.ChangeTheme();
 
@@ -566,6 +567,8 @@ namespace ZenTimings
                         PowerTable = new PowerTable(cpu.smu.TableVersion, cpu.smu.SMU_TYPE);
                         PowerCfgTimer.Interval = TimeSpan.FromMilliseconds(2000);
                         PowerCfgTimer.Tick += new EventHandler(PowerCfgTimer_Tick);
+
+                        table = new uint[PowerTable.tableSize / 4];
 
                         SplashWindow.Loading("SVI2");
                         ReadSVI();
@@ -674,8 +677,8 @@ namespace ZenTimings
         private void Window_Initialized(object sender, EventArgs e)
         {
             SetWindowTitle();
-            labelCPU.Text = SI.CpuName;
-            labelMB.Text = $"{SI.MbName} | BIOS {SI.BiosVersion} | SMU {SI.GetSmuVersionString()}";
+            labelCPU.Text = cpu.systemInfo.CpuName;
+            labelMB.Text = $"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} | SMU {cpu.systemInfo.GetSmuVersionString()}";
 #if DEBUG
             /*foreach (TextWriterTraceListener listener in listeners)
             {
@@ -701,7 +704,7 @@ namespace ZenTimings
             if (settings.AdvancedMode)
             {
                 var parent = Application.Current.MainWindow;
-                DebugDialog debugWnd = new DebugDialog(dramBaseAddress, modules, MEMCFG, SI, BMC, PowerTable, cpu)
+                DebugDialog debugWnd = new DebugDialog(dramBaseAddress, modules, MEMCFG, BMC, PowerTable, cpu)
                 {
                     Owner = parent
                 };
