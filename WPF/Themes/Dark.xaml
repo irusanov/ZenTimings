@@ -9,6 +9,7 @@
 
     <BitmapImage x:Key="CameraImage" UriSource="../Resources/camera-light.png"></BitmapImage>
 
+    <SolidColorBrush x:Key="TextColor" Color="{DynamicResource {x:Static adonisUi:Colors.ForegroundColor}}" />
     <SolidColorBrush x:Key="AccentTextColor" Color="#7facff" />
     <SolidColorBrush x:Key="SeparatorColor" Color="{DynamicResource {x:Static adonisUi:Colors.Layer3BorderColor}}" />
     <SolidColorBrush x:Key="PanelBackgound" Color="{DynamicResource {x:Static adonisUi:Colors.Layer0BackgroundColor}}" />

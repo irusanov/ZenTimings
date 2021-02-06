@@ -289,7 +289,7 @@
                             <TextBlock Text="{Binding powerTable.CLDO_VDDG_IOD, FallbackValue='N/A', Converter={StaticResource FloatToVoltage}}"
                                        Style="{DynamicResource ValueStyles}"/>
                             <TextBlock x:Name="textBoxMemVddio" Text="N/A" Style="{DynamicResource ValueStyles}"/>
-                            <!-- TextBox x:Name="textBoxMemVddio" Text="N/A" Style="{StaticResource TextBoxValueStyles}"/-->
+                            <!-- TextBox x:Name="textBoxMemVddio" Text="N/A" Style="{StaticResource ValueStyles}"/-->
                             <TextBlock x:Name="textBoxMemVtt" Text="N/A" Style="{DynamicResource ValueStyles}"/>
 
                             <TextBlock Text=""/>

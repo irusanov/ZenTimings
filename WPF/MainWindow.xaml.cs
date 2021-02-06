@@ -137,7 +137,7 @@ namespace ZenTimings
                         {
                             string rank = module.DualRank ? "DR" : "SR";
                             totalCapacity += module.Capacity;
-                            comboBoxPartNumber.Items.Add($"{module.Slot}: {module.PartNumber} ({module.Capacity / 1024 / (1024 * 1024)}GB - {rank})");
+                            comboBoxPartNumber.Items.Add($"{module.Slot}: {module.PartNumber} ({module.Capacity / 1024 / (1024 * 1024)}GB, {rank})");
                         }
 
                         if (modules.FirstOrDefault().ClockSpeed != 0)
@@ -797,7 +797,7 @@ namespace ZenTimings
             }
         }
 
-        private void ComboBoxPartNumber_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void ComboBoxPartNumber_SelectionChanged(object sender, RoutedEventArgs e)
         {
             ComboBox combo = sender as ComboBox;
             ReadTimings(modules[combo.SelectedIndex].DctOffset);
