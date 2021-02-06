@@ -58,6 +58,13 @@ namespace ZenTimings
             set => SetProperty(ref gdm, value, InternalEventArgsCache.GDM);
         }
 
+        string powerdown;
+        public string PowerDown
+        {
+            get => powerdown;
+            set => SetProperty(ref powerdown, value, InternalEventArgsCache.PowerDown);
+        }
+
         string cmd2T;
         public string Cmd2T
         {
@@ -344,13 +351,6 @@ namespace ZenTimings
         {
             get => xp;
             set => SetProperty(ref xp, value, InternalEventArgsCache.XP);
-        }
-
-        string powerdown;
-        public string PowerDown
-        {
-            get => powerdown;
-            set => SetProperty(ref powerdown, value, InternalEventArgsCache.PowerDown);
         }
 
         uint phywrd;
