@@ -802,6 +802,18 @@ namespace ZenTimings
             ComboBox combo = sender as ComboBox;
             ReadTimings(modules[combo.SelectedIndex].DctOffset);
         }
+
+        private void SystemInfoToolstripMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+            SystemInfoWindow siWnd = new SystemInfoWindow(cpu.systemInfo, MEMCFG)
+            {
+                Owner = this
+            };
+            siWnd.Width = this.Width;
+            siWnd.Height = this.Height;
+            siWnd.Show();
+        }
     }
 
     public class FloatToNAConverter : IValueConverter
