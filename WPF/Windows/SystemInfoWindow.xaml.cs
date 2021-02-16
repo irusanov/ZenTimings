@@ -1,18 +1,8 @@
-﻿using AdonisUI.Controls;
+using AdonisUI.Controls;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using ZenStates.Core;
 
 namespace ZenTimings.Windows
@@ -28,7 +18,7 @@ namespace ZenTimings.Windows
             public string Value { get; set; }
         }
 
-        public SystemInfoWindow(SystemInfo si, MemoryConfig mc)
+        public SystemInfoWindow(SystemInfo si, MemoryConfig mc, List<AsusSensorInfo> asusSensors)
         {
             InitializeComponent();
             Type type = si.GetType();
@@ -54,9 +44,7 @@ namespace ZenTimings.Windows
 
                 TestGrid.ItemsSource = items;
             }
-            catch
-            {
-            }
+            catch { }
 
             type = mc.GetType();
             properties = type.GetProperties();
@@ -71,9 +59,9 @@ namespace ZenTimings.Windows
 
                 MemCfgGrid.ItemsSource = items;
             }
-            catch
-            {
-            }
+            catch { }
+
+            AsusWmiGrid.ItemsSource = asusSensors;
         }
 
         private void AdonisWindow_Activated(object sender, EventArgs e)

@@ -82,6 +82,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="..\Common\AsusSensorInfo.cs">
+      <Link>Common\AsusSensorInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\AsusWMI.cs">
+      <Link>Common\AsusWMI.cs</Link>
+    </Compile>
     <Compile Include="..\Common\BiosACPIFunction.cs">
       <Link>Common\BiosACPIFunction.cs</Link>
     </Compile>
