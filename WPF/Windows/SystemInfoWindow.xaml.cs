@@ -61,7 +61,11 @@ namespace ZenTimings.Windows
             }
             catch { }
 
-            AsusWmiGrid.ItemsSource = asusSensors;
+            //AsusWmiGrid.ItemsSource = asusSensors;
+
+            DataContext = new {
+                asusSensors
+            };
         }
 
         private void AdonisWindow_Activated(object sender, EventArgs e)

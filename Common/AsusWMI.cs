@@ -14,6 +14,7 @@ namespace ZenTimings
 
         public List<AsusSensorInfo> sensors = new List<AsusSensorInfo>();
 
+        // enums used from https://github.com/electrified/asus-wmi-sensors
         public enum AsusSensorType
         {
             VOLTAGE = 0x0,
@@ -55,6 +56,9 @@ namespace ZenTimings
             {
                 instanceName = WMI.GetInstanceName(scope, className);
                 instance = new ManagementObject(scope, $"{className}.InstanceName='{instanceName}'", null);
+
+                if (instanceName.Length == 0 || instance == null)
+                    throw new Exception($"No instance for WMI class {className}");
 
                 uint count = GetItemCount();
                 for (byte i = 0; i < count; i++)
@@ -130,6 +134,7 @@ namespace ZenTimings
             }
         }
 
+        // ASUS WMI commands
         public uint GetVersion() => GetInvokeMethodData(instance, "sensor_get_version");
 
         public uint GetItemCount() => GetInvokeMethodData(instance, "sensor_get_number");

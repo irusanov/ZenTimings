@@ -1,4 +1,4 @@
-﻿<adonisControls:AdonisWindow
+<adonisControls:AdonisWindow
         xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
         x:Class="ZenTimings.Windows.SystemInfoWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -15,11 +15,13 @@
         BorderThickness="1"
         UseLayoutRounding="True"
         BorderBrush="{DynamicResource WindowBorderColor}" Activated="AdonisWindow_Activated">
+
     <Window.Resources>
         <Style x:Key="HiddenGridViewHeader" TargetType="{x:Type GridViewColumnHeader}">
             <Setter Property="Visibility" Value="Collapsed" />
         </Style>
     </Window.Resources>
+
     <ScrollViewer Padding="0" Margin="0" HorizontalScrollBarVisibility="Disabled">
         <StackPanel CanVerticallyScroll="False">
             <GroupBox
@@ -90,10 +92,26 @@
                 </DataGrid>
             </GroupBox>
 
-            <GroupBox
-                Header="Asus WMI"
-                adonisExtensions:LayerExtension.Layer="3">
-                <DataGrid
+            <Border>
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Visibility" Value="Visible"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding asusSensors.Count}" Value="0">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding asusSensors}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+
+                <GroupBox
+                    Header="Asus WMI"
+                    adonisExtensions:LayerExtension.Layer="3">
+
+                    <DataGrid
                         Name="AsusWmiGrid"
                         adonisExtensions:LayerExtension.Layer="3"
                         AutoGenerateColumns="False"
@@ -106,24 +124,25 @@
                         ScrollViewer.CanContentScroll="False"
                         IsEnabled="False" FontSize="11"
                         ItemsSource="{Binding asusSensors}">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Width="150" Binding="{Binding Name}">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Width="auto" Binding="{Binding Value}">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="Foreground" Value="{DynamicResource AccentTextColor}"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </GroupBox>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Width="150" Binding="{Binding Name}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Width="auto" Binding="{Binding Value}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Foreground" Value="{DynamicResource AccentTextColor}"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+            </Border>
         </StackPanel>
     </ScrollViewer>
 </adonisControls:AdonisWindow>

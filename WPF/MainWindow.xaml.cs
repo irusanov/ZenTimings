@@ -306,11 +306,11 @@ namespace ZenTimings
                 {
                     textBoxMemVddio.Text = $"{vdimm:F4}V";
                 }
-                else if (AsusWmi.Status == 1)
+                else if (AsusWmi != null && AsusWmi.Status == 1)
                 {
                     var sensor = AsusWmi.FindSensorByName("DRAM Voltage");
                     if (sensor != null)
-                        textBoxMemVddio.Text = $"{sensor.Value}";
+                        textBoxMemVddio.Text = sensor.Value;
                 }
                 else
                 {
@@ -522,7 +522,7 @@ namespace ZenTimings
 
         private void PowerCfgTimer_Tick(object sender, EventArgs e)
         {
-            if (AsusWmi.Status == 1)
+            if (AsusWmi != null && AsusWmi.Status == 1)
             {
                 AsusWmi.UpdateSensors();
                 var sensor = AsusWmi.FindSensorByName("DRAM Voltage");
@@ -739,7 +739,7 @@ namespace ZenTimings
             if (settings.AdvancedMode)
             {
                 var parent = Application.Current.MainWindow;
-                DebugDialog debugWnd = new DebugDialog(dramBaseAddress, modules, MEMCFG, BMC, PowerTable, cpu)
+                DebugDialog debugWnd = new DebugDialog(dramBaseAddress, modules, MEMCFG, BMC, PowerTable, AsusWmi, cpu)
                 {
                     Owner = parent
                 };
@@ -828,8 +828,7 @@ namespace ZenTimings
 
         private void SystemInfoToolstripMenuItem_Click(object sender, RoutedEventArgs e)
         {
-
-            SystemInfoWindow siWnd = new SystemInfoWindow(cpu.systemInfo, MEMCFG, AsusWmi.sensors)
+            SystemInfoWindow siWnd = new SystemInfoWindow(cpu.systemInfo, MEMCFG, AsusWmi?.sensors)
             {
                 Owner = this
             };

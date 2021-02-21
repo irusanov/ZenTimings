@@ -26,12 +26,13 @@ namespace ZenTimings.Windows
         private readonly string wmiScope = "root\\wmi";
         private readonly string wmiAMDACPI = "AMD_ACPI";
         private readonly Cpu CPU;
+        private readonly AsusWMI AWMI;
         private ManagementBaseObject pack;
         private string instanceName;
         private ManagementObject classInstance;
 
         public DebugDialog(uint dramBaseAddr, List<MemoryModule> memModules, MemoryConfig memCfg, 
-            BiosMemController biosMemCtrl, PowerTable powerTable, Cpu cpu)
+            BiosMemController biosMemCtrl, PowerTable powerTable, AsusWMI asusWmi, Cpu cpu)
         {
             InitializeComponent();
             //baseAddress = dramBaseAddr;
@@ -41,6 +42,7 @@ namespace ZenTimings.Windows
             PT = powerTable;
             BMC = biosMemCtrl;
             CPU = cpu;
+            AWMI = asusWmi;
         }
 
         private void SetControlsState(bool enabled = true)
@@ -320,6 +322,21 @@ namespace ZenTimings.Windows
 
             PrintWmiFunctions();
             AddLine();
+
+            if (AWMI != null && AWMI.Status == 1)
+            {
+                AddHeading("ASUS WMI");
+                try
+                {
+                    foreach (AsusSensorInfo sensor in AWMI.sensors)
+                        AddLine(sensor.Name + ": " + sensor.Value);
+                }
+                catch
+                {
+                    AddLine("<FAILED>");
+                }
+                AddLine();
+            }
 
             AddHeading("SVI2: PCI Range");
             try

@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using static ZenTimings.AsusWMI;
 
 namespace ZenTimings
 {
     /*
+     * Sample data for core voltage from Crosshair VI Hero
+     * 
      * Data_Type: 3
      * Location: 0
      * Name: CPU Core Voltage
