@@ -120,7 +120,7 @@ namespace ZenTimings
                         temp = WMI.TryGetProperty(queryObject, "DeviceLocator");
                         if (temp != null) deviceLocator = (string)temp;
 
-                        modules.Add(new MemoryModule(partNumber, bankLabel, manufacturer, deviceLocator, capacity, clockSpeed));
+                        modules.Add(new MemoryModule(partNumber.Trim(), bankLabel.Trim(), manufacturer.Trim(), deviceLocator, capacity, clockSpeed));
 
                         //string bl = bankLabel.Length > 0 ? new string(bankLabel.Where(char.IsDigit).ToArray()) : "";
                         //string dl = deviceLocator.Length > 0 ? new string(deviceLocator.Where(char.IsDigit).ToArray()) : "";
@@ -139,7 +139,7 @@ namespace ZenTimings
                         {
                             string rank = module.DualRank ? "DR" : "SR";
                             totalCapacity += module.Capacity;
-                            comboBoxPartNumber.Items.Add($"{module.Slot}: {module.PartNumber.Trim()} ({module.Capacity / 1024 / (1024 * 1024)}GB, {rank})");
+                            comboBoxPartNumber.Items.Add($"{module.Slot}: {module.PartNumber} ({module.Capacity / 1024 / (1024 * 1024)}GB, {rank})");
                         }
 
                         if (modules.FirstOrDefault().ClockSpeed != 0)
@@ -599,14 +599,6 @@ namespace ZenTimings
                         {
                             SplashWindow.Loading("Reading power table");
                             ReadPowerTable();
-
-                            uint o = 0x24C / 4;
-                            for (int i = 0; i < 16; i++)
-                            {
-                                uint power = table[o + i];
-                                string status = power > 0 ? "Enabled" : "Disabled";
-                                Console.WriteLine($"Core{i}: {power} -> {status}");
-                            }
                         }
                         else
                         {

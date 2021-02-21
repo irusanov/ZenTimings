@@ -242,7 +242,7 @@
 
                             <TextBlock Text="" Style="{DynamicResource DividerTextBlock}"/>
 
-                            <TextBlock Text="VSOC (SVI2)" TextAlignment="Right"/>
+                            <TextBlock x:Name="labelVSOC_SVI2" Text="VSOC (SVI2)" TextAlignment="Right"/>
                             <!-- " TextBlock Text="VSOC (SMU)" TextAlignment="Right"/ -->
                             <TextBlock Text="CLDO VDDP" TextAlignment="Right"
                                        IsEnabled="{Binding powerTable.CLDO_VDDP, Converter={StaticResource FloatToBool}}"/>

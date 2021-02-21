@@ -206,6 +206,11 @@ namespace ZenTimings.Windows
             {
                 AddLine($"{module.BankLabel} | {module.DeviceLocator}");
                 AddLine($"-- Slot: {module.Slot}");
+                if (module.DualRank)
+                    AddLine($"-- Dual Rank");
+                else
+                    AddLine($"-- Single Rank");
+                AddLine($"-- DCT Offset: 0x{(module.DctOffset >> 20):X}");
                 AddLine($"-- Manufacturer: {module.Manufacturer}");
                 AddLine($"-- {module.PartNumber} {module.Capacity / 1024 / (1024 * 1024)}GB {module.ClockSpeed}MHz");
                 AddLine();
