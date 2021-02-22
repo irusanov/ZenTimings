@@ -31,15 +31,14 @@ namespace ZenTimings.Windows
         private string instanceName;
         private ManagementObject classInstance;
 
-        public DebugDialog(uint dramBaseAddr, List<MemoryModule> memModules, MemoryConfig memCfg, 
-            BiosMemController biosMemCtrl, PowerTable powerTable, AsusWMI asusWmi, Cpu cpu)
+        public DebugDialog(Cpu cpu, List<MemoryModule> memModules, MemoryConfig memCfg, 
+            BiosMemController biosMemCtrl, AsusWMI asusWmi)
         {
             InitializeComponent();
-            //baseAddress = dramBaseAddr;
             modules = memModules;
             SI = cpu.systemInfo;
             MEMCFG = memCfg;
-            PT = powerTable;
+            PT = cpu.powerTable;
             BMC = biosMemCtrl;
             CPU = cpu;
             AWMI = asusWmi;
