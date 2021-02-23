@@ -443,14 +443,14 @@ namespace ZenTimings
 
             if (WaitForDriverLoad() && cpu.utils.WinIoStatus == Utils.LibStatus.OK)
             {
+                cpu.powerTable.ConfiguredClockSpeed = MEMCFG.Frequency;
+                cpu.powerTable.MemRatio = MEMCFG.Ratio;
+
                 SMU.Status status = cpu.RefreshPowerTable();
                 uint temp = 0;
                 Stopwatch timer = new Stopwatch();
                 timer.Start();
                 short timeout = 10000;
-
-                cpu.powerTable.ConfiguredClockSpeed = MEMCFG.Frequency;
-                cpu.powerTable.MemRatio = MEMCFG.Ratio;
 
                 // Refresh until table is transferred to DRAM or timeout
                 do
@@ -511,9 +511,8 @@ namespace ZenTimings
 
                 //ReadTimings();
                 //ReadMemoryConfig();
-                Dispatcher.Invoke(new Action(() => ReadSVI()));
-                
                 RefreshPowerTable();
+                Dispatcher.Invoke(new Action(() => ReadSVI()));
             }).Start();
         }
 
@@ -573,9 +572,17 @@ namespace ZenTimings
 
                         SplashWindow.Loading("Waiting for power table");
                         if (WaitForPowerTable())
+                        {
+                            // refresh the table again, to avoid displaying initial fclk, mclk and uclk values,
+                            // which seem to be a little off when transferring the table for the "first" time,
+                            // after an idle period
+                            RefreshPowerTable();
                             SplashWindow.Loading("Reading power table");
+                        }
                         else
+                        {
                             SplashWindow.Loading("Power table error!");
+                        }
 
                         if (!AsusWmi.Init())
                         {
