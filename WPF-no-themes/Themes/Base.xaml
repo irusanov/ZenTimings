@@ -66,22 +66,6 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="TextBoxValueStyles" TargetType="TextBox">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Padding" Value="4 2" />
-        <Setter Property="Height" Value="18" />
-        <Setter Property="MinWidth" Value="50" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="TextAlignment" Value="Center" />
-        <Setter Property="Foreground" Value="{DynamicResource AccentTextColor}" />
-        <Setter Property="MinWidth" Value="55"/>
-        <Style.Triggers>
-            <Trigger Property="Text" Value="N/A">
-                <Setter Property="Foreground" Value="{DynamicResource DisabledColor}" />
-            </Trigger>
-        </Style.Triggers>
-    </Style>
-
     <Style x:Key="Separator" TargetType="Border">
         <Setter Property="Margin" Value="0" />
         <Setter Property="Padding" Value="0" />

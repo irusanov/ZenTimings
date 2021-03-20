@@ -17,8 +17,7 @@
         StateChanged="AdonisWindow_StateChanged"
         SizeChanged="AdonisWindow_SizeChanged"
         Activated="AdonisWindow_Activated"
-        Loaded="AdonisWindow_Loaded"
-        UseLayoutRounding="True">
+        Loaded="AdonisWindow_Loaded">
 
     <!--Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
@@ -235,7 +234,7 @@
 
                             <TextBlock Text="" Style="{DynamicResource DividerTextBlock}"/>
 
-                            <TextBlock Text="VSOC (SVI2)" TextAlignment="Right"/>
+                            <TextBlock x:Name="labelVSOC_SVI2" Text="VSOC (SVI2)" TextAlignment="Right"/>
                             <!-- " TextBlock Text="VSOC (SMU)" TextAlignment="Right"/ -->
                             <TextBlock Text="CLDO VDDP" TextAlignment="Right"
                                        IsEnabled="{Binding powerTable.CLDO_VDDP, Converter={StaticResource FloatToBool}}"/>
@@ -283,7 +282,7 @@
                             <TextBlock Text="{Binding powerTable.CLDO_VDDG_IOD, FallbackValue='N/A', Converter={StaticResource FloatToVoltage}}"
                                        Style="{DynamicResource ValueStyles}"/>
                             <TextBlock x:Name="textBoxMemVddio" Text="N/A" Style="{DynamicResource ValueStyles}"/>
-                            <!-- TextBox x:Name="textBoxMemVddio" Text="N/A" Style="{StaticResource TextBoxValueStyles}"/-->
+                            <!-- TextBox x:Name="textBoxMemVddio" Text="N/A" Style="{StaticResource ValueStyles}"/-->
                             <TextBlock x:Name="textBoxMemVtt" Text="N/A" Style="{DynamicResource ValueStyles}"/>
 
                             <TextBlock Text=""/>

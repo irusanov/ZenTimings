@@ -272,6 +272,8 @@ namespace ZenTimings
                     var sensor = AsusWmi.FindSensorByName("DRAM Voltage");
                     if (sensor != null)
                         textBoxMemVddio.Text = sensor.Value;
+                    else
+                        labelMemVddio.IsEnabled = false;
                 }
                 else
                 {
@@ -558,7 +560,8 @@ namespace ZenTimings
                 ReadMemoryModulesInfo();
                 SplashWindow.Loading("Timings");
                 // Read from first enabled DCT
-                ReadTimings(modules[0].DctOffset);
+                if (modules.Count > 0)
+                	ReadTimings(modules[0].DctOffset);
 
                 if (settings.AdvancedMode)
                 {

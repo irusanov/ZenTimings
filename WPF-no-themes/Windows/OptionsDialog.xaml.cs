@@ -10,7 +10,7 @@ namespace ZenTimings.Windows
     /// </summary>
     public partial class OptionsDialog : Window
     {
-        private const string Caption = "Disabling auto-refresh might lead to inaccurate voltages and frequencies on first launch";
+        //private const string Caption = "Disabling auto-refresh might lead to inaccurate voltages and frequencies on first launch";
         private readonly AppSettings settingsInstance;
         private readonly DispatcherTimer timerInstance;
         private DispatcherTimer notificationTimer;
@@ -37,6 +37,13 @@ namespace ZenTimings.Windows
         private void CheckBoxAutoRefresh_Click(object sender, RoutedEventArgs e)
         {
             numericUpDownRefreshInterval.IsEnabled = (bool)checkBoxAutoRefresh.IsChecked;
+            msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
+        }
+
+        private void CheckBoxAdvancedMode_Click(object sender, RoutedEventArgs e)
+        {
+            checkBoxAutoRefresh.IsEnabled = (bool)checkBoxAdvancedMode.IsChecked;
+            numericUpDownRefreshInterval.IsEnabled = (bool)checkBoxAutoRefresh.IsChecked && checkBoxAutoRefresh.IsEnabled;
             msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
         }
 
@@ -88,13 +95,6 @@ namespace ZenTimings.Windows
 
             myPopup.Width = OptionWindowContent.ActualWidth;
             myPopup.IsOpen = true;
-        }
-
-        private void CheckBoxAdvancedMode_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-            checkBoxAutoRefresh.IsEnabled = (bool)checkBoxAdvancedMode.IsChecked;
-            numericUpDownRefreshInterval.IsEnabled = (bool)checkBoxAdvancedMode.IsChecked && (bool)checkBoxAutoRefresh.IsChecked;
-            msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
         }
 
         private void ButtonSettingsCancel_Click(object sender, RoutedEventArgs e)

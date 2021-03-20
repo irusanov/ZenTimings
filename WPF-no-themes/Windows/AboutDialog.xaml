@@ -12,8 +12,7 @@
     SizeToContent="WidthAndHeight"
     ShowInTaskbar="False"
     WindowStartupLocation="CenterOwner"
-    Icon="/ZenTimings;component/Resources/icon-16.png"
-    UseLayoutRounding="True">
+    Icon="/ZenTimings;component/Resources/icon-16.png">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>

@@ -24,23 +24,22 @@ namespace ZenTimings.Windows
         private readonly string wmiScope = "root\\wmi";
         private readonly string wmiAMDACPI = "AMD_ACPI";
         private readonly Cpu CPU;
+        private readonly AsusWMI AWMI;
         private ManagementBaseObject pack;
         private string instanceName;
         private ManagementObject classInstance;
 
-        public DebugDialog(uint dramBaseAddr, List<MemoryModule> memModules,
-            MemoryConfig memCfg, SystemInfo systemInfo,
-            BiosMemController biosMemCtrl, PowerTable powerTable,
-            Cpu cpu)
+        public DebugDialog(Cpu cpu, List<MemoryModule> memModules, MemoryConfig memCfg, 
+            BiosMemController biosMemCtrl, AsusWMI asusWmi)
         {
             InitializeComponent();
-            //baseAddress = dramBaseAddr;
             modules = memModules;
-            SI = systemInfo;
+            SI = cpu.systemInfo;
             MEMCFG = memCfg;
-            PT = powerTable;
+            PT = cpu.powerTable;
             BMC = biosMemCtrl;
             CPU = cpu;
+            AWMI = asusWmi;
         }
 
         private void SetControlsState(bool enabled = true)
@@ -204,6 +203,11 @@ namespace ZenTimings.Windows
             {
                 AddLine($"{module.BankLabel} | {module.DeviceLocator}");
                 AddLine($"-- Slot: {module.Slot}");
+                if (module.DualRank)
+                    AddLine($"-- Dual Rank");
+                else
+                    AddLine($"-- Single Rank");
+                AddLine($"-- DCT Offset: 0x{(module.DctOffset >> 20):X}");
                 AddLine($"-- Manufacturer: {module.Manufacturer}");
                 AddLine($"-- {module.PartNumber} {module.Capacity / 1024 / (1024 * 1024)}GB {module.ClockSpeed}MHz");
                 AddLine();
@@ -320,6 +324,21 @@ namespace ZenTimings.Windows
 
             PrintWmiFunctions();
             AddLine();
+
+            if (AWMI != null && AWMI.Status == 1)
+            {
+                AddHeading("ASUS WMI");
+                try
+                {
+                    foreach (AsusSensorInfo sensor in AWMI.sensors)
+                        AddLine(sensor.Name + ": " + sensor.Value);
+                }
+                catch
+                {
+                    AddLine("<FAILED>");
+                }
+                AddLine();
+            }
 
             AddHeading("SVI2: PCI Range");
             try

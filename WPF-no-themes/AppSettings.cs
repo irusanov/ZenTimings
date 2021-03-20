@@ -37,8 +37,9 @@ namespace ZenTimings
                         XmlSerializer xmls = new XmlSerializer(typeof(AppSettings));
                         return xmls.Deserialize(sw) as AppSettings;
                     }
-                    catch (InvalidOperationException e)
+                    catch (InvalidOperationException ex)
                     {
+                        Console.WriteLine(ex.Message);
                         sw.Close();
                         MessageBox.Show(
                             "Invalid settings file!\nSettings will be reset to defaults.",

@@ -61,9 +61,18 @@
                     </Grid.RowDefinitions>
 
                     <ToggleButton
-                        x:Name="checkBoxAutoRefresh"
+                        x:Name="checkBoxAdvancedMode"
                         Grid.Column="0"
                         Grid.Row="0"
+                        Margin="0 5 5 5"
+                        Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
+                        Content="Advanced Mode"
+                        Click="CheckBoxAdvancedMode_Click" />
+
+                    <ToggleButton
+                        x:Name="checkBoxAutoRefresh"
+                        Grid.Column="0"
+                        Grid.Row="1"
                         Content="Auto Refresh"
                         Margin="0 5 5 5"
                         Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
@@ -72,25 +81,17 @@
                     <TextBox
                         x:Name="numericUpDownRefreshInterval"
                         Grid.Column="1"
-                        Grid.Row="0"
+                        Grid.Row="1"
                         Text="{Binding AutoRefreshInterval}"
                         Margin="5" />
 
                     <Label
                         x:Name="msText"
                         Grid.Column="2"
-                        Grid.Row="0"
+                        Grid.Row="1"
                         Content="ms"
                         VerticalAlignment="Center"
                         Padding="5 0" FontWeight="Normal" />
-
-                    <ToggleButton
-                        x:Name="checkBoxAdvancedMode"
-                        Grid.Column="0"
-                        Grid.Row="1"
-                        Margin="0 5 5 5"
-                        Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
-                        Content="Advanced Mode" />
 
                     <ToggleButton
                         x:Name="comboBoxTheme"

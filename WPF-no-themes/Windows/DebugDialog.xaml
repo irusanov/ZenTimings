@@ -10,8 +10,7 @@
     Width="406"
     Icon="/ZenTimings;component/Resources/icon-16.png"
     ResizeMode="CanMinimize"
-    WindowStartupLocation="CenterOwner"
-    UseLayoutRounding="True">
+    WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
@@ -25,8 +24,7 @@
         <TextBox x:Name="textBoxDebugOutput"
                  Grid.Row="0"
                  SpellCheck.IsEnabled="False" 
-                 VerticalContentAlignment="Top" 
-                 UseLayoutRounding="False" 
+                 VerticalContentAlignment="Top"
                  VerticalScrollBarVisibility="Auto"
                  Height="auto"
                  Width="auto"
