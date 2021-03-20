@@ -9,15 +9,13 @@ namespace ZenTimings
     {
         public static object TryGetProperty(ManagementObject wmiObj, string propertyName)
         {
-            object retval;
+            object retval = null;
             try
             {
                 retval = wmiObj.GetPropertyValue(propertyName);
             }
-            catch (ManagementException ex)
-            {
-                retval = null;
-            }
+            catch (ManagementException ex) { Console.WriteLine(ex.Message); }
+
             return retval;
         }
 
@@ -28,10 +26,10 @@ namespace ZenTimings
             {
                 return new ManagementScope($@"{scope}");
             }
-            catch (ManagementException e)
+            catch (ManagementException ex)
             {
-                Console.WriteLine("WMI: Failed to connect", e.Message);
-                throw;
+                Console.WriteLine("WMI: Failed to connect", ex.Message);
+                throw ex;
             }
         }
 
@@ -45,7 +43,7 @@ namespace ZenTimings
                 {
                     queryObject = searcher.Get().Cast<ManagementObject>().FirstOrDefault();
                 }
-                catch { }
+                catch (ManagementException ex) { Console.WriteLine(ex.Message); }
 
                 return queryObject;
             }
@@ -64,10 +62,7 @@ namespace ZenTimings
                     namespaces.AddRange(GetWmiNamespaces(namespaceName));
                 }
             }
-            catch (ManagementException me)
-            {
-                Console.WriteLine(me.Message);
-            }
+            catch (ManagementException ex) { Console.WriteLine(ex.Message); }
 
             return namespaces.OrderBy(s => s).ToList();
         }
@@ -126,9 +121,9 @@ namespace ZenTimings
 
                 return (ManagementBaseObject)outParams.Properties[$"{propName}"].Value;
             }
-            catch (ManagementException err)
+            catch (ManagementException ex)
             {
-                //MessageBox.Show("An error occurred while trying to execute the WMI method: " + err.Message);
+                Console.WriteLine(ex.Message);
                 return null;
             }
         }
@@ -160,9 +155,9 @@ namespace ZenTimings
                 ManagementBaseObject pack = (ManagementBaseObject)outParams.Properties["Outbuf"].Value;
                 return (byte[])pack.GetPropertyValue("Result");
             }
-            catch (ManagementException err)
+            catch (ManagementException ex)
             {
-                //MessageBox.Show("An error occurred while trying to execute the WMI method: " + err.Message);
+                Console.WriteLine(ex.Message);
                 return null;
             }
         }
