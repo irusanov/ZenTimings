@@ -1,7 +1,6 @@
 using AdonisUI.Controls;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Reflection;
 using ZenStates.Core;
 
@@ -63,7 +62,8 @@ namespace ZenTimings.Windows
 
             //AsusWmiGrid.ItemsSource = asusSensors;
 
-            DataContext = new {
+            DataContext = new
+            {
                 asusSensors
             };
         }

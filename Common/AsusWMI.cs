@@ -99,7 +99,7 @@ namespace ZenTimings
             }
         }
 
-        private uint GetInvokeMethodData(ManagementObject mo = null, string methodName = "", string inParamName = null, uint arg  = 0)
+        private uint GetInvokeMethodData(ManagementObject mo = null, string methodName = "", string inParamName = null, uint arg = 0)
         {
             uint data = 0;
             try
@@ -177,7 +177,7 @@ namespace ZenTimings
             UpdateBuffer(AsusSensorSource.SIO);
             UpdateBuffer(AsusSensorSource.EC);
 
-            foreach(AsusSensorInfo sensor in sensors)
+            foreach (AsusSensorInfo sensor in sensors)
             {
                 sensor.Value = GetSensorFormattedValue(sensor);
             }
@@ -187,7 +187,7 @@ namespace ZenTimings
 
         public uint Status { get; protected set; } = 0;
 
-        public AsusWMI () {}
+        public AsusWMI() { }
 
         private bool disposedValue;
         protected virtual void Dispose(bool disposing)

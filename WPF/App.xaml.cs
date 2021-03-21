@@ -11,25 +11,25 @@ namespace ZenTimings
     /// </summary>
     public partial class App : Application
     {
-        private const string mutexName = "Local\\ZenTimings";
-        private static Mutex instanceMutex = null;
+        internal const string mutexName = "Local\\ZenTimings";
+        internal static Mutex instanceMutex = null;
+        internal bool createdNew = false;
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            instanceMutex = new Mutex(true, mutexName, out bool createdNew);
+            instanceMutex = new Mutex(true, mutexName, out createdNew);
 
             if (!createdNew)
             {
                 // App is already running! Exit the application and show the other window.
-                Current.Shutdown();
                 InteropMethods.PostMessage((IntPtr)InteropMethods.HWND_BROADCAST, InteropMethods.WM_SHOWME, IntPtr.Zero, IntPtr.Zero);
+                Current.Shutdown();
+                Environment.Exit(0);
             }
-            else
-            {
-                GC.KeepAlive(instanceMutex);
-                base.OnStartup(e);
-                SplashWindow.Start();
-            }
+
+            GC.KeepAlive(instanceMutex);
+            base.OnStartup(e);
+            SplashWindow.Start();
         }
     }
 }

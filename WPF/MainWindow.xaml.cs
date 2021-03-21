@@ -3,10 +3,8 @@
 using AdonisUI.Controls;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Management;
 using System.Reflection;
@@ -494,7 +492,7 @@ namespace ZenTimings
         private void PowerCfgTimer_Tick(object sender, EventArgs e)
         {
             // Run refresh operation in a new thread
-            new Thread(() => 
+            new Thread(() =>
             {
                 Thread.CurrentThread.IsBackground = true;
 
@@ -561,7 +559,7 @@ namespace ZenTimings
                 SplashWindow.Loading("Timings");
                 // Read from first enabled DCT
                 if (modules.Count > 0)
-                	ReadTimings(modules[0].DctOffset);
+                    ReadTimings(modules[0].DctOffset);
 
                 if (settings.AdvancedMode)
                 {

@@ -73,7 +73,7 @@ namespace ZenTimings
                         module.Slot = $"{Convert.ToChar(i + 65)}2";
                         module.DctOffset = channelOffset;
                         module.DualRank = cpu.utils.GetBits(cpu.ReadDword(channelOffset | 0x50084), 0, 1) == 1;
-}
+                    }
                 }
             }
         }
@@ -489,7 +489,7 @@ namespace ZenTimings
         private void PowerCfgTimer_Tick(object sender, EventArgs e)
         {
             // Run refresh operation in a new thread
-            new Thread(() => 
+            new Thread(() =>
             {
                 Thread.CurrentThread.IsBackground = true;
 
@@ -506,8 +506,8 @@ namespace ZenTimings
                     }
                 }
 
-            //ReadTimings();
-            //ReadMemoryConfig();
+                //ReadTimings();
+                //ReadMemoryConfig();
                 RefreshPowerTable();
                 Dispatcher.Invoke(new Action(() => ReadSVI()));
             }).Start();
@@ -542,28 +542,28 @@ namespace ZenTimings
                 {
                     if (cpu.info.codeName != Cpu.CodeName.Unsupported)
                     {
-                    PowerCfgTimer.Interval = TimeSpan.FromMilliseconds(2000);
-                    PowerCfgTimer.Tick += new EventHandler(PowerCfgTimer_Tick);
+                        PowerCfgTimer.Interval = TimeSpan.FromMilliseconds(2000);
+                        PowerCfgTimer.Tick += new EventHandler(PowerCfgTimer_Tick);
 
-                    SplashWindow.Loading("SVI2");
-                    ReadSVI();
+                        SplashWindow.Loading("SVI2");
+                        ReadSVI();
 
-                    SplashWindow.Loading("Waiting for power table");
-                    if (WaitForPowerTable())
-                    {
-                        // refresh the table again, to avoid displaying initial fclk, mclk and uclk values,
-                        // which seem to be a little off when transferring the table for the "first" time,
-                        // after an idle period
-                        RefreshPowerTable();
-                        SplashWindow.Loading("Reading power table");
-                    }
-                    else
-                    {
-                        SplashWindow.Loading("Power table error!");
-                    }
+                        SplashWindow.Loading("Waiting for power table");
+                        if (WaitForPowerTable())
+                        {
+                            // refresh the table again, to avoid displaying initial fclk, mclk and uclk values,
+                            // which seem to be a little off when transferring the table for the "first" time,
+                            // after an idle period
+                            RefreshPowerTable();
+                            SplashWindow.Loading("Reading power table");
+                        }
+                        else
+                        {
+                            SplashWindow.Loading("Power table error!");
+                        }
 
                         if (!AsusWmi.Init())
-                    {
+                        {
                             AsusWmi.Dispose();
                             AsusWmi = null;
                         }

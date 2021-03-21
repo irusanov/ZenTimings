@@ -31,7 +31,7 @@ namespace ZenTimings.Windows
         private string instanceName;
         private ManagementObject classInstance;
 
-        public DebugDialog(Cpu cpu, List<MemoryModule> memModules, MemoryConfig memCfg, 
+        public DebugDialog(Cpu cpu, List<MemoryModule> memModules, MemoryConfig memCfg,
             BiosMemController biosMemCtrl, AsusWMI asusWmi)
         {
             InitializeComponent();
