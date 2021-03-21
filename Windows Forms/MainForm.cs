@@ -11,6 +11,7 @@ using System.Management;
 using System.Security.Permissions;
 using System.Threading;
 using System.Windows.Forms;
+using System.Windows.Threading;
 using ZenStates.Core;
 
 namespace ZenTimings
@@ -22,19 +23,9 @@ namespace ZenTimings
         private readonly Cpu cpu = new Cpu();
         private readonly MemoryConfig MEMCFG = new MemoryConfig();
         private readonly BiosMemController BMC;
-        private readonly PowerTable PowerTable;
-        private readonly SystemInfo SI;
-        private readonly uint dramBaseAddress = 0;
-        private BackgroundWorker backgroundWorker1;
         private readonly AppSettings settings = new AppSettings();
-        private readonly uint[] table = new uint[PowerTable.tableSize / 4];
         private bool compatMode = false;
-        private uint offset = 0;
-#if DEBUG
-        readonly TextWriterTraceListener[] listeners = new TextWriterTraceListener[] {
-            //new TextWriterTraceListener("debug.txt")
-        };
-#endif
+        private readonly AsusWMI AsusWmi = new AsusWMI();
 
         private static void ExitApplication()
         {
@@ -123,27 +114,27 @@ namespace ZenTimings
             {
                 Binding b;
                 // Third column
-                b = new Binding("Text", PowerTable, "MCLK");
+                b = new Binding("Text", cpu.powerTable, "MCLK");
                 b.Format += new ConvertEventHandler(FloatToFrequencyString);
                 textBoxMCLK.DataBindings.Add(b);
 
-                b = new Binding("Text", PowerTable, "FCLK");
+                b = new Binding("Text", cpu.powerTable, "FCLK");
                 b.Format += new ConvertEventHandler(FloatToFrequencyString);
                 textBoxFCLK.DataBindings.Add(b);
 
-                b = new Binding("Text", PowerTable, "UCLK");
+                b = new Binding("Text", cpu.powerTable, "UCLK");
                 b.Format += new ConvertEventHandler(FloatToFrequencyString);
                 textBoxUCLK.DataBindings.Add(b);
 
-                b = new Binding("Text", PowerTable, "CLDO_VDDP");
+                b = new Binding("Text", cpu.powerTable, "CLDO_VDDP");
                 b.Format += new ConvertEventHandler(FloatToVoltageString);
                 textBoxCLDO_VDDP.DataBindings.Add(b);
 
-                b = new Binding("Text", PowerTable, "CLDO_VDDG_IOD");
+                b = new Binding("Text", cpu.powerTable, "CLDO_VDDG_IOD");
                 b.Format += new ConvertEventHandler(FloatToVoltageString);
                 textBoxCLDO_VDDG_IOD.DataBindings.Add(b);
 
-                b = new Binding("Text", PowerTable, "CLDO_VDDG_CCD");
+                b = new Binding("Text", cpu.powerTable, "CLDO_VDDG_CCD");
                 b.Format += new ConvertEventHandler(FloatToVoltageString);
                 textBoxCLDO_VDDG_CCD.DataBindings.Add(b);
             }
@@ -168,13 +159,21 @@ namespace ZenTimings
 
                 if (channel && (dimm1 || dimm2))
                 {
-                    offset = channelOffset;
-
                     if (dimm1)
-                        modules[dimmIndex++].Slot = $"{Convert.ToChar(i + 65)}1";
+                    {
+                        MemoryModule module = modules[dimmIndex++];
+                        module.Slot = $"{Convert.ToChar(i + 65)}1";
+                        module.DctOffset = channelOffset;
+                        module.DualRank = cpu.utils.GetBits(cpu.ReadDword(channelOffset | 0x50080), 0, 1) == 1;
+                    }
 
                     if (dimm2)
-                        modules[dimmIndex++].Slot = $"{Convert.ToChar(i + 65)}2";
+                    {
+                        MemoryModule module = modules[dimmIndex++];
+                        module.Slot = $"{Convert.ToChar(i + 65)}2";
+                        module.DctOffset = channelOffset;
+                        module.DualRank = cpu.utils.GetBits(cpu.ReadDword(channelOffset | 0x50084), 0, 1) == 1;
+                    }
                 }
             }
         }
@@ -213,7 +212,7 @@ namespace ZenTimings
                         temp = WMI.TryGetProperty(queryObject, "DeviceLocator");
                         if (temp != null) deviceLocator = (string)temp;
 
-                        modules.Add(new MemoryModule(partNumber, bankLabel, manufacturer, deviceLocator, capacity, clockSpeed));
+                        modules.Add(new MemoryModule(partNumber.Trim(), bankLabel.Trim(), manufacturer.Trim(), deviceLocator, capacity, clockSpeed));
 
                         //string bl = bankLabel.Length > 0 ? new string(bankLabel.Where(char.IsDigit).ToArray()) : "";
                         //string dl = deviceLocator.Length > 0 ? new string(deviceLocator.Where(char.IsDigit).ToArray()) : "";
@@ -226,12 +225,13 @@ namespace ZenTimings
 
                     if (modules.Count > 0)
                     {
-                        var totalCapacity = 0UL;
+                        ulong totalCapacity = 0UL;
 
                         foreach (var module in modules)
                         {
+                            string rank = module.DualRank ? "DR" : "SR";
                             totalCapacity += module.Capacity;
-                            comboBoxPartNumber.Items.Add($"{module.Slot}: {module.PartNumber}");
+                            comboBoxPartNumber.Items.Add($"{module.Slot}: {module.PartNumber} ({module.Capacity / 1024 / (1024 * 1024)}GB, {rank})");
                         }
 
                         if (modules.FirstOrDefault().ClockSpeed != 0)
@@ -241,6 +241,7 @@ namespace ZenTimings
                             MEMCFG.TotalCapacity = $"{totalCapacity / 1024 / (1024 * 1024)}GB";
 
                         comboBoxPartNumber.SelectedIndex = 0;
+                        comboBoxPartNumber.SelectedIndexChanged += new EventHandler(ComboBoxPartNumber_SelectionChanged);
                     }
                 }
                 catch
@@ -252,77 +253,10 @@ namespace ZenTimings
                 }
             }
         }
-        private void ReadPowerTable()
+
+        private bool RefreshPowerTable()
         {
-            if (dramBaseAddress > 0)
-            {
-                for (int i = 0; i < table.Length; ++i)
-                {
-                    cpu.utils.GetPhysLong((UIntPtr)(dramBaseAddress + (i * 4)), out uint data);
-                    table[i] = data;
-                }
-
-                if (table.Any(v => v != 0))
-                {
-                    PowerTable.ConfiguredClockSpeed = MEMCFG.Frequency;
-                    PowerTable.Table = table;
-                }
-            }
-        }
-
-        private void ReadPowerConfig()
-        {
-#if DEBUG
-            /*uint prev1 = 0;
-            uint prev2 = 0;
-            for (; ; )
-            {
-                uint cmd1 = 0, cmd2 = 0;
-                uint arg1 = 0, arg2 = 0;
-                uint rsp1 = 0, rsp2 = 0;
-
-                ops.SmuReadReg(0x03B10564, ref arg1);
-                ops.SmuReadReg(0x03B10528, ref cmd1);
-                ops.SmuReadReg(0x03B10598, ref rsp1);
-                if (cmd1 != prev1)
-                {
-                    prev1 = cmd1;
-                    Console.WriteLine($"1 -> 0x{cmd1:X2}: 0x{arg1:X8}: 0x{rsp1:X8}");
-                }
-
-                ops.SmuReadReg(ops.Smu.SMU_ADDR_ARG, ref arg2);
-                ops.SmuReadReg(ops.Smu.SMU_ADDR_MSG, ref cmd2);
-                ops.SmuReadReg(ops.Smu.SMU_ADDR_RSP, ref rsp2);
-                if (cmd2 != prev2)
-                {
-                    prev2 = cmd2;
-                    Console.WriteLine($"2 -> 0x{cmd2:X2}: 0x{arg2:X8}: 0x{rsp2:X8}");
-                }
-            }*/
-#endif
-            if (dramBaseAddress > 0)
-            {
-                try
-                {
-                    SMU.Status status = cpu.TransferTableToDram();
-
-                    //if (status != SMU.Status.OK)
-                    //    status = cpu.TransferTableToDram(); // retry
-
-                    if (status != SMU.Status.OK)
-                        return;
-
-                    ReadPowerTable();
-                }
-                catch (EntryPointNotFoundException ex)
-                {
-                    throw new ApplicationException(ex.Message);
-                }
-                catch (DllNotFoundException ex)
-                {
-                    throw new ApplicationException(ex.Message);
-                }
-            }
+            return cpu.RefreshPowerTable() == SMU.Status.OK;
         }
 
         private void ReadSVI()
@@ -440,14 +374,19 @@ namespace ZenTimings
             catch (Exception ex)
             {
                 compatMode = true;
-                MessageBox.Show("Failed to read AMD ACPI. Some parameters will be empty.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                MessageBox.Show(
+                    "Failed to read AMD ACPI. Some parameters will be empty.",
+                    "Warning",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
                 Console.WriteLine(ex.Message);
             }
 
             BMC.Dispose();
         }
 
-        private void ReadTimings()
+        private void ReadTimings(uint offset = 0)
         {
             uint powerDown = cpu.ReadDword(offset | 0x5012C);
             uint umcBase = cpu.ReadDword(offset | 0x50200);
@@ -474,6 +413,18 @@ namespace ZenTimings
             uint timings21 = cpu.ReadDword(offset | 0x50264);
             uint timings22 = cpu.ReadDword(offset | 0x5028C);
             uint timings23 = timings20 != timings21 ? (timings20 != 0x21060138 ? timings20 : timings21) : timings20;
+
+            float configured = MEMCFG.Frequency;
+            float ratio = cpu.utils.GetBits(umcBase, 0, 7) / 3.0f;
+            float freqFromRatio = ratio * 200;
+
+            MEMCFG.Ratio = ratio;
+
+            // Fallback to ratio when ConfiguredClockSpeed fails
+            if (configured == 0.0f || freqFromRatio > configured)
+            {
+                MEMCFG.Frequency = freqFromRatio;
+            }
 
             MEMCFG.BGS = (bgs0 == 0x87654321 && bgs1 == 0x87654321) ? "Disabled" : "Enabled";
             MEMCFG.BGSAlt = cpu.utils.GetBits(bgsa0, 4, 7) > 0 || cpu.utils.GetBits(bgsa1, 4, 7) > 0 ? "Enabled" : "Disabled";
@@ -536,16 +487,6 @@ namespace ZenTimings
             MEMCFG.RFC4 = cpu.utils.GetBits(timings23, 22, 11);
 
             MEMCFG.PowerDown = cpu.utils.GetBits(powerDown, 28, 1) == 1 ? "Enabled" : "Disabled";
-
-            var configured = MEMCFG.Frequency;
-            var freqFromRatio = cpu.utils.GetBits(umcBase, 0, 7) / 3.0f * 200;
-
-            // Fallback to ratio when ConfiguredClockSpeed fails
-            if (configured == 0 || freqFromRatio > configured)
-            {
-                MEMCFG.Frequency = freqFromRatio;
-                //PowerTable.ConfiguredClockSpeed = freqFromRatio;
-            }
         }
 
         private void SwitchToCompactMode()
@@ -631,35 +572,43 @@ namespace ZenTimings
 
         private bool WaitForPowerTable()
         {
-            if (dramBaseAddress == 0)
+            if (cpu.powerTable.dramBaseAddress == 0)
             {
-                HandleError("Could not get DRAM base address.\nClose the application and try again.");
+                HandleError("Could not initialize power table.\nClose the application and try again.");
                 return false;
             }
 
             if (WaitForDriverLoad() && cpu.utils.WinIoStatus == Utils.LibStatus.OK)
             {
+                cpu.powerTable.ConfiguredClockSpeed = MEMCFG.Frequency;
+                cpu.powerTable.MemRatio = MEMCFG.Ratio;
+
+                SMU.Status status = cpu.RefreshPowerTable();
+                uint temp = 0;
                 Stopwatch timer = new Stopwatch();
                 timer.Start();
                 short timeout = 10000;
 
-                uint temp;
-                SMU.Status status;
-
                 // Refresh until table is transferred to DRAM or timeout
                 do
                 {
-                    status = cpu.TransferTableToDram();
-                    cpu.utils.GetPhysLong((UIntPtr)dramBaseAddress, out temp);
+                    // if refresh failed, try again
+                    if (status != SMU.Status.OK)
+                        status = cpu.RefreshPowerTable();
+                    else
+                        temp = cpu.powerTable.Table[0];
                 }
                 while ((temp == 0 || status != SMU.Status.OK) && timer.Elapsed.TotalMilliseconds < timeout);
 
                 timer.Stop();
 
-                if (temp == 0)
+                if (temp == 0 || status != SMU.Status.OK)
+                {
                     HandleError("Could not get power table.\nSkipping power table.");
+                    return false;
+                }
 
-                return temp != 0;
+                return true;
             }
             else
             {
@@ -681,13 +630,19 @@ namespace ZenTimings
                 PowerCfgTimer.Start();
             }
         }
-        
+
         private void PowerCfgTimer_Tick(object sender, EventArgs e)
         {
-            //ReadTimings();
-            //ReadMemoryConfig();
-            ReadSVI();
-            ReadPowerConfig();
+			// Run refresh operation in a new thread
+            new Thread(() => 
+            {
+                Thread.CurrentThread.IsBackground = true;
+
+	            //ReadTimings();
+	            //ReadMemoryConfig();
+                RefreshPowerTable();
+                Invoke(new MethodInvoker(delegate { ReadSVI(); }));
+            }).Start();
         }
 
         private void DisableInactiveControls()
@@ -719,17 +674,11 @@ namespace ZenTimings
 #if DEBUG
             Text += " (debug)";
 #endif
-            labelCPU.Text = SI.CpuName;
-            labelMB.Text = $"{SI.MbName} | BIOS {SI.BiosVersion} | SMU {SI.GetSmuVersionString()}";
+            labelCPU.Text = cpu.systemInfo.CpuName;
+            labelMB.Text = $"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} | SMU {cpu.systemInfo.GetSmuVersionString()}";
 
             if (compatMode)
                 Text += " (compatibility)";
-#if DEBUG
-            foreach (TextWriterTraceListener listener in listeners)
-            {
-                listener.Flush();
-            }
-#endif
         }
         
         public MainForm()
@@ -748,28 +697,22 @@ namespace ZenTimings
                         "Please run a debug report and send to the developer.");
                 }
 
-                SI = new SystemInfo(cpu);
-
 #if BETA
                 MessageBox.Show("This is a BETA version of the application. Some functions might be working incorrectly.\n\n" +
                     "Please report if something is not working as expected.");
 #endif
-#if DEBUG
-                Debug.Listeners.AddRange(listeners);
-#endif
                 InitializeComponent();
                 BindControls();
                 ReadMemoryModulesInfo();
-                ReadTimings();
+                // Read from first enabled DCT
+                if (modules.Count > 0)
+                    ReadTimings(modules[0].DctOffset);
+
 
                 if (settings.AdvancedMode)
                 {
                     if (cpu.info.codeName != Cpu.CodeName.Unsupported)
                     {
-						// Get first base address
-	                    dramBaseAddress = (uint)(cpu.GetDramBaseAddress() & 0xFFFFFFFF);
-                        PowerTable = new PowerTable(cpu.smu.TableVersion, cpu.smu.SMU_TYPE);
-
 	                    PowerCfgTimer.Interval = 2000;
 	                    PowerCfgTimer.Tick += new EventHandler(PowerCfgTimer_Tick);
 
@@ -778,20 +721,24 @@ namespace ZenTimings
 	
 	                    if (WaitForPowerTable())
 	                    {
-	
-	                        ReadPowerTable();
+							// refresh the table again, to avoid displaying initial fclk, mclk and uclk values,
+	                        // which seem to be a little off when transferring the table for the "first" time,
+	                        // after an idle period
+	                        RefreshPowerTable();
 	                    } 
                         else
                         {
 	
-                            HandleError("Power table timeout!");
+                            HandleError("Power table error!");
+                        }
+                        
+                        if (!AsusWmi.Init())
+                        {
+                            AsusWmi.Dispose();
+                            AsusWmi = null;
                         }
 	
 	                    StartAutoRefresh();
-                    }
-                    else
-                    {
-                        PowerTable = new PowerTable(0, cpu.smu.SMU_TYPE);
                     }
 
                     BMC = new BiosMemController();
@@ -805,7 +752,7 @@ namespace ZenTimings
             }
             catch (ApplicationException ex)
             {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                HandleError(ex.Message);
                 // Dispose();
                 ExitApplication();
             }
@@ -824,7 +771,12 @@ namespace ZenTimings
 
         public void HandleError(string message, string title = "Error")
         {
-            MessageBox.Show(message, title);
+            MessageBox.Show(
+                message,
+                title,
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
         }
 
         private void Restart()
@@ -891,7 +843,7 @@ namespace ZenTimings
         {
             if (settings.AdvancedMode)
             {
-                Form debugWnd = new DebugDialog(dramBaseAddress, modules, MEMCFG, SI, BMC, PowerTable, cpu);
+                Form debugWnd = new DebugDialog(cpu, modules, MEMCFG, BMC, AsusWmi);
                 debugWnd.ShowDialog();
             }
             else
@@ -908,6 +860,12 @@ namespace ZenTimings
                     Restart();
                 }
             }
+        }
+        
+        private void ComboBoxPartNumber_SelectionChanged(object sender, EventArgs e)
+        {
+            ComboBox combo = sender as ComboBox;
+            ReadTimings(modules[combo.SelectedIndex].DctOffset);
         }
     }
 }
