@@ -440,31 +440,32 @@ namespace ZenTimings
 
             if (WaitForDriverLoad() && cpu.utils.WinIoStatus == Utils.LibStatus.OK)
             {
+                SMU.Status status = SMU.Status.FAILED;
+                Stopwatch timer = new Stopwatch();
+                int timeout = 10000;
+
                 cpu.powerTable.ConfiguredClockSpeed = MEMCFG.Frequency;
                 cpu.powerTable.MemRatio = MEMCFG.Ratio;
 
-                SMU.Status status = cpu.RefreshPowerTable();
-                uint temp = 0;
-                Stopwatch timer = new Stopwatch();
                 timer.Start();
-                short timeout = 10000;
 
-                // Refresh until table is transferred to DRAM or timeout
+                // Refresh each 2 seconds until table is transferred to DRAM or timeout
                 do
                 {
-                    // if refresh failed, try again
-                    if (status != SMU.Status.OK)
                         status = cpu.RefreshPowerTable();
-                    else
-                        temp = cpu.powerTable.Table[0];
+                    if (status != SMU.Status.OK)
+                    {
+                        // It's ok to block the current thread
+                        Thread.Sleep(2000);
                 }
-                while ((temp == 0 || status != SMU.Status.OK) && timer.Elapsed.TotalMilliseconds < timeout);
+                }
+                while (status != SMU.Status.OK && timer.Elapsed.TotalMilliseconds < timeout);
 
                 timer.Stop();
 
-                if (temp == 0 || status != SMU.Status.OK)
+                if (status != SMU.Status.OK)
                 {
-                    HandleError("Could not get power table.\nSkipping power table.");
+                    HandleError("Could not get power table.\nSkipping.");
                     return false;
                 }
 
@@ -489,28 +490,38 @@ namespace ZenTimings
         private void PowerCfgTimer_Tick(object sender, EventArgs e)
         {
             // Run refresh operation in a new thread
-            new Thread(() =>
+            try
             {
-                Thread.CurrentThread.IsBackground = true;
-
-                if (AsusWmi != null && AsusWmi.Status == 1)
+                new Thread(() =>
                 {
-                    AsusWmi.UpdateSensors();
-                    var sensor = AsusWmi.FindSensorByName("DRAM Voltage");
-                    if (sensor != null)
-                    {
-                        Dispatcher.Invoke(new Action(() =>
-                        {
-                            textBoxMemVddio.Text = $"{sensor.Value}";
-                        }));
-                    }
-                }
+                    Thread.CurrentThread.IsBackground = true;
 
-                //ReadTimings();
-                //ReadMemoryConfig();
-                RefreshPowerTable();
-                Dispatcher.Invoke(new Action(() => ReadSVI()));
-            }).Start();
+                    if (AsusWmi != null && AsusWmi.Status == 1)
+                    {
+                        AsusWmi.UpdateSensors();
+                        var sensor = AsusWmi.FindSensorByName("DRAM Voltage");
+                        if (sensor != null)
+                        {
+                            Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() =>
+                            {
+                                textBoxMemVddio.Text = $"{sensor.Value}";
+                            }));
+                        }
+                    }
+
+                    Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() =>
+                    {
+                        //ReadTimings();
+                        //ReadMemoryConfig();
+                        RefreshPowerTable();
+                        ReadSVI();
+                    }));
+                }).Start();
+            } 
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
         public MainWindow()
