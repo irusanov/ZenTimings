@@ -1,7 +1,10 @@
-﻿using AdonisUI.Controls;
+using AdonisUI.Controls;
+using AutoUpdaterDotNET;
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace ZenTimings.Windows
 {
@@ -46,6 +49,11 @@ namespace ZenTimings.Windows
         {
             Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
             e.Handled = true;
+        }
+
+        private void CheckUpdateBtn_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            Updater.CheckForUpdate(true);
         }
     }
 }

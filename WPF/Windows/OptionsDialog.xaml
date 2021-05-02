@@ -11,7 +11,7 @@
     mc:Ignorable="d"
     x:Name="OptionsWindow"
     Title="Options"
-    Height="194"
+    Height="216.27"
     Width="306"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterOwner"
@@ -58,6 +58,7 @@
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
                     </Grid.RowDefinitions>
 
                     <ToggleButton
@@ -101,6 +102,17 @@
                         Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
                         Content="Dark Mode"
                         IsChecked="{Binding DarkMode}"
+                        Click="ComboBoxTheme_CheckedChanged" />
+
+                    <ToggleButton
+                        x:Name="comboBoxCheckUpdate"
+                        Grid.Column="0"
+                        Grid.Row="3"
+                        Grid.ColumnSpan="3"
+                        Margin="0 5 5 5"
+                        Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
+                        Content="Check For Updates On Startup"
+                        IsChecked="{Binding CheckForUpdates}"
                         Click="ComboBoxTheme_CheckedChanged" />
                 </Grid>
 

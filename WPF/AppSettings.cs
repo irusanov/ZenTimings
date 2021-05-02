@@ -20,7 +20,7 @@ namespace ZenTimings
             AutoRefreshInterval = 2000;
             AdvancedMode = true;
             DarkMode = false;
-            IsRestarting = false;
+            CheckForUpdates = true;
 
             Save();
 
@@ -79,10 +79,12 @@ namespace ZenTimings
             //DarkMode = !DarkMode;
         }
 
-        public bool AutoRefresh { get; set; }
-        public int AutoRefreshInterval { get; set; }
-        public bool AdvancedMode { get; set; }
+        public bool AutoRefresh { get; set; } = true;
+        public int AutoRefreshInterval { get; set; } = 2000;
+        public bool AdvancedMode { get; set; } = true;
         public bool DarkMode { get; set; }
-        public bool IsRestarting { get; set; }
+        public bool CheckForUpdates { get; set; } = true;
+        public string UpdaterSkippedVersion { get; set; } = "";
+        public string UpdaterRemindLaterAt { get; set; } = "";
     }
 }

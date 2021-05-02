@@ -31,7 +31,7 @@ namespace ZenTimings
         private readonly Cpu cpu = new Cpu();
         private readonly MemoryConfig MEMCFG = new MemoryConfig();
         private readonly BiosMemController BMC;
-        private readonly AppSettings settings = new AppSettings().Load();
+        private readonly AppSettings settings = (Application.Current as App).settings;
         private readonly DispatcherTimer PowerCfgTimer = new DispatcherTimer();
         private bool compatMode = false;
         private readonly AsusWMI AsusWmi = new AsusWMI();
@@ -567,9 +567,6 @@ namespace ZenTimings
                         "Please run a debug report and send to the developer.");
                 }
 
-                if (settings.DarkMode)
-                    settings.ChangeTheme();
-
                 InitializeComponent();
                 SplashWindow.Loading("Memory modules");
                 ReadMemoryModulesInfo();
@@ -646,7 +643,6 @@ namespace ZenTimings
 
         private void Restart()
         {
-            settings.IsRestarting = true;
             settings.Save();
             Process.Start(Application.ResourceAssembly.Location);
             Application.Current.Shutdown();

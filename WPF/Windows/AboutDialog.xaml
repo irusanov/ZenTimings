@@ -23,6 +23,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition />
+            <ColumnDefinition Width="auto"/>
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
@@ -31,10 +32,10 @@
         </Grid.RowDefinitions>
 
         <Border Grid.Column="0" Padding="10">
-            <Image  Source="/Resources/icon-64.png" Width="48" Height="48" VerticalAlignment="Top" />
+            <Image Source="/Resources/icon-64.png" Width="48" Height="48" VerticalAlignment="Top" />
         </Border>
 
-        <Border Grid.Column="1" Padding="10">
+        <Border Grid.Column="1" Padding="10" Grid.ColumnSpan="2">
             <StackPanel>
                 <Label x:Name="labelProductName" Content="ZenTimings" Padding="0 0 5 10" FontSize="14"/>
                 <TextBlock x:Name="labelVersion" Text="" Padding="0 2 5 2"/>
@@ -48,8 +49,20 @@
             </StackPanel>
         </Border>
 
-        <Button 
+        
+        <Button
+            x:Name="CheckUpdateBtn"
             Grid.Column="1"
+            Grid.Row="1"
+            Content="Check for Update"
+            IsCancel="False"
+            VerticalAlignment="Bottom"
+            HorizontalAlignment="Right"
+            Width="Auto"
+            Margin="10 10 0 10" Click="CheckUpdateBtn_Click" />
+
+        <Button
+            Grid.Column="2"
             Grid.Row="1"
             Content="OK"
             IsCancel="True"
