@@ -526,7 +526,7 @@ namespace ZenTimings
                         ReadSVI();
                     }));
                 }).Start();
-            } 
+            }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
@@ -571,6 +571,7 @@ namespace ZenTimings
                 SplashWindow.Loading("Memory modules");
                 ReadMemoryModulesInfo();
                 SplashWindow.Loading("Timings");
+
                 // Read from first enabled DCT
                 if (modules.Count > 0)
                     ReadTimings(modules[0].DctOffset);

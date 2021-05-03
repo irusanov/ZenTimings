@@ -7,7 +7,8 @@ namespace ZenTimings
     public sealed class UpdaterPersistenceProvider : IPersistenceProvider
     {
         internal AppSettings appSettings;
-        public UpdaterPersistenceProvider(AppSettings settings) {
+        public UpdaterPersistenceProvider(AppSettings settings)
+        {
             appSettings = settings;
         }
 
@@ -53,7 +54,8 @@ namespace ZenTimings
         /// <param name="remindLaterAt">Date and time at which the user must be given again the possibility to upgrade the application.</param>
         public void SetRemindLater(DateTime? remindLaterAt)
         {
-            if (appSettings != null && remindLaterAt != null) {
+            if (appSettings != null && remindLaterAt != null)
+            {
                 appSettings.UpdaterRemindLaterAt = remindLaterAt?.ToString();
                 appSettings.Save();
             }
