@@ -10,7 +10,7 @@
     adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
     mc:Ignorable="d"
     Title="About"
-    Height="233.234"
+    Height="234"
     Width="304"
     ResizeMode="NoResize"
     SizeToContent="WidthAndHeight"

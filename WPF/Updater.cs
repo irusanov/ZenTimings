@@ -12,6 +12,7 @@ namespace ZenTimings
     {
         public static int status = 0;
         private static bool manual = false;
+        private static string ChangelogText { get; set; }
 
         public static void Init(AppSettings settings)
         {
@@ -23,6 +24,7 @@ namespace ZenTimings
             AutoUpdater.DownloadPath = Environment.CurrentDirectory;
             AutoUpdater.PersistenceProvider = new UpdaterPersistenceProvider(settings);
             AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
+            AutoUpdater.ParseUpdateInfoEvent += AutoUpdaterOnParseUpdateInfoEvent;
             status = 1;
         }
 
@@ -43,37 +45,45 @@ namespace ZenTimings
             AutoUpdater.Start("https://zentimings.protonrom.com/AutoUpdater.xml");
         }
 
+        private static void AutoUpdaterOnParseUpdateInfoEvent(ParseUpdateInfoEventArgs args)
+        {
+            XElement data = XElement.Parse(args.RemoteData);
+            if (data != null)
+            {
+                args.UpdateInfo = new UpdateInfoEventArgs
+                {
+                    CurrentVersion = data.Element("version").Value,
+                    DownloadURL = data.Element("url").Value,
+                    ChangelogURL = data.Element("changelog").Value,
+                    Mandatory = new Mandatory
+                    {
+                        Value = Convert.ToBoolean(data.Element("mandatory").Value),
+                    },
+                    CheckSum = new CheckSum
+                    {
+                        Value = data.Element("checksum").Value,
+                        HashingAlgorithm = "MD5"
+                    }
+                };
+
+                ChangelogText = $"\nChangelog{Environment.NewLine}";
+                IEnumerable<XElement> changes = data.Descendants("change");
+                foreach (XElement change in changes)
+                    ChangelogText += $"- {change.Value}{Environment.NewLine}";
+            }
+        }
+
         private static void AutoUpdaterOnCheckForUpdateEvent(UpdateInfoEventArgs args)
         {
             if (args.Error == null)
             {
                 if (args.IsUpdateAvailable)
                 {
-                    WebClient client = new WebClient();
-                    string xml = client.DownloadString("https://zentimings.protonrom.com/AutoUpdater.xml");
-
-                    XElement data = XElement.Parse(xml);
-                    if (data != null)
-                    {
-                        IEnumerable<XElement> version = data.Descendants("version");
-                        foreach (XElement v in version)
-                            Console.WriteLine((string)v);
-                    }
-
-                    string text = $"\nChangelog{Environment.NewLine}" +
-                        $"- Add Cezanne support (5000 Zen3 series APU){Environment.NewLine}" +
-                        $"- Add Lucienne support(5000 Zen2 series APU){Environment.NewLine}" +
-                        $"- Improve Epyc Rome support{Environment.NewLine}" +
-                        $"- Add separate DCT readings for each installed DIMM{Environment.NewLine}" +
-                        $"- Add Asus WMI sensors reading for boards that support it{Environment.NewLine}" +
-                        $"- Fix startup for unsupported CPUs{Environment.NewLine}" +
-                        $"- Reduce minimum.NET framework version for legacy app to 3.5{Environment.NewLine}";
-
                     var messageBox = new AdonisUI.Controls.MessageBoxModel
                     {
                         Text = $"There is new version {args.CurrentVersion} available.{Environment.NewLine}" +
                             $"You are using version {args.InstalledVersion}.{Environment.NewLine}" +
-                            $"{text}{Environment.NewLine}" +
+                            $"{ChangelogText}{Environment.NewLine}" +
                             $"Do you want to update the application now?",
                         Caption = @"Update Available",
                         Buttons = AdonisUI.Controls.MessageBoxButtons.YesNo()
