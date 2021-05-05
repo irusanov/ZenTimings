@@ -117,6 +117,7 @@
     </Compile>
     <Compile Include="Updater.cs" />
     <Compile Include="UpdaterPersistenceProvider.cs" />
+    <Compile Include="UpdaterArgs.cs" />
     <Compile Include="Windows\AboutDialog.xaml.cs">
       <DependentUpon>AboutDialog.xaml</DependentUpon>
     </Compile>

@@ -1,9 +1,9 @@
 ﻿using AutoUpdaterDotNET;
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Windows;
-using System.Xml.Linq;
+using System.Xml.Serialization;
 using ZenTimings.Windows;
 
 namespace ZenTimings
@@ -13,6 +13,7 @@ namespace ZenTimings
         public static int status = 0;
         private static bool manual = false;
         private static string ChangelogText { get; set; }
+        private const string url = "https://zentimings.protonrom.com/AutoUpdater.xml";
 
         public static void Init(AppSettings settings)
         {
@@ -42,34 +43,45 @@ namespace ZenTimings
 
             manual = manualUpdate;
 
-            AutoUpdater.Start("https://zentimings.protonrom.com/AutoUpdater.xml");
+            AutoUpdater.Start(url);
         }
 
         private static void AutoUpdaterOnParseUpdateInfoEvent(ParseUpdateInfoEventArgs args)
         {
-            XElement data = XElement.Parse(args.RemoteData);
-            if (data != null)
+            try
             {
-                args.UpdateInfo = new UpdateInfoEventArgs
-                {
-                    CurrentVersion = data.Element("version").Value,
-                    DownloadURL = data.Element("url").Value,
-                    ChangelogURL = data.Element("changelog").Value,
-                    Mandatory = new Mandatory
-                    {
-                        Value = Convert.ToBoolean(data.Element("mandatory").Value),
-                    },
-                    CheckSum = new CheckSum
-                    {
-                        Value = data.Element("checksum").Value,
-                        HashingAlgorithm = "MD5"
-                    }
-                };
-
                 ChangelogText = $"\nChangelog{Environment.NewLine}";
-                IEnumerable<XElement> changes = data.Descendants("change");
-                foreach (XElement change in changes)
-                    ChangelogText += $"- {change.Value}{Environment.NewLine}";
+
+                using (StringReader txtReader = new StringReader(args.RemoteData))
+                {
+                    XmlSerializer xmls = new XmlSerializer(typeof(UpdaterArgs));
+                    UpdaterArgs updaterArgs = xmls.Deserialize(txtReader) as UpdaterArgs;
+
+                    args.UpdateInfo = new UpdateInfoEventArgs
+                    {
+                        CurrentVersion = updaterArgs.Version,
+                        DownloadURL = updaterArgs.Url,
+                        ChangelogURL = updaterArgs.Changelog,
+                        Mandatory = new Mandatory
+                        {
+                            Value = updaterArgs.Mandatory,
+                        },
+                        CheckSum = new CheckSum
+                        {
+                            Value = updaterArgs.Checksum.Value,
+                            HashingAlgorithm = updaterArgs.Checksum.algorithm
+                        }
+                    };
+
+                    foreach (string change in updaterArgs.Changes)
+                    {
+                        ChangelogText += $"- {change}{Environment.NewLine}";
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
 
