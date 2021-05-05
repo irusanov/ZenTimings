@@ -45,8 +45,8 @@ namespace ZenTimings.Windows
             // List of all modules, there might be more DLL files in the directory
             string[] files =
             {
-                "AdonisUI.ClassicTheme.dll",
-                "AdonisUI.dll",
+                //"AdonisUI.ClassicTheme.dll",
+                //"AdonisUI.dll",
                 "AutoUpdater.NET.dll",
                 "inpoutx64.dll",
                 "WinIo32.dll",

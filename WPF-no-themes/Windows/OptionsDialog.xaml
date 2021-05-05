@@ -83,6 +83,14 @@
                         Content="ms"
                         VerticalAlignment="Center"
                         Padding="5 0" FontWeight="Normal" />
+
+                    <CheckBox
+                        x:Name="checkBoxCheckUpdate"
+                        Grid.Column="0"
+                        Grid.Row="2"
+                        Grid.ColumnSpan="2"
+                        Margin="0 5 5 5"
+                        Content="Check For Updates On Startup" />
                 </Grid>
 
                 <Border Style="{DynamicResource Separator}" Margin="0 20 0 0"/>

@@ -136,7 +136,8 @@
             VerticalAlignment="Bottom"
             HorizontalAlignment="Right"
             Width="Auto"
-            Margin="10 10 0 10" Click="CheckUpdateBtn_Click" />
+            Margin="10 10 0 10"
+            Click="CheckUpdateBtn_Click" />
 
         <Button
             Grid.Column="1"
