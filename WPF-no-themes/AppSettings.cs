@@ -19,6 +19,7 @@ namespace ZenTimings
             AutoRefreshInterval = 2000;
             AdvancedMode = true;
             DarkMode = false;
+            CheckForUpdates = true;
             IsRestarting = false;
 
             Save();
@@ -30,17 +31,17 @@ namespace ZenTimings
         {
             if (File.Exists(filename))
             {
-                using (StreamReader sw = new StreamReader(filename))
+                using (StreamReader sr = new StreamReader(filename))
                 {
                     try
                     {
                         XmlSerializer xmls = new XmlSerializer(typeof(AppSettings));
-                        return xmls.Deserialize(sw) as AppSettings;
+                        return xmls.Deserialize(sr) as AppSettings;
                     }
                     catch (InvalidOperationException ex)
                     {
                         Console.WriteLine(ex.Message);
-                        sw.Close();
+                        sr.Close();
                         MessageBox.Show(
                             "Invalid settings file!\nSettings will be reset to defaults.",
                             "Error",
@@ -65,10 +66,13 @@ namespace ZenTimings
             }
         }
 
-        public bool AutoRefresh { get; set; }
-        public int AutoRefreshInterval { get; set; }
-        public bool AdvancedMode { get; set; }
+        public bool AutoRefresh { get; set; } = true;
+        public int AutoRefreshInterval { get; set; } = 2000;
+        public bool AdvancedMode { get; set; } = true;
         public bool DarkMode { get; set; }
+        public bool CheckForUpdates { get; set; } = true;
+        public string UpdaterSkippedVersion { get; set; } = "";
+        public string UpdaterRemindLaterAt { get; set; } = "";
         public bool IsRestarting { get; set; }
     }
 }

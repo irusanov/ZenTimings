@@ -91,24 +91,21 @@ namespace ZenTimings
             {
                 if (args.IsUpdateAvailable)
                 {
-                    var messageBox = new AdonisUI.Controls.MessageBoxModel
-                    {
-                        Text = $"There is new version {args.CurrentVersion} available.{Environment.NewLine}" +
+                    MessageBoxResult dialogResult = MessageBox.Show(
+                        $"There is new version {args.CurrentVersion} available.{Environment.NewLine}" +
                             $"You are using version {args.InstalledVersion}.{Environment.NewLine}" +
                             $"{ChangelogText}{Environment.NewLine}" +
                             $"Do you want to update the application now?",
-                        Caption = @"Update Available",
-                        Buttons = AdonisUI.Controls.MessageBoxButtons.YesNo()
-                    };
-
-                    AdonisUI.Controls.MessageBox.Show(messageBox);
+                        @"Update Available",
+                        MessageBoxButton.YesNo
+                    );
 
                     if (!manual)
                     {
                         SplashWindow.splash.Hide();
                     }
 
-                    if (messageBox.Result.Equals(AdonisUI.Controls.MessageBoxResult.Yes))
+                    if (dialogResult.Equals(MessageBoxResult.Yes))
                     {
                         try
                         {
@@ -124,11 +121,11 @@ namespace ZenTimings
                         }
                         catch (Exception exception)
                         {
-                            AdonisUI.Controls.MessageBox.Show(
+                            MessageBox.Show(
                                 exception.Message,
                                 exception.GetType().ToString(),
-                                AdonisUI.Controls.MessageBoxButton.OK,
-                                AdonisUI.Controls.MessageBoxImage.Error);
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
                         }
                     }
                     if (!manual)
@@ -141,19 +138,19 @@ namespace ZenTimings
             {
                 if (args.Error is WebException)
                 {
-                    AdonisUI.Controls.MessageBox.Show(
+                    MessageBox.Show(
                         @"There is a problem reaching update server. Please check your internet connection and try again later.",
                         @"Update Check Failed",
-                        AdonisUI.Controls.MessageBoxButton.OK,
-                        AdonisUI.Controls.MessageBoxImage.Error);
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
                 }
                 else
                 {
-                    AdonisUI.Controls.MessageBox.Show(
+                    MessageBox.Show(
                         args.Error.Message,
                         args.Error.GetType().ToString(),
-                        AdonisUI.Controls.MessageBoxButton.OK,
-                        AdonisUI.Controls.MessageBoxImage.Error);
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
                 }
             }
         }

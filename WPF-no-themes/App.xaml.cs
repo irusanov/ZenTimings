@@ -14,6 +14,7 @@ namespace ZenTimings
         internal const string mutexName = "Local\\ZenTimings";
         internal static Mutex instanceMutex = null;
         internal bool createdNew = false;
+        public readonly AppSettings settings = new AppSettings().Load();
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -29,7 +30,7 @@ namespace ZenTimings
 
             GC.KeepAlive(instanceMutex);
             base.OnStartup(e);
-            SplashWindow.Start();
+            SplashWindow.Start(settings);
         }
     }
 }

@@ -28,7 +28,7 @@ namespace ZenTimings
         private readonly Cpu cpu = new Cpu();
         private readonly MemoryConfig MEMCFG = new MemoryConfig();
         private readonly BiosMemController BMC;
-        private readonly AppSettings settings = new AppSettings().Load();
+        private readonly AppSettings settings = (Application.Current as App).settings;
         private readonly DispatcherTimer PowerCfgTimer = new DispatcherTimer();
         private bool compatMode = false;
         private readonly AsusWMI AsusWmi = new AsusWMI();
@@ -452,12 +452,12 @@ namespace ZenTimings
                 // Refresh each 2 seconds until table is transferred to DRAM or timeout
                 do
                 {
-                        status = cpu.RefreshPowerTable();
+                    status = cpu.RefreshPowerTable();
                     if (status != SMU.Status.OK)
                     {
                         // It's ok to block the current thread
                         Thread.Sleep(2000);
-                }
+                    }
                 }
                 while (status != SMU.Status.OK && timer.Elapsed.TotalMilliseconds < timeout);
 
@@ -480,11 +480,17 @@ namespace ZenTimings
 
         private void StartAutoRefresh()
         {
-            if (settings.AutoRefresh && settings.AdvancedMode)
+            if (settings.AutoRefresh && settings.AdvancedMode && !PowerCfgTimer.IsEnabled)
             {
                 PowerCfgTimer.Interval = TimeSpan.FromMilliseconds(settings.AutoRefreshInterval);
                 PowerCfgTimer.Start();
             }
+        }
+
+        private void StopAutoRefresh()
+        {
+            if (PowerCfgTimer.IsEnabled)
+                PowerCfgTimer.Stop();
         }
 
         private void PowerCfgTimer_Tick(object sender, EventArgs e)
@@ -517,7 +523,7 @@ namespace ZenTimings
                         ReadSVI();
                     }));
                 }).Start();
-            } 
+            }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
@@ -720,7 +726,16 @@ namespace ZenTimings
             }
         }
 
-        private void AdonisWindow_StateChanged(object sender, EventArgs e) => MinimizeFootprint();
+        private void AdonisWindow_StateChanged(object sender, EventArgs e)
+        {
+            // Do not refresh if app is minimized
+            if (WindowState == WindowState.Minimized)
+                StopAutoRefresh();
+            else if (WindowState == WindowState.Normal)
+                StartAutoRefresh();
+
+            MinimizeFootprint();
+        }
 
         private void AdonisWindow_SizeChanged(object sender, SizeChangedEventArgs e) => MinimizeFootprint();
 

@@ -31,17 +31,17 @@ namespace ZenTimings
         {
             if (File.Exists(filename))
             {
-                using (StreamReader sw = new StreamReader(filename))
+                using (StreamReader sr = new StreamReader(filename))
                 {
                     try
                     {
                         XmlSerializer xmls = new XmlSerializer(typeof(AppSettings));
-                        return xmls.Deserialize(sw) as AppSettings;
+                        return xmls.Deserialize(sr) as AppSettings;
                     }
                     catch (InvalidOperationException ex)
                     {
                         Console.WriteLine(ex.Message);
-                        sw.Close();
+                        sr.Close();
                         AdonisUI.Controls.MessageBox.Show(
                             "Invalid settings file!\nSettings will be reset to defaults.",
                             "Error",
