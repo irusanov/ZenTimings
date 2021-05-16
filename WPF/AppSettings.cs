@@ -21,11 +21,14 @@ namespace ZenTimings
             AdvancedMode = true;
             DarkMode = false;
             CheckForUpdates = true;
+            NotifiedForAutoUpdate = false;
 
             Save();
 
             return this;
         }
+
+        public AppSettings Reset() => Create();
 
         public AppSettings Load()
         {
@@ -59,10 +62,21 @@ namespace ZenTimings
 
         public void Save()
         {
-            using (StreamWriter sw = new StreamWriter(filename))
+            try
             {
-                XmlSerializer xmls = new XmlSerializer(typeof(AppSettings));
-                xmls.Serialize(sw, this);
+                using (StreamWriter sw = new StreamWriter(filename))
+                {
+                    XmlSerializer xmls = new XmlSerializer(typeof(AppSettings));
+                    xmls.Serialize(sw, this);
+                }
+            }
+            catch(Exception ex)
+            {
+                AdonisUI.Controls.MessageBox.Show(
+                    "Could not save settings to file!",
+                    "Error",
+                    AdonisUI.Controls.MessageBoxButton.OK,
+                    AdonisUI.Controls.MessageBoxImage.Error);
             }
         }
 
@@ -86,5 +100,6 @@ namespace ZenTimings
         public bool CheckForUpdates { get; set; } = true;
         public string UpdaterSkippedVersion { get; set; } = "";
         public string UpdaterRemindLaterAt { get; set; } = "";
+        public bool NotifiedForAutoUpdate { get; set; }
     }
 }

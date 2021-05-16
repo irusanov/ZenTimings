@@ -24,7 +24,7 @@
 
     <StackPanel>
         <Popup
-            x:Name="myPopup"
+            x:Name="optionsPopup"
             Panel.ZIndex="100"
             PlacementTarget="{Binding ElementName=OptionWindowContent}"
             VerticalAlignment="Center"
@@ -37,9 +37,9 @@
             ClipToBounds="True"
             StaysOpen="False"
             ScrollViewer.VerticalScrollBarVisibility="Disabled"
-            MouseDown="MyPopup_MouseDown">
+            MouseDown="OptionsPopup_MouseDown">
             <TextBlock
-                Name="popupText" 
+                Name="optionsPopupText" 
                 Background="{DynamicResource SuccessBackground}"
                 Padding="10" Opacity="0.95">
                 Settings Saved.

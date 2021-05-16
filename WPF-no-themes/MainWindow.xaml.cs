@@ -623,7 +623,6 @@ namespace ZenTimings
 
         private void Restart()
         {
-            settings.IsRestarting = true;
             settings.Save();
             Process.Start(Application.ResourceAssembly.Location);
             Application.Current.Shutdown();

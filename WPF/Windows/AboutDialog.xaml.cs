@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace ZenTimings.Windows
 {
@@ -11,6 +13,9 @@ namespace ZenTimings.Windows
     /// </summary>
     public partial class AboutDialog : AdonisWindow
     {
+        private static readonly Updater updater = (Application.Current as App).updater;
+        private DispatcherTimer notificationTimer;
+
         public AboutDialog()
         {
             var AssemblyTitle = ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(
@@ -73,6 +78,7 @@ namespace ZenTimings.Windows
             }
 
             Modules.ItemsSource = appModules;
+            updater.UpdateCheckCompleteEvent += Updater_UpdateCheckCompleteEvent;
         }
 
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
@@ -83,7 +89,36 @@ namespace ZenTimings.Windows
 
         private void CheckUpdateBtn_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            Updater.CheckForUpdate(true);
+            updater.CheckForUpdate(true);
+        }
+
+        private void Updater_UpdateCheckCompleteEvent(object sender, EventArgs e)
+        {
+            if (notificationTimer != null)
+            {
+                if (notificationTimer.IsEnabled) notificationTimer.Stop();
+            }
+
+            notificationTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(6000)
+            };
+
+            notificationTimer.Tick += new EventHandler((s, x) =>
+            {
+                notificationTimer.Stop();
+                aboutWindowPopup.IsOpen = false;
+            });
+
+            notificationTimer.Start();
+
+            aboutWindowPopup.Width = AboutWindowContent.ActualWidth;
+            aboutWindowPopup.IsOpen = true;
+        }
+
+        private void AboutWindowPopup_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            aboutWindowPopup.IsOpen = false;
         }
     }
 }

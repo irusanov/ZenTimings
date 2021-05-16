@@ -10,12 +10,27 @@ namespace ZenTimings
 {
     public partial class Updater
     {
-        public static int status = 0;
+        public event EventHandler UpdateCheckCompleteEvent;
+
+        //public static int status = 0;
         private static bool manual = false;
         private static string ChangelogText { get; set; }
         private const string url = "https://zentimings.protonrom.com/AutoUpdater.xml";
 
-        public static void Init(AppSettings settings)
+        protected virtual void OnUpdateCheckCompleteEvent(EventArgs e)
+        {
+            // Make a temporary copy of the event to avoid possibility of
+            // a race condition if the last subscriber unsubscribes
+            // immediately after the null check and before the event is raised.
+            UpdateCheckCompleteEvent?.Invoke(this, e);
+        }
+
+        public Updater(AppSettings settingsInstance)
+        {
+            Init(settingsInstance);
+        }
+
+        public void Init(AppSettings settings)
         {
             AutoUpdater.RunUpdateAsAdmin = true;
             AutoUpdater.Synchronous = true;
@@ -24,17 +39,18 @@ namespace ZenTimings
             AutoUpdater.RemindLaterAt = 3;
             AutoUpdater.DownloadPath = Environment.CurrentDirectory;
             AutoUpdater.PersistenceProvider = new UpdaterPersistenceProvider(settings);
-            AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
-            AutoUpdater.ParseUpdateInfoEvent += AutoUpdaterOnParseUpdateInfoEvent;
-            status = 1;
+            //status = 1;
         }
 
-        public static void CheckForUpdate(bool manualUpdate = false)
+        public void CheckForUpdate(bool manualUpdate = false)
         {
-            if (status == 0)
+            /*if (status == 0)
             {
                 Init((Application.Current as App).settings);
-            }
+            }*/
+
+            AutoUpdater.ParseUpdateInfoEvent += AutoUpdaterOnParseUpdateInfoEvent;
+            AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
 
             if (!manualUpdate)
             {
@@ -46,7 +62,7 @@ namespace ZenTimings
             AutoUpdater.Start(url);
         }
 
-        private static void AutoUpdaterOnParseUpdateInfoEvent(ParseUpdateInfoEventArgs args)
+        private void AutoUpdaterOnParseUpdateInfoEvent(ParseUpdateInfoEventArgs args)
         {
             try
             {
@@ -64,7 +80,8 @@ namespace ZenTimings
                         ChangelogURL = updaterArgs.Changelog,
                         Mandatory = new Mandatory
                         {
-                            Value = updaterArgs.Mandatory,
+                            Value = manual,
+                            UpdateMode = Mode.Normal,
                         },
                         CheckSum = new CheckSum
                         {
@@ -85,7 +102,7 @@ namespace ZenTimings
             }
         }
 
-        private static void AutoUpdaterOnCheckForUpdateEvent(UpdateInfoEventArgs args)
+        private void AutoUpdaterOnCheckForUpdateEvent(UpdateInfoEventArgs args)
         {
             if (args.Error == null)
             {
@@ -133,6 +150,10 @@ namespace ZenTimings
                         SplashWindow.splash.Show();
                     }
                 }
+                else if (manual)
+                {
+                    OnUpdateCheckCompleteEvent(new EventArgs());
+                }
             }
             else
             {
@@ -153,6 +174,8 @@ namespace ZenTimings
                         MessageBoxImage.Error);
                 }
             }
+            AutoUpdater.ParseUpdateInfoEvent -= AutoUpdaterOnParseUpdateInfoEvent;
+            AutoUpdater.CheckForUpdateEvent -= AutoUpdaterOnCheckForUpdateEvent;
         }
     }
 }

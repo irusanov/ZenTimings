@@ -13,18 +13,40 @@
     ShowInTaskbar="False"
     WindowStartupLocation="CenterOwner"
     Icon="/ZenTimings;component/Resources/icon-16.png">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition Width="auto"/>
-        </Grid.ColumnDefinitions>
+    <StackPanel x:Name="AboutWindowContent">
+        <Popup
+            x:Name="aboutWindowPopup"
+            Panel.ZIndex="100"
+            PlacementTarget="{Binding ElementName=AboutWindowContent}"
+            VerticalAlignment="Center"
+            Placement="Relative"
+            HorizontalAlignment="Center"
+            VerticalOffset="0"
+            AllowsTransparency="True"
+            Opacity="0.8"
+            PopupAnimation="Fade"
+            ClipToBounds="True"
+            StaysOpen="False"
+            ScrollViewer.VerticalScrollBarVisibility="Disabled" MouseDown="AboutWindowPopup_MouseDown">
+            <TextBlock
+                Name="optionsPopupText" 
+                Background="{DynamicResource SuccessBackground}"
+                Padding="10" Opacity="0.95">
+                ZenTimings is up to date.
+            </TextBlock>
+        </Popup>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
 
-        <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition Height="auto"/>
-        </Grid.RowDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
 
-        <TabControl 
+            <TabControl 
             HorizontalAlignment="Left" 
             VerticalAlignment="Top"
             Grid.Column="0"
@@ -107,4 +129,5 @@
             Width="60"
             Margin="10"/>
     </Grid>
+    </StackPanel>
 </Window>

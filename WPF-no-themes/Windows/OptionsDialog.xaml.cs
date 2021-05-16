@@ -90,7 +90,6 @@ namespace ZenTimings.Windows
             if (_AdvancedMode != settingsInstance.AdvancedMode)
             {
                 buttonSettingsRestart.Visibility = Visibility.Visible;
-                settingsInstance.IsRestarting = true;
                 settingsInstance.Save();
                 popupText.Text = "Advanced Mode will be applied on next launch.";
             }
