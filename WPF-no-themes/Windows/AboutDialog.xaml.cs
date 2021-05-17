@@ -58,7 +58,7 @@ namespace ZenTimings.Windows
                 "ZenStates-Core.dll",
             };
             var appModules = new List<KeyValuePair<string, string>>();
-            
+
             foreach (var file in files)
             {
                 var version = "missing";
@@ -68,7 +68,7 @@ namespace ZenTimings.Windows
                     FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(file);
                     version = fileVersionInfo.FileVersion.Replace(", ", ".");
                 }
-                catch (Exception ex) 
+                catch (Exception ex)
                 {
                     // Do Nothing 
                 }

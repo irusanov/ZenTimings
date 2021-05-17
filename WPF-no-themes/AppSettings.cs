@@ -69,7 +69,7 @@ namespace ZenTimings
                     xmls.Serialize(sw, this);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(
                     "Could not save settings to file!",

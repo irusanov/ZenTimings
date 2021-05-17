@@ -74,7 +74,7 @@ namespace ZenTimings.Windows
             notificationTimer.Tick += new EventHandler((s, x) =>
             {
                 notificationTimer.Stop();
-                myPopup.IsOpen = false;
+                optionsPopup.IsOpen = false;
             });
 
             notificationTimer.Start();
@@ -91,11 +91,11 @@ namespace ZenTimings.Windows
             {
                 buttonSettingsRestart.Visibility = Visibility.Visible;
                 settingsInstance.Save();
-                popupText.Text = "Advanced Mode will be applied on next launch.";
+                optionsPopupText.Text = "Advanced Mode will be applied on next launch.";
             }
 
-            myPopup.Width = OptionWindowContent.ActualWidth;
-            myPopup.IsOpen = true;
+            optionsPopup.Width = OptionWindowContent.ActualWidth;
+            optionsPopup.IsOpen = true;
         }
 
         private void ButtonSettingsCancel_Click(object sender, RoutedEventArgs e)
@@ -113,9 +113,9 @@ namespace ZenTimings.Windows
             Application.Current.Shutdown();
         }
 
-        private void MyPopup_MouseDown(object sender, MouseButtonEventArgs e)
+        private void OptionsPopup_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            myPopup.IsOpen = false;
+            optionsPopup.IsOpen = false;
         }
     }
 }

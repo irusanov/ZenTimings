@@ -54,12 +54,12 @@ namespace ZenTimings.Windows
                 "AdonisUI.dll",
                 "AutoUpdater.NET.dll",
                 "inpoutx64.dll",
-                "WinIo32.dll",
+                //"WinIo32.dll",
                 "WinRing0x64.dll",
                 "ZenStates-Core.dll",
             };
             var appModules = new List<KeyValuePair<string, string>>();
-            
+
             foreach (var file in files)
             {
                 var version = "missing";
@@ -69,7 +69,7 @@ namespace ZenTimings.Windows
                     FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(file);
                     version = fileVersionInfo.FileVersion.Replace(", ", ".");
                 }
-                catch (Exception ex) 
+                catch (Exception ex)
                 {
                     // Do Nothing 
                 }
