@@ -28,15 +28,15 @@ namespace ZenTimings.Windows
             // One-time notification dialog
             if (!settings.NotifiedForAutoUpdate)
             {
-                MessageBoxResult result = MessageBox.Show(
+                AdonisUI.Controls.MessageBoxResult result = AdonisUI.Controls.MessageBox.Show(
                     "The app now includes Auto Update and will check for a new version each startup.\n" +
                     "Do you want to disable the feature now?\n\n" +
                     "You can always change the setting in Options dialog.",
                     "AutoUpdate",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Warning);
+                    AdonisUI.Controls.MessageBoxButton.YesNo,
+                    AdonisUI.Controls.MessageBoxImage.Information);
 
-                if (result.Equals(MessageBoxResult.Yes))
+                if (result.Equals(AdonisUI.Controls.MessageBoxResult.Yes))
                     settings.CheckForUpdates = false;
 
                 settings.NotifiedForAutoUpdate = true;
