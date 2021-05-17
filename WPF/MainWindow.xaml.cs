@@ -85,8 +85,13 @@ namespace ZenTimings
         {
             using (var searcher = new ManagementObjectSearcher("select * from Win32_PhysicalMemory"))
             {
+                bool connected = false;
                 try
                 {
+                    WMI.Connect(@"root\cimv2");
+
+                    connected = true;
+
                     foreach (var queryObject in searcher.Get().Cast<ManagementObject>())
                     {
                         ulong capacity = 0UL;
@@ -123,38 +128,39 @@ namespace ZenTimings
                         //comboBoxPartNumber.Items.Add($"#{bl}: {partNumber}");
                         //comboBoxPartNumber.SelectedIndex = 0;
                     }
-
-                    ReadChannelsInfo();
-
-                    if (modules.Count > 0)
-                    {
-                        ulong totalCapacity = 0UL;
-
-                        foreach (var module in modules)
-                        {
-                            string rank = module.DualRank ? "DR" : "SR";
-                            totalCapacity += module.Capacity;
-                            comboBoxPartNumber.Items.Add($"{module.Slot}: {module.PartNumber} ({module.Capacity / 1024 / (1024 * 1024)}GB, {rank})");
-                        }
-
-                        if (modules.FirstOrDefault().ClockSpeed != 0)
-                            MEMCFG.Frequency = modules.FirstOrDefault().ClockSpeed;
-
-                        if (totalCapacity != 0)
-                            MEMCFG.TotalCapacity = $"{totalCapacity / 1024 / (1024 * 1024)}GB";
-
-                        comboBoxPartNumber.SelectedIndex = 0;
-                        comboBoxPartNumber.SelectionChanged += new SelectionChangedEventHandler(ComboBoxPartNumber_SelectionChanged);
-                    }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    var title = connected ? @"Failed to get installed memory parameters." : $@"{ex.Message}";
                     AdonisUI.Controls.MessageBox.Show(
-                        "Failed to get installed memory parameters. Corresponding fields will be empty.",
+                        title,
                         "Warning",
                         AdonisUI.Controls.MessageBoxButton.OK,
                         AdonisUI.Controls.MessageBoxImage.Warning);
                 }
+            }
+
+            if (modules.Count > 0)
+            {
+                ReadChannelsInfo();
+
+                ulong totalCapacity = 0UL;
+
+                foreach (var module in modules)
+                {
+                    string rank = module.DualRank ? "DR" : "SR";
+                    totalCapacity += module.Capacity;
+                    comboBoxPartNumber.Items.Add($"{module.Slot}: {module.PartNumber} ({module.Capacity / 1024 / (1024 * 1024)}GB, {rank})");
+                }
+
+                if (modules.FirstOrDefault().ClockSpeed != 0)
+                    MEMCFG.Frequency = modules.FirstOrDefault().ClockSpeed;
+
+                if (totalCapacity != 0)
+                    MEMCFG.TotalCapacity = $"{totalCapacity / 1024 / (1024 * 1024)}GB";
+
+                comboBoxPartNumber.SelectedIndex = 0;
+                comboBoxPartNumber.SelectionChanged += new SelectionChangedEventHandler(ComboBoxPartNumber_SelectionChanged);
             }
         }
 
@@ -181,11 +187,13 @@ namespace ZenTimings
 
         private void ReadMemoryConfig()
         {
-            string scope = "root\\wmi";
+            string scope = @"root\wmi";
             string className = "AMD_ACPI";
 
             try
             {
+                WMI.Connect($@"{scope}");
+
                 string instanceName = WMI.GetInstanceName(scope, className);
 
                 ManagementBaseObject pack;
@@ -202,7 +210,8 @@ namespace ZenTimings
                     {
                         Debug.WriteLine("{0}", DValuesBuffer[i]);
                     }
-                }*/
+                }
+                */
 
 
                 // Get function names with their IDs
@@ -304,7 +313,7 @@ namespace ZenTimings
                 compatMode = true;
 
                 AdonisUI.Controls.MessageBox.Show(
-                    "Failed to read AMD ACPI. Some parameters will be empty.",
+                    "Failed to read AMD ACPI. Odt, Setup and Drive strength parameters will be empty.",
                     "Warning",
                     AdonisUI.Controls.MessageBoxButton.OK,
                     AdonisUI.Controls.MessageBoxImage.Warning);
@@ -443,7 +452,6 @@ namespace ZenTimings
 
             if (WaitForDriverLoad() && cpu.utils.WinIoStatus == Utils.LibStatus.OK)
             {
-                SMU.Status status = SMU.Status.FAILED;
                 Stopwatch timer = new Stopwatch();
                 int timeout = 10000;
 
@@ -452,6 +460,7 @@ namespace ZenTimings
 
                 timer.Start();
 
+                SMU.Status status;
                 // Refresh each 2 seconds until table is transferred to DRAM or timeout
                 do
                 {
@@ -575,6 +584,8 @@ namespace ZenTimings
                 // Read from first enabled DCT
                 if (modules.Count > 0)
                     ReadTimings(modules[0].DctOffset);
+                else
+                    ReadTimings(0);
 
                 if (settings.AdvancedMode)
                 {

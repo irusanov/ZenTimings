@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Management;
+using System.ServiceProcess;
 
 namespace ZenTimings
 {
@@ -24,11 +25,22 @@ namespace ZenTimings
         {
             try
             {
-                return new ManagementScope($@"{scope}");
+                var sc = new ServiceController("Windows Management Instrumentation");
+                if (sc.Status != ServiceControllerStatus.Running)
+                    throw new ManagementException(@"Windows Management Instrumentation service is not running");
+
+                ManagementScope mScope = new ManagementScope($@"{scope}");
+                mScope.Connect();
+
+                if (mScope.IsConnected)
+                    return mScope;
+                else
+                    throw new ManagementException($@"Failed to connect to {scope}");
+
             }
             catch (ManagementException ex)
             {
-                Console.WriteLine("WMI: Failed to connect", ex.Message);
+                Console.WriteLine("WMI: {0}", ex.Message);
                 throw ex;
             }
         }

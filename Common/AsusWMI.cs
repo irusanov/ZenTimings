@@ -54,6 +54,8 @@ namespace ZenTimings
         {
             try
             {
+                WMI.Connect(scope);
+
                 instanceName = WMI.GetInstanceName(scope, className);
                 instance = new ManagementObject(scope, $"{className}.InstanceName='{instanceName}'", null);
 
