@@ -49,7 +49,7 @@ namespace ZenTimings.Windows
                 //"AdonisUI.dll",
                 //"AutoUpdater.NET.dll",
                 "inpoutx64.dll",
-                "WinIo32.dll",
+                "WinIo.dll",
                 "WinRing0.dll",
                 "WinRing0x64.dll",
                 "ZenStates-Core.dll",
