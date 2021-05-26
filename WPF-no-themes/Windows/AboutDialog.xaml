@@ -9,7 +9,6 @@
     Height="222"
     Width="304"
     ResizeMode="NoResize"
-    SizeToContent="WidthAndHeight"
     ShowInTaskbar="False"
     WindowStartupLocation="CenterOwner"
     Icon="/ZenTimings-legacy;component/Resources/icon-16.png">
