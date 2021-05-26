@@ -28,6 +28,7 @@ namespace ZenTimings.Windows
         private ManagementBaseObject pack;
         private string instanceName;
         private ManagementObject classInstance;
+        private delegate void Action();
 
         public DebugDialog(Cpu cpu, List<MemoryModule> memModules, MemoryConfig memCfg,
             BiosMemController biosMemCtrl, AsusWMI asusWmi)
