@@ -30,7 +30,6 @@ namespace ZenTimings.Windows
             checkBoxAutoRefresh.IsChecked = settings.AutoRefresh;
             checkBoxAutoRefresh.IsEnabled = settings.AdvancedMode;
             checkBoxAdvancedMode.IsChecked = settings.AdvancedMode;
-            checkBoxCheckUpdate.IsChecked = settings.CheckForUpdates;
             numericUpDownRefreshInterval.IsEnabled = settings.AutoRefresh && settings.AdvancedMode;
             msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
         }
@@ -53,7 +52,6 @@ namespace ZenTimings.Windows
             settingsInstance.AutoRefresh = (bool)checkBoxAutoRefresh.IsChecked;
             settingsInstance.AutoRefreshInterval = Convert.ToInt32(numericUpDownRefreshInterval.Text);
             settingsInstance.AdvancedMode = (bool)checkBoxAdvancedMode.IsChecked;
-            settingsInstance.CheckForUpdates = (bool)checkBoxCheckUpdate.IsChecked;
 
             settingsInstance.Save();
 

@@ -8,7 +8,7 @@
     Title="Debug Report"
     Height="550"
     Width="406"
-    Icon="/ZenTimings;component/Resources/icon-16.png"
+    Icon="/ZenTimings-legacy;component/Resources/icon-16.png"
     ResizeMode="CanMinimize"
     WindowStartupLocation="CenterOwner">
     <Grid>

@@ -150,8 +150,8 @@ namespace ZenTimings
                     comboBoxPartNumber.Items.Add($"{module.Slot}: {module.PartNumber} ({module.Capacity / 1024 / (1024 * 1024)}GB, {rank})");
                 }
 
-                if (modules.FirstOrDefault().ClockSpeed != 0)
-                    MEMCFG.Frequency = modules.FirstOrDefault().ClockSpeed;
+                if (modules[0].ClockSpeed != 0)
+                    MEMCFG.Frequency = modules[0].ClockSpeed;
 
                 if (totalCapacity != 0)
                     MEMCFG.TotalCapacity = $"{totalCapacity / 1024 / (1024 * 1024)}GB";
@@ -205,7 +205,7 @@ namespace ZenTimings
                     uint[] DValuesBuffer = (uint[])pack.GetPropertyValue("DValuesBuffer");
                     for (var i = 0; i < DValuesBuffer.Length; i++)
                     {
-                        Debug.WriteLine("{0}", DValuesBuffer[i]);
+                        Console.WriteLine("{0}", DValuesBuffer[i]);
                     }
                 }
                 */
@@ -687,13 +687,6 @@ namespace ZenTimings
             SetWindowTitle();
             labelCPU.Text = cpu.systemInfo.CpuName;
             labelMB.Text = $"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} | SMU {cpu.systemInfo.GetSmuVersionString()}";
-#if DEBUG
-            /*foreach (TextWriterTraceListener listener in listeners)
-            {
-                listener.Flush();
-            }
-            Debug.Listeners.AddRange(listeners);*/
-#endif
             //ShowWindow();
 
             MinimizeFootprint();
