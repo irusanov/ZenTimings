@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Management;
 using System.ServiceProcess;
+using static System.Management.ManagementObjectCollection;
 
 namespace ZenTimings
 {
@@ -47,18 +47,18 @@ namespace ZenTimings
 
         public static ManagementObject Query(string scope, string wmiClass)
         {
-            using (var searcher = new ManagementObjectSearcher($"{scope}", $"SELECT * FROM {wmiClass}"))
+            try
             {
-                ManagementObject queryObject = null;
-
-                try
+                using (var searcher = new ManagementObjectSearcher($"{scope}", $"SELECT * FROM {wmiClass}"))
                 {
-                    queryObject = searcher.Get().Cast<ManagementObject>().FirstOrDefault();
+                    ManagementObjectEnumerator enumerator = searcher.Get().GetEnumerator();
+                    if (enumerator.MoveNext())
+                        return enumerator.Current as ManagementObject;
                 }
-                catch (ManagementException ex) { Console.WriteLine(ex.Message); }
-
-                return queryObject;
             }
+            catch (Exception ex) { Console.WriteLine(ex.Message); }
+
+            return null;
         }
 
         public static List<string> GetWmiNamespaces(string root)
@@ -73,27 +73,34 @@ namespace ZenTimings
                     namespaces.Add(namespaceName);
                     namespaces.AddRange(GetWmiNamespaces(namespaceName));
                 }
+                namespaces.Sort(StringComparer.OrdinalIgnoreCase);
             }
-            catch (ManagementException ex) { Console.WriteLine(ex.Message); }
+            catch (Exception ex) { Console.WriteLine(ex.Message); }
 
-            return namespaces.OrderBy(s => s).ToList();
+            return namespaces;
         }
 
         public static List<string> GetClassNamesWithinWmiNamespace(string wmiNamespaceName)
         {
             List<string> classes = new List<string>();
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher
-                        (new ManagementScope(wmiNamespaceName),
-                        new WqlObjectQuery("SELECT * FROM meta_class"));
-            List<string> classNames = new List<string>();
-            ManagementObjectCollection objectCollection = searcher.Get();
-            foreach (ManagementClass wmiClass in objectCollection)
+            try
             {
-                string stringified = wmiClass.ToString();
-                string[] parts = stringified.Split(new char[] { ':' });
-                classes.Add(parts[1]);
+                ManagementObjectSearcher searcher = new ManagementObjectSearcher
+                            (new ManagementScope(wmiNamespaceName),
+                            new WqlObjectQuery("SELECT * FROM meta_class"));
+                List<string> classNames = new List<string>();
+                ManagementObjectCollection objectCollection = searcher.Get();
+                foreach (ManagementClass wmiClass in objectCollection)
+                {
+                    string stringified = wmiClass.ToString();
+                    string[] parts = stringified.Split(new char[] { ':' });
+                    classes.Add(parts[1]);
+                }
+                classes.Sort(StringComparer.OrdinalIgnoreCase);
             }
-            return classes.OrderBy(s => s).ToList();
+            catch (Exception ex) { Console.WriteLine(ex.Message); }
+
+            return classes;
         }
 
         public static string GetInstanceName(string scope, string wmiClass)
@@ -133,7 +140,7 @@ namespace ZenTimings
 
                 return (ManagementBaseObject)outParams.Properties[$"{propName}"].Value;
             }
-            catch (ManagementException ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return null;

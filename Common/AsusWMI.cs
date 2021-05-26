@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Management;
 
 namespace ZenTimings
@@ -67,7 +66,7 @@ namespace ZenTimings
                 {
                     AsusSensorInfo sensor = GetSensorInfo(i);
                     sensors.Add(sensor);
-                    sensors = sensors.OrderBy(o => o.Type).ToList();
+                    sensors.Sort((a, b) => a.Type.CompareTo(b.Type));
                 }
 
                 Status = 1;
