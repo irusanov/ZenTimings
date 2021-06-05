@@ -108,8 +108,6 @@ namespace ZenTimings
         };
 
         byte[] table;
-        private bool disposedValue;
-
         public byte[] Table
         {
             get => table;
@@ -131,6 +129,7 @@ namespace ZenTimings
         public string GetRttWrString(int key) => GetByKey(RttWrDict, key);
         public string GetSetupString(byte value) => $"{value / 32}/{value % 32}";
 
+        private bool disposedValue;
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)

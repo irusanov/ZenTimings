@@ -16,7 +16,7 @@
 
         public UpdaterArgsChecksum Checksum { get; set; }
 
-        [System.Xml.Serialization.XmlArrayItemAttribute("Change", IsNullable = false)]
+        [System.Xml.Serialization.XmlArrayItem("Change", IsNullable = false)]
         public string[] Changes { get; set; }
     }
 
@@ -25,10 +25,10 @@
     [System.Xml.Serialization.XmlType(AnonymousType = true)]
     public partial class UpdaterArgsChecksum
     {
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.Xml.Serialization.XmlAttribute()]
         public string algorithm { get; set; }
 
-        [System.Xml.Serialization.XmlTextAttribute()]
+        [System.Xml.Serialization.XmlText()]
         public string Value { get; set; }
     }
 }
