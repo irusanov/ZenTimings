@@ -7,7 +7,7 @@
     mc:Ignorable="d"
     x:Name="OptionsWindow"
     Title="Options"
-    Height="150"
+    Height="173.664"
     Width="306"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterOwner"
@@ -50,6 +50,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
                     </Grid.RowDefinitions>
 
                     <CheckBox
@@ -82,6 +83,14 @@
                         Content="ms"
                         VerticalAlignment="Center"
                         Padding="5 0" FontWeight="Normal" />
+
+                    <CheckBox
+                        x:Name="checkBoxCheckUpdate"
+                        Grid.Column="0"
+                        Grid.Row="2"
+                        Grid.ColumnSpan="3"
+                        Margin="0 5 5 5"
+                        Content="Check For Updates On Startup" />
                 </Grid>
 
                 <Border Style="{DynamicResource Separator}" Margin="0 20 0 0"/>

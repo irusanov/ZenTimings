@@ -15,6 +15,7 @@ namespace ZenTimings
         internal static Mutex instanceMutex = null;
         internal bool createdNew = false;
         public readonly AppSettings settings = new AppSettings().Load();
+        public Updater updater;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -27,6 +28,8 @@ namespace ZenTimings
                 Current.Shutdown();
                 Environment.Exit(0);
             }
+
+            updater = new Updater(settings);
 
             GC.KeepAlive(instanceMutex);
             base.OnStartup(e);

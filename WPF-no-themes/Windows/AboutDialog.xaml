@@ -13,6 +13,27 @@
     WindowStartupLocation="CenterOwner"
     Icon="/ZenTimings-legacy;component/Resources/icon-16.png">
     <StackPanel x:Name="AboutWindowContent">
+        <Popup
+            x:Name="aboutWindowPopup"
+            Panel.ZIndex="100"
+            PlacementTarget="{Binding ElementName=AboutWindowContent}"
+            VerticalAlignment="Center"
+            Placement="Relative"
+            HorizontalAlignment="Center"
+            VerticalOffset="0"
+            AllowsTransparency="True"
+            Opacity="0.8"
+            PopupAnimation="Fade"
+            ClipToBounds="True"
+            StaysOpen="False"
+            ScrollViewer.VerticalScrollBarVisibility="Disabled" MouseDown="AboutWindowPopup_MouseDown">
+            <TextBlock
+                Name="optionsPopupText" 
+                Background="{DynamicResource SuccessBackground}"
+                Padding="10" Opacity="0.95">
+                ZenTimings is up to date.
+            </TextBlock>
+        </Popup>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
@@ -84,6 +105,18 @@
                     </ListView>
                 </TabItem>
             </TabControl>
+
+            <Button
+                x:Name="CheckUpdateBtn"
+                Grid.Column="0"
+                Grid.Row="1"
+                Content="Check for Update"
+                IsCancel="False"
+                VerticalAlignment="Bottom"
+                HorizontalAlignment="Right"
+                Width="Auto"
+                Margin="10 10 0 10"
+                Click="CheckUpdateBtn_Click" />
 
             <Button
                 Grid.Column="1"

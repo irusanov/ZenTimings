@@ -260,11 +260,10 @@ namespace ZenTimings
                 }
 
                 BMC.Table = apcbConfig;
-                bool allZero = !BMC.Table.Any(v => v != 0);
 
                 // When ProcODT is 0, then all other resistance values are 0
                 // Happens when one DIMM installed in A1 or A2 slot
-                if (allZero || BMC.Table == null || BMC.Config.ProcODT < 1)
+                if (BMC.Table == null  || cpu.utils.AllZero(BMC.Table) || BMC.Config.ProcODT < 1)
                 {
                     throw new Exception();
                 }

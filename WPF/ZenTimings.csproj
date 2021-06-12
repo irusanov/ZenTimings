@@ -108,6 +108,12 @@
     <Compile Include="..\Common\Screenshot.cs">
       <Link>Common\Screenshot.cs</Link>
     </Compile>
+    <Compile Include="..\Common\UpdaterArgs.cs">
+      <Link>Common\UpdaterArgs.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\UpdaterPersistenceProvider.cs">
+      <Link>Common\UpdaterPersistenceProvider.cs</Link>
+    </Compile>
     <Compile Include="..\Common\WMI.cs">
       <Link>Common\WMI.cs</Link>
     </Compile>
@@ -118,8 +124,6 @@
       <DependentUpon>BuildNumberTemplate.tt</DependentUpon>
     </Compile>
     <Compile Include="Updater.cs" />
-    <Compile Include="UpdaterArgs.cs" />
-    <Compile Include="UpdaterPersistenceProvider.cs" />
     <Compile Include="Windows\AboutDialog.xaml.cs">
       <DependentUpon>AboutDialog.xaml</DependentUpon>
     </Compile>
