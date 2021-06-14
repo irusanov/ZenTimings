@@ -25,7 +25,7 @@ namespace ZenTimings
         {
             try
             {
-                var sc = new ServiceController("Windows Management Instrumentation");
+                var sc = new ServiceController("Winmgmt");
                 if (sc.Status != ServiceControllerStatus.Running)
                     throw new ManagementException(@"Windows Management Instrumentation service is not running");
 
