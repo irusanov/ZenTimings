@@ -174,7 +174,7 @@ namespace ZenTimings
             ushort timeout = 20;
             uint plane1_value;
             do
-                plane1_value = cpu.ReadDword(cpu.info.SVI2.SocAddress);
+                plane1_value = cpu.ReadDword(cpu.info.svi2.socAddress);
             while ((plane1_value & 0xFF00) != 0 && --timeout > 0);
 
             if (timeout > 0)
