@@ -9,11 +9,11 @@ namespace ZenTimings
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    public partial class App
     {
         internal const string mutexName = "Local\\ZenTimings";
-        internal static Mutex instanceMutex = null;
-        internal bool createdNew = false;
+        internal static Mutex instanceMutex;
+        internal bool createdNew;
         public readonly AppSettings settings = new AppSettings().Load();
         public Updater updater;
 
@@ -24,7 +24,8 @@ namespace ZenTimings
             if (!createdNew)
             {
                 // App is already running! Exit the application and show the other window.
-                InteropMethods.PostMessage((IntPtr)InteropMethods.HWND_BROADCAST, InteropMethods.WM_SHOWME, IntPtr.Zero, IntPtr.Zero);
+                InteropMethods.PostMessage((IntPtr) InteropMethods.HWND_BROADCAST, InteropMethods.WM_SHOWME,
+                    IntPtr.Zero, IntPtr.Zero);
                 Current.Shutdown();
                 Environment.Exit(0);
             }

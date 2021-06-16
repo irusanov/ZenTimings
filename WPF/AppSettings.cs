@@ -1,8 +1,8 @@
-﻿using AdonisUI;
 using System;
 using System.IO;
 using System.Windows;
 using System.Xml.Serialization;
+using AdonisUI;
 
 namespace ZenTimings
 {
@@ -70,7 +70,7 @@ namespace ZenTimings
                     xmls.Serialize(sw, this);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 AdonisUI.Controls.MessageBox.Show(
                     "Could not save settings to file!",
@@ -82,8 +82,10 @@ namespace ZenTimings
 
         public void ChangeTheme()
         {
-            Uri DarkColorScheme = new Uri("pack://application:,,,/ZenTimings;component/Themes/Dark.xaml", UriKind.Absolute);
-            Uri LightColorScheme = new Uri("pack://application:,,,/ZenTimings;component/Themes/Light.xaml", UriKind.Absolute);
+            Uri DarkColorScheme = new Uri("pack://application:,,,/ZenTimings;component/Themes/Dark.xaml",
+                UriKind.Absolute);
+            Uri LightColorScheme = new Uri("pack://application:,,,/ZenTimings;component/Themes/Light.xaml",
+                UriKind.Absolute);
 
             if (DarkMode)
                 ResourceLocator.SetColorScheme(Application.Current.Resources, DarkColorScheme);

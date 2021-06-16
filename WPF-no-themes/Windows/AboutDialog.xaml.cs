@@ -10,9 +10,9 @@ namespace ZenTimings.Windows
     /// <summary>
     /// Interaction logic for AboutDialog.xaml
     /// </summary>
-    public partial class AboutDialog : Window
+    public partial class AboutDialog
     {
-        private static readonly Updater updater = (Application.Current as App).updater;
+        private static readonly Updater updater = (Application.Current as App)?.updater;
         private DispatcherTimer notificationTimer;
 
         public AboutDialog()
@@ -42,7 +42,7 @@ namespace ZenTimings.Windows
 
             //this.Title = string.Format("About {0}", AssemblyTitle);
             this.labelProductName.Content = AssemblyProduct;
-            this.labelVersion.Text = string.Format("Version {0}L", AssemblyVersion);
+            this.labelVersion.Text = $"Version {AssemblyVersion}";
             this.labelCopyright.Text = AssemblyCopyright;
             this.labelCompanyName.Text = AssemblyDescription;
 
@@ -69,7 +69,7 @@ namespace ZenTimings.Windows
                     FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(file);
                     version = fileVersionInfo.FileVersion.Replace(", ", ".");
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // Do Nothing 
                 }
@@ -87,7 +87,7 @@ namespace ZenTimings.Windows
             e.Handled = true;
         }
 
-        private void CheckUpdateBtn_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void CheckUpdateBtn_Click(object sender, RoutedEventArgs e)
         {
             updater.CheckForUpdate(true);
         }

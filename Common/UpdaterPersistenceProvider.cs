@@ -1,12 +1,13 @@
-﻿using AutoUpdaterDotNET;
-using System;
+﻿using System;
 using System.Reflection;
+using AutoUpdaterDotNET;
 
 namespace ZenTimings
 {
     public sealed class UpdaterPersistenceProvider : IPersistenceProvider
     {
         internal AppSettings appSettings;
+
         public UpdaterPersistenceProvider(AppSettings settings)
         {
             appSettings = settings;
@@ -27,11 +28,12 @@ namespace ZenTimings
         /// <returns>Returns a DateTime value at which the user must be given again the possibility to upgrade the application. If remind later value is not present then it will return null.</returns>
         public DateTime? GetRemindLater()
         {
-            if (appSettings != null && appSettings.UpdaterRemindLaterAt != null)
+            if (appSettings?.UpdaterRemindLaterAt != null)
             {
                 DateTime.TryParse(appSettings?.UpdaterRemindLaterAt, out DateTime result);
                 return result;
             }
+
             return null;
         }
 
@@ -43,7 +45,7 @@ namespace ZenTimings
         {
             if (appSettings != null && version != null)
             {
-                appSettings.UpdaterSkippedVersion = version?.ToString();
+                appSettings.UpdaterSkippedVersion = version.ToString();
                 appSettings.Save();
             }
         }
@@ -56,7 +58,7 @@ namespace ZenTimings
         {
             if (appSettings != null && remindLaterAt != null)
             {
-                appSettings.UpdaterRemindLaterAt = remindLaterAt?.ToString();
+                appSettings.UpdaterRemindLaterAt = remindLaterAt.ToString();
                 appSettings.Save();
             }
         }

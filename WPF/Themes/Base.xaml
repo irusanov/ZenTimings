@@ -1,6 +1,5 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Style x:Key="MainContainerStyles" TargetType="Border">
         <Setter Property="BorderBrush" Value="{DynamicResource SeparatorColor}" />
@@ -65,7 +64,7 @@
     <Style x:Key="ValueStyles" TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlockStyles}">
         <Setter Property="TextAlignment" Value="Center" />
         <Setter Property="Foreground" Value="{DynamicResource AccentTextColor}" />
-        <Setter Property="MinWidth" Value="55"/>
+        <Setter Property="MinWidth" Value="55" />
         <Style.Triggers>
             <Trigger Property="Text" Value="N/A">
                 <Setter Property="Foreground" Value="{DynamicResource DisabledColor}" />

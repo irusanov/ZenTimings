@@ -1,35 +1,38 @@
-using AdonisUI.Controls;
-using Microsoft.VisualBasic.Devices;
-using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Management;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
+using Microsoft.VisualBasic.Devices;
+using Microsoft.Win32;
 using ZenStates.Core;
+using MessageBox = AdonisUI.Controls.MessageBox;
 
 namespace ZenTimings.Windows
 {
     /// <summary>
-    /// Interaction logic for DebugDialog.xaml
+    ///     Interaction logic for DebugDialog.xaml
     /// </summary>
-    public partial class DebugDialog : AdonisWindow
+    public partial class DebugDialog
     {
-        private string result = "";
-        private readonly List<MemoryModule> modules;
+        private readonly AsusWMI AWMI;
+        private readonly BiosMemController BMC;
+        private readonly Cpu CPU;
+
         private readonly MemoryConfig MEMCFG;
+        private readonly List<MemoryModule> modules;
+        private readonly PowerTable PT;
+
         //private readonly uint baseAddress;
         private readonly SystemInfo SI;
-        private readonly PowerTable PT;
-        private readonly BiosMemController BMC;
-        private readonly string wmiScope = "root\\wmi";
         private readonly string wmiAMDACPI = "AMD_ACPI";
-        private readonly Cpu CPU;
-        private readonly AsusWMI AWMI;
-        private ManagementBaseObject pack;
-        private string instanceName;
+        private readonly string wmiScope = "root\\wmi";
         private ManagementObject classInstance;
+        private string instanceName;
+        private ManagementBaseObject pack;
+        private string result = "";
 
         public DebugDialog(Cpu cpu, List<MemoryModule> memModules, MemoryConfig memCfg,
             BiosMemController biosMemCtrl, AsusWMI asusWmi)
@@ -59,7 +62,10 @@ namespace ZenTimings.Windows
             {
                 instanceName = WMI.GetInstanceName(wmiScope, wmiAMDACPI);
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
 
             return instanceName;
         }
@@ -73,8 +79,8 @@ namespace ZenTimings.Windows
                     null);
 
                 // Get function names with their IDs
-                string[] functionObjects = { "GetObjectID", "GetObjectID2" };
-                int index = 1;
+                string[] functionObjects = {"GetObjectID", "GetObjectID2"};
+                var index = 1;
 
                 foreach (var functionObject in functionObjects)
                 {
@@ -86,9 +92,9 @@ namespace ZenTimings.Windows
 
                         if (pack != null)
                         {
-                            uint[] ID = (uint[])pack.GetPropertyValue("ID");
-                            string[] IDString = (string[])pack.GetPropertyValue("IDString");
-                            byte Length = (byte)pack.GetPropertyValue("Length");
+                            var ID = (uint[]) pack.GetPropertyValue("ID");
+                            var IDString = (string[]) pack.GetPropertyValue("IDString");
+                            var Length = (byte) pack.GetPropertyValue("Length");
 
                             for (var i = 0; i < Length; ++i)
                             {
@@ -102,18 +108,24 @@ namespace ZenTimings.Windows
                             AddLine("<FAILED>");
                         }
                     }
-                    catch { }
+                    catch
+                    {
+                        // ignored
+                    }
 
                     index++;
                     AddLine();
                 }
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
         }
 
         private void AddHeading(string heading)
         {
-            string h =
+            var h =
                 "######################################################" +
                 Environment.NewLine +
                 heading +
@@ -135,21 +147,21 @@ namespace ZenTimings.Windows
             {
                 try
                 {
-                    uint offset = i << 20;
-                    bool channel = CPU.utils.GetBits(CPU.ReadDword(offset | 0x50DF0), 19, 1) == 0;
-                    bool dimm1 = CPU.utils.GetBits(CPU.ReadDword(offset | 0x50000), 0, 1) == 1;
-                    bool dimm2 = CPU.utils.GetBits(CPU.ReadDword(offset | 0x50008), 0, 1) == 1;
-                    bool enabled = channel && (dimm1 || dimm2);
+                    var offset = i << 20;
+                    var channel = CPU.utils.GetBits(CPU.ReadDword(offset | 0x50DF0), 19, 1) == 0;
+                    var dimm1 = CPU.utils.GetBits(CPU.ReadDword(offset | 0x50000), 0, 1) == 1;
+                    var dimm2 = CPU.utils.GetBits(CPU.ReadDword(offset | 0x50008), 0, 1) == 1;
+                    var enabled = channel && (dimm1 || dimm2);
 
                     AddLine($"Channel{i}: {enabled}");
                     if (enabled)
                     {
                         AddLine("-- UMC Registers");
-                        uint startReg = offset | 0x50000;
-                        uint endReg = offset | 0x50300;
+                        var startReg = offset | 0x50000;
+                        var endReg = offset | 0x50300;
                         while (startReg <= endReg)
                         {
-                            uint data = CPU.ReadDword(startReg);
+                            var data = CPU.ReadDword(startReg);
                             AddLine($"   0x{startReg:X8}: 0x{data:X8}");
                             startReg += 4;
                         }
@@ -165,24 +177,22 @@ namespace ZenTimings.Windows
 
         private void Debug()
         {
-            Application.Current.Dispatcher.Invoke(new Action(() =>
-            {
-                SetControlsState(false);
-            }));
+            Application.Current.Dispatcher.Invoke(new Action(() => { SetControlsState(false); }));
 
-            result = $"{System.Windows.Forms.Application.ProductName} {System.Windows.Forms.Application.ProductVersion} Debug Report" +
+            result =
+                $"{System.Windows.Forms.Application.ProductName} {System.Windows.Forms.Application.ProductVersion} Debug Report" +
                 Environment.NewLine +
                 Environment.NewLine;
 
-            Type type = SI.GetType();
-            PropertyInfo[] properties = type.GetProperties();
+            var type = SI.GetType();
+            var properties = type.GetProperties();
 
             AddHeading("System Info");
             try
             {
                 AddLine("OS: " + new ComputerInfo().OSFullName);
 
-                foreach (PropertyInfo property in properties)
+                foreach (var property in properties)
                 {
                     if (property.Name == "CpuId" || property.Name == "PatchLevel" || property.Name == "SmuTableVersion")
                         AddLine(property.Name + ": " + $"{property.GetValue(SI, null):X8}");
@@ -190,26 +200,27 @@ namespace ZenTimings.Windows
                         AddLine(property.Name + ": " + SI.GetSmuVersionString());
                     else
                         AddLine(property.Name + ": " + property.GetValue(SI, null));
-                }
+            	}
             }
             catch
             {
                 AddLine("<FAILED>");
             }
+
             AddLine();
 
             // DRAM modules info
             AddHeading("Memory Modules");
 
-            foreach (MemoryModule module in modules)
+            foreach (var module in modules)
             {
                 AddLine($"{module.BankLabel} | {module.DeviceLocator}");
                 AddLine($"-- Slot: {module.Slot}");
                 if (module.DualRank)
-                    AddLine($"-- Dual Rank");
+                    AddLine("-- Dual Rank");
                 else
-                    AddLine($"-- Single Rank");
-                AddLine($"-- DCT Offset: 0x{(module.DctOffset >> 20):X}");
+                    AddLine("-- Single Rank");
+                AddLine($"-- DCT Offset: 0x{module.DctOffset >> 20:X}");
                 AddLine($"-- Manufacturer: {module.Manufacturer}");
                 AddLine($"-- {module.PartNumber} {module.Capacity / 1024 / (1024 * 1024)}GB {module.ClockSpeed}MHz");
                 AddLine();
@@ -225,35 +236,37 @@ namespace ZenTimings.Windows
             try
             {
                 // AddLine($"DRAM Base Address: {baseAddress:X8}");
-                foreach (PropertyInfo property in properties)
+                foreach (var property in properties)
                     AddLine(property.Name + ": " + property.GetValue(MEMCFG, null));
             }
             catch
             {
                 AddLine("<FAILED>");
             }
+
             AddLine();
 
             // Configured DRAM memory controller settings from BIOS
             AddHeading("BIOS: Memory Controller Config");
             try
             {
-                for (int i = 0; i < BMC.Table.Length; ++i)
+                for (var i = 0; i < BMC.Table.Length; ++i)
                     AddLine($"Index {i:D3}: {BMC.Table[i]:X2} ({BMC.Table[i]})");
             }
             catch
             {
                 AddLine("<FAILED>");
             }
+
             AddLine();
 
             // SMU power table
             AddHeading("SMU: Power Table");
             try
             {
-                for (int i = 0; i < PT.Table.Length; ++i)
+                for (var i = 0; i < PT.Table.Length; ++i)
                 {
-                    byte[] temp = BitConverter.GetBytes(PT.Table[i]);
+                    var temp = BitConverter.GetBytes(PT.Table[i]);
                     AddLine($"Offset {i * 0x4:X3}: {BitConverter.ToSingle(temp, 0):F8}");
                 }
             }
@@ -261,6 +274,7 @@ namespace ZenTimings.Windows
             {
                 AddLine("<FAILED>");
             }
+
             AddLine();
 
             // SMU power table
@@ -270,7 +284,7 @@ namespace ZenTimings.Windows
                 type = PT.GetType();
                 properties = type.GetProperties();
 
-                foreach (PropertyInfo property in properties)
+                foreach (var property in properties)
                 {
                     if (property.Name == "TableVersion")
                         AddLine(property.Name + ": " + $"{property.GetValue(PT, null):X8}");
@@ -290,6 +304,7 @@ namespace ZenTimings.Windows
             {
                 AddLine("<FAILED>");
             }
+
             AddLine();
 
             // All WMI classes in root namespace
@@ -322,6 +337,7 @@ namespace ZenTimings.Windows
             {
                 AddLine("<FAILED>");
             }
+
             AddLine();
 
             PrintWmiFunctions();
@@ -332,13 +348,14 @@ namespace ZenTimings.Windows
                 AddHeading("ASUS WMI");
                 try
                 {
-                    foreach (AsusSensorInfo sensor in AWMI.sensors)
+                    foreach (var sensor in AWMI.sensors)
                         AddLine(sensor.Name + ": " + sensor.Value);
                 }
                 catch
                 {
                     AddLine("<FAILED>");
                 }
+
                 AddLine();
             }
 
@@ -378,12 +395,13 @@ namespace ZenTimings.Windows
 
         private void SaveToFile(bool saveAs = false)
         {
-            string unixTimestamp = Convert.ToString((DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMinutes);
-            string filename = $@"{string.Join("_", Title.Split())}_{unixTimestamp}.txt";
+            var unixTimestamp = Convert.ToString(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMinutes,
+                CultureInfo.InvariantCulture);
+            var filename = $@"{string.Join("_", Title.Split())}_{unixTimestamp}.txt";
 
             if (saveAs)
             {
-                SaveFileDialog saveFileDialog = new SaveFileDialog
+                var saveFileDialog = new SaveFileDialog
                 {
                     Filter = "text files (*.txt)|*.txt|All files (*.*)|*.*",
                     FilterIndex = 1,
@@ -398,13 +416,28 @@ namespace ZenTimings.Windows
                 filename = saveFileDialog.FileName;
             }
 
-            System.IO.File.WriteAllText(filename, textBoxDebugOutput.Text);
-            AdonisUI.Controls.MessageBox.Show($"Debug report saved as {filename}", saveAs ? "Save As" : "Save", AdonisUI.Controls.MessageBoxButton.OK);
+            File.WriteAllText(filename, textBoxDebugOutput.Text);
+            MessageBox.Show($"Debug report saved as {filename}", saveAs ? "Save As" : "Save");
         }
 
-        private async void ButtonDebug_Click(object sender, RoutedEventArgs e) => await Task.Run(() => Debug());
-        private void ButtonDebugCancel_Click(object sender, RoutedEventArgs e) => Close();
-        private void ButtonDebugSave_Click(object sender, RoutedEventArgs e) => SaveToFile();
-        private void ButtonDebugSaveAs_Click(object sender, RoutedEventArgs e) => SaveToFile(true);
+        private async void ButtonDebug_Click(object sender, RoutedEventArgs e)
+        {
+            await Task.Run(Debug);
+        }
+
+        private void ButtonDebugCancel_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void ButtonDebugSave_Click(object sender, RoutedEventArgs e)
+        {
+            SaveToFile();
+        }
+
+        private void ButtonDebugSaveAs_Click(object sender, RoutedEventArgs e)
+        {
+            SaveToFile(true);
+        }
     }
 }

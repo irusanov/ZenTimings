@@ -29,14 +29,16 @@ namespace ZenTimings
             return true;
         }
 
-        byte index;
+        private byte index;
+
         public byte Index
         {
             get => index;
             set => SetProperty(ref index, value, InternalEventArgsCache.Index);
         }
 
-        AsusSensorDataType dataType;
+        private AsusSensorDataType dataType;
+
         public AsusSensorDataType DataType
         {
             get => dataType;
@@ -44,35 +46,40 @@ namespace ZenTimings
         }
 
 
-        AsusSensorLocation location;
+        private AsusSensorLocation location;
+
         public AsusSensorLocation Location
         {
             get => location;
             set => SetProperty(ref location, value, InternalEventArgsCache.Location);
         }
 
-        string name;
+        private string name;
+
         public string Name
         {
             get => name;
             set => SetProperty(ref name, value, InternalEventArgsCache.Name);
         }
 
-        AsusSensorSource source;
+        private AsusSensorSource source;
+
         public AsusSensorSource Source
         {
             get => source;
             set => SetProperty(ref source, value, InternalEventArgsCache.Source);
         }
 
-        AsusSensorType type;
+        private AsusSensorType type;
+
         public AsusSensorType Type
         {
             get => type;
             set => SetProperty(ref type, value, InternalEventArgsCache.Type);
         }
 
-        string val;
+        private string val;
+
         public string Value
         {
             get => val;

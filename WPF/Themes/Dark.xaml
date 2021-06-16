@@ -3,11 +3,11 @@
                     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI">
 
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="pack://application:,,,/AdonisUI;component/ColorSchemes/Dark.xaml"/>
-        <ResourceDictionary Source="pack://application:,,,/Themes/Base.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/AdonisUI;component/ColorSchemes/Dark.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Themes/Base.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
-    <BitmapImage x:Key="CameraImage" UriSource="../Resources/camera-light.png"></BitmapImage>
+    <BitmapImage x:Key="CameraImage" UriSource="../Resources/camera-light.png" />
 
     <SolidColorBrush x:Key="TextColor" Color="{DynamicResource {x:Static adonisUi:Colors.ForegroundColor}}" />
     <SolidColorBrush x:Key="AccentTextColor" Color="#7facff" />

@@ -1,4 +1,3 @@
-using AdonisUI.Controls;
 using System;
 using System.Windows;
 using System.Windows.Input;
@@ -9,14 +8,14 @@ namespace ZenTimings.Windows
     /// <summary>
     /// Interaction logic for OptionsDialog.xaml
     /// </summary>
-    public partial class OptionsDialog : AdonisWindow
+    public partial class OptionsDialog
     {
         //private const string Caption = "Disabling auto-refresh might lead to inaccurate voltages and frequencies on first launch";
         private readonly AppSettings settingsInstance;
         private readonly DispatcherTimer timerInstance;
         private DispatcherTimer notificationTimer;
         private bool _DarkMode;
-        private bool _AdvancedMode;
+        private readonly bool _AdvancedMode;
 
         public OptionsDialog(AppSettings settings, DispatcherTimer timer)
         {
@@ -39,23 +38,24 @@ namespace ZenTimings.Windows
 
         private void CheckBoxAutoRefresh_Click(object sender, RoutedEventArgs e)
         {
-            numericUpDownRefreshInterval.IsEnabled = (bool)checkBoxAutoRefresh.IsChecked;
+            numericUpDownRefreshInterval.IsEnabled = (bool) checkBoxAutoRefresh.IsChecked;
             msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
         }
 
         private void CheckBoxAdvancedMode_Click(object sender, RoutedEventArgs e)
         {
-            checkBoxAutoRefresh.IsEnabled = (bool)checkBoxAdvancedMode.IsChecked;
-            numericUpDownRefreshInterval.IsEnabled = (bool)checkBoxAutoRefresh.IsChecked && checkBoxAutoRefresh.IsEnabled;
+            checkBoxAutoRefresh.IsEnabled = (bool) checkBoxAdvancedMode.IsChecked;
+            numericUpDownRefreshInterval.IsEnabled =
+                (bool) checkBoxAutoRefresh.IsChecked && checkBoxAutoRefresh.IsEnabled;
             msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
         }
 
         private void ButtonSettingsApply_Click(object sender, RoutedEventArgs e)
         {
-            settingsInstance.AutoRefresh = (bool)checkBoxAutoRefresh.IsChecked;
+            settingsInstance.AutoRefresh = (bool) checkBoxAutoRefresh.IsChecked;
             settingsInstance.AutoRefreshInterval = Convert.ToInt32(numericUpDownRefreshInterval.Text);
-            settingsInstance.AdvancedMode = (bool)checkBoxAdvancedMode.IsChecked;
-            settingsInstance.CheckForUpdates = (bool)checkBoxCheckUpdate.IsChecked;
+            settingsInstance.AdvancedMode = (bool) checkBoxAdvancedMode.IsChecked;
+            settingsInstance.CheckForUpdates = (bool) checkBoxCheckUpdate.IsChecked;
 
             settingsInstance.Save();
 
@@ -63,9 +63,8 @@ namespace ZenTimings.Windows
             _DarkMode = settingsInstance.DarkMode;
 
             if (notificationTimer != null)
-            {
-                if (notificationTimer.IsEnabled) notificationTimer.Stop();
-            }
+                if (notificationTimer.IsEnabled)
+                    notificationTimer.Stop();
 
             notificationTimer = new DispatcherTimer
             {
@@ -75,7 +74,7 @@ namespace ZenTimings.Windows
             notificationTimer.Tick += new EventHandler((s, x) =>
             {
                 notificationTimer.Stop();
-                optionsPopup.IsOpen = false;
+                OptionsPopup.IsOpen = false;
             });
 
             notificationTimer.Start();
@@ -92,16 +91,16 @@ namespace ZenTimings.Windows
             {
                 buttonSettingsRestart.Visibility = Visibility.Visible;
                 settingsInstance.Save();
-                optionsPopupText.Text = "Advanced Mode will be applied on next launch.";
+                OptionsPopupText.Text = "Advanced Mode will be applied on next launch.";
             }
 
-            optionsPopup.Width = OptionWindowContent.ActualWidth;
-            optionsPopup.IsOpen = true;
+            OptionsPopup.Width = OptionWindowContent.ActualWidth;
+            OptionsPopup.IsOpen = true;
         }
 
         private void ComboBoxTheme_CheckedChanged(object sender, RoutedEventArgs e)
         {
-            settingsInstance.DarkMode = (bool)comboBoxTheme.IsChecked;
+            settingsInstance.DarkMode = (bool) comboBoxTheme.IsChecked;
             settingsInstance.ChangeTheme();
         }
 
@@ -123,7 +122,7 @@ namespace ZenTimings.Windows
 
         private void OptionsPopup_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            optionsPopup.IsOpen = false;
+            OptionsPopup.IsOpen = false;
         }
     }
 }

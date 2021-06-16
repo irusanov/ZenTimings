@@ -16,280 +16,320 @@ namespace ZenTimings
             return true;
         }
 
-        float frequency;
+        private float frequency;
+
         public float Frequency
         {
             get => frequency;
             set => SetProperty(ref frequency, value, InternalEventArgsCache.Frequency);
         }
 
-        float ratio;
+        private float ratio;
+
         public float Ratio
         {
             get => ratio;
             set => SetProperty(ref ratio, value, InternalEventArgsCache.Ratio);
         }
 
-        string totalCapacity;
+        private string totalCapacity;
+
         public string TotalCapacity
         {
             get => totalCapacity;
             set => SetProperty(ref totalCapacity, value, InternalEventArgsCache.TotalCapacity);
         }
 
-        string bgs;
+        private string bgs;
+
         public string BGS
         {
             get => bgs;
             set => SetProperty(ref bgs, value, InternalEventArgsCache.BGS);
         }
 
-        string bgsAlt;
+        private string bgsAlt;
+
         public string BGSAlt
         {
             get => bgsAlt;
             set => SetProperty(ref bgsAlt, value, InternalEventArgsCache.BGSAlt);
         }
 
-        string gdm;
+        private string gdm;
+
         public string GDM
         {
             get => gdm;
             set => SetProperty(ref gdm, value, InternalEventArgsCache.GDM);
         }
 
-        string powerdown;
+        private string powerdown;
+
         public string PowerDown
         {
             get => powerdown;
             set => SetProperty(ref powerdown, value, InternalEventArgsCache.PowerDown);
         }
 
-        string cmd2T;
+        private string cmd2T;
+
         public string Cmd2T
         {
             get => cmd2T;
             set => SetProperty(ref cmd2T, value, InternalEventArgsCache.Cmd2T);
         }
 
-        uint cl;
+        private uint cl;
+
         public uint CL
         {
             get => cl;
             set => SetProperty(ref cl, value, InternalEventArgsCache.CL);
         }
 
-        uint rcdwr;
+        private uint rcdwr;
+
         public uint RCDWR
         {
             get => rcdwr;
             set => SetProperty(ref rcdwr, value, InternalEventArgsCache.RCDWR);
         }
 
-        uint rcdrd;
+        private uint rcdrd;
+
         public uint RCDRD
         {
             get => rcdrd;
             set => SetProperty(ref rcdrd, value, InternalEventArgsCache.RCDRD);
         }
 
-        uint rp;
+        private uint rp;
+
         public uint RP
         {
             get => rp;
             set => SetProperty(ref rp, value, InternalEventArgsCache.RP);
         }
 
-        uint ras;
+        private uint ras;
+
         public uint RAS
         {
             get => ras;
             set => SetProperty(ref ras, value, InternalEventArgsCache.RAS);
         }
 
-        uint rc;
+        private uint rc;
+
         public uint RC
         {
             get => rc;
             set => SetProperty(ref rc, value, InternalEventArgsCache.RC);
         }
 
-        uint rrds;
+        private uint rrds;
+
         public uint RRDS
         {
             get => rrds;
             set => SetProperty(ref rrds, value, InternalEventArgsCache.RRDS);
         }
 
-        uint rrdl;
+        private uint rrdl;
+
         public uint RRDL
         {
             get => rrdl;
             set => SetProperty(ref rrdl, value, InternalEventArgsCache.RRDL);
         }
 
-        uint faw;
+        private uint faw;
+
         public uint FAW
         {
             get => faw;
             set => SetProperty(ref faw, value, InternalEventArgsCache.FAW);
         }
 
-        uint wtrs;
+        private uint wtrs;
+
         public uint WTRS
         {
             get => wtrs;
             set => SetProperty(ref wtrs, value, InternalEventArgsCache.WTRS);
         }
 
-        uint wtrl;
+        private uint wtrl;
+
         public uint WTRL
         {
             get => wtrl;
             set => SetProperty(ref wtrl, value, InternalEventArgsCache.WTRL);
         }
 
-        uint wr;
+        private uint wr;
+
         public uint WR
         {
             get => wr;
             set => SetProperty(ref wr, value, InternalEventArgsCache.WR);
         }
 
-        uint rdrdscl;
+        private uint rdrdscl;
+
         public uint RDRDSCL
         {
             get => rdrdscl;
             set => SetProperty(ref rdrdscl, value, InternalEventArgsCache.RDRDSCL);
         }
 
-        uint wrwrscl;
+        private uint wrwrscl;
+
         public uint WRWRSCL
         {
             get => wrwrscl;
             set => SetProperty(ref wrwrscl, value, InternalEventArgsCache.WRWRSCL);
         }
 
-        uint cwl;
+        private uint cwl;
+
         public uint CWL
         {
             get => cwl;
             set => SetProperty(ref cwl, value, InternalEventArgsCache.CWL);
         }
 
-        uint rtp;
+        private uint rtp;
+
         public uint RTP
         {
             get => rtp;
             set => SetProperty(ref rtp, value, InternalEventArgsCache.RTP);
         }
 
-        uint rdwr;
+        private uint rdwr;
+
         public uint RDWR
         {
             get => rdwr;
             set => SetProperty(ref rdwr, value, InternalEventArgsCache.RDWR);
         }
 
-        uint wrrd;
+        private uint wrrd;
+
         public uint WRRD
         {
             get => wrrd;
             set => SetProperty(ref wrrd, value, InternalEventArgsCache.WRRD);
         }
 
-        uint rdrdsc;
+        private uint rdrdsc;
+
         public uint RDRDSC
         {
             get => rdrdsc;
             set => SetProperty(ref rdrdsc, value, InternalEventArgsCache.RDRDSC);
         }
 
-        uint rdrdsd;
+        private uint rdrdsd;
+
         public uint RDRDSD
         {
             get => rdrdsd;
             set => SetProperty(ref rdrdsd, value, InternalEventArgsCache.RDRDSD);
         }
 
-        uint rdrddd;
+        private uint rdrddd;
+
         public uint RDRDDD
         {
             get => rdrddd;
             set => SetProperty(ref rdrddd, value, InternalEventArgsCache.RDRDDD);
         }
 
-        uint wrwrsc;
+        private uint wrwrsc;
+
         public uint WRWRSC
         {
             get => wrwrsc;
             set => SetProperty(ref wrwrsc, value, InternalEventArgsCache.WRWRSC);
         }
 
-        uint wrwrsd;
+        private uint wrwrsd;
+
         public uint WRWRSD
         {
             get => wrwrsd;
             set => SetProperty(ref wrwrsd, value, InternalEventArgsCache.WRWRSD);
         }
 
-        uint wrwrdd;
+        private uint wrwrdd;
+
         public uint WRWRDD
         {
             get => wrwrdd;
             set => SetProperty(ref wrwrdd, value, InternalEventArgsCache.WRWRDD);
         }
 
-        uint trcpage;
+        private uint trcpage;
+
         public uint TRCPAGE
         {
             get => trcpage;
             set => SetProperty(ref trcpage, value, InternalEventArgsCache.TRCPAGE);
         }
 
-        uint cke;
+        private uint cke;
+
         public uint CKE
         {
             get => cke;
             set => SetProperty(ref cke, value, InternalEventArgsCache.CKE);
         }
 
-        uint stag;
+        private uint stag;
+
         public uint STAG
         {
             get => stag;
             set => SetProperty(ref stag, value, InternalEventArgsCache.STAG);
         }
 
-        uint mod;
+        private uint mod;
+
         public uint MOD
         {
             get => mod;
             set => SetProperty(ref mod, value, InternalEventArgsCache.MOD);
         }
 
-        uint modpda;
+        private uint modpda;
+
         public uint MODPDA
         {
             get => modpda;
             set => SetProperty(ref modpda, value, InternalEventArgsCache.MODPDA);
         }
 
-        uint mrd;
+        private uint mrd;
+
         public uint MRD
         {
             get => mrd;
             set => SetProperty(ref mrd, value, InternalEventArgsCache.MRD);
         }
 
-        uint mrdpda;
+        private uint mrdpda;
+
         public uint MRDPDA
         {
             get => mrdpda;
             set => SetProperty(ref mrdpda, value, InternalEventArgsCache.MRDPDA);
         }
 
-        uint rfc;
+        private uint rfc;
+
         public uint RFC
         {
             get => rfc;
@@ -304,28 +344,32 @@ namespace ZenTimings
             }
         }
 
-        string refns;
+        private string refns;
+
         public string RFCns
         {
             get => refns;
             set => SetProperty(ref refns, value, InternalEventArgsCache.RFCns);
         }
 
-        uint rfc2;
+        private uint rfc2;
+
         public uint RFC2
         {
             get => rfc2;
             set => SetProperty(ref rfc2, value, InternalEventArgsCache.RFC2);
         }
 
-        uint rfc4;
+        private uint rfc4;
+
         public uint RFC4
         {
             get => rfc4;
             set => SetProperty(ref rfc4, value, InternalEventArgsCache.RFC4);
         }
 
-        uint refi;
+        private uint refi;
+
         public uint REFI
         {
             get => refi;
@@ -339,35 +383,40 @@ namespace ZenTimings
             }
         }
 
-        string refins;
+        private string refins;
+
         public string REFIns
         {
             get => refins;
             set => SetProperty(ref refins, value, InternalEventArgsCache.REFIns);
         }
 
-        uint xp;
+        private uint xp;
+
         public uint XP
         {
             get => xp;
             set => SetProperty(ref xp, value, InternalEventArgsCache.XP);
         }
 
-        uint phywrd;
+        private uint phywrd;
+
         public uint PHYWRD
         {
             get => phywrd;
             set => SetProperty(ref phywrd, value, InternalEventArgsCache.PHYWRD);
         }
 
-        uint phywrl;
+        private uint phywrl;
+
         public uint PHYWRL
         {
             get => phywrl;
             set => SetProperty(ref phywrl, value, InternalEventArgsCache.PHYWRL);
         }
 
-        uint phyrdl;
+        private uint phyrdl;
+
         public uint PHYRDL
         {
             get => phyrdl;

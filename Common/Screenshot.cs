@@ -9,7 +9,8 @@ namespace ZenTimings
     {
         // GDI stuff for window screenshot without shadows
         [DllImport("gdi32.dll")]
-        private static extern bool BitBlt(IntPtr hdcDest, int nxDest, int nyDest, int nWidth, int nHeight, IntPtr hdcSrc, int nXSrc, int nYSrc, int dwRop);
+        private static extern bool BitBlt(IntPtr hdcDest, int nxDest, int nyDest, int nWidth, int nHeight,
+            IntPtr hdcSrc, int nXSrc, int nYSrc, int dwRop);
 
         [DllImport("gdi32.dll")]
         private static extern IntPtr CreateCompatibleBitmap(IntPtr hdc, int width, int nHeight);
@@ -39,49 +40,42 @@ namespace ZenTimings
         private static extern bool GetWindowRect(IntPtr hwnd, out RECT lpRect);
 
         [DllImport("dwmapi.dll")]
-        static extern int DwmGetWindowAttribute(IntPtr hwnd, int dwAttribute, out RECT pvAttribute, int cbAttribute);
+        private static extern int DwmGetWindowAttribute(IntPtr hwnd, int dwAttribute, out RECT pvAttribute,
+            int cbAttribute);
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct RECT
+        private readonly struct RECT
         {
-            public int left;
-            public int top;
-            public int right;
-            public int bottom;
+            public readonly int left;
+            public readonly int top;
+            public readonly int right;
+            public readonly int bottom;
         }
 
-        const int DWMWA_EXTENDED_FRAME_BOUNDS = 9;
-        const int SRCCOPY = 0x00CC0020;
-        const int CAPTUREBLT = 0x40000000;
+        private const int DWMWA_EXTENDED_FRAME_BOUNDS = 9;
+        private const int SRCCOPY = 0x00CC0020;
+        private const int CAPTUREBLT = 0x40000000;
         private bool disposedValue;
 
         private Bitmap CaptureRegion(Rectangle region)
         {
-            IntPtr desktophWnd;
-            IntPtr desktopDc;
-            IntPtr memoryDc;
-            IntPtr bitmap;
-            IntPtr oldBitmap;
-            bool success;
             Bitmap result;
 
-            desktophWnd = GetDesktopWindow();
-            desktopDc = GetWindowDC(desktophWnd);
-            memoryDc = CreateCompatibleDC(desktopDc);
-            bitmap = CreateCompatibleBitmap(desktopDc, region.Width, region.Height);
-            oldBitmap = SelectObject(memoryDc, bitmap);
+            IntPtr desktophWnd = GetDesktopWindow();
+            IntPtr desktopDc = GetWindowDC(desktophWnd);
+            IntPtr memoryDc = CreateCompatibleDC(desktopDc);
+            IntPtr bitmap = CreateCompatibleBitmap(desktopDc, region.Width, region.Height);
+            IntPtr oldBitmap = SelectObject(memoryDc, bitmap);
 
-            success = BitBlt(memoryDc, 0, 0, region.Width, region.Height, desktopDc, region.Left, region.Top, SRCCOPY | CAPTUREBLT);
+            var success = BitBlt(memoryDc, 0, 0, region.Width, region.Height, desktopDc, region.Left, region.Top,
+                SRCCOPY | CAPTUREBLT);
 
             try
             {
-                if (!success)
-                {
-                    throw new Win32Exception();
-                }
+                if (!success) throw new Win32Exception();
 
                 result = Image.FromHbitmap(bitmap);
             }
@@ -106,10 +100,8 @@ namespace ZenTimings
             }
             else
             {
-                if (DwmGetWindowAttribute(hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, out region, Marshal.SizeOf(typeof(RECT))) != 0)
-                {
-                    GetWindowRect(hWnd, out region);
-                }
+                if (DwmGetWindowAttribute(hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, out region,
+                    Marshal.SizeOf(typeof(RECT))) != 0) GetWindowRect(hWnd, out region);
             }
 
             return CaptureRegion(Rectangle.FromLTRB(region.left, region.top, region.right, region.bottom));
@@ -150,7 +142,7 @@ namespace ZenTimings
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
     }

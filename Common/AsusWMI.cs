@@ -9,7 +9,7 @@ namespace ZenTimings
         private const string scope = "root\\wmi";
         private const string className = "ASUSHW";
         private string instanceName = "";
-        private ManagementObject instance = null;
+        private ManagementObject instance;
 
         public List<AsusSensorInfo> sensors = new List<AsusSensorInfo>();
 
@@ -100,16 +100,20 @@ namespace ZenTimings
             }
         }
 
-        private uint GetInvokeMethodData(ManagementObject mo = null, string methodName = "", string inParamName = null, uint arg = 0)
+        private uint GetInvokeMethodData(ManagementObject mo = null, string methodName = "", string inParamName = null,
+            uint arg = 0)
         {
             uint data = 0;
             try
             {
                 ManagementBaseObject res = InvokeMethod(mo, methodName, inParamName, arg);
                 if (res != null)
-                    data = (uint)res["Data"];
+                    data = (uint) res["Data"];
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
 
             return data;
         }
@@ -119,7 +123,7 @@ namespace ZenTimings
             switch (type)
             {
                 case AsusSensorType.VOLTAGE:
-                    return $"{(value / 1000000.0f):F4}V";
+                    return $"{value / 1000000.0f:F4}V";
 
                 case AsusSensorType.TEMPERATURE_C:
                     return $"{value}\u00b0C";
@@ -142,7 +146,8 @@ namespace ZenTimings
 
         public uint GetBufferAddress() => GetInvokeMethodData(instance, "sensor_get_buffer_address");
 
-        public uint UpdateBuffer(AsusSensorSource source) => GetInvokeMethodData(instance, "sensor_update_buffer", "Source", (uint)source);
+        public uint UpdateBuffer(AsusSensorSource source) =>
+            GetInvokeMethodData(instance, "sensor_update_buffer", "Source", (uint) source);
 
         public uint GetSensorValue(byte index) => GetInvokeMethodData(instance, "sensor_get_value", "Index", index);
 
@@ -160,15 +165,18 @@ namespace ZenTimings
                 if (res != null)
                 {
                     sensor.Index = index;
-                    sensor.DataType = (AsusSensorDataType)(uint)res["Data_Type"];
-                    sensor.Location = (AsusSensorLocation)(uint)res["Location"];
-                    sensor.Name = (string)res["Name"];
-                    sensor.Source = (AsusSensorSource)(uint)res["Source"];
-                    sensor.Type = (AsusSensorType)(uint)res["Type"];
+                    sensor.DataType = (AsusSensorDataType) (uint) res["Data_Type"];
+                    sensor.Location = (AsusSensorLocation) (uint) res["Location"];
+                    sensor.Name = (string) res["Name"];
+                    sensor.Source = (AsusSensorSource) (uint) res["Source"];
+                    sensor.Type = (AsusSensorType) (uint) res["Type"];
                     sensor.Value = GetSensorFormattedValue(sensor);
                 }
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
 
             return sensor;
         }
@@ -178,19 +186,15 @@ namespace ZenTimings
             UpdateBuffer(AsusSensorSource.SIO);
             UpdateBuffer(AsusSensorSource.EC);
 
-            foreach (AsusSensorInfo sensor in sensors)
-            {
-                sensor.Value = GetSensorFormattedValue(sensor);
-            }
+            foreach (AsusSensorInfo sensor in sensors) sensor.Value = GetSensorFormattedValue(sensor);
         }
 
         public AsusSensorInfo FindSensorByName(string name) => sensors.Find(x => x.Name == name);
 
-        public uint Status { get; protected set; } = 0;
-
-        public AsusWMI() { }
+        public uint Status { get; protected set; }
 
         private bool disposedValue;
+
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -203,7 +207,7 @@ namespace ZenTimings
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
     }

@@ -5,17 +5,18 @@ namespace ZenTimings.Windows
     /// <summary>
     /// Interaction logic for SplashWindow.xaml
     /// </summary>
-    public partial class SplashWindow : Window
+    public partial class SplashWindow
     {
         public static readonly SplashWindow splash = new SplashWindow();
-        private static readonly Updater updater = (Application.Current as App).updater;
+        private static readonly Updater updater = (Application.Current as App)?.updater;
 
         // To refresh the UI immediately
         private delegate void RefreshDelegate();
+
         private static void Refresh(DependencyObject obj)
         {
             obj.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Render,
-                (RefreshDelegate)delegate { });
+                (RefreshDelegate) delegate { });
         }
 
         public SplashWindow()
@@ -48,10 +49,7 @@ namespace ZenTimings.Windows
             if (settings.DarkMode)
                 settings.ChangeTheme();
 
-            if (settings.CheckForUpdates)
-            {
-                updater.CheckForUpdate();
-            }
+            if (settings.CheckForUpdates) updater.CheckForUpdate();
         }
 
         public static void Stop() => splash.Close();

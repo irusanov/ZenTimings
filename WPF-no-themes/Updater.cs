@@ -1,19 +1,19 @@
-﻿using AutoUpdaterDotNET;
-using System;
+﻿using System;
 using System.IO;
 using System.Net;
 using System.Windows;
 using System.Xml.Serialization;
+using AutoUpdaterDotNET;
 using ZenTimings.Windows;
 
 namespace ZenTimings
 {
-    public partial class Updater
+    public class Updater
     {
         public event EventHandler UpdateCheckCompleteEvent;
 
         //public static int status = 0;
-        private static bool manual = false;
+        private static bool manual;
         private static string ChangelogText { get; set; }
         private const string url = "https://zentimings.protonrom.com/AutoUpdater.xml";
 
@@ -52,10 +52,7 @@ namespace ZenTimings
             AutoUpdater.ParseUpdateInfoEvent += AutoUpdaterOnParseUpdateInfoEvent;
             AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
 
-            if (!manualUpdate)
-            {
-                SplashWindow.Loading("Checking for updates");
-            }
+            if (!manualUpdate) SplashWindow.Loading("Checking for updates");
 
             manual = manualUpdate;
 
@@ -71,28 +68,28 @@ namespace ZenTimings
                 using (StringReader txtReader = new StringReader(args.RemoteData))
                 {
                     XmlSerializer xmls = new XmlSerializer(typeof(UpdaterArgs));
-                    UpdaterArgs updaterArgs = xmls.Deserialize(txtReader) as UpdaterArgs;
 
-                    args.UpdateInfo = new UpdateInfoEventArgs
+                    if (xmls.Deserialize(txtReader) is UpdaterArgs updaterArgs)
                     {
-                        CurrentVersion = updaterArgs.Version,
-                        DownloadURL = updaterArgs.Url,
-                        ChangelogURL = updaterArgs.Changelog,
-                        Mandatory = new Mandatory
-                        {
-                            Value = manual,
-                            UpdateMode = Mode.Normal,
-                        },
-                        CheckSum = new CheckSum
-                        {
-                            Value = updaterArgs.Checksum.Value,
-                            HashingAlgorithm = updaterArgs.Checksum.algorithm
-                        }
-                    };
-
-                    foreach (string change in updaterArgs.Changes)
-                    {
-                        ChangelogText += $" - {change}{Environment.NewLine}";
+	                    args.UpdateInfo = new UpdateInfoEventArgs
+	                    {
+	                        CurrentVersion = updaterArgs.Version,
+	                        DownloadURL = updaterArgs.Url,
+	                        ChangelogURL = updaterArgs.Changelog,
+	                        Mandatory = new Mandatory
+	                        {
+	                            Value = manual,
+	                                UpdateMode = Mode.Normal
+	                        },
+	                        CheckSum = new CheckSum
+	                        {
+	                            Value = updaterArgs.Checksum.Value,
+	                            HashingAlgorithm = updaterArgs.Checksum.algorithm
+	                        }
+	                    };
+	
+	                    foreach (string change in updaterArgs.Changes)
+	                        ChangelogText += $" - {change}{Environment.NewLine}";
                     }
                 }
             }
@@ -112,15 +109,12 @@ namespace ZenTimings
                         $"There is new version {args.CurrentVersion} available.{Environment.NewLine}" +
                         $"You are using version {args.InstalledVersion}.{Environment.NewLine}" +
                         $"{ChangelogText}{Environment.NewLine}" +
-                        $"Do you want to update the application now?",
+                        "Do you want to update the application now?",
                         @"Update Available",
                         MessageBoxButton.YesNo
                     );
 
-                    if (!manual)
-                    {
-                        SplashWindow.splash.Hide();
-                    }
+                    if (!manual) SplashWindow.splash.Hide();
 
                     if (result.Equals(MessageBoxResult.Yes))
                     {
@@ -128,10 +122,7 @@ namespace ZenTimings
                         {
                             if (AutoUpdater.DownloadUpdate(args))
                             {
-                                if (!manual)
-                                {
-                                    SplashWindow.Stop();
-                                }
+                                if (!manual) SplashWindow.Stop();
                                 Application.Current.Shutdown();
                                 Environment.Exit(0);
                             }
@@ -146,10 +137,7 @@ namespace ZenTimings
                         }
                     }
 
-                    if (!manual)
-                    {
-                        SplashWindow.splash.Show();
-                    }
+                    if (!manual) SplashWindow.splash.Show();
                 }
                 else if (manual)
                 {

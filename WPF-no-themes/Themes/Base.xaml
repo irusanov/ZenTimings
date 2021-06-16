@@ -58,7 +58,7 @@
     <Style x:Key="ValueStyles" TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlockStyles}">
         <Setter Property="TextAlignment" Value="Center" />
         <Setter Property="Foreground" Value="{DynamicResource AccentTextColor}" />
-        <Setter Property="MinWidth" Value="55"/>
+        <Setter Property="MinWidth" Value="55" />
         <Style.Triggers>
             <Trigger Property="Text" Value="N/A">
                 <Setter Property="Foreground" Value="{DynamicResource DisabledColor}" />

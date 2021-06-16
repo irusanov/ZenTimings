@@ -12,9 +12,6 @@
     ResizeMode="CanMinimize"
     WindowStartupLocation="CenterOwner">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -23,7 +20,7 @@
 
         <TextBox x:Name="textBoxDebugOutput"
                  Grid.Row="0"
-                 SpellCheck.IsEnabled="False" 
+                 SpellCheck.IsEnabled="False"
                  VerticalContentAlignment="Top"
                  VerticalScrollBarVisibility="Auto"
                  Height="auto"
@@ -39,36 +36,36 @@
         <Border Padding="5" Grid.Column="0" Grid.Row="1">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="auto" />
                     <ColumnDefinition />
-                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto" />
                 </Grid.ColumnDefinitions>
 
                 <Button x:Name="buttonDebug"
-                        Grid.Column="0" 
-                        Content="Debug" 
+                        Grid.Column="0"
+                        Content="Debug"
                         Margin="3 0"
                         Width="70"
-                        Click="ButtonDebug_Click"/>
+                        Click="ButtonDebug_Click" />
                 <Button x:Name="buttonDebugSave"
-                        Grid.Column="1" 
-                        Content="Save" 
-                        Margin="3 0" 
+                        Grid.Column="1"
+                        Content="Save"
+                        Margin="3 0"
                         IsEnabled="False"
                         Width="70"
-                        Click="ButtonDebugSave_Click"/>
+                        Click="ButtonDebugSave_Click" />
                 <Button x:Name="buttonDebugSaveAs"
-                        Grid.Column="2" 
-                        Content="Save As..." 
-                        Margin="3 0" 
+                        Grid.Column="2"
+                        Content="Save As..."
+                        Margin="3 0"
                         IsEnabled="False"
                         Width="70"
-                        Click="ButtonDebugSaveAs_Click"/>
+                        Click="ButtonDebugSaveAs_Click" />
                 <Button x:Name="buttonDebugCancel"
-                        Grid.Column="4" 
-                        Content="Close" 
+                        Grid.Column="4"
+                        Content="Close"
                         IsCancel="True"
                         Width="70"
                         Click="ButtonDebugCancel_Click" />

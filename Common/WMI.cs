@@ -15,7 +15,10 @@ namespace ZenTimings
             {
                 retval = wmiObj.GetPropertyValue(propertyName);
             }
-            catch (ManagementException ex) { Console.WriteLine(ex.Message); }
+            catch (ManagementException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
 
             return retval;
         }
@@ -36,12 +39,11 @@ namespace ZenTimings
                     return mScope;
                 else
                     throw new ManagementException($@"Failed to connect to {scope}");
-
             }
             catch (ManagementException ex)
             {
-                Console.WriteLine("WMI: {0}", ex.Message);
-                throw ex;
+                Console.WriteLine(@"WMI: {0}", ex.Message);
+                throw;
             }
         }
 
@@ -56,7 +58,10 @@ namespace ZenTimings
                         return enumerator.Current as ManagementObject;
                 }
             }
-            catch (Exception ex) { Console.WriteLine(ex.Message); }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
 
             return null;
         }
@@ -66,41 +71,51 @@ namespace ZenTimings
             List<string> namespaces = new List<string>();
             try
             {
-                ManagementClass nsClass = new ManagementClass(new ManagementScope(root), new ManagementPath("__namespace"), null);
-                foreach (ManagementObject ns in nsClass.GetInstances())
+                ManagementClass nsClass =
+                    new ManagementClass(new ManagementScope(root), new ManagementPath("__namespace"), null);
+                foreach (var obj in nsClass.GetInstances())
                 {
-                    string namespaceName = root + "\\" + ns["Name"].ToString();
+                    var ns = (ManagementObject) obj;
+                    string namespaceName = root + "\\" + ns["Name"];
                     namespaces.Add(namespaceName);
                     namespaces.AddRange(GetWmiNamespaces(namespaceName));
                 }
+
                 namespaces.Sort(StringComparer.OrdinalIgnoreCase);
             }
-            catch (Exception ex) { Console.WriteLine(ex.Message); }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
 
             return namespaces;
         }
 
         public static List<string> GetClassNamesWithinWmiNamespace(string wmiNamespaceName)
         {
-            List<string> classes = new List<string>();
+            List<string> classNames = new List<string>();
             try
             {
                 ManagementObjectSearcher searcher = new ManagementObjectSearcher
-                            (new ManagementScope(wmiNamespaceName),
-                            new WqlObjectQuery("SELECT * FROM meta_class"));
-                List<string> classNames = new List<string>();
+                (new ManagementScope(wmiNamespaceName),
+                    new WqlObjectQuery("SELECT * FROM meta_class"));
                 ManagementObjectCollection objectCollection = searcher.Get();
-                foreach (ManagementClass wmiClass in objectCollection)
+                foreach (var obj in objectCollection)
                 {
+                    var wmiClass = (ManagementClass) obj;
                     string stringified = wmiClass.ToString();
-                    string[] parts = stringified.Split(new char[] { ':' });
-                    classes.Add(parts[1]);
+                    string[] parts = stringified.Split(':');
+                    classNames.Add(parts[1]);
                 }
-                classes.Sort(StringComparer.OrdinalIgnoreCase);
-            }
-            catch (Exception ex) { Console.WriteLine(ex.Message); }
 
-            return classes;
+                classNames.Sort(StringComparer.OrdinalIgnoreCase);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return classNames;
         }
 
         public static string GetInstanceName(string scope, string wmiClass)
@@ -108,23 +123,26 @@ namespace ZenTimings
             using (ManagementObject queryObject = Query(scope, wmiClass))
             {
                 string name = "";
-                object obj;
 
                 if (queryObject == null)
                     return name;
 
                 try
                 {
-                    obj = TryGetProperty(queryObject, "InstanceName");
+                    var obj = TryGetProperty(queryObject, "InstanceName");
                     if (obj != null) name = obj.ToString();
                 }
-                catch { }
+                catch
+                {
+                    // ignored
+                }
 
                 return name;
             }
         }
 
-        public static ManagementBaseObject InvokeMethod(ManagementObject mo, string methodName, string propName, string inParamName, uint arg)
+        public static ManagementBaseObject InvokeMethod(ManagementObject mo, string methodName, string propName,
+            string inParamName, uint arg)
         {
             try
             {
@@ -138,7 +156,7 @@ namespace ZenTimings
                 // Execute the method and obtain the return values.
                 ManagementBaseObject outParams = mo.InvokeMethod($"{methodName}", inParams, null);
 
-                return (ManagementBaseObject)outParams.Properties[$"{propName}"].Value;
+                return (ManagementBaseObject) outParams?.Properties[$"{propName}"].Value;
             }
             catch (Exception ex)
             {
@@ -155,12 +173,10 @@ namespace ZenTimings
                 ManagementBaseObject inParams = mo.GetMethodParameters("RunCommand");
 
                 // Add the input parameters.
-                byte[] cmd = new byte[4];
-                byte[] args = new byte[4];
                 byte[] buffer = new byte[8];
 
-                cmd = BitConverter.GetBytes(commandID);
-                args = BitConverter.GetBytes(commandArgs);
+                var cmd = BitConverter.GetBytes(commandID);
+                var args = BitConverter.GetBytes(commandArgs);
 
                 Buffer.BlockCopy(cmd, 0, buffer, 0, cmd.Length);
                 Buffer.BlockCopy(args, 0, buffer, cmd.Length, args.Length);
@@ -171,8 +187,8 @@ namespace ZenTimings
                 ManagementBaseObject outParams = mo.InvokeMethod("RunCommand", inParams, null);
 
                 // return outParam
-                ManagementBaseObject pack = (ManagementBaseObject)outParams.Properties["Outbuf"].Value;
-                return (byte[])pack.GetPropertyValue("Result");
+                ManagementBaseObject pack = (ManagementBaseObject) outParams?.Properties["Outbuf"].Value;
+                return (byte[]) pack?.GetPropertyValue("Result");
             }
             catch (ManagementException ex)
             {

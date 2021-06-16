@@ -1,17 +1,18 @@
-﻿using AdonisUI.Controls;
-using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Drawing;
+using System.Globalization;
 using System.Windows;
+using Microsoft.Win32;
 
 namespace ZenTimings.Windows
 {
     /// <summary>
     /// Interaction logic for SaveWindow.xaml
     /// </summary>
-    public partial class SaveWindow : AdonisWindow, IDisposable
+    public partial class SaveWindow : IDisposable
     {
         private static Bitmap screenshot;
+
         public SaveWindow(Bitmap bitmap)
         {
             screenshot = bitmap;
@@ -27,7 +28,8 @@ namespace ZenTimings.Windows
 
         private void ButtonSave_Click(object sender, RoutedEventArgs e)
         {
-            string unixTimestamp = Convert.ToString((DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMinutes);
+            string unixTimestamp = Convert.ToString(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMinutes,
+                CultureInfo.InvariantCulture);
             string filename = $@"{string.Join("_", this.Title.Split())}_{unixTimestamp}.png";
             SaveToFile(filename);
         }
@@ -43,10 +45,7 @@ namespace ZenTimings.Windows
                 RestoreDirectory = true
             };
 
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                SaveToFile(saveFileDialog.FileName);
-            }
+            if (saveFileDialog.ShowDialog() == true) SaveToFile(saveFileDialog.FileName);
         }
 
         private void ButtonCopyToClipboard_Click(object sender, RoutedEventArgs e)
@@ -57,7 +56,7 @@ namespace ZenTimings.Windows
 
         public void Dispose()
         {
-            ((IDisposable)screenshot).Dispose();
+            ((IDisposable) screenshot).Dispose();
         }
     }
 }

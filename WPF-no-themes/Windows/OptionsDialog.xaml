@@ -17,7 +17,7 @@
 
     <StackPanel>
         <Popup
-            x:Name="optionsPopup"
+            x:Name="OptionsPopup"
             Panel.ZIndex="100"
             PlacementTarget="{Binding ElementName=OptionWindowContent}"
             VerticalAlignment="Center"
@@ -32,7 +32,7 @@
             ScrollViewer.VerticalScrollBarVisibility="Disabled"
             MouseDown="OptionsPopup_MouseDown">
             <TextBlock
-                Name="optionsPopupText" 
+                Name="OptionsPopupText"
                 Background="{DynamicResource SuccessBackground}"
                 Padding="10" Opacity="0.95">
                 Settings Saved.
@@ -42,7 +42,7 @@
             <StackPanel Height="auto">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto" />
                         <ColumnDefinition Width="78" />
                         <ColumnDefinition Width="78" />
                     </Grid.ColumnDefinitions>
@@ -93,7 +93,7 @@
                         Content="Check For Updates On Startup" />
                 </Grid>
 
-                <Border Style="{DynamicResource Separator}" Margin="0 20 0 0"/>
+                <Border Style="{DynamicResource Separator}" Margin="0 20 0 0" />
 
                 <Grid Margin="0 10 0 0">
                     <Grid.ColumnDefinitions>
@@ -115,7 +115,7 @@
                     <Button
                         x:Name="buttonSettingsApply"
                         Grid.Column="2"
-                        Content="Apply" 
+                        Content="Apply"
                         Margin="3 0"
                         Width="70"
                         Click="ButtonSettingsApply_Click" />
@@ -123,7 +123,7 @@
                     <Button
                         x:Name="buttonSettingsCancel"
                         Grid.Column="3"
-                        Content="Close" 
+                        Content="Close"
                         IsCancel="True"
                         Width="70"
                         Click="ButtonSettingsCancel_Click" />

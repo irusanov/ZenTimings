@@ -5,7 +5,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
     xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-    xmlns:Converters="clr-namespace:AdonisUI.Converters;assembly=AdonisUI" xmlns:AdonisUI="clr-namespace:AdonisUI;assembly=AdonisUI" 
+    xmlns:Converters="clr-namespace:AdonisUI.Converters;assembly=AdonisUI"
+    xmlns:AdonisUI="clr-namespace:AdonisUI;assembly=AdonisUI"
     x:Class="ZenTimings.Windows.AboutDialog"
     adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
     mc:Ignorable="d"
@@ -25,47 +26,70 @@
         <ControlTemplate x:Key="AboutTabControlControlTemplate" TargetType="{x:Type TabControl}">
             <Grid KeyboardNavigation.TabNavigation="Local">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <TabPanel x:Name="HeaderPanel" Background="Transparent" IsItemsHost="True" Grid.Row="0" KeyboardNavigation.TabIndex="1" Panel.ZIndex="1"/>
-                <Border x:Name="Border" Padding="0" Margin="0" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" KeyboardNavigation.DirectionalNavigation="Contained" Grid.Row="1" KeyboardNavigation.TabIndex="2" KeyboardNavigation.TabNavigation="Local">
+                <TabPanel x:Name="HeaderPanel" Background="Transparent" IsItemsHost="True" Grid.Row="0"
+                          KeyboardNavigation.TabIndex="1" Panel.ZIndex="1" />
+                <Border x:Name="Border" Padding="0" Margin="0" BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}"
+                        KeyboardNavigation.DirectionalNavigation="Contained" Grid.Row="1"
+                        KeyboardNavigation.TabIndex="2" KeyboardNavigation.TabNavigation="Local">
                     <Border.CornerRadius>
                         <MultiBinding UpdateSourceTrigger="Default">
                             <MultiBinding.Converter>
-                                <Converters:ValuesToCornerRadiusConverter/>
+                                <Converters:ValuesToCornerRadiusConverter />
                             </MultiBinding.Converter>
-                            <Binding/>
-                            <Binding Path="(adonisExtensions:CornerRadiusExtension.CornerRadius).TopRight" RelativeSource="{RelativeSource TemplatedParent}"/>
-                            <Binding Path="(adonisExtensions:CornerRadiusExtension.CornerRadius).BottomRight" RelativeSource="{RelativeSource TemplatedParent}"/>
-                            <Binding Path="(adonisExtensions:CornerRadiusExtension.CornerRadius).BottomLeft" RelativeSource="{RelativeSource TemplatedParent}"/>
+                            <Binding />
+                            <Binding Path="(adonisExtensions:CornerRadiusExtension.CornerRadius).TopRight"
+                                     RelativeSource="{RelativeSource TemplatedParent}" />
+                            <Binding Path="(adonisExtensions:CornerRadiusExtension.CornerRadius).BottomRight"
+                                     RelativeSource="{RelativeSource TemplatedParent}" />
+                            <Binding Path="(adonisExtensions:CornerRadiusExtension.CornerRadius).BottomLeft"
+                                     RelativeSource="{RelativeSource TemplatedParent}" />
                         </MultiBinding>
                     </Border.CornerRadius>
-                    <ContentPresenter x:Name="PART_SelectedContentHost" ContentTemplate="{TemplateBinding SelectedContentTemplate}" Content="{TemplateBinding SelectedContent}" ContentStringFormat="{TemplateBinding SelectedContentStringFormat}" ContentSource="SelectedContent" Margin="0"/>
+                    <ContentPresenter x:Name="PART_SelectedContentHost"
+                                      ContentTemplate="{TemplateBinding SelectedContentTemplate}"
+                                      Content="{TemplateBinding SelectedContent}"
+                                      ContentStringFormat="{TemplateBinding SelectedContentStringFormat}"
+                                      ContentSource="SelectedContent" Margin="0" />
                 </Border>
-                <Border x:Name="SelectedItemHighlight" Background="{DynamicResource {ComponentResourceKey ResourceId=Layer1HighlightBrush, TypeInTargetAssembly={x:Type AdonisUI:Brushes}}}" Height="0" Margin="{TemplateBinding BorderThickness}" Grid.Row="1" VerticalAlignment="Top">
+                <Border x:Name="SelectedItemHighlight"
+                        Background="{DynamicResource {ComponentResourceKey ResourceId=Layer1HighlightBrush, TypeInTargetAssembly={x:Type AdonisUI:Brushes}}}"
+                        Height="0" Margin="{TemplateBinding BorderThickness}" Grid.Row="1" VerticalAlignment="Top">
                     <Border.CornerRadius>
                         <MultiBinding UpdateSourceTrigger="Default">
                             <MultiBinding.Converter>
-                                <Converters:ValuesToCornerRadiusConverter/>
+                                <Converters:ValuesToCornerRadiusConverter />
                             </MultiBinding.Converter>
-                            <Binding/>
-                            <Binding Path="(adonisExtensions:CornerRadiusExtension.CornerRadius).TopRight" RelativeSource="{RelativeSource TemplatedParent}"/>
-                            <Binding/>
-                            <Binding/>
+                            <Binding />
+                            <Binding Path="(adonisExtensions:CornerRadiusExtension.CornerRadius).TopRight"
+                                     RelativeSource="{RelativeSource TemplatedParent}" />
+                            <Binding />
+                            <Binding />
                         </MultiBinding>
                     </Border.CornerRadius>
                 </Border>
             </Grid>
             <ControlTemplate.Triggers>
-                <DataTrigger Binding="{Binding (adonisExtensions:LayerExtension.ComputedLayer), RelativeSource={RelativeSource Self}}" Value="2">
-                    <Setter Property="Background" TargetName="SelectedItemHighlight" Value="{DynamicResource {ComponentResourceKey ResourceId=Layer2HighlightBrush, TypeInTargetAssembly={x:Type AdonisUI:Brushes}}}"/>
+                <DataTrigger
+                    Binding="{Binding (adonisExtensions:LayerExtension.ComputedLayer), RelativeSource={RelativeSource Self}}"
+                    Value="2">
+                    <Setter Property="Background" TargetName="SelectedItemHighlight"
+                            Value="{DynamicResource {ComponentResourceKey ResourceId=Layer2HighlightBrush, TypeInTargetAssembly={x:Type AdonisUI:Brushes}}}" />
                 </DataTrigger>
-                <DataTrigger Binding="{Binding (adonisExtensions:LayerExtension.ComputedLayer), RelativeSource={RelativeSource Self}}" Value="3">
-                    <Setter Property="Background" TargetName="SelectedItemHighlight" Value="{DynamicResource {ComponentResourceKey ResourceId=Layer3HighlightBrush, TypeInTargetAssembly={x:Type AdonisUI:Brushes}}}"/>
+                <DataTrigger
+                    Binding="{Binding (adonisExtensions:LayerExtension.ComputedLayer), RelativeSource={RelativeSource Self}}"
+                    Value="3">
+                    <Setter Property="Background" TargetName="SelectedItemHighlight"
+                            Value="{DynamicResource {ComponentResourceKey ResourceId=Layer3HighlightBrush, TypeInTargetAssembly={x:Type AdonisUI:Brushes}}}" />
                 </DataTrigger>
-                <DataTrigger Binding="{Binding (adonisExtensions:LayerExtension.ComputedLayer), RelativeSource={RelativeSource Self}}" Value="4">
-                    <Setter Property="Background" TargetName="SelectedItemHighlight" Value="{DynamicResource {ComponentResourceKey ResourceId=Layer4HighlightBrush, TypeInTargetAssembly={x:Type AdonisUI:Brushes}}}"/>
+                <DataTrigger
+                    Binding="{Binding (adonisExtensions:LayerExtension.ComputedLayer), RelativeSource={RelativeSource Self}}"
+                    Value="4">
+                    <Setter Property="Background" TargetName="SelectedItemHighlight"
+                            Value="{DynamicResource {ComponentResourceKey ResourceId=Layer4HighlightBrush, TypeInTargetAssembly={x:Type AdonisUI:Brushes}}}" />
                 </DataTrigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -87,7 +111,7 @@
             StaysOpen="False"
             ScrollViewer.VerticalScrollBarVisibility="Disabled" MouseDown="AboutWindowPopup_MouseDown">
             <TextBlock
-                Name="optionsPopupText" 
+                Name="optionsPopupText"
                 Background="{DynamicResource SuccessBackground}"
                 Padding="10" Opacity="0.95">
                 ZenTimings is up to date.
@@ -96,16 +120,16 @@
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
-                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
                 <RowDefinition />
-                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
 
-            <TabControl 
-                HorizontalAlignment="Left" 
+            <TabControl
+                HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Grid.Column="0"
                 Grid.ColumnSpan="2"
@@ -116,17 +140,19 @@
                 ClipToBounds="True"
                 SnapsToDevicePixels="True"
                 Width="296"
-                ScrollViewer.CanContentScroll="True" Template="{DynamicResource AboutTabControlControlTemplate}" BorderBrush="{DynamicResource SeparatorColor}">
-                <TabItem Header="General" Background="{DynamicResource PanelBackgound}" BorderThickness="0,1,1,1" BorderBrush="{DynamicResource SeparatorColor}">
+                ScrollViewer.CanContentScroll="True" Template="{DynamicResource AboutTabControlControlTemplate}"
+                BorderBrush="{DynamicResource SeparatorColor}">
+                <TabItem Header="General" Background="{DynamicResource PanelBackgound}" BorderThickness="0,1,1,1"
+                         BorderBrush="{DynamicResource SeparatorColor}">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto" />
                             <ColumnDefinition />
-                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto" />
                         </Grid.ColumnDefinitions>
 
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto" />
                         </Grid.RowDefinitions>
 
                         <Border Grid.Column="0" Padding="10">
@@ -135,17 +161,26 @@
 
                         <Border Grid.Column="1" Padding="10" Grid.ColumnSpan="2">
                             <StackPanel>
-                                <Label x:Name="labelProductName" Content="ZenTimings" Padding="0 0 5 10" FontSize="14"/>
-                                <TextBlock x:Name="labelVersion" Text="" Padding="0 2 5 2"/>
-                                <TextBlock x:Name="labelCopyright" Text="" Padding="0 2 5 2"/>
-                                <TextBlock x:Name="labelCompanyName" Text="" Padding="0 2 5 2"/>
-                                <TextBlock Padding="0 2 5 2"><Hyperlink NavigateUri="https://zentimings.protonrom.com" RequestNavigate="Hyperlink_RequestNavigate"><Run Text="https://zentimings.protonrom.com"/></Hyperlink></TextBlock>
+                                <Label x:Name="labelProductName" Content="ZenTimings" Padding="0 0 5 10" FontSize="14" />
+                                <TextBlock x:Name="labelVersion" Text="" Padding="0 2 5 2" />
+                                <TextBlock x:Name="labelCopyright" Text="" Padding="0 2 5 2" />
+                                <TextBlock x:Name="labelCompanyName" Text="" Padding="0 2 5 2" />
+                                <TextBlock Padding="0 2 5 2">
+                                    <Hyperlink NavigateUri="https://zentimings.protonrom.com"
+                                               RequestNavigate="Hyperlink_RequestNavigate">
+                                        <Run Text="https://zentimings.protonrom.com" />
+                                    </Hyperlink>
+                                </TextBlock>
                             </StackPanel>
                         </Border>
                     </Grid>
                 </TabItem>
-                <TabItem Header="Modules" Background="{DynamicResource PanelBackgound}" BorderThickness="1" Margin="-1,0,0,0" BorderBrush="{DynamicResource SeparatorColor}">
-                    <DataGrid Name="Modules" AutoGenerateColumns="True" Margin="10" HeadersVisibility="None" ColumnWidth="Auto" GridLinesVisibility="None" CanUserDeleteRows="False" CanUserResizeRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserSortColumns="False" Focusable="False"/>
+                <TabItem Header="Modules" Background="{DynamicResource PanelBackgound}" BorderThickness="1"
+                         Margin="-1,0,0,0" BorderBrush="{DynamicResource SeparatorColor}">
+                    <DataGrid Name="Modules" AutoGenerateColumns="True" Margin="10" HeadersVisibility="None"
+                              ColumnWidth="Auto" GridLinesVisibility="None" CanUserDeleteRows="False"
+                              CanUserResizeRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False"
+                              CanUserSortColumns="False" Focusable="False" />
                 </TabItem>
             </TabControl>
 
@@ -169,7 +204,7 @@
                 VerticalAlignment="Bottom"
                 HorizontalAlignment="Right"
                 Width="60"
-                Margin="10"/>
+                Margin="10" />
         </Grid>
     </StackPanel>
 </adonisControls:AdonisWindow>

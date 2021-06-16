@@ -37,12 +37,12 @@
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
-                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
                 <RowDefinition />
-                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
 
             <TabControl 
@@ -61,13 +61,13 @@
                 <TabItem Header="General" Background="{x:Null}" BorderThickness="0,1,1,1" BorderBrush="{DynamicResource SeparatorColor}">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto" />
                             <ColumnDefinition />
-                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto" />
                         </Grid.ColumnDefinitions>
 
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto" />
                         </Grid.RowDefinitions>
 
                         <Border Grid.Column="0" Padding="10">
@@ -76,11 +76,16 @@
 
                         <Border Grid.Column="1" Padding="10" Grid.ColumnSpan="2">
                             <StackPanel>
-                                <Label x:Name="labelProductName" Content="ZenTimings" Padding="0 0 5 10" FontSize="14"/>
-                                <TextBlock x:Name="labelVersion" Text="" Padding="0 2 5 2"/>
-                                <TextBlock x:Name="labelCopyright" Text="" Padding="0 2 5 2"/>
-                                <TextBlock x:Name="labelCompanyName" Text="" Padding="0 2 5 2"/>
-                                <TextBlock Padding="0 2 5 2"><Hyperlink NavigateUri="https://zentimings.protonrom.com" RequestNavigate="Hyperlink_RequestNavigate"><Run Text="https://zentimings.protonrom.com"/></Hyperlink></TextBlock>
+                                <Label x:Name="labelProductName" Content="ZenTimings" Padding="0 0 5 10" FontSize="14" />
+                                <TextBlock x:Name="labelVersion" Text="" Padding="0 2 5 2" />
+                                <TextBlock x:Name="labelCopyright" Text="" Padding="0 2 5 2" />
+                                <TextBlock x:Name="labelCompanyName" Text="" Padding="0 2 5 2" />
+                                <TextBlock Padding="0 2 5 2">
+                                    <Hyperlink NavigateUri="https://zentimings.protonrom.com"
+                                               RequestNavigate="Hyperlink_RequestNavigate">
+                                        <Run Text="https://zentimings.protonrom.com" />
+                                    </Hyperlink>
+                                </TextBlock>
                             </StackPanel>
                         </Border>
                     </Grid>
@@ -126,7 +131,7 @@
                 VerticalAlignment="Bottom"
                 HorizontalAlignment="Right"
                 Width="60"
-                Margin="10"/>
+                Margin="10" />
         </Grid>
     </StackPanel>
 </Window>

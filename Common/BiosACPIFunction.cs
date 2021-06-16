@@ -15,8 +15,7 @@ namespace ZenTimings
 
         public IEnumerator GetEnumerator()
         {
-            return ((IEnumerable)IDString).GetEnumerator();
+            return ((IEnumerable) IDString).GetEnumerator();
         }
     }
-
 }

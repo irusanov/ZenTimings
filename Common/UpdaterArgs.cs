@@ -1,10 +1,10 @@
-﻿namespace ZenTimings
+namespace ZenTimings
 {
     [System.Serializable()]
     [System.ComponentModel.DesignerCategory("code")]
     [System.Xml.Serialization.XmlType(AnonymousType = true)]
     [System.Xml.Serialization.XmlRoot(Namespace = "", IsNullable = false)]
-    public partial class UpdaterArgs
+    public class UpdaterArgs
     {
         public string Version { get; set; }
 
@@ -23,7 +23,7 @@
     [System.Serializable()]
     [System.ComponentModel.DesignerCategory("code")]
     [System.Xml.Serialization.XmlType(AnonymousType = true)]
-    public partial class UpdaterArgsChecksum
+    public class UpdaterArgsChecksum
     {
         [System.Xml.Serialization.XmlAttribute()]
         public string algorithm { get; set; }
