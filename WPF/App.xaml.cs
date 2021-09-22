@@ -33,8 +33,8 @@ namespace ZenTimings
             updater = new Updater(settings);
 
             GC.KeepAlive(instanceMutex);
-            base.OnStartup(e);
             SplashWindow.Start(settings);
+            base.OnStartup(e);
         }
     }
 }

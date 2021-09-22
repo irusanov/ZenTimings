@@ -41,15 +41,15 @@ namespace ZenTimings
                         XmlSerializer xmls = new XmlSerializer(typeof(AppSettings));
                         return xmls.Deserialize(sr) as AppSettings;
                     }
-                    catch (InvalidOperationException ex)
+                    catch (Exception ex)
                     {
                         Console.WriteLine(ex.Message);
                         sr.Close();
-                        AdonisUI.Controls.MessageBox.Show(
+                        MessageBox.Show(
                             "Invalid settings file!\nSettings will be reset to defaults.",
                             "Error",
-                            AdonisUI.Controls.MessageBoxButton.OK,
-                            AdonisUI.Controls.MessageBoxImage.Error);
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Error);
                         return Create();
                     }
                 }
