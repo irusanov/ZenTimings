@@ -13,8 +13,8 @@
     <SolidColorBrush x:Key="AccentTextColor" Color="#7facff" />
     <SolidColorBrush x:Key="SeparatorColor" Color="{DynamicResource {x:Static adonisUi:Colors.Layer3BorderColor}}" />
     <SolidColorBrush x:Key="PanelBackgound" Color="{DynamicResource {x:Static adonisUi:Colors.Layer0BackgroundColor}}" />
-    <SolidColorBrush x:Key="SuccessBackground" Color="{DynamicResource {x:Static adonisUi:Colors.Layer3BorderColor}}" />
-    <!-- SolidColorBrush x:Key="SuccessBackground" Color="#0f461c" / -->
+    <!-- SolidColorBrush x:Key="SuccessBackground" Color="{DynamicResource {x:Static adonisUi:Colors.Layer3BorderColor}}" /-->
+    <SolidColorBrush x:Key="SuccessBackground" Color="#00661c" />
     <SolidColorBrush x:Key="DisabledColor" Color="#5b5b70" />
     <SolidColorBrush x:Key="WindowBorderColor" Color="{DynamicResource {x:Static adonisUi:Colors.Layer3BorderColor}}" />
 
