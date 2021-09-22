@@ -541,7 +541,7 @@ namespace ZenTimings
 
         private bool WaitForPowerTable()
         {
-            if (cpu.powerTable.dramBaseAddress == 0)
+            if (cpu.powerTable.DramBaseAddress == 0)
             {
                 HandleError("Could not initialize power table.\nClose the application and try again.");
                 return false;
