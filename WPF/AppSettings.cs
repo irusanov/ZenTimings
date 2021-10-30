@@ -10,7 +10,7 @@ namespace ZenTimings
     public sealed class AppSettings
     {
         private const int VERSION_MAJOR = 1;
-        private const int VERSION_MINOR = 0;
+        private const int VERSION_MINOR = 1;
 
         private const string filename = "settings.xml";
 
@@ -21,7 +21,9 @@ namespace ZenTimings
             AdvancedMode = true;
             DarkMode = false;
             CheckForUpdates = true;
-            NotifiedForAutoUpdate = false;
+            SaveWindowPosition = false;
+            WindowLeft = 0;
+            WindowTop = 0;
 
             Save();
 
@@ -102,6 +104,8 @@ namespace ZenTimings
         public bool CheckForUpdates { get; set; } = true;
         public string UpdaterSkippedVersion { get; set; } = "";
         public string UpdaterRemindLaterAt { get; set; } = "";
-        public bool NotifiedForAutoUpdate { get; set; }
+        public bool SaveWindowPosition { get; set; }
+        public double WindowLeft { get; set; }
+        public double WindowTop { get; set; }
     }
 }

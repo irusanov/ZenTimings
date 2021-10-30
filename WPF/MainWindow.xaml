@@ -23,7 +23,7 @@
     Loaded="AdonisWindow_Loaded"
     BorderThickness="1"
     UseLayoutRounding="True"
-    BorderBrush="{DynamicResource WindowBorderColor}">
+    BorderBrush="{DynamicResource WindowBorderColor}" Closing="AdonisWindow_Closing">
 
     <!--Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>

@@ -705,6 +705,13 @@ namespace ZenTimings
 
         private void Window_Initialized(object sender, EventArgs e)
         {
+            if (settings.SaveWindowPosition)
+            {
+                WindowStartupLocation = WindowStartupLocation.Manual;
+                Left = settings.WindowLeft;
+                Top = settings.WindowTop;
+            }
+
             SetWindowTitle();
             labelCPU.Text = cpu.systemInfo.CpuName;
             labelMB.Text =
@@ -828,6 +835,16 @@ namespace ZenTimings
                 Owner = this, Width = Width, Height = Height
             };
             siWnd.Show();
+        }
+
+        private void AdonisWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (settings.SaveWindowPosition)
+            {
+                settings.WindowLeft = Left;
+                settings.WindowTop = Top;
+                settings.Save();
+            }
         }
     }
 
