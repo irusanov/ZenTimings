@@ -49,7 +49,7 @@
                             <MenuItem Header="E_xit" Click="ExitToolStripMenuItem_Click" />
                         </MenuItem>
                         <MenuItem Header="_Tools">
-                            <!-- MenuItem Header="System _Info" Click="SystemInfoToolstripMenuItem_Click" /-->
+                            <MenuItem Header="System _Info" Click="SystemInfoToolstripMenuItem_Click" />
                             <MenuItem Header="_Options" Click="OptionsToolStripMenuItem_Click" />
                             <MenuItem Header="_Debug" Click="DebugToolstripItem_Click" />
                         </MenuItem>

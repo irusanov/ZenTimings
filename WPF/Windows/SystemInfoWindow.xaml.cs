@@ -10,18 +10,20 @@ namespace ZenTimings.Windows
     /// </summary>
     public partial class SystemInfoWindow
     {
+        private AppSettings settingsInstance;
         private class GridItem
         {
             public string Name { get; set; }
             public string Value { get; set; }
         }
 
-        public SystemInfoWindow(SystemInfo si, MemoryConfig mc, List<AsusSensorInfo> asusSensors)
+        public SystemInfoWindow(AppSettings settings, SystemInfo si, MemoryConfig mc, List<AsusSensorInfo> asusSensors)
         {
             InitializeComponent();
             Type type = si.GetType();
             PropertyInfo[] properties = type.GetProperties();
             List<GridItem> items;
+            settingsInstance = settings;
 
             try
             {
@@ -73,6 +75,18 @@ namespace ZenTimings.Windows
         private void AdonisWindow_Activated(object sender, EventArgs e)
         {
             InteropMethods.EmptyWorkingSet(System.Diagnostics.Process.GetCurrentProcess().Handle);
+        }
+
+        private void AdonisWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (settingsInstance.SaveWindowPosition)
+            {
+                settingsInstance.SysInfoWindowLeft = Left;
+                settingsInstance.SysInfoWindowTop = Top;
+                settingsInstance.SysInfoWindowHeight = Height;
+                settingsInstance.SysInfoWindowWidth = Width;
+                settingsInstance.Save();
+            }
         }
     }
 }

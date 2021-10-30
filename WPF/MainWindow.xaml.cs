@@ -38,6 +38,7 @@ namespace ZenTimings
         private readonly List<MemoryModule> modules = new List<MemoryModule>();
         private readonly DispatcherTimer PowerCfgTimer = new DispatcherTimer();
         private readonly AppSettings settings = (Application.Current as App)?.settings;
+        private SystemInfoWindow siWnd = null;
         private bool compatMode;
 
         public MainWindow()
@@ -830,15 +831,40 @@ namespace ZenTimings
 
         private void SystemInfoToolstripMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            var siWnd = new SystemInfoWindow(cpu.systemInfo, MEMCFG, AsusWmi?.sensors)
+            double sysInfoWindowWidth = Width;
+            double sysInfoWindowHeight = Height;
+            double sysInfoWindowTop = 0;
+            double sysInfoWindowLeft = 0;
+            WindowStartupLocation location = WindowStartupLocation.CenterScreen;
+
+            if (settings.SaveWindowPosition && settings.SysInfoWindowHeight != 0 && settings.SysInfoWindowWidth != 0)
             {
-                Owner = this, Width = Width, Height = Height
+                location = WindowStartupLocation.Manual;
+                sysInfoWindowLeft = settings.SysInfoWindowLeft;
+                sysInfoWindowTop = settings.SysInfoWindowTop;
+                sysInfoWindowHeight = settings.SysInfoWindowHeight;
+                sysInfoWindowWidth = settings.SysInfoWindowWidth;
+            }
+
+            siWnd = new SystemInfoWindow(settings, cpu.systemInfo, MEMCFG, AsusWmi?.sensors)
+            {
+                Width = sysInfoWindowWidth,
+                Height = sysInfoWindowHeight,
+                WindowStartupLocation = location,
+                Top = sysInfoWindowTop,
+                Left = sysInfoWindowLeft
             };
+
             siWnd.Show();
         }
 
         private void AdonisWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            if (siWnd != null)
+            {
+                siWnd.Close();
+            }
+
             if (settings.SaveWindowPosition)
             {
                 settings.WindowLeft = Left;

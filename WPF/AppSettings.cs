@@ -24,6 +24,9 @@ namespace ZenTimings
             SaveWindowPosition = false;
             WindowLeft = 0;
             WindowTop = 0;
+            SysInfoWindowLeft = 0;
+            SysInfoWindowHeight = 0;
+            SysInfoWindowWidth = 0;
 
             Save();
 
@@ -107,5 +110,9 @@ namespace ZenTimings
         public bool SaveWindowPosition { get; set; }
         public double WindowLeft { get; set; }
         public double WindowTop { get; set; }
+        public double SysInfoWindowLeft { get; set; }
+        public double SysInfoWindowTop { get; set; }
+        public double SysInfoWindowWidth { get; set; }
+        public double SysInfoWindowHeight { get; set; }
     }
 }
