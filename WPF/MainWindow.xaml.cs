@@ -767,7 +767,7 @@ namespace ZenTimings
         private void AdonisWindow_StateChanged(object sender, EventArgs e)
         {
             // Do not refresh if app is minimized
-            if (WindowState == WindowState.Minimized)
+            if (WindowState == WindowState.Minimized && (siWnd == null || !siWnd.IsLoaded))
                 StopAutoRefresh();
             else if (WindowState == WindowState.Normal)
                 StartAutoRefresh();
