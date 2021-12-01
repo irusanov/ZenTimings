@@ -49,12 +49,12 @@ namespace ZenTimings
 
                 IconSource = GetIcon("pack://application:,,,/ZenTimings;component/Resources/ZenTimings.ico", 16);
 
-                if (cpu.info.family != Cpu.Family.FAMILY_17H && cpu.info.family != Cpu.Family.FAMILY_19H)
+                if (cpu.info.family.Equals(Cpu.Family.UNSUPPORTED))
                 {
                     HandleError("CPU is not supported.");
                     ExitApplication();
                 }
-                else if (cpu.info.codeName == Cpu.CodeName.Unsupported)
+                else if (cpu.info.codeName.Equals(Cpu.CodeName.Unsupported))
                 {
                     HandleError("CPU model is not supported.\n" +
                                 "Please run a debug report and send to the developer.");
@@ -127,8 +127,10 @@ namespace ZenTimings
             }
         }
 
-        private static void ExitApplication()
+        private void ExitApplication()
         {
+            AsusWmi?.Dispose();
+            cpu?.Dispose();
             Application.Current.Shutdown();
         }
 
@@ -542,7 +544,7 @@ namespace ZenTimings
 
         private bool WaitForPowerTable()
         {
-            if (cpu.powerTable.DramBaseAddress == 0)
+            if (cpu.powerTable == null || cpu.powerTable.DramBaseAddress == 0)
             {
                 HandleError("Could not initialize power table.\nClose the application and try again.");
                 return false;
@@ -659,7 +661,7 @@ namespace ZenTimings
         {
             settings.Save();
             Process.Start(Application.ResourceAssembly.Location);
-            Application.Current.Shutdown();
+            ExitApplication();
         }
 
         private void ShowWindow()
@@ -871,6 +873,9 @@ namespace ZenTimings
                 settings.WindowTop = Top;
                 settings.Save();
             }
+
+            AsusWmi?.Dispose();
+            cpu?.Dispose();
         }
     }
 

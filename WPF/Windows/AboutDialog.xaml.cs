@@ -54,7 +54,7 @@ namespace ZenTimings.Windows
                 "AutoUpdater.NET.dll",
                 "inpoutx64.dll",
                 //"WinIo.dll",
-                "WinRing0x64.dll",
+                //"WinRing0x64.dll",
                 "ZenStates-Core.dll",
             };
             var appModules = new List<KeyValuePair<string, string>>();
