@@ -7,8 +7,9 @@ namespace ZenTimings.Windows
     /// </summary>
     public partial class SplashWindow
     {
+        internal static readonly AppSettings appSettings = (Application.Current as App)?.settings;
+        internal static readonly Updater updater = (Application.Current as App)?.updater;
         public static readonly SplashWindow splash = new SplashWindow();
-        private static readonly Updater updater = (Application.Current as App)?.updater;
 
         // To refresh the UI immediately
         private delegate void RefreshDelegate();
@@ -24,14 +25,14 @@ namespace ZenTimings.Windows
             InitializeComponent();
         }
 
-        public static void Start(AppSettings settings)
+        public static void Start()
         {
             splash.Show();
 
-            if (settings.DarkMode)
-                settings.ChangeTheme();
+            if (appSettings.DarkMode)
+                appSettings.ChangeTheme();
 
-            if (settings.CheckForUpdates) updater.CheckForUpdate();
+            if (appSettings.CheckForUpdates) updater.CheckForUpdate();
         }
 
         public static void Stop() => splash.Close();

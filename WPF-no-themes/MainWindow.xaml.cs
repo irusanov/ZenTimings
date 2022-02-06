@@ -73,11 +73,11 @@ namespace ZenTimings
                         SplashWindow.Loading("Waiting for power table");
                         if (WaitForPowerTable())
                         {
+                            SplashWindow.Loading("Reading power table");
                             // refresh the table again, to avoid displaying initial fclk, mclk and uclk values,
                             // which seem to be a little off when transferring the table for the "first" time,
                             // after an idle period
                             RefreshPowerTable();
-                            SplashWindow.Loading("Reading power table");
                         }
                         else
                         {

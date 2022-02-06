@@ -20,7 +20,6 @@ namespace ZenTimings
             AdvancedMode = true;
             DarkMode = false;
             CheckForUpdates = true;
-            NotifiedForAutoUpdate = false;
 
             Save();
 
@@ -86,6 +85,5 @@ namespace ZenTimings
         public bool CheckForUpdates { get; set; } = true;
         public string UpdaterSkippedVersion { get; set; } = "";
         public string UpdaterRemindLaterAt { get; set; } = "";
-        public bool NotifiedForAutoUpdate { get; set; }
     }
 }

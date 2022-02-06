@@ -114,6 +114,13 @@
       <Link>Common\WMI.cs</Link>
     </Compile>
     <Compile Include="AppSettings.cs" />
+    <Compile Include="Common\ISensor.cs" />
+    <Compile Include="Common\Sensor.cs" />
+    <Compile Include="Converters\FloatToBoolConverter.cs" />
+    <Compile Include="Converters\FloatToNAConverter.cs" />
+    <Compile Include="Converters\FloatToVoltageConverter.cs" />
+    <Compile Include="Plugin\IPlugin.cs" />
+    <Compile Include="Plugin\SVI2Plugin.cs" />
     <Compile Include="Properties\BuildNumberTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -150,14 +157,14 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Themes\Dark.xaml">
+    <Resource Include="Themes\Dark.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Themes\Light.xaml">
+    </Resource>
+    <Resource Include="Themes\Light.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
+    </Resource>
     <Page Include="Windows\AboutDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -225,6 +232,7 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BuildNumberTemplate.cs</LastGenOutput>
     </Content>
+    <Resource Include="Resources\warning-icon.png" />
     <Resource Include="Resources\splash.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

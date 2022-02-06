@@ -30,12 +30,7 @@ namespace ZenTimings
             UpdateCheckCompleteEvent?.Invoke(this, e);
         }
 
-        public Updater(AppSettings settingsInstance)
-        {
-            Init(settingsInstance);
-        }
-
-        public void Init(AppSettings settings)
+        public Updater()
         {
             AutoUpdater.RunUpdateAsAdmin = true;
             AutoUpdater.Synchronous = true;
@@ -43,7 +38,7 @@ namespace ZenTimings
             AutoUpdater.RemindLaterTimeSpan = RemindLaterFormat.Days;
             AutoUpdater.RemindLaterAt = 3;
             AutoUpdater.DownloadPath = Environment.CurrentDirectory;
-            AutoUpdater.PersistenceProvider = new UpdaterPersistenceProvider(settings);
+            AutoUpdater.PersistenceProvider = new UpdaterPersistenceProvider();
             //status = 1;
         }
 

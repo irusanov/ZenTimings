@@ -100,7 +100,7 @@ namespace ZenTimings.Windows
                             {
                                 if (IDString[i] == "")
                                     return;
-                                AddLine($"{IDString[i]}: {ID[i]:X8}");
+                                AddLine($"{IDString[i] + ":",-30}{ID[i]:X8}");
                             }
                         }
                         else
@@ -190,17 +190,18 @@ namespace ZenTimings.Windows
             AddHeading("System Info");
             try
             {
-                AddLine("OS: " + new ComputerInfo().OSFullName);
+                AddLine($"{"OS:",-19}{new ComputerInfo().OSFullName}");
 
                 foreach (var property in properties)
                 {
                     if (property.Name == "CpuId" || property.Name == "PatchLevel" || property.Name == "SmuTableVersion")
-                        AddLine(property.Name + ": " + $"{property.GetValue(SI, null):X8}");
+                        AddLine($"{property.Name + ":",-19}{property.GetValue(SI, null):X8}");
                     else if (property.Name == "SmuVersion")
-                        AddLine(property.Name + ": " + SI.GetSmuVersionString());
+                        AddLine($"{property.Name + ":",-19}{SI.GetSmuVersionString()}");
                     else
-                        AddLine(property.Name + ": " + property.GetValue(SI, null));
-            	}
+                        AddLine($"{property.Name + ":",-19}{property.GetValue(SI, null)}");
+
+                }
             }
             catch
             {
@@ -235,9 +236,8 @@ namespace ZenTimings.Windows
 
             try
             {
-                // AddLine($"DRAM Base Address: {baseAddress:X8}");
                 foreach (var property in properties)
-                    AddLine(property.Name + ": " + property.GetValue(MEMCFG, null));
+                    AddLine($"{property.Name + ":",-16}{ property.GetValue(MEMCFG, null)}");
             }
             catch
             {
@@ -287,9 +287,9 @@ namespace ZenTimings.Windows
                 foreach (var property in properties)
                 {
                     if (property.Name == "TableVersion")
-                        AddLine(property.Name + ": " + $"{property.GetValue(PT, null):X8}");
+                        AddLine($"{property.Name + ":",-25}{property.GetValue(PT, null):X8}");
                     else if (property.Name != "Table")
-                        AddLine(property.Name + ": " + property.GetValue(PT, null));
+                        AddLine($"{property.Name + ":",-25}{property.GetValue(PT, null)}");
                 }
 
                 /*AddLine($"MCLK: {PT.MCLK}");
@@ -349,7 +349,7 @@ namespace ZenTimings.Windows
                 try
                 {
                     foreach (var sensor in AWMI.sensors)
-                        AddLine(sensor.Name + ": " + sensor.Value);
+                        AddLine($"{sensor.Name + ": ",-25}{sensor.Value}");
                 }
                 catch
                 {

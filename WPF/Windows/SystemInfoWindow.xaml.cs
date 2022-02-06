@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Windows;
 using ZenStates.Core;
 
 namespace ZenTimings.Windows
@@ -10,20 +11,19 @@ namespace ZenTimings.Windows
     /// </summary>
     public partial class SystemInfoWindow
     {
-        private AppSettings settingsInstance;
+        internal readonly AppSettings appSettings = (Application.Current as App)?.settings;
         private class GridItem
         {
             public string Name { get; set; }
             public string Value { get; set; }
         }
 
-        public SystemInfoWindow(AppSettings settings, SystemInfo si, MemoryConfig mc, List<AsusSensorInfo> asusSensors)
+        public SystemInfoWindow(SystemInfo si, MemoryConfig mc, List<AsusSensorInfo> asusSensors)
         {
             InitializeComponent();
             Type type = si.GetType();
             PropertyInfo[] properties = type.GetProperties();
             List<GridItem> items;
-            settingsInstance = settings;
 
             try
             {
@@ -79,13 +79,13 @@ namespace ZenTimings.Windows
 
         private void AdonisWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (settingsInstance.SaveWindowPosition)
+            if (appSettings.SaveWindowPosition)
             {
-                settingsInstance.SysInfoWindowLeft = Left;
-                settingsInstance.SysInfoWindowTop = Top;
-                settingsInstance.SysInfoWindowHeight = Height;
-                settingsInstance.SysInfoWindowWidth = Width;
-                settingsInstance.Save();
+                appSettings.SysInfoWindowLeft = Left;
+                appSettings.SysInfoWindowTop = Top;
+                appSettings.SysInfoWindowHeight = Height;
+                appSettings.SysInfoWindowWidth = Width;
+                appSettings.Save();
             }
         }
     }

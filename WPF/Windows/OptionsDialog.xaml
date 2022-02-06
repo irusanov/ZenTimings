@@ -11,8 +11,8 @@
     mc:Ignorable="d"
     x:Name="OptionsWindow"
     Title="Options"
-    Height="243.603"
-    Width="306"
+    Height="264"
+    Width="310"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterOwner"
     Icon="/ZenTimings;component/Resources/icon-16.png"
@@ -22,7 +22,7 @@
     UseLayoutRounding="True"
     BorderBrush="{DynamicResource WindowBorderColor}">
 
-    <StackPanel>
+    <StackPanel x:Name="OptionWindowContent">
         <Popup
             x:Name="OptionsPopup"
             Panel.ZIndex="100"
@@ -45,9 +45,26 @@
                 Settings Saved.
             </TextBlock>
         </Popup>
-        <Border Padding="10" x:Name="OptionWindowContent">
-            <StackPanel Height="auto">
-                <Grid>
+
+        <TabControl
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Padding="0"
+            Background="{DynamicResource PanelBackgound}"
+            BorderThickness="0,1"
+            ClipToBounds="True"
+            SnapsToDevicePixels="True"
+            MinHeight="190"
+            MinWidth="310"
+            ScrollViewer.CanContentScroll="True"
+            BorderBrush="{DynamicResource SeparatorColor}"
+            Template="{DynamicResource TabControlControlTemplate}">
+            <TabItem
+                Header="General"
+                Background="{DynamicResource PanelBackgound}"
+                BorderThickness="0,1,1,1"
+                BorderBrush="{DynamicResource SeparatorColor}">
+                <Grid Margin="8,12,8,8">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto" />
                         <ColumnDefinition Width="78" />
@@ -84,7 +101,6 @@
                         x:Name="numericUpDownRefreshInterval"
                         Grid.Column="1"
                         Grid.Row="1"
-                        Text="{Binding AutoRefreshInterval}"
                         Margin="5" />
 
                     <Label
@@ -102,7 +118,6 @@
                         Margin="0 5 5 5"
                         Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
                         Content="Dark Mode"
-                        IsChecked="{Binding DarkMode}"
                         Click="ComboBoxTheme_CheckedChanged" />
 
                     <ToggleButton
@@ -123,44 +138,93 @@
                         Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
                         Content="Check For Updates On Startup" />
                 </Grid>
-
-                <Border Style="{DynamicResource Separator}" Margin="0 20 0 0" />
-
-                <Grid Margin="0 10 0 0">
+            </TabItem>
+            <TabItem
+                Header="Sensors"
+                Background="{DynamicResource PanelBackgound}"
+                BorderThickness="0,1,1,1"
+                BorderBrush="{DynamicResource SeparatorColor}">
+                <Grid Margin="8,12,8,8">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto" />
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="auto" />
-                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="78" />
+                        <ColumnDefinition Width="78" />
                     </Grid.ColumnDefinitions>
 
-                    <Button
-                        x:Name="buttonSettingsRestart"
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+
+                    <Label
+                        x:Name="vdimmSourceLabel"
                         Grid.Column="0"
-                        Content="Restart"
-                        Visibility="Hidden"
-                        Margin="{adonisUi:Space 0, 0, 1, 0}"
-                        Width="70"
-                        Click="ButtonSettingsRestart_Click" />
+                        Grid.Row="0"
+                        Content="VDIMM Source"
+                        VerticalAlignment="Center"
+                        Padding="5 0" FontWeight="Normal" />
 
-                    <Button
-                        x:Name="buttonSettingsApply"
-                        Grid.Column="2"
-                        Content="Apply"
-                        Margin="{adonisUi:Space 0, 0, 1, 0}"
-                        Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
-                        Width="70"
-                        Click="ButtonSettingsApply_Click" />
+                    <ComboBox
+                        x:Name="comboBoxVdimmSource"
+                        IsReadOnly="True"
+                        Grid.Column="1"
+                        Grid.Row="0"
+                        Grid.ColumnSpan="2"
+                        Margin="5" />
 
-                    <Button
-                        x:Name="buttonSettingsCancel"
-                        Grid.Column="3"
-                        Content="Close"
-                        IsCancel="True"
-                        Width="70"
-                        Click="ButtonSettingsCancel_Click" />
+                    <Label
+                        x:Name="vttSourceLabel"
+                        Grid.Column="0"
+                        Grid.Row="1"
+                        Content="VTT Source"
+                        VerticalAlignment="Center"
+                        Padding="5 0" FontWeight="Normal" />
+
+                    <ComboBox
+                        x:Name="comboBoxVttSource"
+                        IsReadOnly="True"
+                        Grid.Column="1"
+                        Grid.Row="1"
+                        Grid.ColumnSpan="2"
+                        Margin="5" />
                 </Grid>
-            </StackPanel>
-        </Border>
+            </TabItem>
+        </TabControl>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button
+                    x:Name="buttonSettingsRestart"
+                    Grid.Column="0"
+                    Content="Restart"
+                    Visibility="Hidden"
+                    Margin="10 10 0 10"
+                    Width="70"
+                    Click="ButtonSettingsRestart_Click" />
+
+            <Button
+                    x:Name="buttonSettingsApply"
+                    Grid.Column="2"
+                    Content="Apply"
+                    Margin="10 10 0 10"
+                    Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
+                    Width="70"
+                    Click="ButtonSettingsApply_Click" />
+
+            <Button
+                    x:Name="buttonSettingsCancel"
+                    Grid.Column="3"
+                    Content="Close"
+                    IsCancel="True"
+                    Width="70"
+                    Margin="10"
+                    Click="ButtonSettingsCancel_Click" />
+        </Grid>
     </StackPanel>
 </adonisControls:AdonisWindow>

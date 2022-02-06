@@ -1,57 +1,57 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:Converters="clr-namespace:AdonisUI.Converters;assembly=AdonisUI" xmlns:Extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" xmlns:AdonisUI="clr-namespace:AdonisUI;assembly=AdonisUI">
 
-    <Style x:Key="MainContainerStyles" TargetType="Border">
+    <BitmapImage x:Key="WarningImage" UriSource="../Resources/warning-icon.png" />
+
+    <Style x:Key="MainContainerStyles" TargetType="{x:Type Border}">
         <Setter Property="BorderBrush" Value="{DynamicResource SeparatorColor}" />
         <Setter Property="Padding" Value="5" />
     </Style>
 
-    <Style x:Key="DefaultTextBlockStyles" TargetType="TextBlock">
+    <Style x:Key="DefaultTextBlockStyles" TargetType="{x:Type TextBlock}">
         <Setter Property="Padding" Value="4 2" />
         <Setter Property="Height" Value="18" />
         <Setter Property="LineHeight" Value="16" />
         <Setter Property="MinWidth" Value="50" />
     </Style>
 
-    <Style x:Key="DividerTextBlock" TargetType="TextBlock">
+    <Style x:Key="DividerTextBlock" TargetType="{x:Type TextBlock}">
         <Setter Property="Height" Value="10" />
     </Style>
 
-    <Style x:Key="SuccessBackground" TargetType="StatusBar">
+    <Style x:Key="SuccessBackground" TargetType="{x:Type StatusBar}">
         <Setter Property="Background" Value="{DynamicResource SuccessBackground}" />
     </Style>
 
-    <Style x:Key="MainMenuStyles" TargetType="Border">
+    <Style x:Key="MainMenuStyles" TargetType="{x:Type Border}">
         <Setter Property="Background" Value="{DynamicResource PanelBackgound}" />
         <Setter Property="Padding" Value="5 2 7 2" />
     </Style>
 
-    <Style x:Key="MenuBackground" TargetType="Menu">
+    <Style x:Key="MenuBackground" TargetType="{x:Type Menu}">
         <Setter Property="Background" Value="{DynamicResource PanelBackgound}" />
     </Style>
 
-    <Style x:Key="PanelBackground" TargetType="Border">
+    <Style x:Key="PanelBackground" TargetType="{x:Type Border}">
         <Setter Property="Background" Value="{DynamicResource PanelBackgound}" />
     </Style>
 
-    <Style x:Key="StackPanelBackground" TargetType="StackPanel">
+    <Style x:Key="StackPanelBackground" TargetType="{x:Type StackPanel}">
         <Setter Property="Background" Value="{DynamicResource PanelBackgound}" />
     </Style>
 
-    <Style x:Key="SystemInfoGridStyles" TargetType="DataGrid">
+    <Style x:Key="SystemInfoGridStyles" TargetType="{x:Type DataGrid}">
         <Setter Property="Background" Value="{DynamicResource PanelBackgound}" />
         <Setter Property="BorderThickness" Value="0" />
     </Style>
 
-    <Style x:Key="TimingsStackPanelStyles" TargetType="StackPanel">
+    <Style x:Key="TimingsStackPanelStyles" TargetType="{x:Type StackPanel}">
         <Setter Property="Orientation" Value="Horizontal" />
     </Style>
 
-    <Style x:Key="TimingsStyles" TargetType="Border">
-        <Setter Property="Padding" Value="6 5" />
-        <Setter Property="Background" Value="{DynamicResource ContentBackground}" />
+    <Style x:Key="TimingsStyles" TargetType="{x:Type Border}">
         <Style.Resources>
-            <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlockStyles}">
+            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource DefaultTextBlockStyles}">
                 <Style.Triggers>
                     <Trigger Property="IsEnabled" Value="False">
                         <Setter Property="Foreground" Value="{DynamicResource DisabledColor}" />
@@ -59,9 +59,11 @@
                 </Style.Triggers>
             </Style>
         </Style.Resources>
+        <Setter Property="Padding" Value="6 5" />
+        <Setter Property="Background" Value="{DynamicResource ContentBackground}" />
     </Style>
 
-    <Style x:Key="ValueStyles" TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlockStyles}">
+    <Style x:Key="ValueStyles" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource DefaultTextBlockStyles}">
         <Setter Property="TextAlignment" Value="Center" />
         <Setter Property="Foreground" Value="{DynamicResource AccentTextColor}" />
         <Setter Property="MinWidth" Value="55" />
@@ -72,7 +74,7 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="Separator" TargetType="Border">
+    <Style x:Key="Separator" TargetType="{x:Type Border}">
         <Setter Property="Margin" Value="0" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="Height" Value="1" />
@@ -80,16 +82,16 @@
         <Setter Property="Background" Value="{DynamicResource SeparatorColor}" />
     </Style>
 
-    <Style x:Key="BottomPanelStyles" TargetType="Border">
+    <Style x:Key="BottomPanelStyles" TargetType="{x:Type Border}">
         <Setter Property="Padding" Value="5" />
         <Setter Property="Background" Value="{DynamicResource PanelBackgound}" />
     </Style>
 
-    <Style x:Key="CameraButtonStyle" TargetType="Button">
+    <Style x:Key="CameraButtonStyle" TargetType="{x:Type Button}">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="Button">
+                <ControlTemplate TargetType="{x:Type Button}">
                     <Grid Background="{TemplateBinding Background}">
                         <ContentPresenter />
                     </Grid>
@@ -97,4 +99,51 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <ControlTemplate x:Key="TabControlControlTemplate" TargetType="{x:Type TabControl}">
+        <Grid KeyboardNavigation.TabNavigation="Local">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TabPanel x:Name="HeaderPanel" Background="Transparent" IsItemsHost="True" Grid.Row="0" KeyboardNavigation.TabIndex="1" Panel.ZIndex="1"/>
+            <Border x:Name="Border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" KeyboardNavigation.DirectionalNavigation="Contained" Grid.Row="1" KeyboardNavigation.TabIndex="2" KeyboardNavigation.TabNavigation="Local">
+                <Border.CornerRadius>
+                    <MultiBinding UpdateSourceTrigger="Default">
+                        <MultiBinding.Converter>
+                            <Converters:ValuesToCornerRadiusConverter/>
+                        </MultiBinding.Converter>
+                        <Binding/>
+                        <Binding Path="(Extensions:CornerRadiusExtension.CornerRadius).TopRight" RelativeSource="{RelativeSource TemplatedParent}"/>
+                        <Binding Path="(Extensions:CornerRadiusExtension.CornerRadius).BottomRight" RelativeSource="{RelativeSource TemplatedParent}"/>
+                        <Binding Path="(Extensions:CornerRadiusExtension.CornerRadius).BottomLeft" RelativeSource="{RelativeSource TemplatedParent}"/>
+                    </MultiBinding>
+                </Border.CornerRadius>
+                <ContentPresenter x:Name="PART_SelectedContentHost" ContentTemplate="{TemplateBinding SelectedContentTemplate}" Content="{TemplateBinding SelectedContent}" ContentStringFormat="{TemplateBinding SelectedContentStringFormat}" ContentSource="SelectedContent" Margin="0"/>
+            </Border>
+            <Border x:Name="SelectedItemHighlight" Background="{DynamicResource {ComponentResourceKey ResourceId=Layer1HighlightBrush, TypeInTargetAssembly={x:Type AdonisUI:Brushes}}}" Height="0" Margin="{TemplateBinding BorderThickness}" Grid.Row="1" VerticalAlignment="Top">
+                <Border.CornerRadius>
+                    <MultiBinding UpdateSourceTrigger="Default">
+                        <MultiBinding.Converter>
+                            <Converters:ValuesToCornerRadiusConverter/>
+                        </MultiBinding.Converter>
+                        <Binding/>
+                        <Binding Path="(Extensions:CornerRadiusExtension.CornerRadius).TopRight" RelativeSource="{RelativeSource TemplatedParent}"/>
+                        <Binding/>
+                        <Binding/>
+                    </MultiBinding>
+                </Border.CornerRadius>
+            </Border>
+        </Grid>
+        <ControlTemplate.Triggers>
+            <DataTrigger Binding="{Binding (Extensions:LayerExtension.ComputedLayer), RelativeSource={RelativeSource Self}}" Value="2">
+                <Setter Property="Background" TargetName="SelectedItemHighlight" Value="{DynamicResource {ComponentResourceKey ResourceId=Layer2HighlightBrush, TypeInTargetAssembly={x:Type AdonisUI:Brushes}}}"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding (Extensions:LayerExtension.ComputedLayer), RelativeSource={RelativeSource Self}}" Value="3">
+                <Setter Property="Background" TargetName="SelectedItemHighlight" Value="{DynamicResource {ComponentResourceKey ResourceId=Layer3HighlightBrush, TypeInTargetAssembly={x:Type AdonisUI:Brushes}}}"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding (Extensions:LayerExtension.ComputedLayer), RelativeSource={RelativeSource Self}}" Value="4">
+                <Setter Property="Background" TargetName="SelectedItemHighlight" Value="{DynamicResource {ComponentResourceKey ResourceId=Layer4HighlightBrush, TypeInTargetAssembly={x:Type AdonisUI:Brushes}}}"/>
+            </DataTrigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
 </ResourceDictionary>

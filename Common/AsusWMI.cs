@@ -14,7 +14,7 @@ namespace ZenTimings
         public List<AsusSensorInfo> sensors = new List<AsusSensorInfo>();
 
         // enums used from https://github.com/electrified/asus-wmi-sensors
-        public enum AsusSensorType
+        public enum AsusSensorType: uint
         {
             VOLTAGE = 0x0,
             TEMPERATURE_C = 0x1,
@@ -23,7 +23,7 @@ namespace ZenTimings
             WATER_FLOW = 0x4
         };
 
-        public enum AsusSensorDataType
+        public enum AsusSensorDataType: uint
         {
             SIGNED_INT = 0x0,
             UNSIGNED_INT = 0x1,
@@ -31,13 +31,13 @@ namespace ZenTimings
             SCALED = 0x3
         };
 
-        public enum AsusSensorSource
+        public enum AsusSensorSource: uint
         {
             SIO = 0x1,
             EC = 0x2
         };
 
-        public enum AsusSensorLocation
+        public enum AsusSensorLocation: uint
         {
             CPU = 0x0,
             CPU_SOC = 0x1,
@@ -66,8 +66,9 @@ namespace ZenTimings
                 {
                     AsusSensorInfo sensor = GetSensorInfo(i);
                     sensors.Add(sensor);
-                    sensors.Sort((a, b) => a.Type.CompareTo(b.Type));
                 }
+
+                sensors.Sort((a, b) => a.Type.CompareTo(b.Type));
 
                 Status = 1;
                 return true;
@@ -165,11 +166,11 @@ namespace ZenTimings
                 if (res != null)
                 {
                     sensor.Index = index;
-                    sensor.DataType = (AsusSensorDataType) (uint) res["Data_Type"];
-                    sensor.Location = (AsusSensorLocation) (uint) res["Location"];
+                    sensor.DataType = (AsusSensorDataType) res["Data_Type"];
+                    sensor.Location = (AsusSensorLocation) res["Location"];
                     sensor.Name = (string) res["Name"];
-                    sensor.Source = (AsusSensorSource) (uint) res["Source"];
-                    sensor.Type = (AsusSensorType) (uint) res["Type"];
+                    sensor.Source = (AsusSensorSource) res["Source"];
+                    sensor.Type = (AsusSensorType) res["Type"];
                     sensor.Value = GetSensorFormattedValue(sensor);
                 }
             }
@@ -189,7 +190,7 @@ namespace ZenTimings
             foreach (AsusSensorInfo sensor in sensors) sensor.Value = GetSensorFormattedValue(sensor);
         }
 
-        public AsusSensorInfo FindSensorByName(string name) => sensors.Find(x => x.Name == name);
+        public AsusSensorInfo FindSensorByName(string name) => sensors?.Find(x => x.Name == name);
 
         public uint Status { get; protected set; }
 

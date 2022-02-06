@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Reflection;
+using System.Windows;
 using AutoUpdaterDotNET;
 
 namespace ZenTimings
 {
     public sealed class UpdaterPersistenceProvider : IPersistenceProvider
     {
-        internal AppSettings appSettings;
-
-        public UpdaterPersistenceProvider(AppSettings settings)
-        {
-            appSettings = settings;
-        }
+        internal readonly AppSettings appSettings = (Application.Current as App)?.settings;
+        public UpdaterPersistenceProvider(){}
 
         /// <summary>
         /// Reads the flag indicating whether a specific version should be skipped or not.
