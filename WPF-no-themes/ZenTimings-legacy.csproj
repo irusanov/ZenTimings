@@ -105,6 +105,27 @@
     <Compile Include="..\Common\WMI.cs">
       <Link>Common\WMI.cs</Link>
     </Compile>
+    <Compile Include="..\WPF\Common\ISensor.cs">
+      <Link>Common\ISensor.cs</Link>
+    </Compile>
+    <Compile Include="..\WPF\Common\Sensor.cs">
+      <Link>Common\Sensor.cs</Link>
+    </Compile>
+    <Compile Include="..\WPF\Converters\FloatToBoolConverter.cs">
+      <Link>Converters\FloatToBoolConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\WPF\Converters\FloatToNAConverter.cs">
+      <Link>Converters\FloatToNAConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\WPF\Converters\FloatToVoltageConverter.cs">
+      <Link>Converters\FloatToVoltageConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\WPF\Plugin\IPlugin.cs">
+      <Link>Plugin\IPlugin.cs</Link>
+    </Compile>
+    <Compile Include="..\WPF\Plugin\SVI2Plugin.cs">
+      <Link>Plugin\SVI2Plugin.cs</Link>
+    </Compile>
     <Compile Include="AppSettings.cs" />
     <Compile Include="Properties\BuildNumberTemplate.cs">
       <AutoGen>True</AutoGen>

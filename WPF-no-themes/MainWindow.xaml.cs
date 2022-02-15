@@ -13,6 +13,7 @@ using System.Windows.Data;
 using System.Windows.Interop;
 using System.Windows.Threading;
 using ZenStates.Core;
+using ZenTimings.Plugin;
 using ZenTimings.Windows;
 
 namespace ZenTimings
@@ -22,14 +23,15 @@ namespace ZenTimings
     /// </summary>
     public partial class MainWindow
     {
-		private readonly AsusWMI AsusWmi = new AsusWMI();
+        private readonly AsusWMI AsusWmi = new AsusWMI();
         private readonly List<BiosACPIFunction> biosFunctions = new List<BiosACPIFunction>();
         private readonly BiosMemController BMC;
-        private readonly Cpu cpu = new Cpu();
+        private readonly Cpu cpu;
         private readonly MemoryConfig MEMCFG = new MemoryConfig();
         private readonly List<MemoryModule> modules = new List<MemoryModule>();
         private readonly DispatcherTimer PowerCfgTimer = new DispatcherTimer();
         private readonly AppSettings settings = (Application.Current as App)?.settings;
+        private readonly List<IPlugin> plugins = new List<IPlugin>();
         private bool compatMode;
         private delegate void Action();
 
@@ -38,16 +40,15 @@ namespace ZenTimings
             try
             {
                 SplashWindow.Loading("CPU");
+                cpu = new Cpu();
 
-                if (cpu.info.family != Cpu.Family.FAMILY_17H && cpu.info.family != Cpu.Family.FAMILY_19H)
+                if (cpu.info.family.Equals(Cpu.Family.UNSUPPORTED))
                 {
-                    HandleError("CPU is not supported.");
-                    ExitApplication();
+                    throw new ApplicationException("CPU is not supported.");
                 }
-                else if (cpu.info.codeName == Cpu.CodeName.Unsupported)
+                else if (cpu.info.codeName.Equals(Cpu.CodeName.Unsupported))
                 {
-                    HandleError("CPU model is not supported.\n" +
-                        "Please run a debug report and send to the developer.");
+                    throw new ApplicationException("CPU model is not supported.\nPlease run a debug report and send to the developer.");
                 }
 
                 InitializeComponent();
@@ -62,36 +63,37 @@ namespace ZenTimings
 
                 if (settings.AdvancedMode)
                 {
-                    if (cpu.info.codeName != Cpu.CodeName.Unsupported)
+
+                    PowerCfgTimer.Interval = TimeSpan.FromMilliseconds(2000);
+                    PowerCfgTimer.Tick += PowerCfgTimer_Tick;
+
+
+                    SplashWindow.Loading("Waiting for power table");
+                    if (WaitForPowerTable())
                     {
-                        PowerCfgTimer.Interval = TimeSpan.FromMilliseconds(2000);
-                        PowerCfgTimer.Tick += PowerCfgTimer_Tick;
-
-                        SplashWindow.Loading("SVI2");
-                        ReadSVI();
-
-                        SplashWindow.Loading("Waiting for power table");
-                        if (WaitForPowerTable())
-                        {
-                            SplashWindow.Loading("Reading power table");
-                            // refresh the table again, to avoid displaying initial fclk, mclk and uclk values,
-                            // which seem to be a little off when transferring the table for the "first" time,
-                            // after an idle period
-                            RefreshPowerTable();
-                        }
-                        else
-                        {
-                            SplashWindow.Loading("Power table error!");
-                        }
-
-                        if (!AsusWmi.Init())
-                        {
-                            AsusWmi.Dispose();
-                            AsusWmi = null;
-                        }
-
-                        StartAutoRefresh();
+                        SplashWindow.Loading("Reading power table");
+                        // refresh the table again, to avoid displaying initial fclk, mclk and uclk values,
+                        // which seem to be a little off when transferring the table for the "first" time,
+                        // after an idle period
+                        RefreshPowerTable();
                     }
+                    else
+                    {
+                        SplashWindow.Loading("Power table error!");
+                    }
+
+                    SplashWindow.Loading("Plugins");
+                    SplashWindow.Loading("SVI2 Plugin");
+                    plugins.Add(new SVI2Plugin(cpu));
+                    ReadSVI();
+                    if (!AsusWmi.Init())
+                    {
+                        AsusWmi.Dispose();
+                        AsusWmi = null;
+                    }
+
+                    StartAutoRefresh();
+
 
                     SplashWindow.Loading("Memory controller");
                     BMC = new BiosMemController();
@@ -108,16 +110,17 @@ namespace ZenTimings
                     settings
                 };
             }
-            catch (ApplicationException ex)
+            catch (Exception ex)
             {
                 HandleError(ex.Message);
-                //Dispose();
                 ExitApplication();
             }
         }
 
-        private static void ExitApplication()
+        private void ExitApplication()
         {
+            AsusWmi?.Dispose();
+            cpu?.Dispose();
             Application.Current.Shutdown();
         }
 
@@ -177,7 +180,7 @@ namespace ZenTimings
 
                     foreach (var obj in searcher.Get())
                     {
-                        var queryObject = (ManagementObject) obj;
+                        var queryObject = (ManagementObject)obj;
                         var capacity = 0UL;
                         var clockSpeed = 0U;
                         var partNumber = "N/A";
@@ -186,22 +189,22 @@ namespace ZenTimings
                         var deviceLocator = "";
 
                         var temp = WMI.TryGetProperty(queryObject, "Capacity");
-                        if (temp != null) capacity = (ulong) temp;
+                        if (temp != null) capacity = (ulong)temp;
 
                         temp = WMI.TryGetProperty(queryObject, "ConfiguredClockSpeed");
-                        if (temp != null) clockSpeed = (uint) temp;
+                        if (temp != null) clockSpeed = (uint)temp;
 
                         temp = WMI.TryGetProperty(queryObject, "partNumber");
-                        if (temp != null) partNumber = (string) temp;
+                        if (temp != null) partNumber = (string)temp;
 
                         temp = WMI.TryGetProperty(queryObject, "BankLabel");
-                        if (temp != null) bankLabel = (string) temp;
+                        if (temp != null) bankLabel = (string)temp;
 
                         temp = WMI.TryGetProperty(queryObject, "Manufacturer");
-                        if (temp != null) manufacturer = (string) temp;
+                        if (temp != null) manufacturer = (string)temp;
 
                         temp = WMI.TryGetProperty(queryObject, "DeviceLocator");
-                        if (temp != null) deviceLocator = (string) temp;
+                        if (temp != null) deviceLocator = (string)temp;
 
                         modules.Add(new MemoryModule(partNumber.Trim(), bankLabel.Trim(), manufacturer.Trim(),
                             deviceLocator, capacity, clockSpeed));
@@ -256,19 +259,10 @@ namespace ZenTimings
 
         private void ReadSVI()
         {
-            ushort timeout = 20;
-            uint plane1_value;
-            do
+            if (plugins[0].Update())
             {
-                plane1_value = cpu.ReadDword(cpu.info.svi2.socAddress);
-            } while ((plane1_value & 0xFF00) != 0 && --timeout > 0);
-
-            if (timeout > 0)
-            {
-                var vddcr_soc = (plane1_value >> 16) & 0xFF;
-                textBoxVSOC_SVI2.Text = $"{cpu.utils.VidToVoltage(vddcr_soc):F4}V";
+                textBoxVSOC_SVI2.Text = $"{plugins[0].Sensors[0].Value:F4}V";
             }
-            //uint vcore = (ops.ReadDword(cpu.info.SVI2.CoreAddress) >> 16) & 0xFF;
         }
 
         private void ReadMemoryConfig()
@@ -300,7 +294,7 @@ namespace ZenTimings
 
 
                 // Get function names with their IDs
-                string[] functionObjects = {"GetObjectID", "GetObjectID2"};
+                string[] functionObjects = { "GetObjectID", "GetObjectID2" };
                 foreach (var functionObject in functionObjects)
                 {
                     try
@@ -308,9 +302,9 @@ namespace ZenTimings
                         var pack = WMI.InvokeMethod(classInstance, functionObject, "pack", null, 0);
                         if (pack != null)
                         {
-                            var ID = (uint[]) pack.GetPropertyValue("ID");
-                            var IDString = (string[]) pack.GetPropertyValue("IDString");
-                            var Length = (byte) pack.GetPropertyValue("Length");
+                            var ID = (uint[])pack.GetPropertyValue("ID");
+                            var IDString = (string[])pack.GetPropertyValue("IDString");
+                            var Length = (byte)pack.GetPropertyValue("Length");
 
                             for (var i = 0; i < Length; ++i)
                             {
@@ -532,13 +526,13 @@ namespace ZenTimings
 
         private bool WaitForPowerTable()
         {
-            if (cpu.powerTable.DramBaseAddress == 0)
+            if (cpu.powerTable == null || cpu.powerTable.DramBaseAddress == 0)
             {
                 HandleError("Could not initialize power table.\nClose the application and try again.");
                 return false;
             }
 
-            if (WaitForDriverLoad() && cpu.utils.WinIoStatus == Utils.LibStatus.OK)
+            if (WaitForDriverLoad())
             {
                 var timer = new Stopwatch();
                 var timeout = 10000;
@@ -554,8 +548,7 @@ namespace ZenTimings
                 {
                     status = cpu.RefreshPowerTable();
                     if (status != SMU.Status.OK)
-                        // It's ok to block the current thread
-                        Thread.Sleep(2000);
+                        Thread.Sleep(2000);  // It's ok to block the current thread
                 } while (status != SMU.Status.OK && timer.Elapsed.TotalMilliseconds < timeout);
 
                 timer.Stop();
@@ -605,7 +598,7 @@ namespace ZenTimings
                         var sensor = AsusWmi.FindSensorByName("DRAM Voltage");
                         if (sensor != null)
                             Dispatcher.Invoke(DispatcherPriority.ApplicationIdle,
-                                new Action(() => { textBoxMemVddio.Text = $"{sensor.Value}"; }));
+                                new Action(() => { textBoxMemVddio.Text = sensor.Value; }));
                     }
 
                     Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() =>
@@ -637,7 +630,7 @@ namespace ZenTimings
         {
             settings.Save();
             Process.Start(Application.ResourceAssembly.Location);
-            Application.Current.Shutdown();
+            ExitApplication();
         }
 
         private void ShowWindow()
@@ -659,11 +652,11 @@ namespace ZenTimings
             var AssemblyTitle = "ZT";
 
             if (settings.AdvancedMode)
-                AssemblyTitle = ((AssemblyTitleAttribute) Attribute.GetCustomAttribute(
+                AssemblyTitle = ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(
                     Assembly.GetExecutingAssembly(),
                     typeof(AssemblyTitleAttribute), false)).Title;
 
-            var AssemblyVersion = ((AssemblyFileVersionAttribute) Attribute.GetCustomAttribute(
+            var AssemblyVersion = ((AssemblyFileVersionAttribute)Attribute.GetCustomAttribute(
                 Assembly.GetExecutingAssembly(),
                 typeof(AssemblyFileVersionAttribute), false)).Version;
 
@@ -684,6 +677,13 @@ namespace ZenTimings
 
         private void Window_Initialized(object sender, EventArgs e)
         {
+            if (settings.SaveWindowPosition)
+            {
+                WindowStartupLocation = WindowStartupLocation.Manual;
+                Left = settings.WindowLeft;
+                Top = settings.WindowTop;
+            }
+
             SetWindowTitle();
             labelCPU.Text = cpu.systemInfo.CpuName;
             labelMB.Text =
@@ -709,11 +709,13 @@ namespace ZenTimings
                 if (parent != null)
                 {
                     var debugWnd = new DebugDialog(cpu, modules, MEMCFG, BMC, AsusWmi)
-	                {
-	                	Owner = parent, Width = parent.Width, Height = parent.Height
-	                };
-	                debugWnd.ShowDialog();
-            	}
+                    {
+                        Owner = parent,
+                        Width = parent.Width,
+                        Height = parent.Height
+                    };
+                    debugWnd.ShowDialog();
+                }
             }
             else
             {
@@ -762,7 +764,7 @@ namespace ZenTimings
 
         private void OptionsToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            var optionsWnd = new OptionsDialog(settings, PowerCfgTimer)
+            var optionsWnd = new OptionsDialog(PowerCfgTimer)
             {
                 Owner = Application.Current.MainWindow
             };
@@ -796,7 +798,6 @@ namespace ZenTimings
             if (sender is ComboBox combo) ReadTimings(modules[combo.SelectedIndex].DctOffset);
         }
     }
-
     public class FloatToNAConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

@@ -11,27 +11,27 @@ namespace ZenTimings.Windows
     public partial class OptionsDialog
     {
         //private const string Caption = "Disabling auto-refresh might lead to inaccurate voltages and frequencies on first launch";
-        private readonly AppSettings settingsInstance;
+        internal readonly AppSettings appSettings = (Application.Current as App)?.settings;
         private readonly DispatcherTimer timerInstance;
         private DispatcherTimer notificationTimer;
         private bool _DarkMode;
         private readonly bool _AdvancedMode;
 
-        public OptionsDialog(AppSettings settings, DispatcherTimer timer)
+        public OptionsDialog(DispatcherTimer timer)
         {
-            settingsInstance = settings;
             timerInstance = timer;
-            DataContext = settingsInstance;
-            _DarkMode = settingsInstance.DarkMode;
-            _AdvancedMode = settingsInstance.AdvancedMode;
+            _DarkMode = appSettings.DarkMode;
+            _AdvancedMode = appSettings.AdvancedMode;
 
             InitializeComponent();
 
-            checkBoxAutoRefresh.IsChecked = settings.AutoRefresh;
-            checkBoxAutoRefresh.IsEnabled = settings.AdvancedMode;
-            checkBoxAdvancedMode.IsChecked = settings.AdvancedMode;
-            checkBoxCheckUpdate.IsChecked = settings.CheckForUpdates;
-            numericUpDownRefreshInterval.IsEnabled = settings.AutoRefresh && settings.AdvancedMode;
+            checkBoxAutoRefresh.IsChecked = appSettings.AutoRefresh;
+            checkBoxAutoRefresh.IsEnabled = appSettings.AdvancedMode;
+            checkBoxAdvancedMode.IsChecked = appSettings.AdvancedMode;
+            checkBoxCheckUpdate.IsChecked = appSettings.CheckForUpdates;
+            checkBoxSavePosition.IsChecked = appSettings.SaveWindowPosition;
+            numericUpDownRefreshInterval.IsEnabled = appSettings.AutoRefresh && appSettings.AdvancedMode;
+            numericUpDownRefreshInterval.Text = appSettings.AutoRefreshInterval.ToString();
             msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
         }
 
@@ -51,15 +51,16 @@ namespace ZenTimings.Windows
 
         private void ButtonSettingsApply_Click(object sender, RoutedEventArgs e)
         {
-            settingsInstance.AutoRefresh = (bool) checkBoxAutoRefresh.IsChecked;
-            settingsInstance.AutoRefreshInterval = Convert.ToInt32(numericUpDownRefreshInterval.Text);
-            settingsInstance.AdvancedMode = (bool) checkBoxAdvancedMode.IsChecked;
-            settingsInstance.CheckForUpdates = (bool) checkBoxCheckUpdate.IsChecked;
+            appSettings.AutoRefresh = (bool) checkBoxAutoRefresh.IsChecked;
+            appSettings.AutoRefreshInterval = Convert.ToInt32(numericUpDownRefreshInterval.Text);
+            appSettings.AdvancedMode = (bool) checkBoxAdvancedMode.IsChecked;
+            appSettings.CheckForUpdates = (bool) checkBoxCheckUpdate.IsChecked;
+            appSettings.SaveWindowPosition = (bool)checkBoxSavePosition.IsChecked;
 
-            settingsInstance.Save();
+            appSettings.Save();
 
-            timerInstance.Interval = TimeSpan.FromMilliseconds(settingsInstance.AutoRefreshInterval);
-            _DarkMode = settingsInstance.DarkMode;
+            timerInstance.Interval = TimeSpan.FromMilliseconds(appSettings.AutoRefreshInterval);
+            _DarkMode = appSettings.DarkMode;
 
 
             if (notificationTimer != null)
@@ -81,16 +82,16 @@ namespace ZenTimings.Windows
 
             if (checkBoxAutoRefresh.IsEnabled)
             {
-                if (settingsInstance.AutoRefresh && !timerInstance.IsEnabled)
+                if (appSettings.AutoRefresh && !timerInstance.IsEnabled)
                     timerInstance.Start();
-                else if (!settingsInstance.AutoRefresh && timerInstance.IsEnabled)
+                else if (!appSettings.AutoRefresh && timerInstance.IsEnabled)
                     timerInstance.Stop();
             }
 
-            if (_AdvancedMode != settingsInstance.AdvancedMode)
+            if (_AdvancedMode != appSettings.AdvancedMode)
             {
                 buttonSettingsRestart.Visibility = Visibility.Visible;
-                settingsInstance.Save();
+                appSettings.Save();
                 OptionsPopupText.Text = "Advanced Mode will be applied on next launch.";
             }
 
@@ -101,9 +102,10 @@ namespace ZenTimings.Windows
         private void ButtonSettingsCancel_Click(object sender, RoutedEventArgs e)
         {
             // Restore theme on close if not saved
-            if (settingsInstance.DarkMode != _DarkMode)
+            if (appSettings.DarkMode != _DarkMode)
             {
-                settingsInstance.DarkMode = _DarkMode;
+                appSettings.DarkMode = _DarkMode;
+
             }
         }
 

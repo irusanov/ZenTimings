@@ -9,7 +9,7 @@ namespace ZenTimings
     public sealed class AppSettings
     {
         private const int VERSION_MAJOR = 1;
-        private const int VERSION_MINOR = 0;
+        private const int VERSION_MINOR = 1;
 
         private const string filename = "settings.xml";
 
@@ -20,6 +20,12 @@ namespace ZenTimings
             AdvancedMode = true;
             DarkMode = false;
             CheckForUpdates = true;
+            SaveWindowPosition = false;
+            WindowLeft = 0;
+            WindowTop = 0;
+            SysInfoWindowLeft = 0;
+            SysInfoWindowHeight = 0;
+            SysInfoWindowWidth = 0;
 
             Save();
 
@@ -39,7 +45,7 @@ namespace ZenTimings
                         XmlSerializer xmls = new XmlSerializer(typeof(AppSettings));
                         return xmls.Deserialize(sr) as AppSettings;
                     }
-                    catch (InvalidOperationException ex)
+                    catch (Exception ex)
                     {
                         Console.WriteLine(ex.Message);
                         sr.Close();
@@ -85,5 +91,12 @@ namespace ZenTimings
         public bool CheckForUpdates { get; set; } = true;
         public string UpdaterSkippedVersion { get; set; } = "";
         public string UpdaterRemindLaterAt { get; set; } = "";
+        public bool SaveWindowPosition { get; set; }
+        public double WindowLeft { get; set; }
+        public double WindowTop { get; set; }
+        public double SysInfoWindowLeft { get; set; }
+        public double SysInfoWindowTop { get; set; }
+        public double SysInfoWindowWidth { get; set; }
+        public double SysInfoWindowHeight { get; set; }
     }
 }

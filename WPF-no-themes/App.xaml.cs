@@ -30,11 +30,11 @@ namespace ZenTimings
                 Environment.Exit(0);
             }
 
-            updater = new Updater(settings);
+            updater = new Updater();
 
             GC.KeepAlive(instanceMutex);
+            SplashWindow.Start();
             base.OnStartup(e);
-            SplashWindow.Start(settings);
         }
     }
 }
