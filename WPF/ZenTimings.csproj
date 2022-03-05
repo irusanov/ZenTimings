@@ -38,7 +38,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Resources\ZenTimings.ico</ApplicationIcon>
+    <ApplicationIcon>ZenTimings2022.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <TransformOnBuild>true</TransformOnBuild>
@@ -212,22 +212,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\icon-64.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\icon-16.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\camera-dark.png" />
     <Resource Include="Resources\camera-light.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\ZenTimings.ico" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\new-icon\64.png" />
+    <Resource Include="Resources\new-icon\16.png" />
+    <Resource Include="ZenTimings2022.ico" />
+    <Resource Include="Resources\ZenTimings2022.ico" />
     <Content Include="Properties\BuildNumberTemplate.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BuildNumberTemplate.cs</LastGenOutput>

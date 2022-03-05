@@ -15,7 +15,7 @@
     Width="310"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterOwner"
-    Icon="/ZenTimings;component/Resources/icon-16.png"
+    Icon="/ZenTimings;component/Resources/new-icon/16.png"
     SizeToContent="WidthAndHeight"
     ShowInTaskbar="False"
     BorderThickness="1"

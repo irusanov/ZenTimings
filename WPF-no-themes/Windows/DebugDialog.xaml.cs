@@ -147,9 +147,9 @@ namespace ZenTimings.Windows
                 try
                 {
                     var offset = i << 20;
-                    var channel = CPU.utils.GetBits(CPU.ReadDword(offset | 0x50DF0), 19, 1) == 0;
-                    var dimm1 = CPU.utils.GetBits(CPU.ReadDword(offset | 0x50000), 0, 1) == 1;
-                    var dimm2 = CPU.utils.GetBits(CPU.ReadDword(offset | 0x50008), 0, 1) == 1;
+                    var channel = Utils.GetBits(CPU.ReadDword(offset | 0x50DF0), 19, 1) == 0;
+                    var dimm1 = Utils.GetBits(CPU.ReadDword(offset | 0x50000), 0, 1) == 1;
+                    var dimm2 = Utils.GetBits(CPU.ReadDword(offset | 0x50008), 0, 1) == 1;
                     var enabled = channel && (dimm1 || dimm2);
 
                     AddLine($"Channel{i}: {enabled}");

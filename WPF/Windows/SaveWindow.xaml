@@ -12,7 +12,7 @@
     SizeToContent="WidthAndHeight"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterOwner"
-    Icon="/ZenTimings;component/Resources/icon-16.png"
+    Icon="/ZenTimings;component/Resources/new-icon/16.png"
     BorderThickness="1"
     UseLayoutRounding="True"
     BorderBrush="{DynamicResource WindowBorderColor}">

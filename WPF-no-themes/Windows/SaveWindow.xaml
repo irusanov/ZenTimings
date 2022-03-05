@@ -10,8 +10,7 @@
     Width="230"
     SizeToContent="WidthAndHeight"
     ResizeMode="NoResize"
-    WindowStartupLocation="CenterOwner"
-    Icon="/ZenTimings-legacy;component/Resources/icon-16.png">
+    WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />

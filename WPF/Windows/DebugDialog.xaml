@@ -12,7 +12,7 @@
     Title="Debug Report"
     Height="550"
     Width="406"
-    Icon="/ZenTimings;component/Resources/icon-16.png"
+    Icon="/ZenTimings;component/Resources/new-icon/16.png"
     ResizeMode="CanMinimize"
     WindowStartupLocation="CenterOwner"
     BorderThickness="1"

@@ -3,28 +3,27 @@
     public class Sensor : ISensor
     {
         private float? currentValue;
-        private float? currentMin;
-        private float? currentMax;
 
         public int Index { get; }
         public string Name { get; }
         public float? Value
         {
             get => currentValue;
-            set {
+            set
+            {
                 if (value != null && value != currentValue)
                 {
                     currentValue = value;
 
-                    if (currentMax == null || currentValue > currentMax)
-                        currentMax = currentValue;
-                    else if (currentMin == null || currentValue < currentMin)
-                        currentMin = currentValue;
+                    if (Max == null || currentValue > Max)
+                        Max = currentValue;
+                    else if (Min == null || currentValue < Min)
+                        Min = currentValue;
                 }
             }
         }
-        public float? Min => currentMin;
-        public float? Max => currentMax;
+        public float? Min { get; private set; }
+        public float? Max { get; private set; }
 
         public Sensor(string name, int index)
         {
@@ -32,7 +31,7 @@
             Index = index;
         }
 
-        public void ResetMin() => currentMin = null;
-        public void ResetMax() => currentMax = null;
+        public void ResetMin() => Min = null;
+        public void ResetMax() => Max = null;
     }
 }

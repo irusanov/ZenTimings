@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   sodipodi:docname="drawing.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="1.0998546"
+     inkscape:cx="269.12648"
+     inkscape:cy="223.21132"
+     inkscape:window-width="2560"
+     inkscape:window-height="1387"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer3" />
+  <defs
+     id="defs2">
+    <linearGradient
+       id="linearGradient3621"
+       inkscape:swatch="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop3619" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient2809">
+      <stop
+         style="stop-color:#075839;stop-opacity:1"
+         offset="0"
+         id="stop2805" />
+      <stop
+         style="stop-color:#1d9a12;stop-opacity:1"
+         offset="1"
+         id="stop2807" />
+    </linearGradient>
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect2288"
+       is_visible="true"
+       lpeversion="1"
+       satellites_param="F,0,0,1,0,26.458333,0,1 @ F,0,0,1,0,26.458333,0,1 @ F,0,0,1,0,26.458333,0,1 @ F,0,0,1,0,26.458333,0,1 @ F,0,0,1,0,26.458333,0,1 @ F,0,0,1,0,26.458333,0,1"
+       unit="px"
+       method="auto"
+       mode="F"
+       radius="100"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
+    <linearGradient
+       id="linearGradient4052"
+       inkscape:swatch="solid">
+      <stop
+         style="stop-color:#008000;stop-opacity:1;"
+         offset="0"
+         id="stop4050" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2809"
+       id="linearGradient2811"
+       x1="269.23257"
+       y1="-90.998161"
+       x2="269.23257"
+       y2="520.65045"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <g
+     inkscape:label="base"
+     inkscape:groupmode="layer"
+     id="layer1"
+     style="display:inline">
+    <path
+       sodipodi:type="star"
+       style="mix-blend-mode:normal;fill:url(#linearGradient2811);fill-opacity:1;stroke:none;stroke-width:15.9811;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+       id="path2206"
+       inkscape:flatsided="true"
+       sodipodi:sides="6"
+       sodipodi:cx="268.73611"
+       sodipodi:cy="216.01753"
+       sodipodi:r1="312.47775"
+       sodipodi:r2="270.61365"
+       sodipodi:arg1="1.5707963"
+       sodipodi:arg2="2.0943951"
+       inkscape:rounded="1.04083e-17"
+       inkscape:randomized="0"
+       d="M 245.82253,515.26612 21.036036,385.48558 a 45.827177,45.827177 59.999998 0 1 -22.91359,-39.6875 l -6.9e-6,-259.561084 A 45.827177,45.827177 120 0 1 21.036027,46.549496 L 245.82252,-83.231053 a 45.827177,45.827177 180 0 1 45.82718,-10e-7 L 516.43619,46.549483 a 45.827177,45.827177 59.999998 0 1 22.91359,39.687499 l 10e-6,259.561088 a 45.827177,45.827177 120 0 1 -22.91359,39.6875 L 291.64971,515.26612 a 45.827177,45.827177 180 0 1 -45.82718,0 z"
+       transform="matrix(0.22179416,0,0,0.22179416,44.826876,22.610687)"
+       inkscape:path-effect="#path-effect2288"
+       inkscape:export-filename="C:\GIT\ZenTimings\WPF\Resources\new-icon\96.png"
+       inkscape:export-xdpi="18"
+       inkscape:export-ydpi="18" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="activity">
+    <g
+       style="fill:none;stroke:#ffffff;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+       id="g5865"
+       transform="matrix(3.8217593,0,0,3.8217593,58.569865,24.661003)"
+       inkscape:export-filename="C:\GIT\ZenTimings\WPF\Resources\new-icon\96.png"
+       inkscape:export-xdpi="18"
+       inkscape:export-ydpi="18">
+      <polyline
+         points="22 12 18 12 15 21 9 3 6 12 2 12"
+         id="polyline5856"
+         style="stroke:#ffffff;stroke-opacity:1" />
+    </g>
+  </g>
+</svg>

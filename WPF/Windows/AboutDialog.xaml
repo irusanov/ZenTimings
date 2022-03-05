@@ -17,7 +17,7 @@
     SizeToContent="WidthAndHeight"
     ShowInTaskbar="False"
     WindowStartupLocation="CenterOwner"
-    Icon="/ZenTimings;component/Resources/icon-16.png"
+    Icon="/ZenTimings;component/Resources/new-icon/16.png"
     BorderThickness="1"
     UseLayoutRounding="True"
     BorderBrush="{DynamicResource WindowBorderColor}" WindowStyle="ToolWindow">
@@ -88,7 +88,7 @@
                         </Grid.RowDefinitions>
 
                         <Border Grid.Column="0" Padding="10">
-                            <Image Source="/Resources/icon-64.png" Width="48" Height="48" VerticalAlignment="Top" />
+                            <Image Source="/ZenTimings;component/Resources/new-icon/64.png" Width="48" Height="48" VerticalAlignment="Top" />
                         </Border>
 
                         <Border Grid.Column="1" Padding="10" Grid.ColumnSpan="2">

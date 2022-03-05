@@ -23,7 +23,7 @@ namespace ZenTimings.Plugin
 
         public SVI2Plugin(Cpu cpu)
         {
-            if (cpu != null && cpu.Status == Utils.LibStatus.OK)
+            if (cpu != null && cpu.Status == IOModule.LibStatus.OK)
             {
                 _cpu = cpu;
                 Sensors = new List<Sensor>
@@ -53,7 +53,7 @@ namespace ZenTimings.Plugin
             if (timeout > 0)
             {
                 uint socVid = (soc_plane_value >> 16) & 0xFF;
-                Sensors[0].Value = Convert.ToSingle(_cpu.utils.VidToVoltage(socVid));
+                Sensors[0].Value = Convert.ToSingle(Utils.VidToVoltage(socVid));
 
                 Console.WriteLine(Sensors[0].Min + " " + Sensors[0].Max);
                 return true;

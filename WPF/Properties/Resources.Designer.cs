@@ -61,11 +61,31 @@ namespace ZenTimings.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap _16 {
+            get {
+                object obj = ResourceManager.GetObject("_16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap _64 {
+            get {
+                object obj = ResourceManager.GetObject("_64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon ZenTimings {
+        internal static System.Drawing.Icon ZenTimings2022 {
             get {
-                object obj = ResourceManager.GetObject("ZenTimings", resourceCulture);
+                object obj = ResourceManager.GetObject("ZenTimings2022", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }

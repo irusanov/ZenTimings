@@ -59,7 +59,7 @@ namespace ZenTimings
                    throw new ApplicationException("CPU model is not supported.\nPlease run a debug report and send to the developer.");
                 }
 
-                IconSource = GetIcon("pack://application:,,,/ZenTimings;component/Resources/ZenTimings.ico", 16);
+                IconSource = GetIcon("pack://application:,,,/ZenTimings;component/Resources/ZenTimings2022.ico", 16);
                 InitializeComponent();
                 SplashWindow.Loading("Memory modules");
                 ReadMemoryModulesInfo();
@@ -161,9 +161,9 @@ namespace ZenTimings
             for (var i = 0; i < 8; i++)
             {
                 uint channelOffset = (uint)i << 20;
-                bool channel = cpu.utils.GetBits(cpu.ReadDword(channelOffset | 0x50DF0), 19, 1) == 0;
-                bool dimm1 = cpu.utils.GetBits(cpu.ReadDword(channelOffset | 0x50000), 0, 1) == 1;
-                bool dimm2 = cpu.utils.GetBits(cpu.ReadDword(channelOffset | 0x50008), 0, 1) == 1;
+                bool channel = Utils.GetBits(cpu.ReadDword(channelOffset | 0x50DF0), 19, 1) == 0;
+                bool dimm1 = Utils.GetBits(cpu.ReadDword(channelOffset | 0x50000), 0, 1) == 1;
+                bool dimm2 = Utils.GetBits(cpu.ReadDword(channelOffset | 0x50008), 0, 1) == 1;
 
                 if (channel && (dimm1 || dimm2))
                 {
@@ -172,7 +172,7 @@ namespace ZenTimings
                         MemoryModule module = modules[dimmIndex++];
                         module.Slot = $"{Convert.ToChar(i + 65)}1";
                         module.DctOffset = channelOffset;
-                        module.DualRank = cpu.utils.GetBits(cpu.ReadDword(channelOffset | 0x50080), 0, 1) == 1;
+                        module.DualRank = Utils.GetBits(cpu.ReadDword(channelOffset | 0x50080), 0, 1) == 1;
                     }
 
                     if (dimm2)
@@ -180,7 +180,7 @@ namespace ZenTimings
                         MemoryModule module = modules[dimmIndex++];
                         module.Slot = $"{Convert.ToChar(i + 65)}2";
                         module.DctOffset = channelOffset;
-                        module.DualRank = cpu.utils.GetBits(cpu.ReadDword(channelOffset | 0x50084), 0, 1) == 1;
+                        module.DualRank = Utils.GetBits(cpu.ReadDword(channelOffset | 0x50084), 0, 1) == 1;
                     }
                 }
             }
@@ -383,7 +383,7 @@ namespace ZenTimings
 
                 // When ProcODT is 0, then all other resistance values are 0
                 // Happens when one DIMM installed in A1 or A2 slot
-                if (BMC.Table == null || cpu.utils.AllZero(BMC.Table) || BMC.Config.ProcODT < 1) throw new Exception();
+                if (BMC.Table == null || Utils.AllZero(BMC.Table) || BMC.Config.ProcODT < 1) throw new Exception();
 
                 var vdimm = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVddio) / 1000);
                 if (vdimm > 0)
@@ -468,7 +468,7 @@ namespace ZenTimings
             uint timings23 = timings20 != timings21 ? (timings20 != 0x21060138 ? timings20 : timings21) : timings20;
 
             float configured = MEMCFG.Frequency;
-            float ratio = cpu.utils.GetBits(umcBase, 0, 7) / 3.0f;
+            float ratio = Utils.GetBits(umcBase, 0, 7) / 3.0f;
             float freqFromRatio = ratio * 200;
 
             MEMCFG.Ratio = ratio;
@@ -481,68 +481,68 @@ namespace ZenTimings
 
 
             MEMCFG.BGS = bgs0 == 0x87654321 && bgs1 == 0x87654321 ? "Disabled" : "Enabled";
-            MEMCFG.BGSAlt = cpu.utils.GetBits(bgsa0, 4, 7) > 0 || cpu.utils.GetBits(bgsa1, 4, 7) > 0
+            MEMCFG.BGSAlt = Utils.GetBits(bgsa0, 4, 7) > 0 || Utils.GetBits(bgsa1, 4, 7) > 0
                 ? "Enabled"
                 : "Disabled";
-            MEMCFG.GDM = cpu.utils.GetBits(umcBase, 11, 1) > 0 ? "Enabled" : "Disabled";
-            MEMCFG.Cmd2T = cpu.utils.GetBits(umcBase, 10, 1) > 0 ? "2T" : "1T";
+            MEMCFG.GDM = Utils.GetBits(umcBase, 11, 1) > 0 ? "Enabled" : "Disabled";
+            MEMCFG.Cmd2T = Utils.GetBits(umcBase, 10, 1) > 0 ? "2T" : "1T";
 
-            MEMCFG.CL = cpu.utils.GetBits(timings5, 0, 6);
-            MEMCFG.RAS = cpu.utils.GetBits(timings5, 8, 7);
-            MEMCFG.RCDRD = cpu.utils.GetBits(timings5, 16, 6);
-            MEMCFG.RCDWR = cpu.utils.GetBits(timings5, 24, 6);
+            MEMCFG.CL = Utils.GetBits(timings5, 0, 6);
+            MEMCFG.RAS = Utils.GetBits(timings5, 8, 7);
+            MEMCFG.RCDRD = Utils.GetBits(timings5, 16, 6);
+            MEMCFG.RCDWR = Utils.GetBits(timings5, 24, 6);
 
-            MEMCFG.RC = cpu.utils.GetBits(timings6, 0, 8);
-            MEMCFG.RP = cpu.utils.GetBits(timings6, 16, 6);
+            MEMCFG.RC = Utils.GetBits(timings6, 0, 8);
+            MEMCFG.RP = Utils.GetBits(timings6, 16, 6);
 
-            MEMCFG.RRDS = cpu.utils.GetBits(timings7, 0, 5);
-            MEMCFG.RRDL = cpu.utils.GetBits(timings7, 8, 5);
-            MEMCFG.RTP = cpu.utils.GetBits(timings7, 24, 5);
+            MEMCFG.RRDS = Utils.GetBits(timings7, 0, 5);
+            MEMCFG.RRDL = Utils.GetBits(timings7, 8, 5);
+            MEMCFG.RTP = Utils.GetBits(timings7, 24, 5);
 
-            MEMCFG.FAW = cpu.utils.GetBits(timings8, 0, 8);
+            MEMCFG.FAW = Utils.GetBits(timings8, 0, 8);
 
-            MEMCFG.CWL = cpu.utils.GetBits(timings9, 0, 6);
-            MEMCFG.WTRS = cpu.utils.GetBits(timings9, 8, 5);
-            MEMCFG.WTRL = cpu.utils.GetBits(timings9, 16, 7);
+            MEMCFG.CWL = Utils.GetBits(timings9, 0, 6);
+            MEMCFG.WTRS = Utils.GetBits(timings9, 8, 5);
+            MEMCFG.WTRL = Utils.GetBits(timings9, 16, 7);
 
-            MEMCFG.WR = cpu.utils.GetBits(timings10, 0, 8);
+            MEMCFG.WR = Utils.GetBits(timings10, 0, 8);
 
-            MEMCFG.TRCPAGE = cpu.utils.GetBits(timings11, 20, 12);
+            MEMCFG.TRCPAGE = Utils.GetBits(timings11, 20, 12);
 
-            MEMCFG.RDRDDD = cpu.utils.GetBits(timings12, 0, 4);
-            MEMCFG.RDRDSD = cpu.utils.GetBits(timings12, 8, 4);
-            MEMCFG.RDRDSC = cpu.utils.GetBits(timings12, 16, 4);
-            MEMCFG.RDRDSCL = cpu.utils.GetBits(timings12, 24, 6);
+            MEMCFG.RDRDDD = Utils.GetBits(timings12, 0, 4);
+            MEMCFG.RDRDSD = Utils.GetBits(timings12, 8, 4);
+            MEMCFG.RDRDSC = Utils.GetBits(timings12, 16, 4);
+            MEMCFG.RDRDSCL = Utils.GetBits(timings12, 24, 6);
 
-            MEMCFG.WRWRDD = cpu.utils.GetBits(timings13, 0, 4);
-            MEMCFG.WRWRSD = cpu.utils.GetBits(timings13, 8, 4);
-            MEMCFG.WRWRSC = cpu.utils.GetBits(timings13, 16, 4);
-            MEMCFG.WRWRSCL = cpu.utils.GetBits(timings13, 24, 6);
+            MEMCFG.WRWRDD = Utils.GetBits(timings13, 0, 4);
+            MEMCFG.WRWRSD = Utils.GetBits(timings13, 8, 4);
+            MEMCFG.WRWRSC = Utils.GetBits(timings13, 16, 4);
+            MEMCFG.WRWRSCL = Utils.GetBits(timings13, 24, 6);
 
-            MEMCFG.RDWR = cpu.utils.GetBits(timings14, 8, 5);
-            MEMCFG.WRRD = cpu.utils.GetBits(timings14, 0, 4);
+            MEMCFG.RDWR = Utils.GetBits(timings14, 8, 5);
+            MEMCFG.WRRD = Utils.GetBits(timings14, 0, 4);
 
-            MEMCFG.REFI = cpu.utils.GetBits(timings15, 0, 16);
+            MEMCFG.REFI = Utils.GetBits(timings15, 0, 16);
 
-            MEMCFG.MODPDA = cpu.utils.GetBits(timings16, 24, 6);
-            MEMCFG.MRDPDA = cpu.utils.GetBits(timings16, 16, 6);
-            MEMCFG.MOD = cpu.utils.GetBits(timings16, 8, 6);
-            MEMCFG.MRD = cpu.utils.GetBits(timings16, 0, 6);
+            MEMCFG.MODPDA = Utils.GetBits(timings16, 24, 6);
+            MEMCFG.MRDPDA = Utils.GetBits(timings16, 16, 6);
+            MEMCFG.MOD = Utils.GetBits(timings16, 8, 6);
+            MEMCFG.MRD = Utils.GetBits(timings16, 0, 6);
 
-            MEMCFG.STAG = cpu.utils.GetBits(timings17, 16, 8);
+            MEMCFG.STAG = Utils.GetBits(timings17, 16, 8);
 
-            MEMCFG.XP = cpu.utils.GetBits(timings18, 0, 6);
-            MEMCFG.CKE = cpu.utils.GetBits(timings18, 24, 5);
+            MEMCFG.XP = Utils.GetBits(timings18, 0, 6);
+            MEMCFG.CKE = Utils.GetBits(timings18, 24, 5);
 
-            MEMCFG.PHYWRL = cpu.utils.GetBits(timings19, 8, 5);
-            MEMCFG.PHYRDL = cpu.utils.GetBits(timings19, 16, 6);
-            MEMCFG.PHYWRD = cpu.utils.GetBits(timings19, 24, 3);
+            MEMCFG.PHYWRL = Utils.GetBits(timings19, 8, 5);
+            MEMCFG.PHYRDL = Utils.GetBits(timings19, 16, 6);
+            MEMCFG.PHYWRD = Utils.GetBits(timings19, 24, 3);
 
-            MEMCFG.RFC = cpu.utils.GetBits(timings23, 0, 11);
-            MEMCFG.RFC2 = cpu.utils.GetBits(timings23, 11, 11);
-            MEMCFG.RFC4 = cpu.utils.GetBits(timings23, 22, 11);
+            MEMCFG.RFC = Utils.GetBits(timings23, 0, 11);
+            MEMCFG.RFC2 = Utils.GetBits(timings23, 11, 11);
+            MEMCFG.RFC4 = Utils.GetBits(timings23, 22, 11);
 
-            MEMCFG.PowerDown = cpu.utils.GetBits(powerDown, 28, 1) == 1 ? "Enabled" : "Disabled";
+            MEMCFG.PowerDown = Utils.GetBits(powerDown, 28, 1) == 1 ? "Enabled" : "Disabled";
         }
 
         private bool WaitForDriverLoad()
@@ -554,7 +554,7 @@ namespace ZenTimings
             // Refresh until driver is opened
             do
             {
-                temp = cpu.utils.IsInpOutDriverOpen();
+                temp = cpu.io.IsInpOutDriverOpen();
             } while (!temp && timer.Elapsed.TotalMilliseconds < 10000);
 
             timer.Stop();
