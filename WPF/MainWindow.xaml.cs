@@ -21,6 +21,7 @@ using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
+using Forms = System.Windows.Forms;
 //using OpenHardwareMonitor.Hardware;
 
 namespace ZenTimings
@@ -40,6 +41,7 @@ namespace ZenTimings
         private readonly AppSettings settings = (Application.Current as App)?.settings;
         private readonly List<IPlugin> plugins = new List<IPlugin>();
         private SystemInfoWindow siWnd = null;
+        internal readonly Forms.NotifyIcon _notifyIcon;
         private bool compatMode;
         //private Computer computer;
 
@@ -60,6 +62,8 @@ namespace ZenTimings
                 }
 
                 IconSource = GetIcon("pack://application:,,,/ZenTimings;component/Resources/ZenTimings2022.ico", 16);
+                _notifyIcon = GetTrayIcon();
+
                 InitializeComponent();
                 SplashWindow.Loading("Memory modules");
                 ReadMemoryModulesInfo();
@@ -136,8 +140,48 @@ namespace ZenTimings
             }
         }
 
+        private Forms.NotifyIcon GetTrayIcon()
+        {
+            string AssemblyProduct = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(
+                Assembly.GetExecutingAssembly(),
+                typeof(AssemblyProductAttribute), false)).Product;
+
+            string AssemblyVersion = ((AssemblyFileVersionAttribute)Attribute.GetCustomAttribute(
+                Assembly.GetExecutingAssembly(),
+                typeof(AssemblyFileVersionAttribute), false)).Version;
+            Forms.NotifyIcon notifyIcon = new Forms.NotifyIcon
+            {
+                Icon = Properties.Resources.ZenTimings2022
+            };
+
+            notifyIcon.MouseClick += NotifyIcon_MouseClick;
+            notifyIcon.ContextMenuStrip = new Forms.ContextMenuStrip();
+            notifyIcon.ContextMenuStrip.Items.Add($"{AssemblyProduct} {AssemblyVersion}", null, OnAppContextMenuItemClick);
+            notifyIcon.ContextMenuStrip.Items.Add("-");
+            notifyIcon.ContextMenuStrip.Items.Add("Exit", null, (object sender, EventArgs e) => ExitApplication());
+
+            return notifyIcon;
+        }
+
+        private void OnAppContextMenuItemClick(object sender, EventArgs e)
+        {
+            WindowState = WindowState.Normal;
+        }
+
+        private void NotifyIcon_MouseClick(object sender, Forms.MouseEventArgs e)
+        {
+            if (e.Button == Forms.MouseButtons.Left)
+            {
+                WindowState = WindowState.Normal;
+                Activate();
+            }
+
+            // else, default = show context menu
+        }
+
         private void ExitApplication()
         {
+            _notifyIcon?.Dispose();
             AsusWmi?.Dispose();
             cpu?.Dispose();
             Application.Current.Shutdown();
@@ -793,6 +837,20 @@ namespace ZenTimings
                 StopAutoRefresh();
             else if (WindowState == WindowState.Normal)
                 StartAutoRefresh();
+
+            if (WindowState == WindowState.Minimized)
+            {
+                if (settings.MinimizeToTray)
+                {
+                    _notifyIcon.Visible = true;
+                    ShowInTaskbar = false;
+                }
+            }
+            else
+            {
+                _notifyIcon.Visible = false;
+                ShowInTaskbar = true;
+            }
 
             MinimizeFootprint();
         }

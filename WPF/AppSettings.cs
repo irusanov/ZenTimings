@@ -107,6 +107,7 @@ namespace ZenTimings
         public bool CheckForUpdates { get; set; } = true;
         public string UpdaterSkippedVersion { get; set; } = "";
         public string UpdaterRemindLaterAt { get; set; } = "";
+        public bool MinimizeToTray { get; set; }
         public bool SaveWindowPosition { get; set; }
         public double WindowLeft { get; set; }
         public double WindowTop { get; set; }

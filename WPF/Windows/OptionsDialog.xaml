@@ -11,7 +11,7 @@
     mc:Ignorable="d"
     x:Name="OptionsWindow"
     Title="Options"
-    Height="264"
+    Height="284.667"
     Width="310"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterOwner"
@@ -77,6 +77,7 @@
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
                     </Grid.RowDefinitions>
 
                     <ToggleButton
@@ -121,9 +122,18 @@
                         Click="ComboBoxTheme_CheckedChanged" />
 
                     <ToggleButton
+                        x:Name="checkBoxMinimizeToTray"
+                        Content="Minimize To Tray"
+                        Grid.Row="3"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="3"
+                        Margin="0 5 5 5"
+                        Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
+                    
+                    <ToggleButton
                         x:Name="checkBoxSavePosition"
                         Grid.Column="0"
-                        Grid.Row="3"
+                        Grid.Row="4"
                         Grid.ColumnSpan="3"
                         Margin="0 5 5 5"
                         Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
@@ -132,7 +142,7 @@
                     <ToggleButton
                         x:Name="checkBoxCheckUpdate"
                         Grid.Column="0"
-                        Grid.Row="4"
+                        Grid.Row="5"
                         Grid.ColumnSpan="3"
                         Margin="0 5 5 5"
                         Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
