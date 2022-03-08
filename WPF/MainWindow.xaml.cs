@@ -952,6 +952,7 @@ namespace ZenTimings
                 settings.Save();
             }
 
+			_notifyIcon.Dispose();
             AsusWmi?.Dispose();
             cpu?.Dispose();
         }

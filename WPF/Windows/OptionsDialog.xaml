@@ -86,14 +86,14 @@
                         Grid.Row="0"
                         Margin="0 5 5 5"
                         Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
-                        Content="Advanced Mode"
+                        Content="Advanced mode"
                         Click="CheckBoxAdvancedMode_Click" />
 
                     <ToggleButton
                         x:Name="checkBoxAutoRefresh"
                         Grid.Column="0"
                         Grid.Row="1"
-                        Content="Auto Refresh"
+                        Content="Auto refresh"
                         Margin="0 5 5 5"
                         Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
                         Click="CheckBoxAutoRefresh_Click" />
@@ -118,12 +118,12 @@
                         Grid.Row="2"
                         Margin="0 5 5 5"
                         Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
-                        Content="Dark Mode"
+                        Content="Dark mode"
                         Click="ComboBoxTheme_CheckedChanged" />
 
                     <ToggleButton
                         x:Name="checkBoxMinimizeToTray"
-                        Content="Minimize To Tray"
+                        Content="Minimize to tray"
                         Grid.Row="3"
                         Grid.Column="0"
                         Grid.ColumnSpan="3"
@@ -137,7 +137,7 @@
                         Grid.ColumnSpan="3"
                         Margin="0 5 5 5"
                         Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
-                        Content="Save Window Position On Close" />
+                        Content="Save window position on close" />
 
                     <ToggleButton
                         x:Name="checkBoxCheckUpdate"
@@ -146,7 +146,7 @@
                         Grid.ColumnSpan="3"
                         Margin="0 5 5 5"
                         Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
-                        Content="Check For Updates On Startup" />
+                        Content="Check for updates on startup" />
                 </Grid>
             </TabItem>
             <TabItem

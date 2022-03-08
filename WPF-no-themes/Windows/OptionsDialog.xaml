@@ -51,6 +51,7 @@
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
                     </Grid.RowDefinitions>
 
                     <CheckBox
@@ -58,14 +59,14 @@
                         Grid.Column="0"
                         Grid.Row="0"
                         Margin="0 5 5 5"
-                        Content="Advanced Mode"
+                        Content="Advanced mode"
                         Click="CheckBoxAdvancedMode_Click" />
 
                     <CheckBox
                         x:Name="checkBoxAutoRefresh"
                         Grid.Column="0"
                         Grid.Row="1"
-                        Content="Auto Refresh"
+                        Content="Auto refresh"
                         Margin="0 5 5 5"
                         Click="CheckBoxAutoRefresh_Click" />
 
@@ -84,20 +85,28 @@
                         Padding="5 0" FontWeight="Normal" />
 
                     <CheckBox
-                        x:Name="checkBoxSavePosition"
-                        Grid.Column="0"
+                        x:Name="checkBoxMinimizeToTray"
+                        Content="Minimize to tray"
                         Grid.Row="2"
+                        Grid.Column="0"
                         Grid.ColumnSpan="3"
-                        Margin="0 5 5 5"
-                        Content="Save Window Position On Close" />
+                        Margin="0 5 5 5" />
 
                     <CheckBox
-                        x:Name="checkBoxCheckUpdate"
+                        x:Name="checkBoxSavePosition"
                         Grid.Column="0"
                         Grid.Row="3"
                         Grid.ColumnSpan="3"
                         Margin="0 5 5 5"
-                        Content="Check For Updates On Startup" />
+                        Content="Save window position on close" />
+
+                    <CheckBox
+                        x:Name="checkBoxCheckUpdate"
+                        Grid.Column="0"
+                        Grid.Row="4"
+                        Grid.ColumnSpan="3"
+                        Margin="0 5 5 5"
+                        Content="Check for updates on startup" />
                 </Grid>
 
                 <Border Style="{DynamicResource Separator}" Margin="0 20 0 0" />

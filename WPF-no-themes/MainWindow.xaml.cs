@@ -15,6 +15,7 @@ using System.Windows.Threading;
 using ZenStates.Core;
 using ZenTimings.Plugin;
 using ZenTimings.Windows;
+using Forms = System.Windows.Forms;
 
 namespace ZenTimings
 {
@@ -32,6 +33,7 @@ namespace ZenTimings
         private readonly DispatcherTimer PowerCfgTimer = new DispatcherTimer();
         private readonly AppSettings settings = (Application.Current as App)?.settings;
         private readonly List<IPlugin> plugins = new List<IPlugin>();
+        internal readonly Forms.NotifyIcon _notifyIcon;
         private bool compatMode;
         private delegate void Action();
 
@@ -51,6 +53,7 @@ namespace ZenTimings
                     throw new ApplicationException("CPU model is not supported.\nPlease run a debug report and send to the developer.");
                 }
 
+                _notifyIcon = GetTrayIcon();
                 InitializeComponent();
                 SplashWindow.Loading("Memory modules");
                 ReadMemoryModulesInfo();
@@ -117,8 +120,48 @@ namespace ZenTimings
             }
         }
 
+        private Forms.NotifyIcon GetTrayIcon()
+        {
+            string AssemblyProduct = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(
+                Assembly.GetExecutingAssembly(),
+                typeof(AssemblyProductAttribute), false)).Product;
+
+            string AssemblyVersion = ((AssemblyFileVersionAttribute)Attribute.GetCustomAttribute(
+                Assembly.GetExecutingAssembly(),
+                typeof(AssemblyFileVersionAttribute), false)).Version;
+            Forms.NotifyIcon notifyIcon = new Forms.NotifyIcon
+            {
+                Icon = Properties.Resources.ZenTimings2022
+            };
+
+            notifyIcon.MouseClick += NotifyIcon_MouseClick;
+            notifyIcon.ContextMenuStrip = new Forms.ContextMenuStrip();
+            notifyIcon.ContextMenuStrip.Items.Add($"{AssemblyProduct} {AssemblyVersion}", null, OnAppContextMenuItemClick);
+            notifyIcon.ContextMenuStrip.Items.Add("-");
+            notifyIcon.ContextMenuStrip.Items.Add("Exit", null, (object sender, EventArgs e) => ExitApplication());
+
+            return notifyIcon;
+        }
+
+        private void OnAppContextMenuItemClick(object sender, EventArgs e)
+        {
+            WindowState = WindowState.Normal;
+        }
+
+        private void NotifyIcon_MouseClick(object sender, Forms.MouseEventArgs e)
+        {
+            if (e.Button == Forms.MouseButtons.Left)
+            {
+                WindowState = WindowState.Normal;
+                Activate();
+            }
+
+            // else, default = show context menu
+        }
+
         private void ExitApplication()
         {
+            _notifyIcon?.Dispose();
             AsusWmi?.Dispose();
             cpu?.Dispose();
             Application.Current.Shutdown();
@@ -742,6 +785,20 @@ namespace ZenTimings
             else if (WindowState == WindowState.Normal)
                 StartAutoRefresh();
 
+            if (WindowState == WindowState.Minimized)
+            {
+                if (settings.MinimizeToTray)
+                {
+                    _notifyIcon.Visible = true;
+                    ShowInTaskbar = false;
+                }
+            }
+            else
+            {
+                _notifyIcon.Visible = false;
+                ShowInTaskbar = true;
+            }
+
             MinimizeFootprint();
         }
 
@@ -796,6 +853,21 @@ namespace ZenTimings
         private void ComboBoxPartNumber_SelectionChanged(object sender, RoutedEventArgs e)
         {
             if (sender is ComboBox combo) ReadTimings(modules[combo.SelectedIndex].DctOffset);
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+			if (settings.SaveWindowPosition)
+            {
+                settings.WindowLeft = Left;
+                settings.WindowTop = Top;
+                settings.Save();
+            }
+
+            _notifyIcon.Dispose();
+            AsusWmi?.Dispose();
+            cpu?.Dispose();
+
         }
     }
     public class FloatToNAConverter : IValueConverter

@@ -30,6 +30,7 @@ namespace ZenTimings.Windows
             checkBoxAdvancedMode.IsChecked = appSettings.AdvancedMode;
             checkBoxCheckUpdate.IsChecked = appSettings.CheckForUpdates;
             checkBoxSavePosition.IsChecked = appSettings.SaveWindowPosition;
+            checkBoxMinimizeToTray.IsChecked = appSettings.MinimizeToTray;
             numericUpDownRefreshInterval.IsEnabled = appSettings.AutoRefresh && appSettings.AdvancedMode;
             numericUpDownRefreshInterval.Text = appSettings.AutoRefreshInterval.ToString();
             msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
@@ -56,6 +57,7 @@ namespace ZenTimings.Windows
             appSettings.AdvancedMode = (bool) checkBoxAdvancedMode.IsChecked;
             appSettings.CheckForUpdates = (bool) checkBoxCheckUpdate.IsChecked;
             appSettings.SaveWindowPosition = (bool)checkBoxSavePosition.IsChecked;
+            appSettings.MinimizeToTray = (bool)checkBoxMinimizeToTray.IsChecked;
 
             appSettings.Save();
 

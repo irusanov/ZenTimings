@@ -17,7 +17,7 @@
         StateChanged="AdonisWindow_StateChanged"
         SizeChanged="AdonisWindow_SizeChanged"
         Activated="AdonisWindow_Activated"
-        Loaded="AdonisWindow_Loaded">
+        Loaded="AdonisWindow_Loaded" Closing="Window_Closing">
 
     <!--Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
