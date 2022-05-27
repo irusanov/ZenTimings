@@ -16,6 +16,14 @@ namespace ZenTimings
             return true;
         }
 
+        public enum MemType
+        {
+            DDR4 = 0,
+            DDR5 = 1,
+        }
+
+        public MemType Type { get; set; }
+
         private float frequency;
 
         public float Frequency

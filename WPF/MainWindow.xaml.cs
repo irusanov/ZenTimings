@@ -22,6 +22,7 @@ using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
 using Forms = System.Windows.Forms;
+using static ZenTimings.MemoryConfig;
 //using OpenHardwareMonitor.Hardware;
 
 namespace ZenTimings
@@ -88,7 +89,7 @@ namespace ZenTimings
                         // refresh the table again, to avoid displaying initial fclk, mclk and uclk values,
                         // which seem to be a little off when transferring the table for the "first" time,
                         // after an idle period
-                        RefreshPowerTable();
+                        cpu.RefreshPowerTable();
                     }
                     else
                     {
@@ -195,6 +196,7 @@ namespace ZenTimings
         private void ReadChannelsInfo()
         {
             int dimmIndex = 0;
+            int channelsPerDimm = MEMCFG.Type == MemType.DDR5 ? 2 : 1;
 
             // Get the offset by probing the IMC0 to IMC7
             // It appears that offsets 0x80 and 0x84 are DIMM config registers
@@ -202,31 +204,33 @@ namespace ZenTimings
             // 0x50000
             // offset 0, bit 0 when set to 1 means DIMM1 is installed
             // offset 8, bit 0 when set to 1 means DIMM2 is installed
-            for (var i = 0; i < 8; i++)
+            for (var i = 0; i < 8 * channelsPerDimm; i += channelsPerDimm)
             {
                 uint channelOffset = (uint)i << 20;
                 bool channel = Utils.GetBits(cpu.ReadDword(channelOffset | 0x50DF0), 19, 1) == 0;
                 bool dimm1 = Utils.GetBits(cpu.ReadDword(channelOffset | 0x50000), 0, 1) == 1;
                 bool dimm2 = Utils.GetBits(cpu.ReadDword(channelOffset | 0x50008), 0, 1) == 1;
-
-                if (channel && (dimm1 || dimm2))
+                try
                 {
-                    if (dimm1)
+                    if (channel && (dimm1 || dimm2))
                     {
-                        MemoryModule module = modules[dimmIndex++];
-                        module.Slot = $"{Convert.ToChar(i + 65)}1";
-                        module.DctOffset = channelOffset;
-                        module.DualRank = Utils.GetBits(cpu.ReadDword(channelOffset | 0x50080), 0, 1) == 1;
-                    }
+                        if (dimm1)
+                        {
+                            MemoryModule module = modules[dimmIndex++];
+                            module.Slot = $"{Convert.ToChar(i / channelsPerDimm + 65)}1";
+                            module.DctOffset = channelOffset;
+                            module.Rank = (MemRank)Utils.GetBits(cpu.ReadDword(channelOffset | 0x50080), 0, 1);
+                        }
 
-                    if (dimm2)
-                    {
-                        MemoryModule module = modules[dimmIndex++];
-                        module.Slot = $"{Convert.ToChar(i + 65)}2";
-                        module.DctOffset = channelOffset;
-                        module.DualRank = Utils.GetBits(cpu.ReadDword(channelOffset | 0x50084), 0, 1) == 1;
+                        if (dimm2)
+                        {
+                            MemoryModule module = modules[dimmIndex++];
+                            module.Slot = $"{Convert.ToChar(i / channelsPerDimm + 65)}2";
+                            module.DctOffset = channelOffset;
+                            module.Rank = (MemRank)Utils.GetBits(cpu.ReadDword(channelOffset | 0x50084), 0, 1);
+                        }
                     }
-                }
+                } catch { }
             }
         }
 
@@ -300,7 +304,7 @@ namespace ZenTimings
                     var rank = module.DualRank ? "DR" : "SR";
                     totalCapacity += module.Capacity;
                     comboBoxPartNumber.Items.Add(
-                        $"{module.Slot}: {module.PartNumber} ({module.Capacity / 1024 / (1024 * 1024)}GB, {rank})");
+                        $"{module.Slot}: {module.PartNumber} ({module.Capacity / 1024 / (1024 * 1024)}GB, {module.Rank})");
                 }
 
                 if (modules[0].ClockSpeed != 0)
@@ -309,8 +313,11 @@ namespace ZenTimings
                 if (totalCapacity != 0)
                     MEMCFG.TotalCapacity = $"{totalCapacity / 1024 / (1024 * 1024)}GB";
 
-                comboBoxPartNumber.SelectedIndex = 0;
-                comboBoxPartNumber.SelectionChanged += ComboBoxPartNumber_SelectionChanged;
+                if (comboBoxPartNumber.Items.Count > 0)
+                {
+                    comboBoxPartNumber.SelectedIndex = 0;
+                    comboBoxPartNumber.SelectionChanged += ComboBoxPartNumber_SelectionChanged;
+                }
             }
         }
 
@@ -427,17 +434,21 @@ namespace ZenTimings
 
                 // When ProcODT is 0, then all other resistance values are 0
                 // Happens when one DIMM installed in A1 or A2 slot
-                if (BMC.Table == null || Utils.AllZero(BMC.Table) || BMC.Config.ProcODT < 1) throw new Exception();
+                if (BMC.Table == null || Utils.AllZero(BMC.Table) || BMC.Config.ProcODT < 1)
+                    throw new Exception("Failed to read AMD ACPI. Odt, Setup and Drive strength parameters will be empty.");
 
                 var vdimm = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVddio) / 1000);
-                if (vdimm > 0)
+                if (vdimm > 0 && vdimm < 3)
                 {
                     textBoxMemVddio.Text = $"{vdimm:F4}V";
                 }
                 else if (AsusWmi != null && AsusWmi.Status == 1)
                 {
-                    var sensor = AsusWmi.FindSensorByName("DRAM Voltage");
-                    if (sensor != null)
+                    AsusSensorInfo sensor = AsusWmi.FindSensorByName("DRAM Voltage");
+                    float temp = 0;
+                    bool valid = sensor != null && float.TryParse(sensor.Value, out temp);
+
+                    if (valid && temp > 0 && temp < 3)
                         textBoxMemVddio.Text = sensor.Value;
                     else
                         labelMemVddio.IsEnabled = false;
@@ -485,6 +496,7 @@ namespace ZenTimings
 
         private void ReadTimings(uint offset = 0)
         {
+            uint config = cpu.ReadDword(offset | 0x50100);
             uint powerDown = cpu.ReadDword(offset | 0x5012C);
             uint umcBase = cpu.ReadDword(offset | 0x50200);
             uint bgsa0 = cpu.ReadDword(offset | 0x500D0);
@@ -510,6 +522,8 @@ namespace ZenTimings
             uint timings21 = cpu.ReadDword(offset | 0x50264);
             uint timings22 = cpu.ReadDword(offset | 0x5028C);
             uint timings23 = timings20 != timings21 ? (timings20 != 0x21060138 ? timings20 : timings21) : timings20;
+
+            MEMCFG.Type = (MemType)Utils.GetBits(config, 0, 2);
 
             float configured = MEMCFG.Frequency;
             float ratio = Utils.GetBits(umcBase, 0, 7) / 3.0f;
@@ -573,13 +587,13 @@ namespace ZenTimings
             MEMCFG.MOD = Utils.GetBits(timings16, 8, 6);
             MEMCFG.MRD = Utils.GetBits(timings16, 0, 6);
 
-            MEMCFG.STAG = Utils.GetBits(timings17, 16, 8);
+            MEMCFG.STAG = Utils.GetBits(timings17, 16, 11);
 
             MEMCFG.XP = Utils.GetBits(timings18, 0, 6);
             MEMCFG.CKE = Utils.GetBits(timings18, 24, 5);
 
-            MEMCFG.PHYWRL = Utils.GetBits(timings19, 8, 5);
-            MEMCFG.PHYRDL = Utils.GetBits(timings19, 16, 6);
+            MEMCFG.PHYWRL = Utils.GetBits(timings19, 8, 8);
+            MEMCFG.PHYRDL = Utils.GetBits(timings19, 16, 8);
             MEMCFG.PHYWRD = Utils.GetBits(timings19, 24, 3);
 
             MEMCFG.RFC = Utils.GetBits(timings23, 0, 11);
@@ -680,14 +694,17 @@ namespace ZenTimings
                         var sensor = AsusWmi.FindSensorByName("DRAM Voltage");
                         if (sensor != null)
                             Dispatcher.Invoke(DispatcherPriority.ApplicationIdle,
-                                new Action(() => { textBoxMemVddio.Text = sensor.Value; }));
+                                new Action(() => {
+                                    textBoxMemVddio.Text = sensor.Value;
+                                    labelMemVddio.IsEnabled = true;
+                                }));
                     }
 
                     Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() =>
                     {
                         //ReadTimings();
                         //ReadMemoryConfig();
-                        RefreshPowerTable();
+                        cpu.RefreshPowerTable();
                         ReadSVI();
                         //RefreshSensors();
                     }));

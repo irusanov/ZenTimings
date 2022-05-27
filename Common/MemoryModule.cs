@@ -2,6 +2,13 @@
 
 namespace ZenTimings
 {
+    public enum MemRank
+    {
+        SR = 0,
+        DR = 1,
+        QR = 2,
+    }
+
     public class MemoryModule : IEnumerable
     {
         public string BankLabel { get; set; }
@@ -10,7 +17,7 @@ namespace ZenTimings
         public string DeviceLocator { get; set; }
         public ulong Capacity { get; set; }
         public uint ClockSpeed { get; set; }
-        public bool DualRank { get; set; } = false;
+        public MemRank Rank { get; set; }
         public string Slot { get; set; } = "";
         public uint DctOffset { get; set; } = 0;
 
