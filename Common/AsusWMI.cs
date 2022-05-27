@@ -79,35 +79,13 @@ namespace ZenTimings
             }
         }
 
-        private ManagementBaseObject InvokeMethod(ManagementObject mo, string methodName, string inParamName, uint arg)
-        {
-            try
-            {
-                // Obtain in-parameters for the method
-                ManagementBaseObject inParams = mo.GetMethodParameters($"{methodName}");
-
-                // Add the input parameters.
-                if (inParams != null)
-                    inParams[$"{inParamName}"] = arg;
-
-                // Execute the method and obtain the return values.
-                ManagementBaseObject outParams = mo.InvokeMethod($"{methodName}", inParams, null);
-
-                return outParams;
-            }
-            catch (ManagementException)
-            {
-                return null;
-            }
-        }
-
         private uint GetInvokeMethodData(ManagementObject mo = null, string methodName = "", string inParamName = null,
             uint arg = 0)
         {
             uint data = 0;
             try
             {
-                ManagementBaseObject res = InvokeMethod(mo, methodName, inParamName, arg);
+                ManagementBaseObject res = WMI.InvokeMethod(mo, methodName, inParamName, arg);
                 if (res != null)
                     data = (uint) res["Data"];
             }
@@ -162,7 +140,7 @@ namespace ZenTimings
             AsusSensorInfo sensor = new AsusSensorInfo();
             try
             {
-                ManagementBaseObject res = InvokeMethod(instance, "sensor_get_info", "Index", index);
+                ManagementBaseObject res = WMI.InvokeMethod(instance, "sensor_get_info", "Index", index);
                 if (res != null)
                 {
                     sensor.Index = index;

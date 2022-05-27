@@ -88,7 +88,7 @@ namespace ZenTimings.Windows
 
                     try
                     {
-                        pack = WMI.InvokeMethod(classInstance, functionObject, "pack", null, 0);
+                        pack = WMI.InvokeMethodAndGetValue(classInstance, functionObject, "pack", null, 0);
 
                         if (pack != null)
                         {

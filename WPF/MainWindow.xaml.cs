@@ -381,7 +381,7 @@ namespace ZenTimings
                 {
                     try
                     {
-                        var pack = WMI.InvokeMethod(classInstance, functionObject, "pack", null, 0);
+                        var pack = WMI.InvokeMethodAndGetValue(classInstance, functionObject, "pack", null, 0);
                         if (pack != null)
                         {
                             var ID = (uint[]) pack.GetPropertyValue("ID");
@@ -473,7 +473,7 @@ namespace ZenTimings
                 compatMode = true;
 
                 MessageBox.Show(
-                    "Failed to read AMD ACPI. Odt, Setup and Drive strength parameters will be empty.",
+                    ex.Message,
                     "Warning",
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
