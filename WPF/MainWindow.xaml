@@ -378,7 +378,7 @@
 
                     <ComboBox x:Name="comboBoxPartNumber" IsReadOnly="True" Grid.Column="0" />
 
-                    <Button Grid.Column="1"
+                    <!-- Button Grid.Column="1"
                             Width="20"
                             Height="16"
                             BorderThickness="0"
@@ -394,7 +394,7 @@
                                Stretch="None"
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center" />
-                    </Button>
+                    </Button-->
                 </Grid>
             </Border>
         </StackPanel>

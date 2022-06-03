@@ -27,6 +27,7 @@ namespace ZenTimings
             SysInfoWindowLeft = 0;
             SysInfoWindowHeight = 0;
             SysInfoWindowWidth = 0;
+            NotifiedChangelog = "";
 
             Save();
 
@@ -115,5 +116,6 @@ namespace ZenTimings
         public double SysInfoWindowTop { get; set; }
         public double SysInfoWindowWidth { get; set; }
         public double SysInfoWindowHeight { get; set; }
+        public string NotifiedChangelog { get; set; } = "";
     }
 }

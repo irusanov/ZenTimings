@@ -888,6 +888,16 @@ namespace ZenTimings
             var source = HwndSource.FromHwnd(handle);
 
             source?.AddHook(WndProc);
+
+            if (!settings.NotifiedChangelog.Equals(AssemblyVersion)) {
+                var changelogWindow = new Changelog()
+                {
+                    Owner = Application.Current.MainWindow
+                };
+                changelogWindow.ShowDialog();
+                settings.NotifiedChangelog = AssemblyVersion;
+                settings.Save();
+            }
         }
 
         private void OptionsToolStripMenuItem_Click(object sender, RoutedEventArgs e)
