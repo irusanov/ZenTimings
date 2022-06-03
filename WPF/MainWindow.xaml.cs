@@ -67,7 +67,25 @@ namespace ZenTimings
                 }
                 else if (cpu.info.codeName.Equals(Cpu.CodeName.Unsupported))
                 {
-                   throw new ApplicationException("CPU model is not supported.\nPlease run a debug report and send to the developer.");
+                    throw new ApplicationException("CPU model is not supported.\nPlease run a debug report and send to the developer.");
+                }
+                else if (cpu.info.codeName.Equals(Cpu.CodeName.Rembrandt) && !settings.NotifiedRembrandt.Equals(AssemblyVersion))
+                {
+                    MessageBox.Show(
+                        "DDR5 support is experimental and Advanced mode is not supported yet."
+                            + Environment.NewLine
+                            + Environment.NewLine
+                            + "You can still enable it in Tools -> Options, but it will most probably fail."
+                            + Environment.NewLine
+                            + Environment.NewLine
+                            + "If you're not able to turn off the Advanced mode from the UI, edit settings.xml manually and set AdvancedMode to 'false'. "
+                            + "You can also delete settings.xml file and it will be regenerated on next application launch.",
+                        "Limited Support",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+                    settings.AdvancedMode = false;
+                    settings.NotifiedRembrandt = AssemblyVersion;
+                    settings.Save();
                 }
 
                 IconSource = GetIcon("pack://application:,,,/ZenTimings;component/Resources/ZenTimings2022.ico", 16);
@@ -283,9 +301,9 @@ namespace ZenTimings
                 }
                 catch (Exception ex)
                 {
-                    var title = connected ? @"Failed to get installed memory parameters." : $@"{ex.Message}";
+                    var text = connected ? @"Failed to get installed memory parameters." : $@"{ex.Message}";
                     MessageBox.Show(
-                        title,
+                        text,
                         "Warning",
                         MessageBoxButton.OK,
                         MessageBoxImage.Warning);
@@ -971,6 +989,11 @@ namespace ZenTimings
             _notifyIcon.Dispose();
             AsusWmi?.Dispose();
             cpu?.Dispose();
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://www.paypal.com/donate?token=A1Y0nRwTYTg-zm7zh2eZRy3pwjoYvaAuXK1lS8ySIf8wLP6z4Mphjkz93evqbKiLjR5MRZQL3HFIQrCo");
         }
     }
 }

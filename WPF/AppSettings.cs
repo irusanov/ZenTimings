@@ -28,6 +28,7 @@ namespace ZenTimings
             SysInfoWindowHeight = 0;
             SysInfoWindowWidth = 0;
             NotifiedChangelog = "";
+            NotifiedRembrandt = "";
 
             Save();
 
@@ -117,5 +118,7 @@ namespace ZenTimings
         public double SysInfoWindowWidth { get; set; }
         public double SysInfoWindowHeight { get; set; }
         public string NotifiedChangelog { get; set; } = "";
+
+        public string NotifiedRembrandt { get; set; } = "";
     }
 }
