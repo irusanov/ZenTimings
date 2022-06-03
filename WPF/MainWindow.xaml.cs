@@ -111,15 +111,6 @@ namespace ZenTimings
                     //plugins[1].Open();
 
                     ReadSVI();
-                    /*computer = new Computer()
-                    {
-                        //CPUEnabled = true,
-                        //RAMEnabled = true,
-                        MainboardEnabled = true,
-                        //FanControllerEnabled = true,
-                    };
-
-                    computer.Open();*/
 
                     if (!AsusWmi.Init())
                     {
@@ -155,13 +146,6 @@ namespace ZenTimings
 
         private Forms.NotifyIcon GetTrayIcon()
         {
-            string AssemblyProduct = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(
-                Assembly.GetExecutingAssembly(),
-                typeof(AssemblyProductAttribute), false)).Product;
-
-            string AssemblyVersion = ((AssemblyFileVersionAttribute)Attribute.GetCustomAttribute(
-                Assembly.GetExecutingAssembly(),
-                typeof(AssemblyFileVersionAttribute), false)).Version;
             Forms.NotifyIcon notifyIcon = new Forms.NotifyIcon
             {
                 Icon = Properties.Resources.ZenTimings2022
@@ -338,13 +322,10 @@ namespace ZenTimings
         private void RefreshSensors()
         {
             plugins[1].Update();
-            foreach (var sensor in plugins[1].Sensors)
+/*            foreach (var sensor in plugins[1].Sensors)
             {
                 Console.WriteLine($"----Name: {sensor.Name}, Value: {sensor.Value}");
-            }
-
-            //Console.WriteLine("CCD temp: " + cpu.GetSingleCcdTemperature(0));
-            //Console.WriteLine("Core temp: " + cpu.GetCpuTemperature());
+            }*/
         }
 
         private void ReadSVI()
@@ -780,7 +761,12 @@ namespace ZenTimings
                 "Please report if something is not working as expected.", "Beta version", AdonisUI.Controls.MessageBoxButton.OK);
 #else
 #if DEBUG
-            Title = $@"{AssemblyTitle} {AssemblyVersion} (debug)";
+            Title += $@"{AssemblyVersion.Substring(AssemblyVersion.LastIndexOf('.'))}";
+
+            if (settings.AdvancedMode)
+            {
+                Title += $@" (debug)";
+            }
 #endif
 #endif
             if (compatMode && settings.AdvancedMode)

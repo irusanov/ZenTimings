@@ -217,7 +217,7 @@ namespace ZenTimings.Windows
             {
                 AddLine($"{module.BankLabel} | {module.DeviceLocator}");
                 AddLine($"-- Slot: {module.Slot}");
-                if (module.DualRank)
+                if (module.Rank == MemRank.DR)
                     AddLine("-- Dual Rank");
                 else
                     AddLine("-- Single Rank");
@@ -365,7 +365,7 @@ namespace ZenTimings.Windows
                 uint startAddress = 0x0005A000;
                 uint endAddress = 0x0005A0FF;
 
-                if (CPU.smu.SMU_TYPE == SMU.SmuType.TYPE_APU1)
+                if (CPU.smu.SMU_TYPE == SMU.SmuType.TYPE_APU1 || CPU.smu.SMU_TYPE == SMU.SmuType.TYPE_APU2)
                 {
                     startAddress = 0x0006F000;
                     endAddress = 0x0006F0FF;
