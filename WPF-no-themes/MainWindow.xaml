@@ -4,7 +4,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ZenTimings"
+        xmlns:converters="clr-namespace:ZenTimings.Converters"
         mc:Ignorable="d"
         Title="ZenTimings"
         Height="564"
@@ -25,9 +25,9 @@
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
-        <local:FloatToVoltageConverter x:Key="FloatToVoltage" />
-        <local:FloatToBoolConverter x:Key="FloatToBool" />
-        <local:FloatToNAConverter x:Key="FloatToNA" />
+        <converters:FloatToVoltageConverter x:Key="FloatToVoltage" />
+        <converters:FloatToBoolConverter x:Key="FloatToBool" />
+        <converters:FloatToNAConverter x:Key="FloatToNA" />
     </Window.Resources>
 
     <Border>
@@ -48,6 +48,8 @@
                         </MenuItem>
                         <MenuItem Header="_Help">
                             <MenuItem Header="_About" Click="AboutToolStripMenuItem_Click" />
+                            <MenuItem Header="Donate with _PayPal" Click="MenuItem_Click" />
+                            <MenuItem Header="Donate with _Revolut" Click="MenuItem_Click_1" />
                         </MenuItem>
                     </Menu>
                     <Button Grid.Column="1"
@@ -366,6 +368,7 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="240" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
                     <ComboBox x:Name="comboBoxPartNumber" IsReadOnly="True" />

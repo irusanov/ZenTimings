@@ -118,10 +118,5 @@ namespace ZenTimings.Windows
         {
             aboutWindowPopup.IsOpen = false;
         }
-
-        private void DonateBtn_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start("https://www.paypal.com/donate/?hosted_button_id=NLSRLE9MVDPCW");
-        }
     }
 }

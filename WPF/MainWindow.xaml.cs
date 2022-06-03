@@ -410,7 +410,8 @@ namespace ZenTimings
                 // Get APCB config from BIOS. Holds memory parameters.
                 BiosACPIFunction cmd = GetFunctionByIdString("Get APCB Config");
                 if (cmd == null)
-                    throw new Exception();
+                    throw new Exception("Could not get memory controller config");
+                    // cmd.ID = 0x00010001;
 
                 var apcbConfig = WMI.RunCommand(classInstance, cmd.ID);
 
@@ -775,8 +776,8 @@ namespace ZenTimings
 #if BETA
             Title = $@"{AssemblyTitle} {AssemblyVersion} beta";
 
-            AdonisUI.Controls.MessageBox.Show("This is a BETA version of the application. Some functions might be working incorrectly.\n\n" +
-                "Please report if something is not working as expected.", "Beta version", AdonisUI.Controls.MessageBoxButton.OK);
+            MessageBox.Show("This is a BETA version of the application. Some functions might be working incorrectly.\n\n" +
+                "Please report if something is not working as expected.", "Beta version", MessageBoxButton.OK);
 #else
 #if DEBUG
             Title += $@"{AssemblyVersion.Substring(AssemblyVersion.LastIndexOf('.'))}";

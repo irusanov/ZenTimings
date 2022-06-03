@@ -1,5 +1,8 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:Converters="clr-namespace:AdonisUI.Converters;assembly=AdonisUI" xmlns:Extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI" xmlns:AdonisUI="clr-namespace:AdonisUI;assembly=AdonisUI">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:Converters="clr-namespace:AdonisUI.Converters;assembly=AdonisUI"
+                    xmlns:Extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+                    xmlns:AdonisUI="clr-namespace:AdonisUI;assembly=AdonisUI">
 
     <BitmapImage x:Key="WarningImage" UriSource="../Resources/warning-icon.png" />
 

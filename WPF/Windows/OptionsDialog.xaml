@@ -196,7 +196,8 @@
                         Grid.Column="1"
                         Grid.Row="1"
                         Grid.ColumnSpan="2"
-                        Margin="5" />
+                        Margin="5"
+                        ItemsSource="{x:Null}"/>
                 </Grid>
             </TabItem>
         </TabControl>

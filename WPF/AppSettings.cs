@@ -118,7 +118,6 @@ namespace ZenTimings
         public double SysInfoWindowWidth { get; set; }
         public double SysInfoWindowHeight { get; set; }
         public string NotifiedChangelog { get; set; } = "";
-
         public string NotifiedRembrandt { get; set; } = "";
     }
 }

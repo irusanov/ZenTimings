@@ -12,7 +12,7 @@
     mc:Ignorable="d"
     Title="About"
     Height="250"
-     Width="300"
+    Width="300"
     ResizeMode="NoResize"
     SizeToContent="WidthAndHeight"
     ShowInTaskbar="False"
