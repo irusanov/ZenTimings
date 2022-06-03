@@ -27,7 +27,7 @@
 
         public Sensor(string name, int index)
         {
-            Name = name;
+            Name = name ?? "";
             Index = index;
         }
 

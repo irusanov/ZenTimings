@@ -46,6 +46,14 @@ namespace ZenTimings
         private bool compatMode;
         //private Computer computer;
 
+        private readonly string AssemblyProduct = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(
+            Assembly.GetExecutingAssembly(),
+            typeof(AssemblyProductAttribute), false)).Product;
+
+        private readonly string AssemblyVersion = ((AssemblyFileVersionAttribute)Attribute.GetCustomAttribute(
+            Assembly.GetExecutingAssembly(),
+            typeof(AssemblyFileVersionAttribute), false)).Version;
+
         public MainWindow()
         {
             try
@@ -99,6 +107,9 @@ namespace ZenTimings
                     SplashWindow.Loading("Plugins");
                     SplashWindow.Loading("SVI2 Plugin");
                     plugins.Add(new SVI2Plugin(cpu));
+                    //plugins.Add(new OHWMPlugin());
+                    //plugins[1].Open();
+
                     ReadSVI();
                     /*computer = new Computer()
                     {
@@ -131,7 +142,8 @@ namespace ZenTimings
                     timings = MEMCFG,
                     cpu.powerTable,
                     WMIPresent = !compatMode,
-                    settings
+                    settings,
+                    plugins
                 };
             }
             catch (Exception ex)
@@ -182,6 +194,9 @@ namespace ZenTimings
 
         private void ExitApplication()
         {
+            foreach (var plugin in plugins)
+                plugin?.Close();
+
             _notifyIcon?.Dispose();
             AsusWmi?.Dispose();
             cpu?.Dispose();
@@ -301,7 +316,6 @@ namespace ZenTimings
 
                 foreach (var module in modules)
                 {
-                    var rank = module.DualRank ? "DR" : "SR";
                     totalCapacity += module.Capacity;
                     comboBoxPartNumber.Items.Add(
                         $"{module.Slot}: {module.PartNumber} ({module.Capacity / 1024 / (1024 * 1024)}GB, {module.Rank})");
@@ -321,29 +335,16 @@ namespace ZenTimings
             }
         }
 
-/*        private void RefreshSensors()
+        private void RefreshSensors()
         {
-            foreach (var hardware in computer.Hardware)
+            plugins[1].Update();
+            foreach (var sensor in plugins[1].Sensors)
             {
-                if (hardware.HardwareType == HardwareType.Mainboard)
-                {
-                    foreach (var subHardware in hardware.SubHardware)
-                    {
-                        subHardware.Update();
-
-                        foreach (var subsensor in subHardware.Sensors)
-                        {
-                            //if (subsensor.SensorType == SensorType.Voltage)
-                                Console.WriteLine($"----{subsensor.SensorType}, Name: {subsensor.Name}, Value: {subsensor.Value}");
-                        }
-                    }
-                }
+                Console.WriteLine($"----Name: {sensor.Name}, Value: {sensor.Value}");
             }
-        }*/
 
-        private bool RefreshPowerTable()
-        {
-            return cpu.RefreshPowerTable() == SMU.Status.OK;
+            //Console.WriteLine("CCD temp: " + cpu.GetSingleCcdTemperature(0));
+            //Console.WriteLine("Core temp: " + cpu.GetCpuTemperature());
         }
 
         private void ReadSVI()
@@ -369,17 +370,16 @@ namespace ZenTimings
                     $"{className}.InstanceName='{instanceName}'",
                     null);
 
-                // Get possible values (index) of a memory option in BIOS
-                /*pack = WMI.InvokeMethod(classInstance, "Getdvalues", "pack", "ID", 0x20007);
-                if (pack != null)
+               /* // Get possible values (index) of a memory option in BIOS
+                var dvaluesPack = WMI.InvokeMethod(classInstance, "Getdvalues", "pack", "ID", 0x20035);
+                if (dvaluesPack != null)
                 {
-                    uint[] DValuesBuffer = (uint[])pack.GetPropertyValue("DValuesBuffer");
+                    uint[] DValuesBuffer = (uint[])dvaluesPack.GetPropertyValue("DValuesBuffer");
                     for (var i = 0; i < DValuesBuffer.Length; i++)
                     {
                         Debug.WriteLine("{0}", DValuesBuffer[i]);
                     }
-                }
-                */
+                }*/
 
 
                 // Get function names with their IDs
@@ -702,11 +702,11 @@ namespace ZenTimings
 
                     Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() =>
                     {
-                        //ReadTimings();
-                        //ReadMemoryConfig();
+                        // ReadTimings();
+                        // ReadMemoryConfig();
                         cpu.RefreshPowerTable();
                         ReadSVI();
-                        //RefreshSensors();
+                        // RefreshSensors();
                     }));
                 }).Start();
             }
@@ -979,7 +979,10 @@ namespace ZenTimings
                 settings.Save();
             }
 
-			_notifyIcon.Dispose();
+            foreach (var plugin in plugins)
+                plugin?.Close();
+
+            _notifyIcon.Dispose();
             AsusWmi?.Dispose();
             cpu?.Dispose();
         }

@@ -11,7 +11,8 @@ namespace ZenTimings.Plugin
         string Author { get; }
         string Version { get; }
         List<Sensor> Sensors { get; }
-        //void Init();
+        void Open();
+        void Close();
         bool Update();
     }
 }
