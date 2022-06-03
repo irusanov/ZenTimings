@@ -46,6 +46,7 @@
         </Popup>
         <Grid>
             <Grid.ColumnDefinitions>
+                <ColumnDefinition  Width="auto"/>
                 <ColumnDefinition />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
@@ -59,7 +60,7 @@
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Grid.Column="0"
-                Grid.ColumnSpan="2"
+                Grid.ColumnSpan="3"
                 Padding="0"
                 Background="{DynamicResource PanelBackgound}"
                 Grid.Row="0"
@@ -127,7 +128,7 @@
 
             <Button
                 x:Name="CheckUpdateBtn"
-                Grid.Column="0"
+                Grid.Column="1"
                 Grid.Row="1"
                 Content="Check for Update"
                 IsCancel="False"
@@ -138,7 +139,7 @@
                 Click="CheckUpdateBtn_Click" />
 
             <Button
-                Grid.Column="1"
+                Grid.Column="2"
                 Grid.Row="1"
                 Content="OK"
                 IsCancel="True"
@@ -146,6 +147,7 @@
                 HorizontalAlignment="Right"
                 Width="60"
                 Margin="10" />
+
         </Grid>
     </StackPanel>
 </adonisControls:AdonisWindow>

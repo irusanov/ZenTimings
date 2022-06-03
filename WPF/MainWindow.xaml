@@ -55,6 +55,8 @@
                         </MenuItem>
                         <MenuItem Header="_Help">
                             <MenuItem Header="_About" Click="AboutToolStripMenuItem_Click" />
+                            <MenuItem Header="Donate with _PayPal" Click="MenuItem_Click" />
+                            <MenuItem Header="Donate with _Revolut" Click="MenuItem_Click_1" />
                         </MenuItem>
                     </Menu>
                     <Button Grid.Column="1"

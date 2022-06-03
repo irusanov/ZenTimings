@@ -993,7 +993,12 @@ namespace ZenTimings
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://www.paypal.com/donate?token=A1Y0nRwTYTg-zm7zh2eZRy3pwjoYvaAuXK1lS8ySIf8wLP6z4Mphjkz93evqbKiLjR5MRZQL3HFIQrCo");
+            Process.Start("https://www.paypal.com/donate/?hosted_button_id=NLSRLE9MVDPCW");
+        }
+
+        private void MenuItem_Click_1(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://revolut.me/ivanrusanov");
         }
     }
 }
