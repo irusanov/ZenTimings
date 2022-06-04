@@ -46,7 +46,7 @@
             </TextBlock>
         </Popup>
 
-        <TabControl
+        <!--TabControl
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Padding="0"
@@ -63,7 +63,7 @@
                 Header="General"
                 Background="{DynamicResource PanelBackgound}"
                 BorderThickness="0,1,1,1"
-                BorderBrush="{DynamicResource SeparatorColor}">
+                BorderBrush="{DynamicResource SeparatorColor}"-->
                 <Grid Margin="8,12,8,8">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto" />
@@ -148,7 +148,7 @@
                         Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
                         Content="Check for updates on startup" />
                 </Grid>
-            </TabItem>
+            <!--/TabItem>
             <TabItem
                 Header="Sensors"
                 Background="{DynamicResource PanelBackgound}"
@@ -200,7 +200,7 @@
                         ItemsSource="{x:Null}"/>
                 </Grid>
             </TabItem>
-        </TabControl>
+        </TabControl-->
 
         <Grid>
             <Grid.ColumnDefinitions>
