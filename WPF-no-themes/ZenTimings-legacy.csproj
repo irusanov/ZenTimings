@@ -39,8 +39,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>
-    </ApplicationIcon>
+    <ApplicationIcon>Resources\ZenTimings2022.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <TransformOnBuild>true</TransformOnBuild>

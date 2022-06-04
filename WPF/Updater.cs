@@ -20,8 +20,11 @@ namespace ZenTimings
         //public static int status = 0;
         private static bool manual;
         private static string ChangelogText { get; set; }
+#if DEBUG
+        private const string url = "https://zentimings.protonrom.com/AutoUpdater_debug.xml";
+#else
         private const string url = "https://zentimings.protonrom.com/AutoUpdater.xml";
-
+#endif
         protected virtual void OnUpdateCheckCompleteEvent(EventArgs e)
         {
             // Make a temporary copy of the event to avoid possibility of

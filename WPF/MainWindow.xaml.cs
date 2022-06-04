@@ -774,7 +774,7 @@ namespace ZenTimings
 
             Title = $"{AssemblyTitle} {AssemblyVersion.Substring(0, AssemblyVersion.LastIndexOf('.'))}";
 #if BETA
-            Title = $@"{AssemblyTitle} {AssemblyVersion} beta";
+            Title += @" beta";
 
             MessageBox.Show("This is a BETA version of the application. Some functions might be working incorrectly.\n\n" +
                 "Please report if something is not working as expected.", "Beta version", MessageBoxButton.OK);
@@ -784,12 +784,12 @@ namespace ZenTimings
 
             if (settings.AdvancedMode)
             {
-                Title += $@" (debug)";
+                Title += @" (debug)";
             }
 #endif
 #endif
             if (compatMode && settings.AdvancedMode)
-                Title += " (compatibility)";
+                Title += @" (compatibility)";
         }
 
         private void Window_Initialized(object sender, EventArgs e)
