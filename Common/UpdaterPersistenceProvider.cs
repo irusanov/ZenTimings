@@ -16,7 +16,13 @@ namespace ZenTimings
         /// <returns>Returns a version to skip. If skip value is false or not present then it will return null.</returns>
         public Version GetSkippedVersion()
         {
-            return Assembly.GetExecutingAssembly().GetName().Version;
+            // return Assembly.GetExecutingAssembly().GetName().Version;
+            if (appSettings != null && appSettings.UpdaterSkippedVersion != null && appSettings.UpdaterSkippedVersion != "")
+            {
+                return new Version(appSettings.UpdaterSkippedVersion);
+            }
+
+            return new Version(0, 0, 0);
         }
 
         /// <summary>

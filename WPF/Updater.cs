@@ -52,6 +52,8 @@ namespace ZenTimings
                 Init((Application.Current as App).settings);
             }*/
 
+            AutoUpdater.ParseUpdateInfoEvent -= AutoUpdaterOnParseUpdateInfoEvent;
+            AutoUpdater.CheckForUpdateEvent -= AutoUpdaterOnCheckForUpdateEvent;
             AutoUpdater.ParseUpdateInfoEvent += AutoUpdaterOnParseUpdateInfoEvent;
             AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
 
@@ -106,7 +108,8 @@ namespace ZenTimings
         {
             if (args.Error == null)
             {
-                if (args.IsUpdateAvailable)
+                Version currentVersion = new Version(args.CurrentVersion);
+                if (args.IsUpdateAvailable && (manual || !AutoUpdater.PersistenceProvider.GetSkippedVersion().Equals(currentVersion)))
                 {
                     var messageBox = new MessageBoxModel
                     {
@@ -115,8 +118,20 @@ namespace ZenTimings
                                $"{ChangelogText}{Environment.NewLine}" +
                                "Do you want to update the application now?",
                         Caption = @"Update Available",
-                        Buttons = MessageBoxButtons.YesNo()
+                        Buttons = MessageBoxButtons.YesNo(yesLabel: "Update", noLabel: "Skip"),
                     };
+
+                    if (!manual)
+                    {
+                        messageBox.CheckBoxes = new[]
+                        {
+                            new MessageBoxCheckBoxModel("Don't ask for this update again")
+                            {
+                                IsChecked = false,
+                                Placement = MessageBoxCheckBoxPlacement.BelowText,
+                            },
+                        };
+                    }
 
                     MessageBox.Show(messageBox);
 
@@ -142,8 +157,16 @@ namespace ZenTimings
                                 MessageBoxImage.Error);
                         }
                     }
-
-                    if (!manual) SplashWindow.splash.Show();
+                    else if (!manual)
+                    {
+                        var enumerator = messageBox.CheckBoxes.GetEnumerator();
+                        enumerator.MoveNext();
+                        if (enumerator.Current.IsChecked)
+                        {
+                            AutoUpdater.PersistenceProvider.SetSkippedVersion(currentVersion);
+                        }
+                        SplashWindow.splash.Show();
+                    }
                 }
                 else if (manual)
                 {
@@ -169,8 +192,6 @@ namespace ZenTimings
                         MessageBoxImage.Error);
             	}
             }
-            AutoUpdater.ParseUpdateInfoEvent -= AutoUpdaterOnParseUpdateInfoEvent;
-            AutoUpdater.CheckForUpdateEvent -= AutoUpdaterOnCheckForUpdateEvent;
         }
     }
 }
