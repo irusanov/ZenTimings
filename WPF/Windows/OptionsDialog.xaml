@@ -20,7 +20,7 @@
     ShowInTaskbar="False"
     BorderThickness="1"
     UseLayoutRounding="True"
-    BorderBrush="{DynamicResource WindowBorderColor}">
+    BorderBrush="{DynamicResource WindowBorderColor}" Closing="OptionsWindow_Closing">
 
     <StackPanel x:Name="OptionWindowContent">
         <Popup

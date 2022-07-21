@@ -109,12 +109,7 @@ namespace ZenTimings.Windows
 
         private void ButtonSettingsCancel_Click(object sender, RoutedEventArgs e)
         {
-            // Restore theme on close if not saved
-            if (appSettings.DarkMode != _DarkMode)
-            {
-                appSettings.DarkMode = _DarkMode;
-                appSettings.ChangeTheme();
-            }
+            Close();
         }
 
         private void ButtonSettingsRestart_Click(object sender, RoutedEventArgs e)
@@ -126,6 +121,16 @@ namespace ZenTimings.Windows
         private void OptionsPopup_MouseDown(object sender, MouseButtonEventArgs e)
         {
             OptionsPopup.IsOpen = false;
+        }
+
+        private void OptionsWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            // Restore theme on close if not saved
+            if (appSettings.DarkMode != _DarkMode)
+            {
+                appSettings.DarkMode = _DarkMode;
+                appSettings.ChangeTheme();
+            }
         }
     }
 }
