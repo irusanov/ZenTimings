@@ -1001,5 +1001,15 @@ namespace ZenTimings
         {
             Process.Start("https://revolut.me/ivanrusanov");
         }
+
+        private void MenuItem_Click_2(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://discord.gg/FJBvj4VF");
+        }
+
+        private void MenuItem_Click_3(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://github.com/irusanov/ZenStates");
+        }
     }
 }
