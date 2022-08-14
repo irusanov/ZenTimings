@@ -1009,7 +1009,7 @@ namespace ZenTimings
 
         private void MenuItem_Click_3(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://github.com/irusanov/ZenStates");
+            Process.Start("https://github.com/irusanov/ZenTimings");
         }
     }
 }
