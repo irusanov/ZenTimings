@@ -496,6 +496,9 @@ namespace ZenTimings
         private void ReadTimings(uint offset = 0)
         {
             uint config = cpu.ReadDword(offset | 0x50100);
+
+            MEMCFG.Type = (MemType)Utils.GetBits(config, 0, 2);
+
             uint powerDown = cpu.ReadDword(offset | 0x5012C);
             uint umcBase = cpu.ReadDword(offset | 0x50200);
             uint bgsa0 = cpu.ReadDword(offset | 0x500D0);
@@ -517,12 +520,29 @@ namespace ZenTimings
             uint timings17 = cpu.ReadDword(offset | 0x50250);
             uint timings18 = cpu.ReadDword(offset | 0x50254);
             uint timings19 = cpu.ReadDword(offset | 0x50258);
-            uint timings20 = cpu.ReadDword(offset | 0x50260);
-            uint timings21 = cpu.ReadDword(offset | 0x50264);
+            uint trfcTimings0 = cpu.ReadDword(offset | 0x50260);
+            uint trfcTimings1 = cpu.ReadDword(offset | 0x50264);
+            uint trfcTimings2 = cpu.ReadDword(offset | 0x50268);
+            uint trfcTimings3 = cpu.ReadDword(offset | 0x5026C);
             uint timings22 = cpu.ReadDword(offset | 0x5028C);
-            uint timings23 = timings20 != timings21 ? (timings20 != 0x21060138 ? timings20 : timings21) : timings20;
+            uint trfcRegValue = 0;
 
-            MEMCFG.Type = (MemType)Utils.GetBits(config, 0, 2);
+            if (MEMCFG.Type == MemType.DDR4)
+            {
+                trfcRegValue = trfcTimings0 != trfcTimings1 ? (trfcTimings0 != 0x21060138 ? trfcTimings0 : trfcTimings1) : trfcTimings0;
+            } 
+            else if (MEMCFG.Type == MemType.DDR5)
+            {
+                uint[] ddr5Regs = { trfcTimings0, trfcTimings1, trfcTimings2, trfcTimings3 };
+                foreach (uint reg in ddr5Regs)
+                {
+                    if (reg != 0x00C00138)
+                    {
+                        trfcRegValue = reg;
+                        break;
+                    }
+                }
+            }
 
             float configured = MEMCFG.Frequency;
             float ratio = Utils.GetBits(umcBase, 0, 7) / 3.0f;
@@ -595,9 +615,18 @@ namespace ZenTimings
             MEMCFG.PHYRDL = Utils.GetBits(timings19, 16, 8);
             MEMCFG.PHYWRD = Utils.GetBits(timings19, 24, 3);
 
-            MEMCFG.RFC = Utils.GetBits(timings23, 0, 11);
-            MEMCFG.RFC2 = Utils.GetBits(timings23, 11, 11);
-            MEMCFG.RFC4 = Utils.GetBits(timings23, 22, 11);
+            if (MEMCFG.Type == MemType.DDR4)
+            {
+                MEMCFG.RFC = Utils.GetBits(trfcRegValue, 0, 11);
+                MEMCFG.RFC2 = Utils.GetBits(trfcRegValue, 11, 11);
+                MEMCFG.RFC4 = Utils.GetBits(trfcRegValue, 22, 11);
+            }
+
+            if (MEMCFG.Type == MemType.DDR5)
+            {
+                MEMCFG.RFC = Utils.GetBits(trfcRegValue, 0, 16);
+                MEMCFG.RFC2 = Utils.GetBits(trfcRegValue, 16, 16);
+            }
 
             MEMCFG.PowerDown = Utils.GetBits(powerDown, 28, 1) == 1 ? "Enabled" : "Disabled";
         }

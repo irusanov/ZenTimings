@@ -34,6 +34,7 @@
         <converters:FloatToVoltageConverter x:Key="FloatToVoltage" />
         <converters:FloatToBoolConverter x:Key="FloatToBool" />
         <converters:FloatToNAConverter x:Key="FloatToNA" />
+        <converters:MemTypeToVisConverter x:Key="MemTypeToBool" />
     </Window.Resources>
 
     <Border>
@@ -127,7 +128,9 @@
                             <TextBlock Text="tRFC (ns)" TextAlignment="Right" />
                             <TextBlock Text="tRFC" TextAlignment="Right" />
                             <TextBlock Text="tRFC2" TextAlignment="Right" />
-                            <TextBlock Text="tRFC4" TextAlignment="Right" />
+                            <TextBlock Text="tRFC4"
+                                       TextAlignment="Right"
+                                       Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource MemTypeToBool}}"/>
                             <TextBlock Text="tMOD" TextAlignment="Right" />
                             <TextBlock Text="tMODPDA" TextAlignment="Right" />
                             <TextBlock Text="tPHYWRD" TextAlignment="Right" />
@@ -175,7 +178,8 @@
                             <TextBlock Text="{Binding timings.RFC2, FallbackValue='N/A'}"
                                        Style="{DynamicResource ValueStyles}" />
                             <TextBlock Text="{Binding timings.RFC4, FallbackValue='N/A'}"
-                                       Style="{DynamicResource ValueStyles}" />
+                                       Style="{DynamicResource ValueStyles}"
+                                       Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource MemTypeToBool}}"/>
                             <TextBlock Text="{Binding timings.MOD, FallbackValue='N/A'}"
                                        Style="{DynamicResource ValueStyles}" />
                             <TextBlock Text="{Binding timings.MODPDA, FallbackValue='N/A'}"
