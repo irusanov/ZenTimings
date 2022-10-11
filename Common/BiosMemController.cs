@@ -109,8 +109,7 @@ namespace ZenTimings
 
         private static string GetByKey(Dictionary<int, string> dict, int key)
         {
-            if (!dict.TryGetValue(key, out string output)) return "N/A";
-            return output;
+            return dict.TryGetValue(key, out string output) ? output : "N/A";
         }
 
         public string GetProcODTString(int key) => GetByKey(ProcOdtDict, key);

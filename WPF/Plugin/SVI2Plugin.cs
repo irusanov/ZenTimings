@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using ZenStates.Core;
 using ZenTimings.Common;
@@ -32,15 +32,11 @@ namespace ZenTimings.Plugin
                     new Sensor("VCORE", 1),
                 };
             }
-            else
-            {
-                throw new Exception("CPU module is not initialized");
-            }
         }
 
         public bool Update()
         {
-            if (Sensors.Count > 0)
+            if (Sensors?.Count > 0)
             {
                 uint soc_plane_value;
                 uint vcore_plane_value;

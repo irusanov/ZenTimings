@@ -102,7 +102,7 @@ namespace ZenTimings
                 else
                     ReadTimings();
 
-                if (settings.AdvancedMode)
+                if (cpu != null && settings.AdvancedMode)
                 {
 
                     PowerCfgTimer.Interval = TimeSpan.FromMilliseconds(2000);
@@ -137,7 +137,6 @@ namespace ZenTimings
                     }
 
                     StartAutoRefresh();
-
 
                     SplashWindow.Loading("Memory controller");
                     BMC = new BiosMemController();
