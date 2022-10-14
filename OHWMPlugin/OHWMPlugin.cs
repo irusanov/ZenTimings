@@ -14,6 +14,7 @@ namespace OHWMPlugin
     public class OHWMPlugin : IPlugin
     {
         internal Computer computer;
+
         public string Name => "OpenHardwareMonitor Plugin";
 
         public string Description => "A wrapper around OpenHardwareMonitor's DLL";
@@ -27,6 +28,10 @@ namespace OHWMPlugin
         public OHWMPlugin()
         {
             Assembly assembly = Assembly.LoadFrom("OpenHardwareMonitorLib.dll");
+            if (assembly == null)
+            {
+                throw new Exception("OpenHardwareMonitorLib.dll not found");
+            }
         }
 
         public void Close()

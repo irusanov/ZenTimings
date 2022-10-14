@@ -117,10 +117,11 @@
     <Compile Include="AppSettings.cs" />
     <Compile Include="Common\ISensor.cs" />
     <Compile Include="Common\Sensor.cs" />
+    <Compile Include="Converters\DDR5ToVisConverter.cs" />
     <Compile Include="Converters\FloatToBoolConverter.cs" />
     <Compile Include="Converters\FloatToNAConverter.cs" />
     <Compile Include="Converters\FloatToVoltageConverter.cs" />
-    <Compile Include="Converters\MemTypeToVisConverter.cs" />
+    <Compile Include="Converters\DDR4ToVisConverter.cs" />
     <Compile Include="Plugin\IPlugin.cs" />
     <Compile Include="Plugin\OHWMPlugin.cs" />
     <Compile Include="Plugin\SVI2Plugin.cs" />

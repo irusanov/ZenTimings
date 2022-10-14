@@ -34,7 +34,8 @@
         <converters:FloatToVoltageConverter x:Key="FloatToVoltage" />
         <converters:FloatToBoolConverter x:Key="FloatToBool" />
         <converters:FloatToNAConverter x:Key="FloatToNA" />
-        <converters:MemTypeToVisConverter x:Key="MemTypeToBool" />
+        <converters:DDR4ToVisConverter x:Key="DDR4ToBool" />
+        <converters:DDR5ToVisConverter x:Key="DDR5ToBool" />
     </Window.Resources>
 
     <Border>
@@ -130,11 +131,14 @@
                             <TextBlock Text="tRFC2" TextAlignment="Right" />
                             <TextBlock Text="tRFC4"
                                        TextAlignment="Right"
-                                       Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource MemTypeToBool}}"/>
+                                       Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}"/>
                             <TextBlock Text="tMOD" TextAlignment="Right" />
                             <TextBlock Text="tMODPDA" TextAlignment="Right" />
                             <TextBlock Text="tPHYWRD" TextAlignment="Right" />
                             <TextBlock Text="tPHYWRL" TextAlignment="Right" />
+                            <TextBlock Text="tXP"
+                                       TextAlignment="Right"
+                                       Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="1">
@@ -179,7 +183,7 @@
                                        Style="{DynamicResource ValueStyles}" />
                             <TextBlock Text="{Binding timings.RFC4, FallbackValue='N/A'}"
                                        Style="{DynamicResource ValueStyles}"
-                                       Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource MemTypeToBool}}"/>
+                                       Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}"/>
                             <TextBlock Text="{Binding timings.MOD, FallbackValue='N/A'}"
                                        Style="{DynamicResource ValueStyles}" />
                             <TextBlock Text="{Binding timings.MODPDA, FallbackValue='N/A'}"
@@ -188,6 +192,9 @@
                                        Style="{DynamicResource ValueStyles}" />
                             <TextBlock Text="{Binding timings.PHYWRL, FallbackValue='N/A'}"
                                        Style="{DynamicResource ValueStyles}" />
+                            <TextBlock Text="{Binding timings.XP, FallbackValue='N/A'}"
+                                       Style="{DynamicResource ValueStyles}"
+                                       Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}"/>
                         </StackPanel>
                     </Grid>
 
@@ -298,8 +305,13 @@
 
                             <TextBlock Text="" Style="{DynamicResource DividerTextBlock}" />
 
-                            <TextBlock x:Name="labelVSOC_SVI2" Text="VSOC (SVI2)" TextAlignment="Right" />
-                            <!-- " TextBlock Text="VSOC (SMU)" TextAlignment="Right"/ -->
+                            <TextBlock x:Name="labelVSOC_SVI2"
+                                       Text="VSOC (SVI2)"
+                                       TextAlignment="Right"
+                                       Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}"/>
+                            <TextBlock Text="VSOC (SMU)"
+                                       TextAlignment="Right"
+                                       Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}"/>
                             <TextBlock Text="CLDO VDDP" TextAlignment="Right"
                                        IsEnabled="{Binding powerTable.CLDO_VDDP, Mode=OneWay, Converter={StaticResource FloatToBool}}" />
                             <TextBlock Text="VDDG CCD" TextAlignment="Right"
@@ -341,9 +353,14 @@
 
                             <TextBlock Text="" Style="{DynamicResource DividerTextBlock}" />
 
-                            <TextBlock x:Name="textBoxVSOC_SVI2" Text="N/A" Style="{DynamicResource ValueStyles}" />
-                            <!-- " TextBlock Text="{Binding powerTable.VDDCR_SOC, Mode=OneWay, Converter={StaticResource FloatToVoltage}}"
-                                       Style="{DynamicResource ValueStyles}"/ -->
+                            <TextBlock x:Name="textBoxVSOC_SVI2"
+                                       Text="N/A"
+                                       Style="{DynamicResource ValueStyles}"
+                                       Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}"
+                                       />
+                            <TextBlock Text="{Binding powerTable.VDDCR_SOC, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}"
+                                       Style="{DynamicResource ValueStyles}"
+                                       Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}"/>
                             <TextBlock
                                 Text="{Binding powerTable.CLDO_VDDP, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}"
                                 Style="{DynamicResource ValueStyles}" />

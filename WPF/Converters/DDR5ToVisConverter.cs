@@ -4,15 +4,15 @@ using System.Windows.Data;
 
 namespace ZenTimings.Converters
 {
-    class MemTypeToVisConverter : IValueConverter
+    class DDR4ToVisConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if ((MemoryConfig.MemType)value == MemoryConfig.MemType.DDR5)
+            if ((MemoryConfig.MemType)value == MemoryConfig.MemType.DDR4)
             {
-                return System.Windows.Visibility.Collapsed;
+                return System.Windows.Visibility.Visible;
             }
-            return System.Windows.Visibility.Visible;
+            return System.Windows.Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter,
