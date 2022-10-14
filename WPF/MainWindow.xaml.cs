@@ -545,7 +545,7 @@ namespace ZenTimings
             }
 
             float configured = MEMCFG.Frequency;
-            float ratio = Utils.GetBits(umcBase, 0, 7) / 3.0f;
+            float ratio = MEMCFG.Type == MemType.DDR4 ? Utils.GetBits(umcBase, 0, 7) / 3.0f : Utils.GetBits(umcBase, 0, 16) / 100.0f;
             float freqFromRatio = ratio * 200;
 
             MEMCFG.Ratio = ratio;
