@@ -409,7 +409,14 @@ namespace ZenTimings
                 // Get APCB config from BIOS. Holds memory parameters.
                 BiosACPIFunction cmd = GetFunctionByIdString("Get APCB Config");
                 if (cmd == null)
+                {
+                    // Skip for DDR5
+                    if (MEMCFG.Type == MemType.DDR5)
+                    {
+                        return;
+                    }
                     throw new Exception("Could not get memory controller config");
+                }
                     // cmd.ID = 0x00010001;
 
                 var apcbConfig = WMI.RunCommand(classInstance, cmd.ID);
