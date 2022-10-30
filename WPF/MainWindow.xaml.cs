@@ -568,8 +568,10 @@ namespace ZenTimings
             MEMCFG.BGSAlt = Utils.GetBits(bgsa0, 4, 7) > 0 || Utils.GetBits(bgsa1, 4, 7) > 0
                 ? "Enabled"
                 : "Disabled";
-            MEMCFG.GDM = Utils.GetBits(umcBase, 11, 1) > 0 ? "Enabled" : "Disabled";
-            MEMCFG.Cmd2T = Utils.GetBits(umcBase, 10, 1) > 0 ? "2T" : "1T";
+            int GDM_BIT = MEMCFG.Type == MemType.DDR4 ? 11 : 18;
+            MEMCFG.GDM = Utils.GetBits(umcBase, GDM_BIT, 1) > 0 ? "Enabled" : "Disabled";
+            int CMD2T_BIT = MEMCFG.Type == MemType.DDR4 ? 10 : 17;
+            MEMCFG.Cmd2T = Utils.GetBits(umcBase, CMD2T_BIT, 1) > 0 ? "2T" : "1T";
 
             MEMCFG.CL = Utils.GetBits(timings5, 0, 6);
             MEMCFG.RAS = Utils.GetBits(timings5, 8, 7);
