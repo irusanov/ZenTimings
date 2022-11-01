@@ -1041,7 +1041,7 @@ namespace ZenTimings
 
         private void MenuItem_Click_2(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://discord.gg/FJBvj4VF");
+            Process.Start("https://discord.gg/8cfR3UZ");
         }
 
         private void MenuItem_Click_3(object sender, RoutedEventArgs e)
