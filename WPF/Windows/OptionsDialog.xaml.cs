@@ -39,24 +39,24 @@ namespace ZenTimings.Windows
 
         private void CheckBoxAutoRefresh_Click(object sender, RoutedEventArgs e)
         {
-            numericUpDownRefreshInterval.IsEnabled = (bool) checkBoxAutoRefresh.IsChecked;
+            numericUpDownRefreshInterval.IsEnabled = (bool)checkBoxAutoRefresh.IsChecked;
             msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
         }
 
         private void CheckBoxAdvancedMode_Click(object sender, RoutedEventArgs e)
         {
-            checkBoxAutoRefresh.IsEnabled = (bool) checkBoxAdvancedMode.IsChecked;
+            checkBoxAutoRefresh.IsEnabled = (bool)checkBoxAdvancedMode.IsChecked;
             numericUpDownRefreshInterval.IsEnabled =
-                (bool) checkBoxAutoRefresh.IsChecked && checkBoxAutoRefresh.IsEnabled;
+                (bool)checkBoxAutoRefresh.IsChecked && checkBoxAutoRefresh.IsEnabled;
             msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
         }
 
         private void ButtonSettingsApply_Click(object sender, RoutedEventArgs e)
         {
-            appSettings.AutoRefresh = (bool) checkBoxAutoRefresh.IsChecked;
+            appSettings.AutoRefresh = (bool)checkBoxAutoRefresh.IsChecked;
             appSettings.AutoRefreshInterval = Convert.ToInt32(numericUpDownRefreshInterval.Text);
-            appSettings.AdvancedMode = (bool) checkBoxAdvancedMode.IsChecked;
-            appSettings.CheckForUpdates = (bool) checkBoxCheckUpdate.IsChecked;
+            appSettings.AdvancedMode = (bool)checkBoxAdvancedMode.IsChecked;
+            appSettings.CheckForUpdates = (bool)checkBoxCheckUpdate.IsChecked;
             appSettings.SaveWindowPosition = (bool)checkBoxSavePosition.IsChecked;
             appSettings.MinimizeToTray = (bool)checkBoxMinimizeToTray.IsChecked;
 
@@ -103,7 +103,7 @@ namespace ZenTimings.Windows
 
         private void ComboBoxTheme_CheckedChanged(object sender, RoutedEventArgs e)
         {
-            appSettings.DarkMode = (bool) comboBoxTheme.IsChecked;
+            appSettings.DarkMode = (bool)comboBoxTheme.IsChecked;
             appSettings.ChangeTheme();
         }
 

@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Drawing;
 using System.Globalization;
 using System.Windows;
-using Microsoft.Win32;
 
 namespace ZenTimings.Windows
 {
@@ -56,7 +56,7 @@ namespace ZenTimings.Windows
 
         public void Dispose()
         {
-            ((IDisposable) screenshot).Dispose();
+            ((IDisposable)screenshot).Dispose();
         }
     }
 }

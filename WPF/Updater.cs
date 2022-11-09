@@ -1,10 +1,10 @@
-﻿using System;
+﻿using AdonisUI.Controls;
+using AutoUpdaterDotNET;
+using System;
 using System.IO;
 using System.Net;
 using System.Windows;
 using System.Xml.Serialization;
-using AdonisUI.Controls;
-using AutoUpdaterDotNET;
 using ZenTimings.Windows;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
@@ -190,7 +190,7 @@ namespace ZenTimings
                         args.Error.GetType().ToString(),
                         MessageBoxButton.OK,
                         MessageBoxImage.Error);
-            	}
+                }
             }
         }
     }

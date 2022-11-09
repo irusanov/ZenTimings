@@ -34,12 +34,12 @@ namespace ZenTimings.Windows
 
                 foreach (PropertyInfo property in properties)
                     if (property.Name == "CpuId" || property.Name == "PatchLevel" || property.Name == "SmuTableVersion")
-                        items.Add(new GridItem() {Name = property.Name, Value = $"{property.GetValue(si, null):X8}"});
+                        items.Add(new GridItem() { Name = property.Name, Value = $"{property.GetValue(si, null):X8}" });
                     else if (property.Name == "SmuVersion")
-                        items.Add(new GridItem() {Name = property.Name, Value = si.GetSmuVersionString()});
+                        items.Add(new GridItem() { Name = property.Name, Value = si.GetSmuVersionString() });
                     else
                         items.Add(new GridItem()
-                            {Name = property.Name, Value = property.GetValue(si, null).ToString()});
+                        { Name = property.Name, Value = property.GetValue(si, null).ToString() });
 
                 TestGrid.ItemsSource = items;
             }
@@ -55,7 +55,7 @@ namespace ZenTimings.Windows
             {
                 items = new List<GridItem>();
                 foreach (PropertyInfo property in properties)
-                    items.Add(new GridItem() {Name = property.Name, Value = property.GetValue(mc, null).ToString()});
+                    items.Add(new GridItem() { Name = property.Name, Value = property.GetValue(mc, null).ToString() });
 
                 MemCfgGrid.ItemsSource = items;
             }
