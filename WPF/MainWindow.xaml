@@ -132,13 +132,16 @@
                             <TextBlock Text="tRFC4"
                                        TextAlignment="Right"
                                        Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}"/>
+                            <TextBlock Text="tRFCsb"
+                                       TextAlignment="Right"
+                                       Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}"/>
                             <TextBlock Text="tMOD" TextAlignment="Right" />
                             <TextBlock Text="tMODPDA" TextAlignment="Right" />
                             <TextBlock Text="tPHYWRD" TextAlignment="Right" />
                             <TextBlock Text="tPHYWRL" TextAlignment="Right" />
-                            <TextBlock Text="tXP"
+                            <!--TextBlock Text="tXP"
                                        TextAlignment="Right"
-                                       Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}"/>
+                                       Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}"/-->
                         </StackPanel>
 
                         <StackPanel Grid.Column="1">
@@ -192,9 +195,12 @@
                                        Style="{DynamicResource ValueStyles}" />
                             <TextBlock Text="{Binding timings.PHYWRL, FallbackValue='N/A'}"
                                        Style="{DynamicResource ValueStyles}" />
-                            <TextBlock Text="{Binding timings.XP, FallbackValue='N/A'}"
+                            <TextBlock Text="{Binding timings.RFCsb, FallbackValue='N/A'}"
                                        Style="{DynamicResource ValueStyles}"
                                        Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}"/>
+                            <!--TextBlock Text="{Binding timings.XP, FallbackValue='N/A'}"
+                                       Style="{DynamicResource ValueStyles}"
+                                       Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}"/-->
                         </StackPanel>
                     </Grid>
 

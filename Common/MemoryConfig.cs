@@ -376,6 +376,15 @@ namespace ZenTimings
             set => SetProperty(ref rfc4, value, InternalEventArgsCache.RFC4);
         }
 
+
+        private uint rfcsb;
+
+        public uint RFCsb
+        {
+            get => rfcsb;
+            set => SetProperty(ref rfcsb, value, InternalEventArgsCache.RFCsb);
+        }
+
         private uint refi;
 
         public uint REFI
@@ -480,6 +489,7 @@ namespace ZenTimings
         internal static PropertyChangedEventArgs RFC = new PropertyChangedEventArgs("RFC");
         internal static PropertyChangedEventArgs RFC2 = new PropertyChangedEventArgs("RFC2");
         internal static PropertyChangedEventArgs RFC4 = new PropertyChangedEventArgs("RFC4");
+        internal static PropertyChangedEventArgs RFCsb = new PropertyChangedEventArgs("RFCsb");
         internal static PropertyChangedEventArgs REFI = new PropertyChangedEventArgs("REFI");
         internal static PropertyChangedEventArgs RFCns = new PropertyChangedEventArgs("RFCns");
         internal static PropertyChangedEventArgs REFIns = new PropertyChangedEventArgs("REFIns");

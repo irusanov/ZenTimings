@@ -585,13 +585,13 @@ namespace ZenTimings
             MEMCFG.RRDL = Utils.GetBits(timings7, 8, 5);
             MEMCFG.RTP = Utils.GetBits(timings7, 24, 5);
 
-            MEMCFG.FAW = Utils.GetBits(timings8, 0, 8);
+            MEMCFG.FAW = Utils.GetBits(timings8, 0, 7);
 
             MEMCFG.CWL = Utils.GetBits(timings9, 0, 6);
             MEMCFG.WTRS = Utils.GetBits(timings9, 8, 5);
             MEMCFG.WTRL = Utils.GetBits(timings9, 16, 7);
 
-            MEMCFG.WR = Utils.GetBits(timings10, 0, 8);
+            MEMCFG.WR = Utils.GetBits(timings10, 0, 7);
 
             MEMCFG.TRCPAGE = Utils.GetBits(timings11, 20, 12);
 
@@ -605,7 +605,7 @@ namespace ZenTimings
             MEMCFG.WRWRSC = Utils.GetBits(timings13, 16, 4);
             MEMCFG.WRWRSCL = Utils.GetBits(timings13, 24, 6);
 
-            MEMCFG.RDWR = Utils.GetBits(timings14, 8, 5);
+            MEMCFG.RDWR = Utils.GetBits(timings14, 8, 6);
             MEMCFG.WRRD = Utils.GetBits(timings14, 0, 4);
 
             MEMCFG.REFI = Utils.GetBits(timings15, 0, 16);
