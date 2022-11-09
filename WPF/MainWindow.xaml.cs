@@ -149,7 +149,7 @@ namespace ZenTimings
                 {
                     timings = MEMCFG,
                     cpu.powerTable,
-                    WMIPresent = !compatMode,
+                    WMIPresent = !compatMode && MEMCFG.Type == MemType.DDR4,
                     settings,
                     plugins
                 };
