@@ -1051,7 +1051,7 @@ namespace ZenTimings
 
         private void ExportToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            Config Config = new Config(MEMCFG, BMC.Config, cpu.powerTable);
+            Config Config = new Config(MEMCFG, BMC.Config/*, cpu.powerTable*/);
             Console.WriteLine(Config.GetXML());
         }
     }
