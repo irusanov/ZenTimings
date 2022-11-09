@@ -839,9 +839,12 @@ namespace ZenTimings
             }
 
             SetWindowTitle();
-            labelCPU.Text = cpu.systemInfo.CpuName;
-            labelMB.Text =
-                $"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} | SMU {cpu.systemInfo.GetSmuVersionString()}";
+            if (cpu != null)
+            {
+                labelCPU.Text = cpu.systemInfo.CpuName;
+                labelMB.Text =
+                    $"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} | SMU {cpu.systemInfo.GetSmuVersionString()}";
+            }
             //ShowWindow();
 
             MinimizeFootprint();
@@ -1021,12 +1024,7 @@ namespace ZenTimings
                 settings.Save();
             }
 
-            foreach (var plugin in plugins)
-                plugin?.Close();
-
-            _notifyIcon.Dispose();
-            AsusWmi?.Dispose();
-            cpu?.Dispose();
+            ExitApplication();
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
