@@ -187,6 +187,9 @@
                             <TextBlock Text="{Binding timings.RFC4, FallbackValue='N/A'}"
                                        Style="{DynamicResource ValueStyles}"
                                        Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}"/>
+                            <TextBlock Text="{Binding timings.RFCsb, FallbackValue='N/A'}"
+                                       Style="{DynamicResource ValueStyles}"
+                                       Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}"/>
                             <TextBlock Text="{Binding timings.MOD, FallbackValue='N/A'}"
                                        Style="{DynamicResource ValueStyles}" />
                             <TextBlock Text="{Binding timings.MODPDA, FallbackValue='N/A'}"
@@ -195,9 +198,6 @@
                                        Style="{DynamicResource ValueStyles}" />
                             <TextBlock Text="{Binding timings.PHYWRL, FallbackValue='N/A'}"
                                        Style="{DynamicResource ValueStyles}" />
-                            <TextBlock Text="{Binding timings.RFCsb, FallbackValue='N/A'}"
-                                       Style="{DynamicResource ValueStyles}"
-                                       Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}"/>
                             <!--TextBlock Text="{Binding timings.XP, FallbackValue='N/A'}"
                                        Style="{DynamicResource ValueStyles}"
                                        Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}"/-->

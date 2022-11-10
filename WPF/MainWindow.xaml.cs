@@ -635,6 +635,16 @@ namespace ZenTimings
             {
                 MEMCFG.RFC = Utils.GetBits(trfcRegValue, 0, 16);
                 MEMCFG.RFC2 = Utils.GetBits(trfcRegValue, 16, 16);
+                uint[] temp = { 0x502c0, 0x502c4, 0x502c8, 0x502cc };
+                foreach (uint reg in temp)
+                {
+                    uint value = Utils.GetBits(cpu.ReadDword(offset | reg), 0, 11);
+                    if (value != 0)
+                    {
+                        MEMCFG.RFCsb = value;
+                        break;
+                    }
+                }
             }
 
             MEMCFG.PowerDown = Utils.GetBits(powerDown, 28, 1) == 1 ? "Enabled" : "Disabled";
