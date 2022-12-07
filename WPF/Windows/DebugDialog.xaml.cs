@@ -99,7 +99,7 @@ namespace ZenTimings.Windows
                             for (var i = 0; i < Length; ++i)
                             {
                                 if (IDString[i] == "")
-                                    return;
+                                    break;
                                 AddLine($"{IDString[i] + ":",-30}{ID[i]:X8}");
                             }
                         }
@@ -238,6 +238,24 @@ namespace ZenTimings.Windows
             {
                 foreach (var property in properties)
                     AddLine($"{property.Name + ":",-16}{ property.GetValue(MEMCFG, null)}");
+            }
+            catch
+            {
+                AddLine("<FAILED>");
+            }
+
+            AddLine();
+
+            // AOD Table
+            AddHeading("ACPI: AOD Table");
+            type = CPU.info.aod.Table.GetType();
+            properties = type.GetProperties();
+            try
+            {
+                foreach (var property in properties)
+                {
+                    AddLine($"{property.Name + ":",-19}{property.GetValue(CPU.info.aod.Table, null)}");
+                }
             }
             catch
             {

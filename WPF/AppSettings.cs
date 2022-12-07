@@ -53,7 +53,7 @@ namespace ZenTimings
                         Console.WriteLine(ex.Message);
                         sr.Close();
                         MessageBox.Show(
-                            @"Invalid settings file!\nSettings will be reset to defaults.",
+                            "Invalid settings file!\nSettings will be reset to defaults.",
                             "Error",
                             MessageBoxButton.OK,
                             MessageBoxImage.Error);
