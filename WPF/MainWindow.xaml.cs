@@ -406,22 +406,7 @@ namespace ZenTimings
                     }
                 }
 
-                if (MEMCFG.Type == MemType.DDR5)
-                {
-                    var rmpTable = WMI.InvokeMethodAndGetValue(classInstance, "GetRmpData", "pack", null, 0);
-                    if (rmpTable != null)
-                    {
-                        byte[] apcbConfig = WMI.RunCommand(classInstance, 0x2003D);
-                        var properties = rmpTable.Properties;
-                        byte[] Data = (byte[])rmpTable.GetPropertyValue("Data");
-                        for (var i = 0; i < Data.Length; i++)
-                        {
-                            Debug.WriteLine("{0}", Data[i]);
-                        }
-                        BMC.Table = Data;
-                    }
-                }
-                else
+                if (MEMCFG.Type == MemType.DDR4)
                 {
                     // Get APCB config from BIOS. Holds memory parameters.
                     BiosACPIFunction cmd = GetFunctionByIdString("Get APCB Config");
@@ -449,15 +434,12 @@ namespace ZenTimings
                     }
 
                     BMC.Table = apcbConfig;
-                }
 
-                // When ProcODT is 0, then all other resistance values are 0
-                // Happens when one DIMM installed in A1 or A2 slot
-/*                if (BMC.Table == null || Utils.AllZero(BMC.Table) || BMC.Config.ProcODT < 1)
-                    throw new Exception("Failed to read AMD ACPI. Odt, Setup and Drive strength parameters will be empty.");*/
+                    // When ProcODT is 0, then all other resistance values are 0
+                    // Happens when one DIMM installed in A1 or A2 slot
+/*                    if (BMC.Table == null || Utils.AllZero(BMC.Table) || BMC.Config.ProcODT < 1)
+                        throw new Exception("Failed to read AMD ACPI. Odt, Setup and Drive strength parameters will be empty.");*/
 
-                if (MEMCFG.Type == MemType.DDR4)
-                {
                     float vdimm = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVddio) / 1000);
                     if (vdimm > 0 && vdimm < 3)
                     {
@@ -508,9 +490,9 @@ namespace ZenTimings
                     labelMemVddio.IsEnabled = true;
                     labelProcODT.IsEnabled = true;
 
-                    textBoxMemVddio.Text = $"{Data.MemVddio / 1000.0:F3}V";
-                    textBoxMemVddq.Text = $"{Data.MemVddq / 1000.0:F3}V";
-                    textBoxMemVpp.Text = $"{Data.MemVpp / 1000.0:F3}V";
+                    textBoxMemVddio.Text = $"{Data.MemVddio / 1000.0:F4}V";
+                    textBoxMemVddq.Text = $"{Data.MemVddq / 1000.0:F4}V";
+                    textBoxMemVpp.Text = $"{Data.MemVpp / 1000.0:F4}V";
 
                     textBoxProcODT.Text = AOD.GetProcODTString(Data.ProcODT);
                     textBoxDramDataDrvStren.Text = AOD.GetDramDataDrvStrenString(Data.DramDataDrvStren);
