@@ -406,9 +406,11 @@ namespace ZenTimings
                     }
                 }
 
+                AOD aod = cpu.info.aod;
+
                 if (MEMCFG.Type == MemType.DDR4)
                 {
-                    // Get APCB config from BIOS. Holds memory parameters.
+/*                    // Get APCB config from BIOS. Holds memory parameters.
                     BiosACPIFunction cmd = GetFunctionByIdString("Get APCB Config");
                     if (cmd == null)
                     {
@@ -431,14 +433,14 @@ namespace ZenTimings
                             if (value > 0)
                                 apcbConfig[i] = value;
                         }
-                    }
+                    }*/
 
-                    BMC.Table = apcbConfig;
+                    BMC.Table = cpu.info.aod.Table.rawAodTable;
 
                     // When ProcODT is 0, then all other resistance values are 0
                     // Happens when one DIMM installed in A1 or A2 slot
-/*                    if (BMC.Table == null || Utils.AllZero(BMC.Table) || BMC.Config.ProcODT < 1)
-                        throw new Exception("Failed to read AMD ACPI. Odt, Setup and Drive strength parameters will be empty.");*/
+                    /*                    if (BMC.Table == null || Utils.AllZero(BMC.Table) || BMC.Config.ProcODT < 1)
+                                            throw new Exception("Failed to read AMD ACPI. Odt, Setup and Drive strength parameters will be empty.");*/
 
                     float vdimm = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVddio) / 1000);
                     if (vdimm > 0 && vdimm < 3)
@@ -484,7 +486,6 @@ namespace ZenTimings
                 }
                 else
                 {
-                    AOD aod = cpu.info.aod;
                     AOD.AodData Data = cpu.info.aod.Table.Data;
 
                     labelMemVddio.IsEnabled = true;
