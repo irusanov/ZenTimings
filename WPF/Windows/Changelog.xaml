@@ -9,22 +9,26 @@
         mc:Ignorable="d"
         Title="What's New" Height="270" Width="403" UseLayoutRounding="True" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Topmost="True" Icon="/ZenTimings;component/Resources/new-icon/16.png">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="269*"/>
+            <ColumnDefinition Width="128*"/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Vertical" Margin="15">
+        <StackPanel Orientation="Vertical" Margin="15" Grid.ColumnSpan="2">
             <!-- TextBlock Text="Changelog" FontSize="14" FontWeight="Bold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" /-->
             <TextBlock Text="v1.2.8 Dec XX 2022" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" />
             <TextBlock Text="" />
-            <TextBlock Text=" - Improve Zen4 7000 (Raphael) CPU support" />
-            <TextBlock Text=" - Extend DDR5 support" />
-            <TextBlock Text=" - Show tRFCsb instead of tXP" />
-            <TextBlock Text=" - Fix GDM and Cmd2T for DDR5" />
-            <TextBlock Text=" - Fix Picasso/Dali power table reading" />
-            <TextBlock Text=" - Change discord invite link to a permanent one" />
+            <TextBlock Text=" -  Improve Zen4 7000 (Raphael) CPU support" />
+            <TextBlock Text=" -  Extend DDR5 support" />
+            <TextBlock Text=" -  Show tRFCsb instead of tXP" />
+            <TextBlock Text=" -  Fix GDM and Cmd2T for DDR5" />
+            <TextBlock Text=" -  Fix Picasso/Dali power table reading" />
+            <TextBlock Text=" -  Change discord invite link to a permanent one" />
         </StackPanel>
-        <Border Grid.Row="1" Padding="4 10">
+        <Border Grid.Row="1" Padding="4 10" Grid.ColumnSpan="2">
             <Button x:Name="Changelog_Close" Content="Close" Width="80" IsCancel="True" />
         </Border>
     </Grid>

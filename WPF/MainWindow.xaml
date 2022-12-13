@@ -48,7 +48,7 @@
                     <Menu x:Name="MainMenu" Grid.Column="0" Style="{DynamicResource MenuBackground}">
                         <MenuItem Header="_File">
                             <MenuItem Header="E_xit" Click="ExitToolStripMenuItem_Click" />
-                            <MenuItem Header="Export..." HorizontalAlignment="Left" Click="ExportToolStripMenuItem_Click" />
+                            <!-- MenuItem Header="Export..." HorizontalAlignment="Left" Click="ExportToolStripMenuItem_Click" /-->
                         </MenuItem>
                         <MenuItem Header="_Tools">
                             <MenuItem Header="System _Info" Click="SystemInfoToolstripMenuItem_Click" />

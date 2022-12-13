@@ -16,6 +16,7 @@ namespace ZenTimings
 
         public AppSettings Create()
         {
+            Version = $"{VERSION_MAJOR}.{VERSION_MINOR}";
             AutoRefresh = true;
             AutoRefreshInterval = 2000;
             AdvancedMode = true;
@@ -102,6 +103,7 @@ namespace ZenTimings
             //DarkMode = !DarkMode;
         }
 
+        public string Version { get; set; } = $"{VERSION_MAJOR}.{VERSION_MINOR}";
         public bool AutoRefresh { get; set; } = true;
         public int AutoRefreshInterval { get; set; } = 2000;
         public bool AdvancedMode { get; set; } = true;
