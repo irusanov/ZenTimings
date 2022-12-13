@@ -202,6 +202,7 @@ namespace ZenTimings.Windows
                         AddLine($"{property.Name + ":",-19}{property.GetValue(SI, null)}");
 
                 }
+                AddLine($"{"DRAM Base Address:",-19}{((long)CPU.powerTable.DramBaseAddressHi << 32) | CPU.powerTable.DramBaseAddress:X16}");
             }
             catch
             {

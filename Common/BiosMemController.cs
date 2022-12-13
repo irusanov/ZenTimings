@@ -133,6 +133,7 @@ namespace ZenTimings
         {
             [FieldOffset(27)] public ushort MemVddio;
             [FieldOffset(29)] public ushort MemVtt;
+            [FieldOffset(31)] public ushort MemVpp;
             [FieldOffset(33)] public byte ProcODT;
             [FieldOffset(65)] public byte RttNom;
             [FieldOffset(66)] public byte RttWr;

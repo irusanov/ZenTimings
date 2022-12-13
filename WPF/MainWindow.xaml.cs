@@ -340,10 +340,12 @@ namespace ZenTimings
         private void RefreshSensors()
         {
             plugins[1].Update();
-            /*            foreach (var sensor in plugins[1].Sensors)
-                        {
-                            Console.WriteLine($"----Name: {sensor.Name}, Value: {sensor.Value}");
-                        }*/
+            /*
+            foreach (var sensor in plugins[1].Sensors)
+            {
+                Console.WriteLine($"----Name: {sensor.Name}, Value: {sensor.Value}");
+            }
+            */
         }
 
         private void ReadSVI()
@@ -352,6 +354,13 @@ namespace ZenTimings
             {
                 textBoxVSOC_SVI2.Text = $"{plugins[0].Sensors[0].Value:F4}V";
             }
+        }
+
+        private string RttToString(int rtt)
+        {
+            if (rtt > 0)
+                return $"{AOD.GetRttString(rtt)} ({ 240 / rtt})";
+            return $"{AOD.GetRttString(rtt)}";
         }
 
         private void ReadMemoryConfig()
@@ -410,11 +419,14 @@ namespace ZenTimings
 
                 if (MEMCFG.Type == MemType.DDR4)
                 {
-/*                    // Get APCB config from BIOS. Holds memory parameters.
+
+                    // Get APCB config from BIOS. Holds memory parameters.
                     BiosACPIFunction cmd = GetFunctionByIdString("Get APCB Config");
                     if (cmd == null)
                     {
-                        throw new Exception("Could not get memory controller config");
+                        // throw new Exception("Could not get memory controller config");
+                        // Use AOD table as an alternative path for now
+                        BMC.Table = cpu.info.aod.Table.rawAodTable;
                     }
                     // BiosACPIFunction cmd = new BiosACPIFunction("Get APCB Config", 0x00010001);
 
@@ -433,14 +445,7 @@ namespace ZenTimings
                             if (value > 0)
                                 apcbConfig[i] = value;
                         }
-                    }*/
-
-                    BMC.Table = cpu.info.aod.Table.rawAodTable;
-
-                    // When ProcODT is 0, then all other resistance values are 0
-                    // Happens when one DIMM installed in A1 or A2 slot
-                    /*                    if (BMC.Table == null || Utils.AllZero(BMC.Table) || BMC.Config.ProcODT < 1)
-                                            throw new Exception("Failed to read AMD ACPI. Odt, Setup and Drive strength parameters will be empty.");*/
+                    }
 
                     float vdimm = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVddio) / 1000);
                     if (vdimm > 0 && vdimm < 3)
@@ -469,6 +474,11 @@ namespace ZenTimings
                     else
                         labelMemVtt.IsEnabled = false;
 
+                    // When ProcODT is 0, then all other resistance values are 0
+                    // Happens when one DIMM installed in A1 or A2 slot
+                    if (BMC.Table == null || Utils.AllZero(BMC.Table) || BMC.Config.ProcODT < 1)
+                        throw new Exception("Failed to read AMD ACPI. Odt, Setup and Drive strength parameters will be empty.");
+
                     textBoxProcODT.Text = BMC.GetProcODTString(BMC.Config.ProcODT);
 
                     textBoxClkDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.ClkDrvStren);
@@ -488,7 +498,7 @@ namespace ZenTimings
                 {
                     AOD.AodData Data = cpu.info.aod.Table.Data;
 
-                    labelMemVddio.IsEnabled = true;
+                    labelMemVdd.IsEnabled = true;
                     labelProcODT.IsEnabled = true;
 
                     textBoxMemVddio.Text = $"{Data.MemVddio / 1000.0:F4}V";
@@ -496,14 +506,15 @@ namespace ZenTimings
                     textBoxMemVpp.Text = $"{Data.MemVpp / 1000.0:F4}V";
 
                     textBoxProcODT.Text = AOD.GetProcODTString(Data.ProcODT);
+                    textBoxCadBusDrvStren.Text = AOD.GetCadBusDrvStrenString(Data.CadBusDrvStren);
                     textBoxDramDataDrvStren.Text = AOD.GetDramDataDrvStrenString(Data.DramDataDrvStren);
                     textBoxProcDataDrvStren.Text = AOD.GetProcDataDrvStrenString(Data.ProcDataDrvStren);
-                    textBoxRttWrD5.Text = AOD.GetRttString(Data.RttWr);
-                    textBoxRttNomWr.Text = AOD.GetRttString(Data.RttNomWr);
-                    textBoxRttNomRd.Text = AOD.GetRttString(Data.RttNomRd);
-                    textBoxRttParkD5.Text = AOD.GetRttString(Data.RttPark);
-                    textBoxRttParkDqs.Text = AOD.GetRttString(Data.RttParkDqs);
-                    textBoxCadBusDrvStren.Text = AOD.GetCadBusDrvStrenString(Data.CadBusDrvStren);
+
+                    textBoxRttWrD5.Text = RttToString(Data.RttWr);
+                    textBoxRttNomWr.Text = RttToString(Data.RttNomWr);
+                    textBoxRttNomRd.Text = RttToString(Data.RttNomRd);
+                    textBoxRttParkD5.Text = RttToString(Data.RttPark);
+                    textBoxRttParkDqs.Text = RttToString(Data.RttParkDqs);
                 }
             }
             catch (Exception ex)
@@ -772,7 +783,7 @@ namespace ZenTimings
                     Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() =>
                     {
                         // ReadTimings();
-                        // ReadMemoryConfig();
+                        ReadMemoryConfig();
                         cpu.RefreshPowerTable();
                         ReadSVI();
                         // RefreshSensors();
