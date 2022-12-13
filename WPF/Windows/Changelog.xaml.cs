@@ -11,11 +11,12 @@ namespace ZenTimings.Windows
         public Changelog()
         {
             InitializeComponent();
-
+            /*
             var exePath = AppDomain.CurrentDomain.BaseDirectory;
             var pagesFolder = Directory.GetParent(exePath);
             string changeLogPath = pagesFolder.FullName + "\\whatsnew.html";
             Browser1.Source = new Uri(changeLogPath);
+            */
         }
     }
 }
