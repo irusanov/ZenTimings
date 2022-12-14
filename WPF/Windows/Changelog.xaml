@@ -6,8 +6,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+        xmlns:converters="clr-namespace:ZenTimings.Converters"
         mc:Ignorable="d"
-        Title="What's New" Height="270" Width="403" UseLayoutRounding="True" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Topmost="True" Icon="/ZenTimings;component/Resources/new-icon/16.png">
+        Title="What's New" Height="303" Width="403" UseLayoutRounding="True" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Topmost="True" Icon="/ZenTimings;component/Resources/new-icon/16.png">
+    
+    <Window.Resources>
+        <converters:DDR5ToVisConverter x:Key="DDR5ToBool" />
+    </Window.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="269*"/>
@@ -27,6 +33,16 @@
             <TextBlock Text=" -  Fix GDM and Cmd2T for DDR5" />
             <TextBlock Text=" -  Fix Picasso/Dali power table reading" />
             <TextBlock Text=" -  Change discord invite link to a permanent one" />
+            <TextBlock Text="" />
+            <StackPanel Orientation="Horizontal">
+                <Image Source="/Resources/warning-icon.png" Width="16" VerticalAlignment="Top" />
+                <TextBlock
+                    VerticalAlignment="Center"
+                    Margin="5 0 0 0"
+                    Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}"
+                    TextWrapping="Wrap"
+                    Text="Note: The current version can not detect DRAM Overvoltage mode, so you might get inaccurate readings for MEM VDD and MEM VDDQ." Width="329" />
+            </StackPanel>
         </StackPanel>
         <Border Grid.Row="1" Padding="4 10" Grid.ColumnSpan="2">
             <Button x:Name="Changelog_Close" Content="Close" Width="80" IsCancel="True" />

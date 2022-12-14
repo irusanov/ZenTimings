@@ -107,7 +107,7 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="Freq" TextAlignment="Right" />
+                            <TextBlock Text="Speed" TextAlignment="Right" />
                             <TextBlock Text="BGS" TextAlignment="Right" />
                             <TextBlock Text="GDM" TextAlignment="Right" />
 
@@ -144,7 +144,7 @@
                         </StackPanel>
 
                         <StackPanel Grid.Column="1">
-                            <TextBlock Text="{Binding timings.Frequency, FallbackValue='N/A', StringFormat={}{0:F0}}"
+                            <TextBlock Text="{Binding timings.FrequencyString, FallbackValue='N/A', StringFormat={}{0:F0}}"
                                        Style="{DynamicResource ValueStyles}" />
                             <TextBlock Text="{Binding timings.BGS, FallbackValue='N/A'}"
                                        Style="{DynamicResource ValueStyles}" />

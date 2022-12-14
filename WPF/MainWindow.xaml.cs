@@ -415,6 +415,11 @@ namespace ZenTimings
                     }
                 }
 
+                if (cpu.powerTable.MCLK * 2 > MEMCFG.Frequency)
+                {
+                    MEMCFG.Frequency = cpu.powerTable.MCLK * 2;
+                }
+
                 AOD aod = cpu.info.aod;
 
                 if (MEMCFG.Type == MemType.DDR4)

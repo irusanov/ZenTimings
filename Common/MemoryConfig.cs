@@ -32,6 +32,11 @@ namespace ZenTimings
             set => SetProperty(ref frequency, value, InternalEventArgsCache.Frequency);
         }
 
+        public string FrequencyString
+        {
+            get => $"{Type.ToString()}-{Math.Floor(frequency)}";
+        }
+
         private float ratio;
 
         public float Ratio
