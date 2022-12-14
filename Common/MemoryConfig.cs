@@ -29,12 +29,18 @@ namespace ZenTimings
         public float Frequency
         {
             get => frequency;
-            set => SetProperty(ref frequency, value, InternalEventArgsCache.Frequency);
+            set {
+                SetProperty(ref frequency, value, InternalEventArgsCache.Frequency);
+                FrequencyString = $"{Type.ToString()}-{Math.Floor(value)}";
+                
+            }
         }
 
+        private string frequencyString;
         public string FrequencyString
         {
-            get => $"{Type.ToString()}-{Math.Floor(frequency)}";
+            set => SetProperty(ref frequencyString, value, InternalEventArgsCache.FrequencyString);
+            get => frequencyString;
         }
 
         private float ratio;
@@ -455,6 +461,7 @@ namespace ZenTimings
     {
         internal static PropertyChangedEventArgs TotalCapacity = new PropertyChangedEventArgs("TotalCapacity");
         internal static PropertyChangedEventArgs Frequency = new PropertyChangedEventArgs("Frequency");
+        internal static PropertyChangedEventArgs FrequencyString = new PropertyChangedEventArgs("FrequencyString");
         internal static PropertyChangedEventArgs Ratio = new PropertyChangedEventArgs("Ratio");
         internal static PropertyChangedEventArgs BGS = new PropertyChangedEventArgs("BGS");
         internal static PropertyChangedEventArgs BGSAlt = new PropertyChangedEventArgs("BGSAlt");

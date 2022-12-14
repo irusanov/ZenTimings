@@ -432,24 +432,27 @@ namespace ZenTimings
                         // throw new Exception("Could not get memory controller config");
                         // Use AOD table as an alternative path for now
                         BMC.Table = cpu.info.aod.Table.rawAodTable;
-                    }
-                    // BiosACPIFunction cmd = new BiosACPIFunction("Get APCB Config", 0x00010001);
-
-                    byte[] apcbConfig = WMI.RunCommand(classInstance, cmd.ID);
-
-                    cmd = GetFunctionByIdString("Get memory voltages");
-                    if (cmd != null)
+                    } 
+                    else
                     {
-                        byte[] voltages = WMI.RunCommand(classInstance, cmd.ID);
-
-                        // MEM_VDDIO is ushort, offset 27
-                        // MEM_VTT is ushort, offset 29
-                        for (int i = 27; i <= 30; i++)
+                        byte[] apcbConfig = WMI.RunCommand(classInstance, cmd.ID);
+                        // BiosACPIFunction cmd = new BiosACPIFunction("Get APCB Config", 0x00010001);
+                        cmd = GetFunctionByIdString("Get memory voltages");
+                        if (cmd != null)
                         {
-                            byte value = voltages[i];
-                            if (value > 0)
-                                apcbConfig[i] = value;
+                            byte[] voltages = WMI.RunCommand(classInstance, cmd.ID);
+
+                            // MEM_VDDIO is ushort, offset 27
+                            // MEM_VTT is ushort, offset 29
+                            for (int i = 27; i <= 30; i++)
+                            {
+                                byte value = voltages[i];
+                                if (value > 0)
+                                    apcbConfig[i] = value;
+                            }
                         }
+
+                        BMC.Table = apcbConfig ?? new byte[] { };
                     }
 
                     float vdimm = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVddio) / 1000);
@@ -482,7 +485,8 @@ namespace ZenTimings
                     // When ProcODT is 0, then all other resistance values are 0
                     // Happens when one DIMM installed in A1 or A2 slot
                     if (BMC.Table == null || Utils.AllZero(BMC.Table) || BMC.Config.ProcODT < 1)
-                        throw new Exception("Failed to read AMD ACPI. Odt, Setup and Drive strength parameters will be empty.");
+                        // throw new Exception("Failed to read AMD ACPI. Odt, Setup and Drive strength parameters will be empty.");
+                        return;
 
                     textBoxProcODT.Text = BMC.GetProcODTString(BMC.Config.ProcODT);
 
@@ -501,6 +505,9 @@ namespace ZenTimings
                 }
                 else
                 {
+                    if (Utils.AllZero(cpu.info.aod.Table.rawAodTable))
+                        return;
+
                     AOD.AodData Data = cpu.info.aod.Table.Data;
 
                     labelMemVdd.IsEnabled = true;
