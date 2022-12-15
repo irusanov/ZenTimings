@@ -415,11 +415,6 @@ namespace ZenTimings
                     }
                 }
 
-                if (cpu.powerTable.MCLK * 2 > MEMCFG.Frequency)
-                {
-                    MEMCFG.Frequency = cpu.powerTable.MCLK * 2;
-                }
-
                 AOD aod = cpu.info.aod;
 
                 if (MEMCFG.Type == MemType.DDR4)
@@ -795,9 +790,13 @@ namespace ZenTimings
                     Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() =>
                     {
                         // ReadTimings();
-                        ReadMemoryConfig();
+                        // ReadMemoryConfig();
                         cpu.RefreshPowerTable();
                         ReadSVI();
+                        if (cpu.powerTable.MCLK * 2 > MEMCFG.Frequency)
+                        {
+                            MEMCFG.Frequency = cpu.powerTable.MCLK * 2;
+                        }
                         // RefreshSensors();
                     }));
                 }).Start();
@@ -1056,7 +1055,7 @@ namespace ZenTimings
                 sysInfoWindowWidth = settings.SysInfoWindowWidth;
             }
 
-            siWnd = new SystemInfoWindow(cpu.systemInfo, MEMCFG, AsusWmi?.sensors)
+            siWnd = new SystemInfoWindow(cpu.systemInfo, MEMCFG, BMC.Config, cpu.info.aod.Table.Data, AsusWmi?.sensors)
             {
                 Width = sysInfoWindowWidth,
                 Height = sysInfoWindowHeight,

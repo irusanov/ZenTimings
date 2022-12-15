@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Windows;
 using ZenStates.Core;
+using static ZenTimings.BiosMemController;
 
 namespace ZenTimings.Windows
 {
@@ -18,7 +19,7 @@ namespace ZenTimings.Windows
             public string Value { get; set; }
         }
 
-        public SystemInfoWindow(SystemInfo si, MemoryConfig mc, List<AsusSensorInfo> asusSensors)
+        public SystemInfoWindow(SystemInfo si, MemoryConfig mc, Resistances mcConfig, AOD.AodData aodData, List<AsusSensorInfo> asusSensors)
         {
             InitializeComponent();
             Type type = si.GetType();
@@ -62,6 +63,40 @@ namespace ZenTimings.Windows
             catch
             {
                 // ignored
+            }
+
+            if (mc.Type == MemoryConfig.MemType.DDR4) {
+                type = mcConfig.GetType();
+                FieldInfo[] fields = type.GetFields();
+                try
+                {
+                    items = new List<GridItem>();
+                    foreach (FieldInfo property in fields)
+                        items.Add(new GridItem() { Name = property.Name, Value = property.GetValue(mcConfig).ToString() });
+
+                    MemControllerGrid.ItemsSource = items;
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+            else
+            {
+                type = aodData.GetType();
+                FieldInfo[] fields = type.GetFields();
+                try
+                {
+                    items = new List<GridItem>();
+                    foreach (FieldInfo property in fields)
+                        items.Add(new GridItem() { Name = property.Name, Value = property.GetValue(aodData).ToString() });
+
+                    MemControllerGrid.ItemsSource = items;
+                }
+                catch
+                {
+                    // ignored
+                }
             }
 
             //AsusWmiGrid.ItemsSource = asusSensors;

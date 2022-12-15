@@ -88,6 +88,40 @@
                 </DataGrid>
             </GroupBox>
 
+            <GroupBox
+                Header="AOD Table"
+                adonisExtensions:LayerExtension.Layer="3">
+                <DataGrid
+                    Name="MemControllerGrid"
+                    adonisExtensions:LayerExtension.Layer="3"
+                    AutoGenerateColumns="False"
+                    HeadersVisibility="None"
+                    GridLinesVisibility="None"
+                    HorizontalScrollBarVisibility="Disabled"
+                    VerticalScrollBarVisibility="Disabled"
+                    Focusable="False"
+                    IsReadOnly="True"
+                    ScrollViewer.CanContentScroll="False"
+                    IsEnabled="False" FontSize="11">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Width="150" Binding="{Binding Name}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Foreground" Value="{DynamicResource TextColor}" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Width="auto" Binding="{Binding Value}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Foreground" Value="{DynamicResource AccentTextColor}" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </GroupBox>
+
             <Border>
                 <Border.Style>
                     <Style TargetType="Border">
