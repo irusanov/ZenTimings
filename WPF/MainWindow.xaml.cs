@@ -483,6 +483,18 @@ namespace ZenTimings
                         // throw new Exception("Failed to read AMD ACPI. Odt, Setup and Drive strength parameters will be empty.");
                         return;
 
+                    labelProcODT.IsEnabled = true;
+                    labelClkDrvStren.IsEnabled = true;
+                    labelAddrCmdDrvStren.IsEnabled = true;
+                    labelCsOdtDrvStren.IsEnabled = true;
+                    labelCkeDrvStren.IsEnabled = true;
+                    labelRttNom.IsEnabled = true;
+                    labelRttWr.IsEnabled = true;
+                    labelRttPark.IsEnabled = true;
+                    labelAddrCmdSetup.IsEnabled = true;
+                    labelCsOdtSetup.IsEnabled = true;
+                    labelCkeSetup.IsEnabled = true;
+
                     textBoxProcODT.Text = BMC.GetProcODTString(BMC.Config.ProcODT);
 
                     textBoxClkDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.ClkDrvStren);
@@ -506,7 +518,18 @@ namespace ZenTimings
                     AOD.AodData Data = cpu.info.aod.Table.Data;
 
                     labelMemVdd.IsEnabled = true;
+                    labelMemVddq.IsEnabled = true;
+                    labelMemVpp.IsEnabled = true;
+
                     labelProcODT.IsEnabled = true;
+                    labelProcCaDs.IsEnabled = true;
+                    labelProcDqDs.IsEnabled = true;
+                    labelDramDqDs.IsEnabled = true;
+                    labelRttWrD5.IsEnabled = true;
+                    labelRttNomWr.IsEnabled = true;
+                    labelRttNomRd.IsEnabled = true;
+                    labelRttParkD5.IsEnabled = true;
+                    labelRttParkDqs.IsEnabled = true;
 
                     textBoxMemVddio.Text = $"{Data.MemVddio / 1000.0:F4}V";
                     textBoxMemVddq.Text = $"{Data.MemVddq / 1000.0:F4}V";

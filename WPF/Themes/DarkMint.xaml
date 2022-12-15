@@ -12,15 +12,15 @@
     <!-- Text color -->
     <Color x:Key="{x:Static adonisUi:Colors.ForegroundColor}">#D1D4C9</Color>
     <!-- Window title background -->
-    <Color x:Key="{x:Static adonisUi:Colors.Layer0BorderColor}">#1e1f23</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer0BorderColor}">#232428</Color>
     <!-- Window background -->
-    <Color x:Key="{x:Static adonisUi:Colors.Layer0BackgroundColor}">#1e1f23</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer0BackgroundColor}">#232428</Color>
 
-    <Color x:Key="{x:Static adonisUi:Colors.Layer3BorderColor}">#121315</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer3BorderColor}">#191a1d</Color>
 
     <!-- Accent button and toggles -->
     <Color x:Key="{x:Static adonisUi:Colors.AccentColor}">#7ccaa2</Color>
-    <Color x:Key="{x:Static adonisUi:Colors.AccentForegroundColor}">#1e1f23</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.AccentForegroundColor}">#1c1e25</Color>
     <!-- Accent button and toggles hover -->
     <Color x:Key="{x:Static adonisUi:Colors.AccentHighlightColor}">#60cd95</Color>
     <!-- Accent button and toggles active -->

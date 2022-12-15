@@ -10,7 +10,7 @@
     adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
     mc:Ignorable="d"
     Title="ZenTimings"
-    Width="372"
+    Width="387"
     WindowStartupLocation="CenterScreen"
     ResizeMode="CanMinimize"
     SizeToContent="WidthAndHeight"
@@ -327,42 +327,44 @@
 
                             <!-- MEM Voltages -->
                             <TextBlock Text="" TextAlignment="Right"  Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
+                            <!-- DDR4 -->
                             <TextBlock x:Name="labelMemVddio" Text="VDIMM" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
                             <TextBlock x:Name="labelMemVtt" Text="MEM VTT" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
-                            <TextBlock x:Name="labelMemVdd" Text="MEM VDD" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
-                            <TextBlock x:Name="labelMemVddq" Text="MEM VDDQ" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
-                            <TextBlock x:Name="labelMemVpp" Text="MEM VPP" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
-                            <TextBlock x:Name="labelVddMisc" Text="VDD MISC" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
+                            <!-- DDR5 -->
+                            <TextBlock x:Name="labelMemVdd" Text="MEM VDD" IsEnabled="False" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
+                            <TextBlock x:Name="labelMemVddq" Text="MEM VDDQ" IsEnabled="False" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
+                            <TextBlock x:Name="labelMemVpp" Text="MEM VPP" IsEnabled="False" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
+                            <TextBlock x:Name="labelVddMisc" Text="VDD MISC" IsEnabled="{Binding powerTable.VDD_MISC}" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
 
                             <TextBlock Text="" TextAlignment="Right" />
-                            <TextBlock x:Name="labelProcODT" Text="ProcOdt" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" />
+                            <TextBlock x:Name="labelProcODT" Text="ProcOdt" TextAlignment="Right" IsEnabled="False" />
                             <!-- DDR4 -->
-                            <TextBlock Text="RttNom" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
-                            <TextBlock Text="RttWr" TextAlignment="Right" IsEnabled="{Binding WMIPresent}"  Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
-                            <TextBlock Text="RttPark" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
+                            <TextBlock x:Name="labelRttNom" Text="RttNom" TextAlignment="Right" IsEnabled="False" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
+                            <TextBlock x:Name="labelRttWr" Text="RttWr" TextAlignment="Right"  IsEnabled="False" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
+                            <TextBlock x:Name="labelRttPark" Text="RttPark" TextAlignment="Right"  IsEnabled="False" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
                             <!-- DDR5 -->
-                            <TextBlock Text="ProcCaDs" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
-                            <TextBlock Text="ProcDqDs" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
-                            <TextBlock Text="DramDqDs" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
+                            <TextBlock x:Name="labelProcCaDs" Text="ProcCaDs" IsEnabled="False" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
+                            <TextBlock x:Name="labelProcDqDs" Text="ProcDqDs" IsEnabled="False" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
+                            <TextBlock x:Name="labelDramDqDs" Text="DramDqDs" IsEnabled="False" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
 
                             <TextBlock Text="" TextAlignment="Right" />
                             <!-- DDR4 -->
-                            <TextBlock Text="ClkDrvStr" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
-                            <TextBlock Text="AddrCmdDrvStr" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
-                            <TextBlock Text="CsOdtDrvStr" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
-                            <TextBlock Text="CkeDrvStr" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
+                            <TextBlock x:Name="labelClkDrvStren" Text="ClkDrvStr" TextAlignment="Right" IsEnabled="False" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
+                            <TextBlock x:Name="labelAddrCmdDrvStren" Text="AddrCmdDrvStr" TextAlignment="Right" IsEnabled="False" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
+                            <TextBlock x:Name="labelCsOdtDrvStren" Text="CsOdtDrvStr" TextAlignment="Right" IsEnabled="False" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
+                            <TextBlock x:Name="labelCkeDrvStren" Text="CkeDrvStr" TextAlignment="Right" IsEnabled="False" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
                             <!-- DDR5 -->
-                            <TextBlock Text="RttNomWr" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
-                            <TextBlock Text="RttNomRd" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
-                            <TextBlock Text="RttWr" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
-                            <TextBlock Text="RttPark" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
-                            <TextBlock Text="RttParkDqs" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
+                            <TextBlock x:Name="labelRttNomWr" Text="RttNomWr" TextAlignment="Right" IsEnabled="False" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
+                            <TextBlock x:Name="labelRttNomRd" Text="RttNomRd" TextAlignment="Right" IsEnabled="False" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
+                            <TextBlock x:Name="labelRttWrD5" Text="RttWr" TextAlignment="Right" IsEnabled="False" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
+                            <TextBlock x:Name="labelRttParkD5" Text="RttPark" TextAlignment="Right" IsEnabled="False" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
+                            <TextBlock x:Name="labelRttParkDqs" Text="RttParkDqs" TextAlignment="Right" IsEnabled="False" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
 
                             <!-- DDR4 -->
                             <TextBlock Text="" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
-                            <TextBlock Text="AddrCmdSetup" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
-                            <TextBlock Text="CsOdtSetup" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
-                            <TextBlock Text="CkeSetup" TextAlignment="Right" IsEnabled="{Binding WMIPresent}" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
+                            <TextBlock x:Name="labelAddrCmdSetup" Text="AddrCmdSetup" TextAlignment="Right" IsEnabled="False" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
+                            <TextBlock x:Name="labelCsOdtSetup" Text="CsOdtSetup" TextAlignment="Right" IsEnabled="False" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
+                            <TextBlock x:Name="labelCkeSetup" Text="CkeSetup" TextAlignment="Right" IsEnabled="False" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
                             <!-- DDR5 -->
                         </StackPanel>
 

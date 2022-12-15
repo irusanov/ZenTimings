@@ -33,6 +33,7 @@
             <TextBlock Text=" -  Fix GDM and Cmd2T for DDR5" />
             <TextBlock Text=" -  Fix Picasso/Dali power table reading" />
             <TextBlock Text=" -  Change discord invite link to a permanent one" />
+            <TextBlock Text=" -  Update core dll" />
             <TextBlock Text="" />
             <StackPanel Orientation="Horizontal">
                 <Image Source="/Resources/warning-icon.png" Width="16" VerticalAlignment="Top" />
