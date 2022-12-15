@@ -78,6 +78,7 @@
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
 
             <ToggleButton
@@ -112,14 +113,14 @@
                         VerticalAlignment="Center"
                         Padding="5 0" FontWeight="Normal" />
 
-            <ToggleButton
+            <!-- ToggleButton
                         x:Name="comboBoxTheme"
                         Grid.Column="0"
                         Grid.Row="2"
                         Margin="0 5 5 5"
                         Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
                         Content="Dark mode"
-                        Click="ComboBoxTheme_CheckedChanged" />
+                        Click="ComboBoxTheme_CheckedChanged" /-->
 
             <ToggleButton
                         x:Name="checkBoxMinimizeToTray"
@@ -147,6 +148,26 @@
                         Margin="0 5 5 5"
                         Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
                         Content="Check for updates on startup" />
+
+            <TextBlock
+                        Grid.Column="0"
+                        Grid.Row="6"
+                        Margin="0 5 5 5"
+                        Text="Theme" VerticalAlignment="Center" />
+            <ComboBox
+                x:Name="comboBoxTheme"
+                Grid.ColumnSpan="2"
+                Grid.Column="1"
+                Grid.Row="6"
+                HorizontalAlignment="Left"
+                Margin="5"
+                VerticalAlignment="Top"
+                Width="120" SelectionChanged="ComboBoxTheme_SelectionChanged"
+             >
+                <ComboBoxItem Content="Light" />
+                <ComboBoxItem Content="Dark" />
+                <ComboBoxItem Content="Dark Mint" />
+            </ComboBox>
         </Grid>
         <!--/TabItem>
             <TabItem

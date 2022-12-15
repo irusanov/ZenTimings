@@ -14,13 +14,21 @@ namespace ZenTimings
 
         private const string filename = "settings.xml";
 
+        public enum THEME: int
+        {
+            LIGHT,
+            DARK,
+            DARK_MINT,
+        }
+
         public AppSettings Create()
         {
             Version = $"{VERSION_MAJOR}.{VERSION_MINOR}";
+            AppTheme = THEME.LIGHT;
             AutoRefresh = true;
             AutoRefreshInterval = 2000;
             AdvancedMode = true;
-            DarkMode = false;
+            // DarkMode = false;
             CheckForUpdates = true;
             SaveWindowPosition = false;
             WindowLeft = 0;
@@ -92,11 +100,15 @@ namespace ZenTimings
         {
             Uri DarkColorScheme = new Uri("pack://application:,,,/ZenTimings;component/Themes/Dark.xaml",
                 UriKind.Absolute);
+            Uri DarkMintColorScheme = new Uri("pack://application:,,,/ZenTimings;component/Themes/DarkMint.xaml",
+               UriKind.Absolute);
             Uri LightColorScheme = new Uri("pack://application:,,,/ZenTimings;component/Themes/Light.xaml",
                 UriKind.Absolute);
 
-            if (DarkMode)
+            if (AppTheme == THEME.DARK)
                 ResourceLocator.SetColorScheme(Application.Current.Resources, DarkColorScheme);
+            else if (AppTheme == THEME.DARK_MINT)
+                ResourceLocator.SetColorScheme(Application.Current.Resources, DarkMintColorScheme);
             else
                 ResourceLocator.SetColorScheme(Application.Current.Resources, LightColorScheme);
 
@@ -107,7 +119,8 @@ namespace ZenTimings
         public bool AutoRefresh { get; set; } = true;
         public int AutoRefreshInterval { get; set; } = 2000;
         public bool AdvancedMode { get; set; } = true;
-        public bool DarkMode { get; set; }
+        // public bool DarkMode { get; set; }
+        public THEME AppTheme { get; set; } = THEME.LIGHT;
         public bool CheckForUpdates { get; set; } = true;
         public string UpdaterSkippedVersion { get; set; } = "";
         public string UpdaterRemindLaterAt { get; set; } = "";

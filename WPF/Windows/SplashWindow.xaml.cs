@@ -29,7 +29,7 @@ namespace ZenTimings.Windows
         {
             splash.Show();
 
-            if (appSettings.DarkMode)
+            if (appSettings.AppTheme != AppSettings.THEME.LIGHT)
                 appSettings.ChangeTheme();
 
             if (appSettings.CheckForUpdates) updater.CheckForUpdate();
