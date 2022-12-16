@@ -8,7 +8,7 @@
         xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
         xmlns:converters="clr-namespace:ZenTimings.Converters"
         mc:Ignorable="d"
-        Title="What's New" Height="303" Width="403" UseLayoutRounding="True" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Topmost="True" Icon="/ZenTimings;component/Resources/new-icon/16.png">
+        Title="What's New" Height="329" Width="454" UseLayoutRounding="True" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Topmost="True" Icon="/ZenTimings;component/Resources/new-icon/16.png" SizeToContent="WidthAndHeight">
     
     <Window.Resources>
         <converters:DDR5ToVisConverter x:Key="DDR5ToBool" />
@@ -27,13 +27,13 @@
             <!-- TextBlock Text="Changelog" FontSize="14" FontWeight="Bold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" /-->
             <TextBlock Text="v1.2.8 Dec XX 2022" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" />
             <TextBlock Text="" />
-            <TextBlock Text=" -  Improve Zen4 7000 (Raphael) CPU support" />
-            <TextBlock Text=" -  Extend DDR5 support" />
-            <TextBlock Text=" -  Show tRFCsb instead of tXP" />
-            <TextBlock Text=" -  Fix GDM and Cmd2T for DDR5" />
-            <TextBlock Text=" -  Fix Picasso/Dali power table reading" />
-            <TextBlock Text=" -  Change discord invite link to a permanent one" />
-            <TextBlock Text=" -  Update core dll" />
+            <TextBlock Text=" -  Imroved support for Zen4 7000 (Raphael) CPUs" />
+            <TextBlock Text=" -  Extended support for DDR5 memory" />
+            <TextBlock Text=" -  Replaced tXP with tRFCsb in the interface" />
+            <TextBlock Text=" -  Fixed issues with GDM and Cmd2T readings for DDR5 memory" />
+            <TextBlock Text=" -  Resolved issues with the reading of power tables for Picasso/Dali CPUs" />
+            <TextBlock Text=" -  Updated the Discord invite link to a permanent one" />
+            <TextBlock Text=" -  Updated core DLL for enhanced functionality and stability" />
             <TextBlock Text="" />
             <StackPanel Orientation="Horizontal">
                 <Image Source="/Resources/warning-icon.png" Width="16" VerticalAlignment="Top" />
@@ -42,7 +42,7 @@
                     Margin="5 0 0 0"
                     Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}"
                     TextWrapping="Wrap"
-                    Text="Note: The current version can not detect DRAM Overvoltage mode, so you might get inaccurate readings for MEM VDD and MEM VDDQ." Width="329" />
+                    Text="Please be aware that the current version is not capable of detecting DRAM Overvoltage mode. As a result, the readings for MEM VDD and MEM VDDQ may not be accurate." Width="329" />
             </StackPanel>
         </StackPanel>
         <Border Grid.Row="1" Padding="4 10" Grid.ColumnSpan="2">
