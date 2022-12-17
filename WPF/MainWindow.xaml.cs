@@ -729,6 +729,14 @@ namespace ZenTimings
             return temp;
         }
 
+        private void SetFrequencyString()
+        {
+            if (cpu.powerTable.MCLK > 0)
+            {
+                MEMCFG.Frequency = cpu.powerTable.MCLK * 2;
+            }
+        }
+
         private bool WaitForPowerTable()
         {
             if (cpu.powerTable == null || cpu.powerTable.DramBaseAddress == 0)
@@ -763,6 +771,8 @@ namespace ZenTimings
                     HandleError("Could not get power table.\nSkipping.");
                     return false;
                 }
+
+                SetFrequencyString();
 
                 return true;
             }
@@ -816,10 +826,7 @@ namespace ZenTimings
                         // ReadMemoryConfig();
                         cpu.RefreshPowerTable();
                         ReadSVI();
-                        if (cpu.powerTable.MCLK * 2 > MEMCFG.Frequency)
-                        {
-                            MEMCFG.Frequency = cpu.powerTable.MCLK * 2;
-                        }
+                        SetFrequencyString();
                         // RefreshSensors();
                     }));
                 }).Start();
