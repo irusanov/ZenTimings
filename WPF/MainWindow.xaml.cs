@@ -697,10 +697,13 @@ namespace ZenTimings
             {
                 MEMCFG.RFC = Utils.GetBits(trfcRegValue, 0, 16);
                 MEMCFG.RFC2 = Utils.GetBits(trfcRegValue, 16, 16);
-                uint[] temp = { 0x502c0, 0x502c4, 0x502c8, 0x502cc };
-                foreach (uint reg in temp)
+                uint rfcsb1 = Utils.GetBits(cpu.ReadDword(offset | 0x502c0), 0, 11);
+                uint rfcsb2 = Utils.GetBits(cpu.ReadDword(offset | 0x502c4), 0, 11);
+                uint rfcsb3 = Utils.GetBits(cpu.ReadDword(offset | 0x502c8), 0, 11);
+                uint rfcsb4 = Utils.GetBits(cpu.ReadDword(offset | 0x502cc), 0, 11);
+                uint[] trfcsb = { rfcsb1, rfcsb2, rfcsb3, rfcsb4 };
+                foreach (uint value in trfcsb)
                 {
-                    uint value = Utils.GetBits(cpu.ReadDword(offset | reg), 0, 11);
                     if (value != 0)
                     {
                         MEMCFG.RFCsb = value;
