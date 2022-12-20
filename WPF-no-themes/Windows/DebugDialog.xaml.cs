@@ -98,7 +98,7 @@ namespace ZenTimings.Windows
                             for (var i = 0; i < Length; ++i)
                             {
                                 if (IDString[i] == "")
-                                    return;
+                                    break;
                                 AddLine($"{IDString[i] + ":",-30}{ID[i]:X8}");
                             }
                         }
@@ -201,6 +201,7 @@ namespace ZenTimings.Windows
                         AddLine($"{property.Name + ":",-19}{property.GetValue(SI, null)}");
 
                 }
+                AddLine($"{"DRAM Base Address:",-19}{((long)CPU.powerTable.DramBaseAddressHi << 32) | CPU.powerTable.DramBaseAddress:X16}");
             }
             catch
             {

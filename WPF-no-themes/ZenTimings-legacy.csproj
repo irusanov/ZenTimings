@@ -111,6 +111,12 @@
     <Compile Include="..\WPF\Common\Sensor.cs">
       <Link>Common\Sensor.cs</Link>
     </Compile>
+    <Compile Include="..\WPF\Converters\DDR4ToVisConverter.cs">
+      <Link>Converters\DDR4ToVisConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\WPF\Converters\DDR5ToVisConverter.cs">
+      <Link>Converters\DDR5ToVisConverter.cs</Link>
+    </Compile>
     <Compile Include="..\WPF\Converters\FloatToBoolConverter.cs">
       <Link>Converters\FloatToBoolConverter.cs</Link>
     </Compile>
