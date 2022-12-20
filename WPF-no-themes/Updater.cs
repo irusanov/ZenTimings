@@ -1,9 +1,9 @@
-﻿using System;
+﻿using AutoUpdaterDotNET;
+using System;
 using System.IO;
 using System.Net;
 using System.Windows;
 using System.Xml.Serialization;
-using AutoUpdaterDotNET;
 using ZenTimings.Windows;
 
 namespace ZenTimings
@@ -72,25 +72,25 @@ namespace ZenTimings
 
                     if (xmls.Deserialize(txtReader) is UpdaterArgs updaterArgs)
                     {
-	                    args.UpdateInfo = new UpdateInfoEventArgs
-	                    {
-	                        CurrentVersion = updaterArgs.Version,
-	                        DownloadURL = updaterArgs.Url,
-	                        ChangelogURL = updaterArgs.Changelog,
-	                        Mandatory = new Mandatory
-	                        {
-	                            Value = manual,
-	                                UpdateMode = Mode.Normal
-	                        },
-	                        CheckSum = new CheckSum
-	                        {
-	                            Value = updaterArgs.Checksum.Value,
-	                            HashingAlgorithm = updaterArgs.Checksum.algorithm
-	                        }
-	                    };
-	
-	                    foreach (string change in updaterArgs.Changes)
-	                        ChangelogText += $" - {change}{Environment.NewLine}";
+                        args.UpdateInfo = new UpdateInfoEventArgs
+                        {
+                            CurrentVersion = updaterArgs.Version,
+                            DownloadURL = updaterArgs.Url,
+                            ChangelogURL = updaterArgs.Changelog,
+                            Mandatory = new Mandatory
+                            {
+                                Value = manual,
+                                UpdateMode = Mode.Normal
+                            },
+                            CheckSum = new CheckSum
+                            {
+                                Value = updaterArgs.Checksum.Value,
+                                HashingAlgorithm = updaterArgs.Checksum.algorithm
+                            }
+                        };
+
+                        foreach (string change in updaterArgs.Changes)
+                            ChangelogText += $" - {change}{Environment.NewLine}";
                     }
                 }
             }

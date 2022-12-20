@@ -98,7 +98,7 @@ namespace ZenTimings
             GCHandle handle = GCHandle.Alloc(biosTable, GCHandleType.Pinned);
             try
             {
-                Config = (Resistances) Marshal.PtrToStructure(handle.AddrOfPinnedObject(),
+                Config = (Resistances)Marshal.PtrToStructure(handle.AddrOfPinnedObject(),
                     typeof(Resistances));
             }
             finally

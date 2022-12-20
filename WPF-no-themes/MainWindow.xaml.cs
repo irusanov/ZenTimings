@@ -3,20 +3,18 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Management;
 using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Interop;
 using System.Windows.Threading;
 using ZenStates.Core;
 using ZenTimings.Plugin;
 using ZenTimings.Windows;
-using Forms = System.Windows.Forms;
 using static ZenTimings.MemoryConfig;
+using Forms = System.Windows.Forms;
 //using OpenHardwareMonitor.Hardware;
 
 namespace ZenTimings
@@ -24,7 +22,7 @@ namespace ZenTimings
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow: IDisposable
+    public partial class MainWindow : IDisposable
     {
         private readonly AsusWMI AsusWmi = new AsusWMI();
         private readonly List<BiosACPIFunction> biosFunctions = new List<BiosACPIFunction>();
@@ -218,25 +216,26 @@ namespace ZenTimings
                 bool dimm2 = Utils.GetBits(cpu.ReadDword(channelOffset | 0x50008), 0, 1) == 1;
                 try
                 {
-	                if (channel && (dimm1 || dimm2))
-	                {
-	                    if (dimm1)
-	                    {
-	                        MemoryModule module = modules[dimmIndex++];
-	                            module.Slot = $"{Convert.ToChar(i / channelsPerDimm + 65)}1";
-	                        module.DctOffset = channelOffset;
-	                        module.Rank = (MemRank)Utils.GetBits(cpu.ReadDword(channelOffset | 0x50080), 0, 1);
-	                    }
-	
-	                    if (dimm2)
-	                    {
-	                        MemoryModule module = modules[dimmIndex++];
-	                            module.Slot = $"{Convert.ToChar(i / channelsPerDimm + 65)}2";
-	                        module.DctOffset = channelOffset;
-	                        module.Rank = (MemRank)Utils.GetBits(cpu.ReadDword(channelOffset | 0x50084), 0, 1);
-	                    }
-	                }
-                } catch { }
+                    if (channel && (dimm1 || dimm2))
+                    {
+                        if (dimm1)
+                        {
+                            MemoryModule module = modules[dimmIndex++];
+                            module.Slot = $"{Convert.ToChar(i / channelsPerDimm + 65)}1";
+                            module.DctOffset = channelOffset;
+                            module.Rank = (MemRank)Utils.GetBits(cpu.ReadDword(channelOffset | 0x50080), 0, 1);
+                        }
+
+                        if (dimm2)
+                        {
+                            MemoryModule module = modules[dimmIndex++];
+                            module.Slot = $"{Convert.ToChar(i / channelsPerDimm + 65)}2";
+                            module.DctOffset = channelOffset;
+                            module.Rank = (MemRank)Utils.GetBits(cpu.ReadDword(channelOffset | 0x50084), 0, 1);
+                        }
+                    }
+                }
+                catch { }
             }
         }
 
@@ -262,22 +261,22 @@ namespace ZenTimings
                         var deviceLocator = "";
 
                         var temp = WMI.TryGetProperty(queryObject, "Capacity");
-                        if (temp != null) capacity = (ulong) temp;
+                        if (temp != null) capacity = (ulong)temp;
 
                         temp = WMI.TryGetProperty(queryObject, "ConfiguredClockSpeed");
-                        if (temp != null) clockSpeed = (uint) temp;
+                        if (temp != null) clockSpeed = (uint)temp;
 
                         temp = WMI.TryGetProperty(queryObject, "partNumber");
-                        if (temp != null) partNumber = (string) temp;
+                        if (temp != null) partNumber = (string)temp;
 
                         temp = WMI.TryGetProperty(queryObject, "BankLabel");
-                        if (temp != null) bankLabel = (string) temp;
+                        if (temp != null) bankLabel = (string)temp;
 
                         temp = WMI.TryGetProperty(queryObject, "Manufacturer");
-                        if (temp != null) manufacturer = (string) temp;
+                        if (temp != null) manufacturer = (string)temp;
 
                         temp = WMI.TryGetProperty(queryObject, "DeviceLocator");
-                        if (temp != null) deviceLocator = (string) temp;
+                        if (temp != null) deviceLocator = (string)temp;
 
                         modules.Add(new MemoryModule(partNumber.Trim(), bankLabel.Trim(), manufacturer.Trim(),
                             deviceLocator, capacity, clockSpeed));
@@ -351,20 +350,20 @@ namespace ZenTimings
                     $"{className}.InstanceName='{instanceName}'",
                     null);
 
-               /* // Get possible values (index) of a memory option in BIOS
-                var dvaluesPack = WMI.InvokeMethod(classInstance, "Getdvalues", "pack", "ID", 0x20035);
-                if (pack != null)
-                {
-                    uint[] DValuesBuffer = (uint[])pack.GetPropertyValue("DValuesBuffer");
-                    for (var i = 0; i < DValuesBuffer.Length; i++)
-                    {
-                        Console.WriteLine("{0}", DValuesBuffer[i]);
-                    }
-                */
+                /* // Get possible values (index) of a memory option in BIOS
+                 var dvaluesPack = WMI.InvokeMethod(classInstance, "Getdvalues", "pack", "ID", 0x20035);
+                 if (pack != null)
+                 {
+                     uint[] DValuesBuffer = (uint[])pack.GetPropertyValue("DValuesBuffer");
+                     for (var i = 0; i < DValuesBuffer.Length; i++)
+                     {
+                         Console.WriteLine("{0}", DValuesBuffer[i]);
+                     }
+                 */
 
 
                 // Get function names with their IDs
-                string[] functionObjects = {"GetObjectID", "GetObjectID2"};
+                string[] functionObjects = { "GetObjectID", "GetObjectID2" };
                 foreach (var functionObject in functionObjects)
                 {
                     try
@@ -372,9 +371,9 @@ namespace ZenTimings
                         var pack = WMI.InvokeMethodAndGetValue(classInstance, functionObject, "pack", null, 0);
                         if (pack != null)
                         {
-                            var ID = (uint[]) pack.GetPropertyValue("ID");
-                            var IDString = (string[]) pack.GetPropertyValue("IDString");
-                            var Length = (byte) pack.GetPropertyValue("Length");
+                            var ID = (uint[])pack.GetPropertyValue("ID");
+                            var IDString = (string[])pack.GetPropertyValue("IDString");
+                            var Length = (byte)pack.GetPropertyValue("Length");
 
                             for (var i = 0; i < Length; ++i)
                             {
@@ -675,7 +674,8 @@ namespace ZenTimings
                         var sensor = AsusWmi.FindSensorByName("DRAM Voltage");
                         if (sensor != null)
                             Dispatcher.Invoke(DispatcherPriority.ApplicationIdle,
-                                new Action(() => {
+                                new Action(() =>
+                                {
                                     textBoxMemVddio.Text = sensor.Value;
                                     labelMemVddio.IsEnabled = true;
                                 }));
@@ -732,11 +732,11 @@ namespace ZenTimings
             var AssemblyTitle = "ZT";
 
             if (settings.AdvancedMode)
-                AssemblyTitle = ((AssemblyTitleAttribute) Attribute.GetCustomAttribute(
+                AssemblyTitle = ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(
                     Assembly.GetExecutingAssembly(),
                     typeof(AssemblyTitleAttribute), false)).Title;
 
-            var AssemblyVersion = ((AssemblyFileVersionAttribute) Attribute.GetCustomAttribute(
+            var AssemblyVersion = ((AssemblyFileVersionAttribute)Attribute.GetCustomAttribute(
                 Assembly.GetExecutingAssembly(),
                 typeof(AssemblyFileVersionAttribute), false)).Version;
 
@@ -795,7 +795,9 @@ namespace ZenTimings
                 {
                     var debugWnd = new DebugDialog(cpu, modules, MEMCFG, BMC, AsusWmi)
                     {
-                        Owner = parent, Width = parent.Width, Height = parent.Height
+                        Owner = parent,
+                        Width = parent.Width,
+                        Height = parent.Height
                     };
                     debugWnd.ShowDialog();
                 }
@@ -897,7 +899,7 @@ namespace ZenTimings
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-			if (settings.SaveWindowPosition)
+            if (settings.SaveWindowPosition)
             {
                 settings.WindowLeft = Left;
                 settings.WindowTop = Top;
@@ -913,10 +915,10 @@ namespace ZenTimings
             {
                 if (disposing)
                 {
-                foreach (var plugin in plugins)
-                	plugin?.Close();
+                    foreach (var plugin in plugins)
+                        plugin?.Close();
 
-            		_notifyIcon.Dispose();
+                    _notifyIcon.Dispose();
                     BMC?.Dispose();
                     AsusWmi?.Dispose();
                     cpu?.Dispose();

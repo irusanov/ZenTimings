@@ -34,7 +34,7 @@ namespace ZenTimings
 
         public IEnumerator GetEnumerator()
         {
-            return ((IEnumerable) PartNumber).GetEnumerator();
+            return ((IEnumerable)PartNumber).GetEnumerator();
         }
     }
 }

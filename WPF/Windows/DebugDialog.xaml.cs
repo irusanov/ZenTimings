@@ -1,3 +1,5 @@
+using Microsoft.VisualBasic.Devices;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -5,8 +7,6 @@ using System.IO;
 using System.Management;
 using System.Threading.Tasks;
 using System.Windows;
-using Microsoft.VisualBasic.Devices;
-using Microsoft.Win32;
 using ZenStates.Core;
 using MessageBox = AdonisUI.Controls.MessageBox;
 
@@ -79,7 +79,7 @@ namespace ZenTimings.Windows
                     null);
 
                 // Get function names with their IDs
-                string[] functionObjects = {"GetObjectID", "GetObjectID2"};
+                string[] functionObjects = { "GetObjectID", "GetObjectID2" };
                 var index = 1;
 
                 foreach (var functionObject in functionObjects)
@@ -92,9 +92,9 @@ namespace ZenTimings.Windows
 
                         if (pack != null)
                         {
-                            var ID = (uint[]) pack.GetPropertyValue("ID");
-                            var IDString = (string[]) pack.GetPropertyValue("IDString");
-                            var Length = (byte) pack.GetPropertyValue("Length");
+                            var ID = (uint[])pack.GetPropertyValue("ID");
+                            var IDString = (string[])pack.GetPropertyValue("IDString");
+                            var Length = (byte)pack.GetPropertyValue("Length");
 
                             for (var i = 0; i < Length; ++i)
                             {
@@ -238,7 +238,7 @@ namespace ZenTimings.Windows
             try
             {
                 foreach (var property in properties)
-                    AddLine($"{property.Name + ":",-16}{ property.GetValue(MEMCFG, null)}");
+                    AddLine($"{property.Name + ":",-16}{property.GetValue(MEMCFG, null)}");
             }
             catch
             {

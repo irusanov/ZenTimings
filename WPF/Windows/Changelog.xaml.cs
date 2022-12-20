@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace ZenTimings.Windows
+﻿namespace ZenTimings.Windows
 {
     /// <summary>
     /// Interaction logic for Changelog.xaml

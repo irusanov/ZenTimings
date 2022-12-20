@@ -17,12 +17,12 @@ using System.Windows.Threading;
 using ZenStates.Core;
 using ZenTimings.Plugin;
 using ZenTimings.Windows;
+using static ZenTimings.MemoryConfig;
+using Forms = System.Windows.Forms;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
-using Forms = System.Windows.Forms;
-using static ZenTimings.MemoryConfig;
 //using OpenHardwareMonitor.Hardware;
 
 namespace ZenTimings
@@ -359,7 +359,7 @@ namespace ZenTimings
         private string RttToString(int rtt)
         {
             if (rtt > 0)
-                return $"{AOD.GetRttString(rtt)} ({ 240 / rtt})";
+                return $"{AOD.GetRttString(rtt)} ({240 / rtt})";
             return $"{AOD.GetRttString(rtt)}";
         }
 
@@ -427,7 +427,7 @@ namespace ZenTimings
                         // throw new Exception("Could not get memory controller config");
                         // Use AOD table as an alternative path for now
                         BMC.Table = cpu.info.aod.Table.rawAodTable;
-                    } 
+                    }
                     else
                     {
                         byte[] apcbConfig = WMI.RunCommand(classInstance, cmd.ID);

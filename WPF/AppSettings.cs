@@ -1,8 +1,8 @@
+using AdonisUI;
 using System;
 using System.IO;
 using System.Windows;
 using System.Xml.Serialization;
-using AdonisUI;
 
 namespace ZenTimings
 {
@@ -14,7 +14,7 @@ namespace ZenTimings
 
         private const string filename = "settings.xml";
 
-        public enum THEME: int
+        public enum THEME : int
         {
             LIGHT,
             DARK,

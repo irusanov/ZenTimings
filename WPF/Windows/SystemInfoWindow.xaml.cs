@@ -65,7 +65,8 @@ namespace ZenTimings.Windows
                 // ignored
             }
 
-            if (mc.Type == MemoryConfig.MemType.DDR4) {
+            if (mc.Type == MemoryConfig.MemType.DDR4)
+            {
                 type = mcConfig.GetType();
                 FieldInfo[] fields = type.GetFields();
                 try

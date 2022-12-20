@@ -24,7 +24,7 @@ namespace ZenTimings
             if (!createdNew)
             {
                 // App is already running! Exit the application and show the other window.
-                InteropMethods.PostMessage((IntPtr) InteropMethods.HWND_BROADCAST, InteropMethods.WM_SHOWME,
+                InteropMethods.PostMessage((IntPtr)InteropMethods.HWND_BROADCAST, InteropMethods.WM_SHOWME,
                     IntPtr.Zero, IntPtr.Zero);
                 Current.Shutdown();
                 Environment.Exit(0);
