@@ -1,4 +1,6 @@
-﻿namespace ZenTimings.Windows
+﻿using System.Diagnostics;
+
+namespace ZenTimings.Windows
 {
     /// <summary>
     /// Interaction logic for Changelog.xaml
@@ -14,6 +16,12 @@
             string changeLogPath = pagesFolder.FullName + "\\whatsnew.html";
             Browser1.Source = new Uri(changeLogPath);
             */
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+            e.Handled = true;
         }
     }
 }

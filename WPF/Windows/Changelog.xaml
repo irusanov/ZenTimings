@@ -25,6 +25,18 @@
         </Grid.RowDefinitions>
         <StackPanel Orientation="Vertical" Margin="15" Grid.ColumnSpan="2">
             <!-- TextBlock Text="Changelog" FontSize="14" FontWeight="Bold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" /-->
+            <TextBlock Text="v1.2.8.841 Dec 21, 2022" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" />
+            <TextBlock Text="" />
+            <TextBlock Text=" -  Fixed DRAM speed string syncronization with MCLK" />
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text=" -  Added a workaround for false-postives, see github " />
+                <TextBlock>
+                    <Hyperlink NavigateUri="https://github.com/irusanov/ZenTimings/issues/33" RequestNavigate="Hyperlink_RequestNavigate">
+                        <Run Text="issue 33" />
+                    </Hyperlink>
+                </TextBlock>
+            </StackPanel>
+            <TextBlock Text="" />
             <TextBlock Text="v1.2.8 Dec 17, 2022" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" />
             <TextBlock Text="" />
             <TextBlock Text=" -  Imroved support for Zen4 7000 (Raphael) CPUs" />

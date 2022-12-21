@@ -4,11 +4,11 @@ using System.Windows.Data;
 
 namespace ZenTimings.Converters
 {
-    class DDR4ToVisConverter : IValueConverter
+    class DDR5ToVisConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if ((MemoryConfig.MemType)value == MemoryConfig.MemType.DDR4)
+            if ((MemoryConfig.MemType)value == MemoryConfig.MemType.DDR5)
             {
                 return System.Windows.Visibility.Visible;
             }
