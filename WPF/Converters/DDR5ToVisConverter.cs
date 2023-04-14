@@ -8,7 +8,7 @@ namespace ZenTimings.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if ((MemoryConfig.MemType)value == MemoryConfig.MemType.DDR5)
+            if ((MemoryConfig.MemType)value >= MemoryConfig.MemType.DDR5)
             {
                 return System.Windows.Visibility.Visible;
             }

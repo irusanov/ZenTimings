@@ -69,7 +69,7 @@ namespace ZenTimings
                 {
                     throw new ApplicationException("CPU model is not supported.\nPlease run a debug report and send to the developer.");
                 }
-                else if (cpu.info.codeName.Equals(Cpu.CodeName.Rembrandt) && !settings.NotifiedRembrandt.Equals(AssemblyVersion))
+               /* else if (cpu.info.codeName.Equals(Cpu.CodeName.Rembrandt) && !settings.NotifiedRembrandt.Equals(AssemblyVersion))
                 {
                     MessageBox.Show(
                         "DDR5 support is experimental and Advanced mode is not supported yet."
@@ -86,7 +86,7 @@ namespace ZenTimings
                     settings.AdvancedMode = false;
                     settings.NotifiedRembrandt = AssemblyVersion;
                     settings.Save();
-                }
+                }*/
 
                 IconSource = GetIcon("pack://application:,,,/ZenTimings;component/Resources/ZenTimings2022.ico", 16);
                 _notifyIcon = GetTrayIcon();
@@ -212,7 +212,7 @@ namespace ZenTimings
         private void ReadChannelsInfo()
         {
             int dimmIndex = 0;
-            int channelsPerDimm = MEMCFG.Type == MemType.DDR5 ? 2 : 1;
+            int channelsPerDimm = MEMCFG.Type >= MemType.DDR5 ? 2 : 1;
 
             // Get the offset by probing the IMC0 to IMC7
             // It appears that offsets 0x80 and 0x84 are DIMM config registers
@@ -600,7 +600,7 @@ namespace ZenTimings
             {
                 trfcRegValue = trfcTimings0 != trfcTimings1 ? (trfcTimings0 != 0x21060138 ? trfcTimings0 : trfcTimings1) : trfcTimings0;
             }
-            else if (MEMCFG.Type == MemType.DDR5)
+            else if (MEMCFG.Type >= MemType.DDR5)
             {
                 uint[] ddr5Regs = { trfcTimings0, trfcTimings1, trfcTimings2, trfcTimings3 };
                 foreach (uint reg in ddr5Regs)
@@ -693,7 +693,7 @@ namespace ZenTimings
                 MEMCFG.RFC4 = Utils.GetBits(trfcRegValue, 22, 11);
             }
 
-            if (MEMCFG.Type == MemType.DDR5)
+            if (MEMCFG.Type >= MemType.DDR5)
             {
                 MEMCFG.RFC = Utils.GetBits(trfcRegValue, 0, 16);
                 MEMCFG.RFC2 = Utils.GetBits(trfcRegValue, 16, 16);
@@ -826,7 +826,7 @@ namespace ZenTimings
 
                     Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() =>
                     {
-                        // ReadTimings();
+                        ReadTimings();
                         // ReadMemoryConfig();
                         cpu.RefreshPowerTable();
                         ReadSVI();
