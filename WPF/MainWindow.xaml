@@ -13,7 +13,6 @@
     Width="387"
     WindowStartupLocation="CenterScreen"
     ResizeMode="CanMinimize"
-    SizeToContent="WidthAndHeight"
     FontSize="11"
     Initialized="Window_Initialized"
     StateChanged="AdonisWindow_StateChanged"
@@ -22,7 +21,7 @@
     Loaded="AdonisWindow_Loaded"
     BorderThickness="1"
     UseLayoutRounding="True"
-    BorderBrush="{DynamicResource WindowBorderColor}" Closing="AdonisWindow_Closing" Height="566">
+    BorderBrush="{DynamicResource WindowBorderColor}" Closing="AdonisWindow_Closing" Height="566" SizeToContent="WidthAndHeight">
 
     <!--Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>

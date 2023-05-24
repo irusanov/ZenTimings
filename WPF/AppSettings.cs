@@ -98,19 +98,19 @@ namespace ZenTimings
 
         public void ChangeTheme()
         {
-            Uri DarkColorScheme = new Uri("pack://application:,,,/ZenTimings;component/Themes/Dark.xaml",
-                UriKind.Absolute);
-            Uri DarkMintColorScheme = new Uri("pack://application:,,,/ZenTimings;component/Themes/DarkMint.xaml",
-               UriKind.Absolute);
-            Uri LightColorScheme = new Uri("pack://application:,,,/ZenTimings;component/Themes/Light.xaml",
-                UriKind.Absolute);
+            Uri[] ThemeUri = new Uri[]
+            {
+                new Uri("pack://application:,,,/ZenTimings;component/Themes/Dark.xaml", UriKind.Absolute),
+                new Uri("pack://application:,,,/ZenTimings;component/Themes/DarkMint.xaml", UriKind.Absolute),
+                new Uri("pack://application:,,,/ZenTimings;component/Themes/Light.xaml", UriKind.Absolute),
+            };
 
             if (AppTheme == THEME.DARK)
-                ResourceLocator.SetColorScheme(Application.Current.Resources, DarkColorScheme);
+                ResourceLocator.SetColorScheme(Application.Current.Resources, ThemeUri[0]);
             else if (AppTheme == THEME.DARK_MINT)
-                ResourceLocator.SetColorScheme(Application.Current.Resources, DarkMintColorScheme);
+                ResourceLocator.SetColorScheme(Application.Current.Resources, ThemeUri[1]);
             else
-                ResourceLocator.SetColorScheme(Application.Current.Resources, LightColorScheme);
+                ResourceLocator.SetColorScheme(Application.Current.Resources, ThemeUri[ThemeUri.Length - 1]);
 
             //DarkMode = !DarkMode;
         }

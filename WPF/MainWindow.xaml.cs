@@ -1024,6 +1024,7 @@ namespace ZenTimings
 
             source?.AddHook(WndProc);
 
+#if !DEBUG
             if (!settings.NotifiedChangelog.Equals(AssemblyVersion))
             {
                 Changelog changelogWindow = new Changelog()
@@ -1034,6 +1035,7 @@ namespace ZenTimings
                 settings.NotifiedChangelog = AssemblyVersion;
                 settings.Save();
             }
+#endif
         }
 
         private void OptionsToolStripMenuItem_Click(object sender, RoutedEventArgs e)

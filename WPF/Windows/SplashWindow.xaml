@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="SplashWindow"
-        Height="95"
-        Width="229"
+        Height="119"
+        Width="253"
         ShowInTaskbar="False"
         WindowStartupLocation="CenterScreen"
         Topmost="True"
@@ -14,8 +14,8 @@
         Focusable="False"
         WindowStyle="None"
         Margin="0"
-        MaxWidth="229"
-        MaxHeight="95"
+        MaxWidth="253"
+        MaxHeight="119"
         BorderThickness="0"
         ScrollViewer.VerticalScrollBarVisibility="Disabled"
         VerticalContentAlignment="Center"
@@ -23,13 +23,19 @@
         SnapsToDevicePixels="True"
         Padding="0"
         UseLayoutRounding="False"
-        Background="#FF2A2B34">
+        AllowsTransparency="True"
+        Background="Transparent">
     <Grid>
-        <Image HorizontalAlignment="Left" Height="95" Width="229"
-        	   Source="/ZenTimings;component/Resources/splash.png"
-               VerticalAlignment="Top" />
+        <Border CornerRadius="5,5,5,5" Margin="12">
+            <Border.Background>
+                <ImageBrush Stretch="UniformToFill" ImageSource="/ZenTimings;component/Resources/splash.png"/>
+            </Border.Background>
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="12" Opacity=".4" ShadowDepth="2" />
+            </Border.Effect>
+        </Border>
         <Label Name="status" Height="24" FontSize="11" Content="Initializing..." FontWeight="Normal"
-               Foreground="#cdcdcd" Margin="12,66,10,0" VerticalContentAlignment="Center" Panel.ZIndex="1" Width="206"
-               HorizontalAlignment="Left" VerticalAlignment="Top" />
+                       Foreground="#cdcdcd" Margin="24,78,10,0" VerticalContentAlignment="Center" Panel.ZIndex="1" Width="206"
+                       HorizontalAlignment="Left" VerticalAlignment="Top" />
     </Grid>
 </Window>

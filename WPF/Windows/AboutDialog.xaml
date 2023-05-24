@@ -20,7 +20,7 @@
     Icon="/ZenTimings;component/Resources/new-icon/16.png"
     BorderThickness="1"
     UseLayoutRounding="True"
-    BorderBrush="{DynamicResource WindowBorderColor}" WindowStyle="ToolWindow">
+    BorderBrush="{DynamicResource WindowBorderColor}">
 
     <StackPanel x:Name="AboutWindowContent">
         <Popup
