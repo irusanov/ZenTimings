@@ -74,6 +74,9 @@
             <Trigger Property="Text" Value="N/A">
                 <Setter Property="Foreground" Value="{DynamicResource DisabledColor}" />
             </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource DisabledColor}" />
+            </Trigger>
         </Style.Triggers>
     </Style>
 

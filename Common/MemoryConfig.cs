@@ -33,7 +33,7 @@ namespace ZenTimings
             set
             {
                 SetProperty(ref frequency, value, InternalEventArgsCache.Frequency);
-                FrequencyString = $"{Type}-{Math.Floor(value)}";
+                FrequencyString = $"{Math.Floor(value)} MT/s";
             }
         }
 

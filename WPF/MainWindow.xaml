@@ -21,7 +21,7 @@
     Loaded="AdonisWindow_Loaded"
     BorderThickness="1"
     UseLayoutRounding="True"
-    BorderBrush="{DynamicResource WindowBorderColor}" Closing="AdonisWindow_Closing" Height="566" SizeToContent="WidthAndHeight">
+    BorderBrush="{DynamicResource WindowBorderColor}" Closing="AdonisWindow_Closing" Height="538" SizeToContent="WidthAndHeight">
 
     <!--Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
@@ -142,7 +142,7 @@
                                        Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}"/-->
                         </StackPanel>
 
-                        <StackPanel Grid.Column="1">
+                        <StackPanel Grid.Column="1" MinWidth="60">
                             <TextBlock Text="{Binding timings.FrequencyString, FallbackValue='N/A', StringFormat={}{0:F0}}"
                                        Style="{DynamicResource ValueStyles}" />
                             <TextBlock Text="{Binding timings.BGS, FallbackValue='N/A'}"
@@ -447,6 +447,15 @@
                     </Grid.ColumnDefinitions>
 
                     <ComboBox x:Name="comboBoxPartNumber" IsReadOnly="True" Grid.Column="0" />
+                    <TextBlock
+                        Text="{Binding timings.Type, FallbackValue=''}"
+                        Style="{DynamicResource ValueStyles}"
+                        Visibility="{Binding settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}"
+                        Grid.Column="1"
+                        TextAlignment="Right"
+                        Margin="0,0,5,0"
+                        IsEnabled="False"
+                    />
 
                     <!-- Button Grid.Column="1"
                             Width="20"
