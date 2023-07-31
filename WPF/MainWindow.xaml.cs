@@ -826,7 +826,9 @@ namespace ZenTimings
 
                     Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() =>
                     {
-                        ReadTimings();
+                        int selectedIndex = comboBoxPartNumber?.SelectedIndex ?? 0;
+                        MemoryModule module = modules.Count > 0 ? modules[selectedIndex] : null;
+                        ReadTimings(module?.DctOffset ?? 0);
                         // ReadMemoryConfig();
                         cpu.RefreshPowerTable();
                         ReadSVI();
