@@ -265,6 +265,19 @@ namespace ZenTimings.Windows
 
             AddLine();
 
+            AddHeading("ACPI: Raw AOD Table");
+            try
+            {
+                for (var i = 0; i < CPU.info.aod.Table.rawAodTable.Length; ++i)
+                    AddLine($"Index {i:D3}: {CPU.info.aod.Table.rawAodTable[i]:X2} ({CPU.info.aod.Table.rawAodTable[i]})");
+            }
+            catch
+            {
+                AddLine("<FAILED>");
+            }
+
+            AddLine();
+
             // Configured DRAM memory controller settings from BIOS
             AddHeading("BIOS: Memory Controller Config");
             try

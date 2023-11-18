@@ -67,7 +67,12 @@ namespace ZenTimings
                 }
                 else if (cpu.info.codeName.Equals(Cpu.CodeName.Unsupported))
                 {
-                    throw new ApplicationException("CPU model is not supported.\nPlease run a debug report and send to the developer.");
+                    MessageBox.Show(
+                        "CPU model is not supported.\nPlease run a debug report and send to the developer.",
+                        "Unsupported CPU Model",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning
+                    );
                 }
                /* else if (cpu.info.codeName.Equals(Cpu.CodeName.Rembrandt) && !settings.NotifiedRembrandt.Equals(AssemblyVersion))
                 {
@@ -512,7 +517,7 @@ namespace ZenTimings
                 }
                 else
                 {
-                    if (Utils.AllZero(cpu.info.aod.Table.rawAodTable))
+                    if (cpu.info.aod == null || Utils.AllZero(cpu.info.aod.Table.rawAodTable))
                         return;
 
                     AOD.AodData Data = cpu.info.aod.Table.Data;
@@ -735,7 +740,7 @@ namespace ZenTimings
 
         private void SetFrequencyString()
         {
-            if (cpu.powerTable.MCLK > 0)
+            if (cpu.powerTable != null && cpu.powerTable.MCLK > 0)
             {
                 MEMCFG.Frequency = cpu.powerTable.MCLK * 2;
             }
