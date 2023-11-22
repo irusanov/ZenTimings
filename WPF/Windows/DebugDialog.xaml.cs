@@ -268,8 +268,8 @@ namespace ZenTimings.Windows
             AddHeading("ACPI: Raw AOD Table");
             try
             {
-                for (var i = 0; i < CPU.info.aod.Table.rawAodTable.Length; ++i)
-                    AddLine($"Index {i:D3}: {CPU.info.aod.Table.rawAodTable[i]:X2} ({CPU.info.aod.Table.rawAodTable[i]})");
+                for (var i = 0; i < CPU.info.aod.Table.RawAodTable.Length; ++i)
+                    AddLine($"Index {i:D3}: {CPU.info.aod.Table.RawAodTable[i]:X2} ({CPU.info.aod.Table.RawAodTable[i]})");
             }
             catch
             {

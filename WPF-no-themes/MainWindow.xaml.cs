@@ -397,63 +397,62 @@ namespace ZenTimings
 
                 if (MEMCFG.Type == MemType.DDR4)
                 {
-
-                // Get APCB config from BIOS. Holds memory parameters.
-                BiosACPIFunction cmd = GetFunctionByIdString("Get APCB Config");
-                if (cmd == null)
+                    // Get APCB config from BIOS. Holds memory parameters.
+                    BiosACPIFunction cmd = GetFunctionByIdString("Get APCB Config");
+                    if (cmd == null)
                     {
                         // throw new Exception("Could not get memory controller config");
                         // Use AOD table as an alternative path for now
-                        BMC.Table = cpu.info.aod.Table.rawAodTable;
+                        BMC.Table = cpu.info.aod.Table.RawAodTable;
                     }
                     else
                     {
                         byte[] apcbConfig = WMI.RunCommand(classInstance, cmd.ID);
                         // BiosACPIFunction cmd = new BiosACPIFunction("Get APCB Config", 0x00010001);
-                cmd = GetFunctionByIdString("Get memory voltages");
-                if (cmd != null)
-                {
+                        cmd = GetFunctionByIdString("Get memory voltages");
+                        if (cmd != null)
+                        {
                             byte[] voltages = WMI.RunCommand(classInstance, cmd.ID);
 
-                    // MEM_VDDIO is ushort, offset 27
-                    // MEM_VTT is ushort, offset 29
+                            // MEM_VDDIO is ushort, offset 27
+                            // MEM_VTT is ushort, offset 29
                             for (int i = 27; i <= 30; i++)
-                    {
+                            {
                                 byte value = voltages[i];
-                        if (value > 0)
-                            apcbConfig[i] = value;
-                    }
-                }
+                                if (value > 0)
+                                    apcbConfig[i] = value;
+                            }
+                        }
 
                         BMC.Table = apcbConfig ?? new byte[] { };
                     }
 
                     float vdimm = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVddio) / 1000);
-                if (vdimm > 0 && vdimm < 3)
-                {
-                    textBoxMemVddio.Text = $"{vdimm:F4}V";
-                }
-                else if (AsusWmi != null && AsusWmi.Status == 1)
-                {
-                    AsusSensorInfo sensor = AsusWmi.FindSensorByName("DRAM Voltage");
-                    float temp = 0;
-                    bool valid = sensor != null && float.TryParse(sensor.Value, out temp);
+                    if (vdimm > 0 && vdimm < 3)
+                    {
+                        textBoxMemVddio.Text = $"{vdimm:F4}V";
+                    }
+                    else if (AsusWmi != null && AsusWmi.Status == 1)
+                    {
+                        AsusSensorInfo sensor = AsusWmi.FindSensorByName("DRAM Voltage");
+                        float temp = 0;
+                        bool valid = sensor != null && float.TryParse(sensor.Value, out temp);
 
-                    if (valid && temp > 0 && temp < 3)
-                        textBoxMemVddio.Text = sensor.Value;
+                        if (valid && temp > 0 && temp < 3)
+                            textBoxMemVddio.Text = sensor.Value;
+                        else
+                            labelMemVddio.IsEnabled = false;
+                    }
                     else
+                    {
                         labelMemVddio.IsEnabled = false;
-                }
-                else
-                {
-                    labelMemVddio.IsEnabled = false;
-                }
+                    }
 
                     float vtt = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVtt) / 1000);
-                if (vtt > 0)
-                    textBoxMemVtt.Text = $"{vtt:F4}V";
-                else
-                    labelMemVtt.IsEnabled = false;
+                    if (vtt > 0)
+                        textBoxMemVtt.Text = $"{vtt:F4}V";
+                    else
+                        labelMemVtt.IsEnabled = false;
 
                     // When ProcODT is 0, then all other resistance values are 0
                     // Happens when one DIMM installed in A1 or A2 slot
@@ -472,27 +471,27 @@ namespace ZenTimings
                     labelAddrCmdSetup.IsEnabled = true;
                     labelCsOdtSetup.IsEnabled = true;
                     labelCkeSetup.IsEnabled = true;
-                textBoxProcODT.Text = BMC.GetProcODTString(BMC.Config.ProcODT);
+                    textBoxProcODT.Text = BMC.GetProcODTString(BMC.Config.ProcODT);
 
-                textBoxClkDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.ClkDrvStren);
-                textBoxAddrCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.AddrCmdDrvStren);
-                textBoxCsOdtCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CsOdtCmdDrvStren);
-                textBoxCkeDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CkeDrvStren);
+                    textBoxClkDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.ClkDrvStren);
+                    textBoxAddrCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.AddrCmdDrvStren);
+                    textBoxCsOdtCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CsOdtCmdDrvStren);
+                    textBoxCkeDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CkeDrvStren);
 
-                textBoxRttNom.Text = BMC.GetRttString(BMC.Config.RttNom);
-                textBoxRttWr.Text = BMC.GetRttWrString(BMC.Config.RttWr);
-                textBoxRttPark.Text = BMC.GetRttString(BMC.Config.RttPark);
+                    textBoxRttNom.Text = BMC.GetRttString(BMC.Config.RttNom);
+                    textBoxRttWr.Text = BMC.GetRttWrString(BMC.Config.RttWr);
+                    textBoxRttPark.Text = BMC.GetRttString(BMC.Config.RttPark);
 
-                textBoxAddrCmdSetup.Text = $"{BMC.Config.AddrCmdSetup}";
-                textBoxCsOdtSetup.Text = $"{BMC.Config.CsOdtSetup}";
-                textBoxCkeSetup.Text = $"{BMC.Config.CkeSetup}";
-            }
+                    textBoxAddrCmdSetup.Text = $"{BMC.Config.AddrCmdSetup}";
+                    textBoxCsOdtSetup.Text = $"{BMC.Config.CsOdtSetup}";
+                    textBoxCkeSetup.Text = $"{BMC.Config.CkeSetup}";
+                }
                 else
                 {
-                    if (Utils.AllZero(cpu.info.aod.Table.rawAodTable))
+                    if (Utils.AllZero(cpu.info.aod.Table.RawAodTable))
                         return;
 
-                    AOD.AodData Data = cpu.info.aod.Table.Data;
+                    AodData Data = cpu.info.aod.Table.Data;
 
                     labelMemVdd.IsEnabled = true;
                     labelMemVddq.IsEnabled = true;
@@ -893,9 +892,9 @@ namespace ZenTimings
             SetWindowTitle();
             if (cpu != null)
             {
-            labelCPU.Text = cpu.systemInfo.CpuName;
-            labelMB.Text =
-                $"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} | SMU {cpu.systemInfo.GetSmuVersionString()}";
+                labelCPU.Text = cpu.systemInfo.CpuName;
+                labelMB.Text =
+                    $"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} | SMU {cpu.systemInfo.GetSmuVersionString()}";
             }
             //ShowWindow();
 

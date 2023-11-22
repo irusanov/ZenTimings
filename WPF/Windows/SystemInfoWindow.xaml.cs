@@ -19,7 +19,7 @@ namespace ZenTimings.Windows
             public string Value { get; set; }
         }
 
-        public SystemInfoWindow(SystemInfo si, MemoryConfig mc, Resistances mcConfig, AOD.AodData aodData, List<AsusSensorInfo> asusSensors)
+        public SystemInfoWindow(SystemInfo si, MemoryConfig mc, Resistances mcConfig, AodData aodData, List<AsusSensorInfo> asusSensors)
         {
             InitializeComponent();
             Type type = si.GetType();

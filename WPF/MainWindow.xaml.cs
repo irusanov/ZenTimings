@@ -74,24 +74,24 @@ namespace ZenTimings
                         MessageBoxImage.Warning
                     );
                 }
-               /* else if (cpu.info.codeName.Equals(Cpu.CodeName.Rembrandt) && !settings.NotifiedRembrandt.Equals(AssemblyVersion))
-                {
-                    MessageBox.Show(
-                        "DDR5 support is experimental and Advanced mode is not supported yet."
-                            + Environment.NewLine
-                            + Environment.NewLine
-                            + "You can still enable it in Tools -> Options, but it will most probably fail."
-                            + Environment.NewLine
-                            + Environment.NewLine
-                            + "If you're not able to turn off the Advanced mode from the UI, edit settings.xml manually and set AdvancedMode to 'false'. "
-                            + "You can also delete settings.xml file and it will be regenerated on next application launch.",
-                        "Limited Support",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Information);
-                    settings.AdvancedMode = false;
-                    settings.NotifiedRembrandt = AssemblyVersion;
-                    settings.Save();
-                }*/
+                /* else if (cpu.info.codeName.Equals(Cpu.CodeName.Rembrandt) && !settings.NotifiedRembrandt.Equals(AssemblyVersion))
+                 {
+                     MessageBox.Show(
+                         "DDR5 support is experimental and Advanced mode is not supported yet."
+                             + Environment.NewLine
+                             + Environment.NewLine
+                             + "You can still enable it in Tools -> Options, but it will most probably fail."
+                             + Environment.NewLine
+                             + Environment.NewLine
+                             + "If you're not able to turn off the Advanced mode from the UI, edit settings.xml manually and set AdvancedMode to 'false'. "
+                             + "You can also delete settings.xml file and it will be regenerated on next application launch.",
+                         "Limited Support",
+                         MessageBoxButton.OK,
+                         MessageBoxImage.Information);
+                     settings.AdvancedMode = false;
+                     settings.NotifiedRembrandt = AssemblyVersion;
+                     settings.Save();
+                 }*/
 
                 IconSource = GetIcon("pack://application:,,,/ZenTimings;component/Resources/ZenTimings2022.ico", 16);
                 _notifyIcon = GetTrayIcon();
@@ -431,7 +431,7 @@ namespace ZenTimings
                     {
                         // throw new Exception("Could not get memory controller config");
                         // Use AOD table as an alternative path for now
-                        BMC.Table = cpu.info.aod.Table.rawAodTable;
+                        BMC.Table = cpu.info.aod.Table.RawAodTable;
                     }
                     else
                     {
@@ -517,10 +517,10 @@ namespace ZenTimings
                 }
                 else
                 {
-                    if (cpu.info.aod == null || Utils.AllZero(cpu.info.aod.Table.rawAodTable))
+                    if (cpu.info.aod == null || Utils.AllZero(cpu.info.aod.Table.RawAodTable))
                         return;
 
-                    AOD.AodData Data = cpu.info.aod.Table.Data;
+                    AodData Data = cpu.info.aod.Table.Data;
 
                     labelMemVdd.IsEnabled = true;
                     labelMemVddq.IsEnabled = true;
@@ -750,7 +750,7 @@ namespace ZenTimings
         {
             if (cpu.powerTable == null || cpu.powerTable.DramBaseAddress == 0)
             {
-                HandleError("Could not initialize power table.\nClose the application and try again.");
+                HandleError("Could not initialize power table.\n\nClose the application and try again. If the issue persists, you might want to try a system restart.");
                 return false;
             }
 
