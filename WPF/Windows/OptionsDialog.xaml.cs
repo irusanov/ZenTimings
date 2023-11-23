@@ -15,7 +15,7 @@ namespace ZenTimings.Windows
         internal readonly AppSettings appSettings = (Application.Current as App)?.settings;
         private readonly DispatcherTimer timerInstance;
         private DispatcherTimer notificationTimer;
-        private THEME _Theme;
+        private Theme _Theme;
         private readonly bool _AdvancedMode;
 
         public OptionsDialog(DispatcherTimer timer)
@@ -136,7 +136,7 @@ namespace ZenTimings.Windows
 
         private void ComboBoxTheme_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            appSettings.AppTheme = (THEME)comboBoxTheme.SelectedIndex;
+            appSettings.AppTheme = (Theme)comboBoxTheme.SelectedIndex;
             appSettings.ChangeTheme();
         }
     }

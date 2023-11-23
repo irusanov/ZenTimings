@@ -929,8 +929,25 @@ namespace ZenTimings
             if (settings.SaveWindowPosition)
             {
                 WindowStartupLocation = WindowStartupLocation.Manual;
-                Left = settings.WindowLeft;
-                Top = settings.WindowTop;
+
+                // Get the current screen bounds
+                System.Windows.Forms.Screen screen = System.Windows.Forms.Screen.FromHandle(new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                System.Drawing.Rectangle screenBounds = screen.Bounds;
+
+                // Check if the saved window position is outside the screen bounds
+                if (settings.WindowLeft < screenBounds.Left || settings.WindowLeft + Width > screenBounds.Right ||
+                    settings.WindowTop < screenBounds.Top || settings.WindowTop + Height > screenBounds.Bottom)
+                {
+                    // Reset the window position to a default value
+                    Left = (screenBounds.Width - Width) / 2 + screenBounds.Left;
+                    Top = (screenBounds.Height - Height) / 2 + screenBounds.Top;
+                }
+                else
+                {
+                    // Set the window position to the saved values
+                    Left = settings.WindowLeft;
+                    Top = settings.WindowTop;
+                }
             }
 
             SetWindowTitle();

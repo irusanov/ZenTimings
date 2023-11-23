@@ -9,26 +9,25 @@ namespace ZenTimings
     [Serializable]
     public sealed class AppSettings
     {
-        private const int VERSION_MAJOR = 1;
-        private const int VERSION_MINOR = 1;
+        public const int VersionMajor = 1;
+        public const int VersionMinor = 2;
 
-        private const string filename = "settings.xml";
+        private static readonly string Filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.xml");
 
-        public enum THEME : int
+        public enum Theme : int
         {
-            LIGHT,
-            DARK,
-            DARK_MINT,
+            Light,
+            Dark,
+            DarkMint,
         }
 
         public AppSettings Create()
         {
-            Version = $"{VERSION_MAJOR}.{VERSION_MINOR}";
-            AppTheme = THEME.LIGHT;
+            Version = $"{VersionMajor}.{VersionMinor}";
+            AppTheme = Theme.Light;
             AutoRefresh = true;
             AutoRefreshInterval = 2000;
             AdvancedMode = true;
-            // DarkMode = false;
             CheckForUpdates = true;
             SaveWindowPosition = false;
             WindowLeft = 0;
@@ -48,46 +47,43 @@ namespace ZenTimings
 
         public AppSettings Load()
         {
-            if (File.Exists(filename))
+            try
             {
-                using (StreamReader sr = new StreamReader(filename))
+                if (File.Exists(Filename))
                 {
-                    try
+                    using (StreamReader sr = new StreamReader(Filename))
                     {
                         XmlSerializer xmls = new XmlSerializer(typeof(AppSettings));
                         return xmls.Deserialize(sr) as AppSettings;
                     }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                        sr.Close();
-                        MessageBox.Show(
-                            "Invalid settings file!\nSettings will be reset to defaults.",
-                            "Error",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Error);
-                        return Create();
-                    }
                 }
             }
-            else
+            catch (Exception ex)
             {
-                return Create();
+                Console.WriteLine(ex.Message);
+                MessageBox.Show(
+                    "Invalid or outdated settings file!\nSettings will be reset to defaults.",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
             }
+
+            return Create();
         }
 
         public void Save()
         {
             try
             {
-                using (StreamWriter sw = new StreamWriter(filename))
+                using (StreamWriter sw = new StreamWriter(Filename))
                 {
                     XmlSerializer xmls = new XmlSerializer(typeof(AppSettings));
                     xmls.Serialize(sw, this);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 AdonisUI.Controls.MessageBox.Show(
                     "Could not save settings to file!",
                     "Error",
@@ -98,29 +94,21 @@ namespace ZenTimings
 
         public void ChangeTheme()
         {
-            Uri[] ThemeUri = new Uri[]
+            Uri[] themeUri = new Uri[]
             {
+                new Uri("pack://application:,,,/ZenTimings;component/Themes/Light.xaml", UriKind.Absolute),
                 new Uri("pack://application:,,,/ZenTimings;component/Themes/Dark.xaml", UriKind.Absolute),
                 new Uri("pack://application:,,,/ZenTimings;component/Themes/DarkMint.xaml", UriKind.Absolute),
-                new Uri("pack://application:,,,/ZenTimings;component/Themes/Light.xaml", UriKind.Absolute),
             };
 
-            if (AppTheme == THEME.DARK)
-                ResourceLocator.SetColorScheme(Application.Current.Resources, ThemeUri[0]);
-            else if (AppTheme == THEME.DARK_MINT)
-                ResourceLocator.SetColorScheme(Application.Current.Resources, ThemeUri[1]);
-            else
-                ResourceLocator.SetColorScheme(Application.Current.Resources, ThemeUri[ThemeUri.Length - 1]);
-
-            //DarkMode = !DarkMode;
+            ResourceLocator.SetColorScheme(Application.Current.Resources, themeUri[(int)AppTheme]);
         }
 
-        public string Version { get; set; } = $"{VERSION_MAJOR}.{VERSION_MINOR}";
+        public string Version { get; set; } = $"{VersionMajor}.{VersionMinor}";
         public bool AutoRefresh { get; set; } = true;
         public int AutoRefreshInterval { get; set; } = 2000;
         public bool AdvancedMode { get; set; } = true;
-        // public bool DarkMode { get; set; }
-        public THEME AppTheme { get; set; } = THEME.LIGHT;
+        public Theme AppTheme { get; set; } = Theme.Light;
         public bool CheckForUpdates { get; set; } = true;
         public string UpdaterSkippedVersion { get; set; } = "";
         public string UpdaterRemindLaterAt { get; set; } = "";

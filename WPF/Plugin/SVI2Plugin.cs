@@ -7,9 +7,8 @@ namespace ZenTimings.Plugin
 {
     public class SVI2Plugin : IPlugin
     {
-        internal Cpu _cpu;
-        internal int timeout = 20;
-        internal const string VERSION = "1.1";
+        private int timeout = 20;
+        private const string VERSION = "1.1";
 
         public string Name => "SVI2 Sensors";
 
@@ -21,7 +20,14 @@ namespace ZenTimings.Plugin
 
         public List<Sensor> Sensors { get; private set; }
 
+        private Cpu _cpu;
+
         public SVI2Plugin(Cpu cpu)
+        {
+            InitializeSensors(cpu);
+        }
+
+        private void InitializeSensors(Cpu cpu)
         {
             if (cpu != null && cpu.Status == IOModule.LibStatus.OK)
             {
@@ -36,32 +42,39 @@ namespace ZenTimings.Plugin
 
         public bool Update()
         {
-            if (Sensors?.Count > 0)
+            if (Sensors?.Count > 0 && _cpu != null)
             {
-                uint soc_plane_value;
-                uint vcore_plane_value;
+                uint socPlaneValue;
+                uint vcorePlaneValue;
                 do
                 {
-                    soc_plane_value = _cpu.ReadDword(_cpu.info.svi2.socAddress);
-                    vcore_plane_value = _cpu.ReadDword(_cpu.info.svi2.coreAddress);
-                } while ((soc_plane_value & 0xFF00) != 0 && (vcore_plane_value & 0xFF00) != 0 && --timeout > 0);
+                    ReadSensorValues(out socPlaneValue, out vcorePlaneValue);
+                } while ((socPlaneValue & 0xFF00) != 0 && (vcorePlaneValue & 0xFF00) != 0 && --timeout > 0);
 
                 if (timeout > 0)
                 {
-                    uint socVid = (soc_plane_value >> 16) & 0xFF;
-                    Sensors[0].Value = Convert.ToSingle(Utils.VidToVoltage(socVid));
+                    UpdateSensorValue(socPlaneValue, Sensors[0]);
+                    UpdateSensorValue(vcorePlaneValue, Sensors[1]);
 
-                    Console.WriteLine("Vsoc: " + Sensors[0].Min + " " + Sensors[0].Max);
-
-                    uint coreVid = (vcore_plane_value >> 16) & 0xFF;
-                    Sensors[1].Value = Convert.ToSingle(Utils.VidToVoltage(coreVid));
-
-                    Console.WriteLine("Vcore: " + Sensors[1].Min + " " + Sensors[1].Max);
                     return true;
                 }
             }
 
             return false;
+        }
+
+        private void ReadSensorValues(out uint socPlaneValue, out uint vcorePlaneValue)
+        {
+            socPlaneValue = _cpu.ReadDword(_cpu.info.svi2.socAddress);
+            vcorePlaneValue = _cpu.ReadDword(_cpu.info.svi2.coreAddress);
+        }
+
+        private void UpdateSensorValue(uint planeValue, Sensor sensor)
+        {
+            uint vid = (planeValue >> 16) & 0xFF;
+            sensor.Value = Convert.ToSingle(Utils.VidToVoltage(vid));
+
+            Console.WriteLine($"{sensor.Name}: {sensor.Min} {sensor.Max}");
         }
 
         public void Open()
