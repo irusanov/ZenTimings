@@ -217,7 +217,7 @@ namespace ZenTimings
         private void ReadChannelsInfo()
         {
             int dimmIndex = 0;
-            int channelsPerDimm = MEMCFG.Type >= MemType.DDR5 ? 2 : 1;
+            uint channelsPerDimm = MEMCFG.Type >= MemType.DDR5 ? 2u : 1u;
 
             // Get the offset by probing the IMC0 to IMC7
             // It appears that offsets 0x80 and 0x84 are DIMM config registers
@@ -225,9 +225,9 @@ namespace ZenTimings
             // 0x50000
             // offset 0, bit 0 when set to 1 means DIMM1 is installed
             // offset 8, bit 0 when set to 1 means DIMM2 is installed
-            for (int i = 0; i < 8 * channelsPerDimm; i += channelsPerDimm)
+            for (uint i = 0; i < 8u * channelsPerDimm; i += channelsPerDimm)
             {
-                uint channelOffset = (uint)i << 20;
+                uint channelOffset = i << 20;
                 bool channel = Utils.GetBits(cpu.ReadDword(channelOffset | 0x50DF0), 19, 1) == 0;
                 bool dimm1 = Utils.GetBits(cpu.ReadDword(channelOffset | 0x50000), 0, 1) == 1;
                 bool dimm2 = Utils.GetBits(cpu.ReadDword(channelOffset | 0x50008), 0, 1) == 1;
@@ -525,6 +525,7 @@ namespace ZenTimings
                     labelMemVdd.IsEnabled = true;
                     labelMemVddq.IsEnabled = true;
                     labelMemVpp.IsEnabled = true;
+                    labelApuVddio.IsEnabled = true;
 
                     labelProcODT.IsEnabled = true;
                     labelProcCaDs.IsEnabled = true;
@@ -539,6 +540,7 @@ namespace ZenTimings
                     textBoxMemVddio.Text = $"{Data.MemVddio / 1000.0:F4}V";
                     textBoxMemVddq.Text = $"{Data.MemVddq / 1000.0:F4}V";
                     textBoxMemVpp.Text = $"{Data.MemVpp / 1000.0:F4}V";
+                    textBoxApuVddio.Text = $"{Data.ApuVddio / 1000.0:F4}V";
 
                     textBoxProcODT.Text = AOD.GetProcODTString(Data.ProcODT);
                     textBoxCadBusDrvStren.Text = AOD.GetCadBusDrvStrenString(Data.CadBusDrvStren);
@@ -1047,7 +1049,6 @@ namespace ZenTimings
             HwndSource source = HwndSource.FromHwnd(handle);
 
             source?.AddHook(WndProc);
-
 #if !DEBUG
             if (!settings.NotifiedChangelog.Equals(AssemblyVersion))
             {
@@ -1129,10 +1130,7 @@ namespace ZenTimings
 
         private void AdonisWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (siWnd != null)
-            {
-                siWnd.Close();
-            }
+            siWnd?.Close();
 
             if (settings.SaveWindowPosition)
             {

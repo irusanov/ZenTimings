@@ -8,6 +8,7 @@ using System.Management;
 using System.Threading.Tasks;
 using System.Windows;
 using ZenStates.Core;
+using static ZenTimings.MemoryConfig;
 using MessageBox = AdonisUI.Controls.MessageBox;
 
 namespace ZenTimings.Windows
@@ -142,8 +143,10 @@ namespace ZenTimings.Windows
 
         private void PrintChannels()
         {
+            uint channelsPerDimm = MEMCFG.Type >= MemType.DDR5 ? 2u : 1u;
             AddHeading("Memory Channels Info");
-            for (var i = 0u; i < 8u; i++)
+
+            for (var i = 0u; i < 8u * channelsPerDimm; i += channelsPerDimm)
             {
                 try
                 {
@@ -153,7 +156,7 @@ namespace ZenTimings.Windows
                     var dimm2 = Utils.GetBits(CPU.ReadDword(offset | 0x50008), 0, 1) == 1;
                     var enabled = channel && (dimm1 || dimm2);
 
-                    AddLine($"Channel{i}: {enabled}");
+                    AddLine($"Channel{i / channelsPerDimm}: {enabled}");
                     if (enabled)
                     {
                         AddLine("-- UMC Registers");
@@ -169,7 +172,7 @@ namespace ZenTimings.Windows
                 }
                 catch
                 {
-                    AddLine($"Channel{i}: <FAILED>");
+                    AddLine($"Channel{i / channelsPerDimm}: <FAILED>");
                 }
             }
             AddLine();
@@ -181,6 +184,8 @@ namespace ZenTimings.Windows
 
             result =
                 $"{System.Windows.Forms.Application.ProductName} {System.Windows.Forms.Application.ProductVersion} Debug Report" +
+                Environment.NewLine +
+                $"{"Core Version: "}{CPU.Version}" +
                 Environment.NewLine +
                 Environment.NewLine;
 
