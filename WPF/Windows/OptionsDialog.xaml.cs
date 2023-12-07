@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -115,7 +117,14 @@ namespace ZenTimings.Windows
 
         private void ButtonSettingsRestart_Click(object sender, RoutedEventArgs e)
         {
-            System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
+            ProcessStartInfo Info = new ProcessStartInfo
+            {
+                Arguments = "/C choice /C Y /N /D Y /T 1 & START \"\" \"" + Assembly.GetEntryAssembly().Location + "\"",
+                WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true,
+                FileName = "cmd.exe"
+            };
+            Process.Start(Info);
             Application.Current.Shutdown();
         }
 
