@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Windows;
 using ZenStates.Core;
+using static ZenTimings.BiosMemController;
 
 namespace ZenTimings.Windows
 {
@@ -18,7 +19,7 @@ namespace ZenTimings.Windows
             public string Value { get; set; }
         }
 
-        public SystemInfoWindow(SystemInfo si, MemoryConfig mc, List<AsusSensorInfo> asusSensors)
+        public SystemInfoWindow(SystemInfo si, MemoryConfig mc, Resistances mcConfig, AodData aodData, List<AsusSensorInfo> asusSensors)
         {
             InitializeComponent();
             Type type = si.GetType();
@@ -34,12 +35,12 @@ namespace ZenTimings.Windows
 
                 foreach (PropertyInfo property in properties)
                     if (property.Name == "CpuId" || property.Name == "PatchLevel" || property.Name == "SmuTableVersion")
-                        items.Add(new GridItem() {Name = property.Name, Value = $"{property.GetValue(si, null):X8}"});
+                        items.Add(new GridItem() { Name = property.Name, Value = $"{property.GetValue(si, null):X8}" });
                     else if (property.Name == "SmuVersion")
-                        items.Add(new GridItem() {Name = property.Name, Value = si.GetSmuVersionString()});
+                        items.Add(new GridItem() { Name = property.Name, Value = si.GetSmuVersionString() });
                     else
                         items.Add(new GridItem()
-                            {Name = property.Name, Value = property.GetValue(si, null).ToString()});
+                        { Name = property.Name, Value = property.GetValue(si, null).ToString() });
 
                 TestGrid.ItemsSource = items;
             }
@@ -55,13 +56,48 @@ namespace ZenTimings.Windows
             {
                 items = new List<GridItem>();
                 foreach (PropertyInfo property in properties)
-                    items.Add(new GridItem() {Name = property.Name, Value = property.GetValue(mc, null).ToString()});
+                    items.Add(new GridItem() { Name = property.Name, Value = property.GetValue(mc, null).ToString() });
 
                 MemCfgGrid.ItemsSource = items;
             }
             catch
             {
                 // ignored
+            }
+
+            if (mc.Type == MemoryConfig.MemType.DDR4)
+            {
+                type = mcConfig.GetType();
+                FieldInfo[] fields = type.GetFields();
+                try
+                {
+                    items = new List<GridItem>();
+                    foreach (FieldInfo property in fields)
+                        items.Add(new GridItem() { Name = property.Name, Value = property.GetValue(mcConfig).ToString() });
+
+                    MemControllerGrid.ItemsSource = items;
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+            else
+            {
+                type = aodData.GetType();
+                PropertyInfo[] fields = type.GetProperties();
+                try
+                {
+                    items = new List<GridItem>();
+                    foreach (PropertyInfo property in fields)
+                        items.Add(new GridItem() { Name = property.Name, Value = property.GetValue(aodData).ToString() });
+
+                    MemControllerGrid.ItemsSource = items;
+                }
+                catch
+                {
+                    // ignored
+                }
             }
 
             //AsusWmiGrid.ItemsSource = asusSensors;

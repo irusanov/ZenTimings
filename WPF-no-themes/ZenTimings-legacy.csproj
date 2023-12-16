@@ -111,6 +111,12 @@
     <Compile Include="..\WPF\Common\Sensor.cs">
       <Link>Common\Sensor.cs</Link>
     </Compile>
+    <Compile Include="..\WPF\Converters\DDR4ToVisConverter.cs">
+      <Link>Converters\DDR4ToVisConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\WPF\Converters\DDR5ToVisConverter.cs">
+      <Link>Converters\DDR5ToVisConverter.cs</Link>
+    </Compile>
     <Compile Include="..\WPF\Converters\FloatToBoolConverter.cs">
       <Link>Converters\FloatToBoolConverter.cs</Link>
     </Compile>
@@ -221,10 +227,10 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BuildNumberTemplate.cs</LastGenOutput>
     </Content>
+    <None Include="Resources\ZenTimings2022.ico" />
     <Resource Include="Resources\64.png" />
     <Resource Include="Resources\splash.png" />
-    <None Include="Resources\ZenTimings2022.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v16.0\TextTemplating\Microsoft.TextTemplating.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TextTemplating\Microsoft.TextTemplating.targets" />
 </Project>

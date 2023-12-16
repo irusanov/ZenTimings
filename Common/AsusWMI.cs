@@ -14,7 +14,7 @@ namespace ZenTimings
         public List<AsusSensorInfo> sensors = new List<AsusSensorInfo>();
 
         // enums used from https://github.com/electrified/asus-wmi-sensors
-        public enum AsusSensorType: uint
+        public enum AsusSensorType : uint
         {
             VOLTAGE = 0x0,
             TEMPERATURE_C = 0x1,
@@ -23,7 +23,7 @@ namespace ZenTimings
             WATER_FLOW = 0x4
         };
 
-        public enum AsusSensorDataType: uint
+        public enum AsusSensorDataType : uint
         {
             SIGNED_INT = 0x0,
             UNSIGNED_INT = 0x1,
@@ -31,13 +31,13 @@ namespace ZenTimings
             SCALED = 0x3
         };
 
-        public enum AsusSensorSource: uint
+        public enum AsusSensorSource : uint
         {
             SIO = 0x1,
             EC = 0x2
         };
 
-        public enum AsusSensorLocation: uint
+        public enum AsusSensorLocation : uint
         {
             CPU = 0x0,
             CPU_SOC = 0x1,
@@ -87,7 +87,7 @@ namespace ZenTimings
             {
                 ManagementBaseObject res = WMI.InvokeMethod(mo, methodName, inParamName, arg);
                 if (res != null)
-                    data = (uint) res["Data"];
+                    data = (uint)res["Data"];
             }
             catch
             {
@@ -126,7 +126,7 @@ namespace ZenTimings
         public uint GetBufferAddress() => GetInvokeMethodData(instance, "sensor_get_buffer_address");
 
         public uint UpdateBuffer(AsusSensorSource source) =>
-            GetInvokeMethodData(instance, "sensor_update_buffer", "Source", (uint) source);
+            GetInvokeMethodData(instance, "sensor_update_buffer", "Source", (uint)source);
 
         public uint GetSensorValue(byte index) => GetInvokeMethodData(instance, "sensor_get_value", "Index", index);
 
@@ -144,11 +144,11 @@ namespace ZenTimings
                 if (res != null)
                 {
                     sensor.Index = index;
-                    sensor.DataType = (AsusSensorDataType) res["Data_Type"];
-                    sensor.Location = (AsusSensorLocation) res["Location"];
-                    sensor.Name = (string) res["Name"];
-                    sensor.Source = (AsusSensorSource) res["Source"];
-                    sensor.Type = (AsusSensorType) res["Type"];
+                    sensor.DataType = (AsusSensorDataType)res["Data_Type"];
+                    sensor.Location = (AsusSensorLocation)res["Location"];
+                    sensor.Name = (string)res["Name"];
+                    sensor.Source = (AsusSensorSource)res["Source"];
+                    sensor.Type = (AsusSensorType)res["Type"];
                     sensor.Value = GetSensorFormattedValue(sensor);
                 }
             }

@@ -1,10 +1,10 @@
-﻿using System;
+﻿using AdonisUI.Controls;
+using AutoUpdaterDotNET;
+using System;
 using System.IO;
 using System.Net;
 using System.Windows;
 using System.Xml.Serialization;
-using AdonisUI.Controls;
-using AutoUpdaterDotNET;
 using ZenTimings.Windows;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
@@ -20,8 +20,11 @@ namespace ZenTimings
         //public static int status = 0;
         private static bool manual;
         private static string ChangelogText { get; set; }
+#if DEBUG
+        private const string url = "https://zentimings.protonrom.com/AutoUpdater_debug.xml";
+#else
         private const string url = "https://zentimings.protonrom.com/AutoUpdater.xml";
-
+#endif
         protected virtual void OnUpdateCheckCompleteEvent(EventArgs e)
         {
             // Make a temporary copy of the event to avoid possibility of
@@ -49,6 +52,8 @@ namespace ZenTimings
                 Init((Application.Current as App).settings);
             }*/
 
+            AutoUpdater.ParseUpdateInfoEvent -= AutoUpdaterOnParseUpdateInfoEvent;
+            AutoUpdater.CheckForUpdateEvent -= AutoUpdaterOnCheckForUpdateEvent;
             AutoUpdater.ParseUpdateInfoEvent += AutoUpdaterOnParseUpdateInfoEvent;
             AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
 
@@ -103,7 +108,8 @@ namespace ZenTimings
         {
             if (args.Error == null)
             {
-                if (args.IsUpdateAvailable)
+                Version currentVersion = new Version(args.CurrentVersion);
+                if (args.IsUpdateAvailable && (manual || !AutoUpdater.PersistenceProvider.GetSkippedVersion().Equals(currentVersion)))
                 {
                     var messageBox = new MessageBoxModel
                     {
@@ -112,8 +118,20 @@ namespace ZenTimings
                                $"{ChangelogText}{Environment.NewLine}" +
                                "Do you want to update the application now?",
                         Caption = @"Update Available",
-                        Buttons = MessageBoxButtons.YesNo()
+                        Buttons = MessageBoxButtons.YesNo(yesLabel: "Update", noLabel: "Skip"),
                     };
+
+                    if (!manual)
+                    {
+                        messageBox.CheckBoxes = new[]
+                        {
+                            new MessageBoxCheckBoxModel("Don't ask for this update again")
+                            {
+                                IsChecked = false,
+                                Placement = MessageBoxCheckBoxPlacement.BelowText,
+                            },
+                        };
+                    }
 
                     MessageBox.Show(messageBox);
 
@@ -139,8 +157,16 @@ namespace ZenTimings
                                 MessageBoxImage.Error);
                         }
                     }
-
-                    if (!manual) SplashWindow.splash.Show();
+                    else if (!manual)
+                    {
+                        var enumerator = messageBox.CheckBoxes.GetEnumerator();
+                        enumerator.MoveNext();
+                        if (enumerator.Current.IsChecked)
+                        {
+                            AutoUpdater.PersistenceProvider.SetSkippedVersion(currentVersion);
+                        }
+                        SplashWindow.splash.Show();
+                    }
                 }
                 else if (manual)
                 {
@@ -164,10 +190,8 @@ namespace ZenTimings
                         args.Error.GetType().ToString(),
                         MessageBoxButton.OK,
                         MessageBoxImage.Error);
-            	}
+                }
             }
-            AutoUpdater.ParseUpdateInfoEvent -= AutoUpdaterOnParseUpdateInfoEvent;
-            AutoUpdater.CheckForUpdateEvent -= AutoUpdaterOnCheckForUpdateEvent;
         }
     }
 }

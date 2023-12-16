@@ -1,9 +1,9 @@
-﻿using System;
+﻿using AutoUpdaterDotNET;
+using System;
 using System.IO;
 using System.Net;
 using System.Windows;
 using System.Xml.Serialization;
-using AutoUpdaterDotNET;
 using ZenTimings.Windows;
 
 namespace ZenTimings
@@ -15,8 +15,11 @@ namespace ZenTimings
         //public static int status = 0;
         private static bool manual;
         private static string ChangelogText { get; set; }
+#if DEBUG
+        private const string url = "https://zentimings.protonrom.com/AutoUpdater_debug.xml";
+#else
         private const string url = "https://zentimings.protonrom.com/AutoUpdater.xml";
-
+#endif
         protected virtual void OnUpdateCheckCompleteEvent(EventArgs e)
         {
             // Make a temporary copy of the event to avoid possibility of
@@ -45,6 +48,8 @@ namespace ZenTimings
                 Init((Application.Current as App).settings);
             }*/
 
+            AutoUpdater.ParseUpdateInfoEvent -= AutoUpdaterOnParseUpdateInfoEvent;
+            AutoUpdater.CheckForUpdateEvent -= AutoUpdaterOnCheckForUpdateEvent;
             AutoUpdater.ParseUpdateInfoEvent += AutoUpdaterOnParseUpdateInfoEvent;
             AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
 
@@ -67,25 +72,25 @@ namespace ZenTimings
 
                     if (xmls.Deserialize(txtReader) is UpdaterArgs updaterArgs)
                     {
-	                    args.UpdateInfo = new UpdateInfoEventArgs
-	                    {
-	                        CurrentVersion = updaterArgs.Version,
-	                        DownloadURL = updaterArgs.Url,
-	                        ChangelogURL = updaterArgs.Changelog,
-	                        Mandatory = new Mandatory
-	                        {
-	                            Value = manual,
-	                                UpdateMode = Mode.Normal
-	                        },
-	                        CheckSum = new CheckSum
-	                        {
-	                            Value = updaterArgs.Checksum.Value,
-	                            HashingAlgorithm = updaterArgs.Checksum.algorithm
-	                        }
-	                    };
-	
-	                    foreach (string change in updaterArgs.Changes)
-	                        ChangelogText += $" - {change}{Environment.NewLine}";
+                        args.UpdateInfo = new UpdateInfoEventArgs
+                        {
+                            CurrentVersion = updaterArgs.Version,
+                            DownloadURL = updaterArgs.Url,
+                            ChangelogURL = updaterArgs.Changelog,
+                            Mandatory = new Mandatory
+                            {
+                                Value = manual,
+                                UpdateMode = Mode.Normal
+                            },
+                            CheckSum = new CheckSum
+                            {
+                                Value = updaterArgs.Checksum.Value,
+                                HashingAlgorithm = updaterArgs.Checksum.algorithm
+                            }
+                        };
+
+                        foreach (string change in updaterArgs.Changes)
+                            ChangelogText += $" - {change}{Environment.NewLine}";
                     }
                 }
             }
@@ -159,8 +164,6 @@ namespace ZenTimings
                         MessageBoxImage.Error);
                 }
             }
-            AutoUpdater.ParseUpdateInfoEvent -= AutoUpdaterOnParseUpdateInfoEvent;
-            AutoUpdater.CheckForUpdateEvent -= AutoUpdaterOnCheckForUpdateEvent;
         }
     }
 }

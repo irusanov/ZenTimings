@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
@@ -98,7 +98,7 @@ namespace ZenTimings
             GCHandle handle = GCHandle.Alloc(biosTable, GCHandleType.Pinned);
             try
             {
-                Config = (Resistances) Marshal.PtrToStructure(handle.AddrOfPinnedObject(),
+                Config = (Resistances)Marshal.PtrToStructure(handle.AddrOfPinnedObject(),
                     typeof(Resistances));
             }
             finally
@@ -109,8 +109,7 @@ namespace ZenTimings
 
         private static string GetByKey(Dictionary<int, string> dict, int key)
         {
-            if (!dict.TryGetValue(key, out string output)) return "N/A";
-            return output;
+            return dict.TryGetValue(key, out string output) ? output : "N/A";
         }
 
         public string GetProcODTString(int key) => GetByKey(ProcOdtDict, key);
@@ -134,6 +133,7 @@ namespace ZenTimings
         {
             [FieldOffset(27)] public ushort MemVddio;
             [FieldOffset(29)] public ushort MemVtt;
+            [FieldOffset(31)] public ushort MemVpp;
             [FieldOffset(33)] public byte ProcODT;
             [FieldOffset(65)] public byte RttNom;
             [FieldOffset(66)] public byte RttWr;

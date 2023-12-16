@@ -2,6 +2,7 @@ using System;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using static ZenTimings.AppSettings;
 
 namespace ZenTimings.Windows
 {
@@ -14,13 +15,13 @@ namespace ZenTimings.Windows
         internal readonly AppSettings appSettings = (Application.Current as App)?.settings;
         private readonly DispatcherTimer timerInstance;
         private DispatcherTimer notificationTimer;
-        private bool _DarkMode;
+        private THEME _Theme;
         private readonly bool _AdvancedMode;
 
         public OptionsDialog(DispatcherTimer timer)
         {
             timerInstance = timer;
-            _DarkMode = appSettings.DarkMode;
+            _Theme = appSettings.AppTheme;
             _AdvancedMode = appSettings.AdvancedMode;
 
             InitializeComponent();
@@ -38,31 +39,31 @@ namespace ZenTimings.Windows
 
         private void CheckBoxAutoRefresh_Click(object sender, RoutedEventArgs e)
         {
-            numericUpDownRefreshInterval.IsEnabled = (bool) checkBoxAutoRefresh.IsChecked;
+            numericUpDownRefreshInterval.IsEnabled = (bool)checkBoxAutoRefresh.IsChecked;
             msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
         }
 
         private void CheckBoxAdvancedMode_Click(object sender, RoutedEventArgs e)
         {
-            checkBoxAutoRefresh.IsEnabled = (bool) checkBoxAdvancedMode.IsChecked;
+            checkBoxAutoRefresh.IsEnabled = (bool)checkBoxAdvancedMode.IsChecked;
             numericUpDownRefreshInterval.IsEnabled =
-                (bool) checkBoxAutoRefresh.IsChecked && checkBoxAutoRefresh.IsEnabled;
+                (bool)checkBoxAutoRefresh.IsChecked && checkBoxAutoRefresh.IsEnabled;
             msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
         }
 
         private void ButtonSettingsApply_Click(object sender, RoutedEventArgs e)
         {
-            appSettings.AutoRefresh = (bool) checkBoxAutoRefresh.IsChecked;
+            appSettings.AutoRefresh = (bool)checkBoxAutoRefresh.IsChecked;
             appSettings.AutoRefreshInterval = Convert.ToInt32(numericUpDownRefreshInterval.Text);
-            appSettings.AdvancedMode = (bool) checkBoxAdvancedMode.IsChecked;
-            appSettings.CheckForUpdates = (bool) checkBoxCheckUpdate.IsChecked;
+            appSettings.AdvancedMode = (bool)checkBoxAdvancedMode.IsChecked;
+            appSettings.CheckForUpdates = (bool)checkBoxCheckUpdate.IsChecked;
             appSettings.SaveWindowPosition = (bool)checkBoxSavePosition.IsChecked;
             appSettings.MinimizeToTray = (bool)checkBoxMinimizeToTray.IsChecked;
 
             appSettings.Save();
 
             timerInstance.Interval = TimeSpan.FromMilliseconds(appSettings.AutoRefreshInterval);
-            _DarkMode = appSettings.DarkMode;
+            _Theme = appSettings.AppTheme;
 
 
             if (notificationTimer != null)
@@ -104,10 +105,9 @@ namespace ZenTimings.Windows
         private void ButtonSettingsCancel_Click(object sender, RoutedEventArgs e)
         {
             // Restore theme on close if not saved
-            if (appSettings.DarkMode != _DarkMode)
+            if (appSettings.AppTheme != _Theme)
             {
-                appSettings.DarkMode = _DarkMode;
-
+                appSettings.AppTheme = _Theme;
             }
         }
 

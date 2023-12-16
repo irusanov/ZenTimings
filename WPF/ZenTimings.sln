@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenTimings", "ZenTimings.cs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenTimings-legacy", "..\WPF-no-themes\ZenTimings-legacy.csproj", "{C745505A-2C8B-44DF-9240-76D51738D9EF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OHWMPlugin", "..\OHWMPlugin\OHWMPlugin.csproj", "{29941469-27AD-4C9B-8DE2-7E971105A99C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{C745505A-2C8B-44DF-9240-76D51738D9EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C745505A-2C8B-44DF-9240-76D51738D9EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C745505A-2C8B-44DF-9240-76D51738D9EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29941469-27AD-4C9B-8DE2-7E971105A99C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29941469-27AD-4C9B-8DE2-7E971105A99C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29941469-27AD-4C9B-8DE2-7E971105A99C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29941469-27AD-4C9B-8DE2-7E971105A99C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

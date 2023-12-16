@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Management;
 using System.ServiceProcess;
@@ -75,7 +75,7 @@ namespace ZenTimings
                     new ManagementClass(new ManagementScope(root), new ManagementPath("__namespace"), null);
                 foreach (var obj in nsClass.GetInstances())
                 {
-                    var ns = (ManagementObject) obj;
+                    var ns = (ManagementObject)obj;
                     string namespaceName = root + "\\" + ns["Name"];
                     namespaces.Add(namespaceName);
                     namespaces.AddRange(GetWmiNamespaces(namespaceName));
@@ -102,7 +102,7 @@ namespace ZenTimings
                 ManagementObjectCollection objectCollection = searcher.Get();
                 foreach (var obj in objectCollection)
                 {
-                    var wmiClass = (ManagementClass) obj;
+                    var wmiClass = (ManagementClass)obj;
                     string stringified = wmiClass.ToString();
                     string[] parts = stringified.Split(':');
                     classNames.Add(parts[1]);
@@ -169,7 +169,7 @@ namespace ZenTimings
             try
             {
                 ManagementBaseObject outParams = InvokeMethod(mo, methodName, inParamName, arg);
-                return (ManagementBaseObject) outParams?.Properties[$"{propName}"].Value;
+                return (ManagementBaseObject)outParams?.Properties[$"{propName}"].Value;
             }
             catch (Exception ex)
             {
@@ -200,8 +200,8 @@ namespace ZenTimings
                 ManagementBaseObject outParams = mo.InvokeMethod("RunCommand", inParams, null);
 
                 // return outParam
-                ManagementBaseObject pack = (ManagementBaseObject) outParams?.Properties["Outbuf"].Value;
-                return (byte[]) pack?.GetPropertyValue("Result");
+                ManagementBaseObject pack = (ManagementBaseObject)outParams?.Properties["Outbuf"].Value;
+                return (byte[])pack?.GetPropertyValue("Result");
             }
             catch (ManagementException ex)
             {

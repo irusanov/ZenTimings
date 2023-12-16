@@ -51,7 +51,7 @@ namespace ZenTimings.Windows
             {
                 //"AdonisUI.ClassicTheme.dll",
                 //"AdonisUI.dll",
-                //"AutoUpdater.NET.dll",
+                "AutoUpdater.NET.dll",
                 "inpoutx64.dll",
                 "WinIo32.dll",
                 "ZenStates-Core.dll",

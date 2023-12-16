@@ -3,26 +3,26 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Management;
 using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Interop;
 using System.Windows.Threading;
 using ZenStates.Core;
 using ZenTimings.Plugin;
 using ZenTimings.Windows;
+using static ZenTimings.MemoryConfig;
 using Forms = System.Windows.Forms;
+//using OpenHardwareMonitor.Hardware;
 
 namespace ZenTimings
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow
+    public partial class MainWindow : IDisposable
     {
         private readonly AsusWMI AsusWmi = new AsusWMI();
         private readonly List<BiosACPIFunction> biosFunctions = new List<BiosACPIFunction>();
@@ -35,6 +35,16 @@ namespace ZenTimings
         private readonly List<IPlugin> plugins = new List<IPlugin>();
         internal readonly Forms.NotifyIcon _notifyIcon;
         private bool compatMode;
+        private bool disposedValue;
+
+        private readonly string AssemblyProduct = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(
+            Assembly.GetExecutingAssembly(),
+            typeof(AssemblyProductAttribute), false)).Product;
+
+        private readonly string AssemblyVersion = ((AssemblyFileVersionAttribute)Attribute.GetCustomAttribute(
+            Assembly.GetExecutingAssembly(),
+            typeof(AssemblyFileVersionAttribute), false)).Version;
+
         private delegate void Action();
 
         public MainWindow()
@@ -52,6 +62,24 @@ namespace ZenTimings
                 {
                     throw new ApplicationException("CPU model is not supported.\nPlease run a debug report and send to the developer.");
                 }
+                else if (cpu.info.codeName.Equals(Cpu.CodeName.Rembrandt) && !settings.NotifiedRembrandt.Equals(AssemblyVersion))
+                {
+                    MessageBox.Show(
+                        "DDR5 support is experimental and Advanced mode is not supported yet."
+                            + Environment.NewLine
+                            + Environment.NewLine
+                            + "You can still enable it in Tools -> Options, but it will most probably fail."
+                            + Environment.NewLine
+                            + Environment.NewLine
+                            + "If you're not able to turn off the Advanced mode from the UI, edit settings.xml manually and set AdvancedMode to 'false'. "
+                            + "You can also delete settings.xml file and it will be regenerated on next application launch.",
+                        "Limited Support",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+                    settings.AdvancedMode = false;
+                    settings.NotifiedRembrandt = AssemblyVersion;
+                    settings.Save();
+                }
 
                 _notifyIcon = GetTrayIcon();
                 InitializeComponent();
@@ -64,7 +92,7 @@ namespace ZenTimings
                 else
                     ReadTimings();
 
-                if (settings.AdvancedMode)
+                if (cpu != null && settings.AdvancedMode)
                 {
 
                     PowerCfgTimer.Interval = TimeSpan.FromMilliseconds(2000);
@@ -78,7 +106,7 @@ namespace ZenTimings
                         // refresh the table again, to avoid displaying initial fclk, mclk and uclk values,
                         // which seem to be a little off when transferring the table for the "first" time,
                         // after an idle period
-                        RefreshPowerTable();
+                        cpu.RefreshPowerTable();
                     }
                     else
                     {
@@ -109,8 +137,9 @@ namespace ZenTimings
                 {
                     timings = MEMCFG,
                     cpu.powerTable,
-                    WMIPresent = !compatMode,
-                    settings
+                    WMIPresent = !compatMode && MEMCFG.Type == MemType.DDR4,
+                    settings,
+                    plugins
                 };
             }
             catch (Exception ex)
@@ -122,13 +151,6 @@ namespace ZenTimings
 
         private Forms.NotifyIcon GetTrayIcon()
         {
-            string AssemblyProduct = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(
-                Assembly.GetExecutingAssembly(),
-                typeof(AssemblyProductAttribute), false)).Product;
-
-            string AssemblyVersion = ((AssemblyFileVersionAttribute)Attribute.GetCustomAttribute(
-                Assembly.GetExecutingAssembly(),
-                typeof(AssemblyFileVersionAttribute), false)).Version;
             Forms.NotifyIcon notifyIcon = new Forms.NotifyIcon
             {
                 Icon = Properties.Resources.ZenTimings2022
@@ -161,6 +183,9 @@ namespace ZenTimings
 
         private void ExitApplication()
         {
+            foreach (IPlugin plugin in plugins)
+                plugin?.Close();
+
             _notifyIcon?.Dispose();
             AsusWmi?.Dispose();
             cpu?.Dispose();
@@ -175,6 +200,7 @@ namespace ZenTimings
         private void ReadChannelsInfo()
         {
             int dimmIndex = 0;
+            int channelsPerDimm = MEMCFG.Type == MemType.DDR5 ? 2 : 1;
 
             // Get the offset by probing the IMC0 to IMC7
             // It appears that offsets 0x80 and 0x84 are DIMM config registers
@@ -182,37 +208,40 @@ namespace ZenTimings
             // 0x50000
             // offset 0, bit 0 when set to 1 means DIMM1 is installed
             // offset 8, bit 0 when set to 1 means DIMM2 is installed
-            for (var i = 0; i < 8; i++)
+            for (int i = 0; i < 8 * channelsPerDimm; i += channelsPerDimm)
             {
                 uint channelOffset = (uint)i << 20;
                 bool channel = Utils.GetBits(cpu.ReadDword(channelOffset | 0x50DF0), 19, 1) == 0;
                 bool dimm1 = Utils.GetBits(cpu.ReadDword(channelOffset | 0x50000), 0, 1) == 1;
                 bool dimm2 = Utils.GetBits(cpu.ReadDword(channelOffset | 0x50008), 0, 1) == 1;
-
-                if (channel && (dimm1 || dimm2))
+                try
                 {
-                    if (dimm1)
+                    if (channel && (dimm1 || dimm2))
                     {
-                        MemoryModule module = modules[dimmIndex++];
-                        module.Slot = $"{Convert.ToChar(i + 65)}1";
-                        module.DctOffset = channelOffset;
-                        module.DualRank = Utils.GetBits(cpu.ReadDword(channelOffset | 0x50080), 0, 1) == 1;
-                    }
+                        if (dimm1)
+                        {
+                            MemoryModule module = modules[dimmIndex++];
+                            module.Slot = $"{Convert.ToChar(i / channelsPerDimm + 65)}1";
+                            module.DctOffset = channelOffset;
+                            module.Rank = (MemRank)Utils.GetBits(cpu.ReadDword(channelOffset | 0x50080), 0, 1);
+                        }
 
-                    if (dimm2)
-                    {
-                        MemoryModule module = modules[dimmIndex++];
-                        module.Slot = $"{Convert.ToChar(i + 65)}2";
-                        module.DctOffset = channelOffset;
-                        module.DualRank = Utils.GetBits(cpu.ReadDword(channelOffset | 0x50084), 0, 1) == 1;
+                        if (dimm2)
+                        {
+                            MemoryModule module = modules[dimmIndex++];
+                            module.Slot = $"{Convert.ToChar(i / channelsPerDimm + 65)}2";
+                            module.DctOffset = channelOffset;
+                            module.Rank = (MemRank)Utils.GetBits(cpu.ReadDword(channelOffset | 0x50084), 0, 1);
+                        }
                     }
                 }
+                catch { }
             }
         }
 
         private void ReadMemoryModulesInfo()
         {
-            using (var searcher = new ManagementObjectSearcher("select * from Win32_PhysicalMemory"))
+            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("select * from Win32_PhysicalMemory"))
             {
                 bool connected = false;
                 try
@@ -221,17 +250,16 @@ namespace ZenTimings
 
                     connected = true;
 
-                    foreach (var obj in searcher.Get())
+                    foreach (ManagementObject queryObject in searcher.Get())
                     {
-                        var queryObject = (ManagementObject)obj;
-                        var capacity = 0UL;
-                        var clockSpeed = 0U;
-                        var partNumber = "N/A";
-                        var bankLabel = "";
-                        var manufacturer = "";
-                        var deviceLocator = "";
+                        ulong capacity = 0UL;
+                        uint clockSpeed = 0U;
+                        string partNumber = "N/A";
+                        string bankLabel = "";
+                        string manufacturer = "";
+                        string deviceLocator = "";
 
-                        var temp = WMI.TryGetProperty(queryObject, "Capacity");
+                        object temp = WMI.TryGetProperty(queryObject, "Capacity");
                         if (temp != null) capacity = (ulong)temp;
 
                         temp = WMI.TryGetProperty(queryObject, "ConfiguredClockSpeed");
@@ -261,9 +289,9 @@ namespace ZenTimings
                 }
                 catch (Exception ex)
                 {
-                    var title = connected ? @"Failed to get installed memory parameters." : $@"{ex.Message}";
+                    string text = connected ? @"Failed to get installed memory parameters." : $@"{ex.Message}";
                     MessageBox.Show(
-                        title,
+                        text,
                         "Warning",
                         MessageBoxButton.OK,
                         MessageBoxImage.Warning);
@@ -274,14 +302,13 @@ namespace ZenTimings
             {
                 ReadChannelsInfo();
 
-                var totalCapacity = 0UL;
+                ulong totalCapacity = 0UL;
 
-                foreach (var module in modules)
+                foreach (MemoryModule module in modules)
                 {
-                    var rank = module.DualRank ? "DR" : "SR";
                     totalCapacity += module.Capacity;
                     comboBoxPartNumber.Items.Add(
-                        $"{module.Slot}: {module.PartNumber} ({module.Capacity / 1024 / (1024 * 1024)}GB, {rank})");
+                        $"{module.Slot}: {module.PartNumber} ({module.Capacity / 1024 / (1024 * 1024)}GB, {module.Rank})");
                 }
 
                 if (modules[0].ClockSpeed != 0)
@@ -290,15 +317,14 @@ namespace ZenTimings
                 if (totalCapacity != 0)
                     MEMCFG.TotalCapacity = $"{totalCapacity / 1024 / (1024 * 1024)}GB";
 
-                comboBoxPartNumber.SelectedIndex = 0;
-                comboBoxPartNumber.SelectionChanged += ComboBoxPartNumber_SelectionChanged;
+                if (comboBoxPartNumber.Items.Count > 0)
+                {
+                    comboBoxPartNumber.SelectedIndex = 0;
+                    comboBoxPartNumber.SelectionChanged += ComboBoxPartNumber_SelectionChanged;
+                }
             }
         }
 
-        private bool RefreshPowerTable()
-        {
-            return cpu.RefreshPowerTable() == SMU.Status.OK;
-        }
 
         private void ReadSVI()
         {
@@ -308,48 +334,53 @@ namespace ZenTimings
             }
         }
 
+        private string RttToString(int rtt)
+        {
+            if (rtt > 0)
+                return $"{AOD.GetRttString(rtt)} ({240 / rtt})";
+            return $"{AOD.GetRttString(rtt)}";
+        }
         private void ReadMemoryConfig()
         {
-            var scope = @"root\wmi";
-            var className = "AMD_ACPI";
+            string scope = @"root\wmi";
+            string className = "AMD_ACPI";
 
             try
             {
                 WMI.Connect($@"{scope}");
 
-                var instanceName = WMI.GetInstanceName(scope, className);
+                string instanceName = WMI.GetInstanceName(scope, className);
 
-                var classInstance = new ManagementObject(scope,
+                ManagementObject classInstance = new ManagementObject(scope,
                     $"{className}.InstanceName='{instanceName}'",
                     null);
 
-                // Get possible values (index) of a memory option in BIOS
-                /*pack = WMI.InvokeMethod(classInstance, "Getdvalues", "pack", "ID", 0x20007);
-                if (pack != null)
-                {
-                    uint[] DValuesBuffer = (uint[])pack.GetPropertyValue("DValuesBuffer");
-                    for (var i = 0; i < DValuesBuffer.Length; i++)
-                    {
-                        Console.WriteLine("{0}", DValuesBuffer[i]);
-                    }
-                }
-                */
+                /* // Get possible values (index) of a memory option in BIOS
+                 var dvaluesPack = WMI.InvokeMethod(classInstance, "Getdvalues", "pack", "ID", 0x20035);
+                 if (pack != null)
+                 {
+                     uint[] DValuesBuffer = (uint[])pack.GetPropertyValue("DValuesBuffer");
+                     for (var i = 0; i < DValuesBuffer.Length; i++)
+                     {
+                         Console.WriteLine("{0}", DValuesBuffer[i]);
+                     }
+                 */
 
 
                 // Get function names with their IDs
                 string[] functionObjects = { "GetObjectID", "GetObjectID2" };
-                foreach (var functionObject in functionObjects)
+                foreach (string functionObject in functionObjects)
                 {
                     try
                     {
-                        var pack = WMI.InvokeMethod(classInstance, functionObject, "pack", null, 0);
+                        ManagementBaseObject pack = WMI.InvokeMethodAndGetValue(classInstance, functionObject, "pack", null, 0);
                         if (pack != null)
                         {
-                            var ID = (uint[])pack.GetPropertyValue("ID");
-                            var IDString = (string[])pack.GetPropertyValue("IDString");
-                            var Length = (byte)pack.GetPropertyValue("Length");
+                            uint[] ID = (uint[])pack.GetPropertyValue("ID");
+                            string[] IDString = (string[])pack.GetPropertyValue("IDString");
+                            byte Length = (byte)pack.GetPropertyValue("Length");
 
-                            for (var i = 0; i < Length; ++i)
+                            for (int i = 0; i < Length; ++i)
                             {
                                 biosFunctions.Add(new BiosACPIFunction(IDString[i], ID[i]));
                                 Console.WriteLine("{0}: {1:X8}", IDString[i], ID[i]);
@@ -362,79 +393,142 @@ namespace ZenTimings
                     }
                 }
 
-                // Get APCB config from BIOS. Holds memory parameters.
-                BiosACPIFunction cmd = GetFunctionByIdString("Get APCB Config");
-                if (cmd == null)
-                    throw new Exception();
+                AOD aod = cpu.info.aod;
 
-                var apcbConfig = WMI.RunCommand(classInstance, cmd.ID);
-
-                cmd = GetFunctionByIdString("Get memory voltages");
-                if (cmd != null)
+                if (MEMCFG.Type == MemType.DDR4)
                 {
-                    var voltages = WMI.RunCommand(classInstance, cmd.ID);
-
-                    // MEM_VDDIO is ushort, offset 27
-                    // MEM_VTT is ushort, offset 29
-                    for (var i = 27; i <= 30; i++)
+                    // Get APCB config from BIOS. Holds memory parameters.
+                    BiosACPIFunction cmd = GetFunctionByIdString("Get APCB Config");
+                    if (cmd == null)
                     {
-                        var value = voltages[i];
-                        if (value > 0)
-                            apcbConfig[i] = value;
+                        // throw new Exception("Could not get memory controller config");
+                        // Use AOD table as an alternative path for now
+                        BMC.Table = cpu.info.aod.Table.RawAodTable;
                     }
-                }
-
-                BMC.Table = apcbConfig;
-
-                // When ProcODT is 0, then all other resistance values are 0
-                // Happens when one DIMM installed in A1 or A2 slot
-                if (BMC.Table == null || Utils.AllZero(BMC.Table) || BMC.Config.ProcODT < 1) throw new Exception();
-
-                var vdimm = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVddio) / 1000);
-                if (vdimm > 0)
-                {
-                    textBoxMemVddio.Text = $"{vdimm:F4}V";
-                }
-                else if (AsusWmi != null && AsusWmi.Status == 1)
-                {
-                    var sensor = AsusWmi.FindSensorByName("DRAM Voltage");
-                    if (sensor != null)
-                        textBoxMemVddio.Text = sensor.Value;
                     else
+                    {
+                        byte[] apcbConfig = WMI.RunCommand(classInstance, cmd.ID);
+                        // BiosACPIFunction cmd = new BiosACPIFunction("Get APCB Config", 0x00010001);
+                        cmd = GetFunctionByIdString("Get memory voltages");
+                        if (cmd != null)
+                        {
+                            byte[] voltages = WMI.RunCommand(classInstance, cmd.ID);
+
+                            // MEM_VDDIO is ushort, offset 27
+                            // MEM_VTT is ushort, offset 29
+                            for (int i = 27; i <= 30; i++)
+                            {
+                                byte value = voltages[i];
+                                if (value > 0)
+                                    apcbConfig[i] = value;
+                            }
+                        }
+
+                        BMC.Table = apcbConfig ?? new byte[] { };
+                    }
+
+                    float vdimm = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVddio) / 1000);
+                    if (vdimm > 0 && vdimm < 3)
+                    {
+                        textBoxMemVddio.Text = $"{vdimm:F4}V";
+                    }
+                    else if (AsusWmi != null && AsusWmi.Status == 1)
+                    {
+                        AsusSensorInfo sensor = AsusWmi.FindSensorByName("DRAM Voltage");
+                        float temp = 0;
+                        bool valid = sensor != null && float.TryParse(sensor.Value, out temp);
+
+                        if (valid && temp > 0 && temp < 3)
+                            textBoxMemVddio.Text = sensor.Value;
+                        else
+                            labelMemVddio.IsEnabled = false;
+                    }
+                    else
+                    {
                         labelMemVddio.IsEnabled = false;
+                    }
+
+                    float vtt = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVtt) / 1000);
+                    if (vtt > 0)
+                        textBoxMemVtt.Text = $"{vtt:F4}V";
+                    else
+                        labelMemVtt.IsEnabled = false;
+
+                    // When ProcODT is 0, then all other resistance values are 0
+                    // Happens when one DIMM installed in A1 or A2 slot
+                    if (BMC.Table == null || Utils.AllZero(BMC.Table) || BMC.Config.ProcODT < 1)
+                        // throw new Exception("Failed to read AMD ACPI. Odt, Setup and Drive strength parameters will be empty.");
+                        return;
+
+                    labelProcODT.IsEnabled = true;
+                    labelClkDrvStren.IsEnabled = true;
+                    labelAddrCmdDrvStren.IsEnabled = true;
+                    labelCsOdtDrvStren.IsEnabled = true;
+                    labelCkeDrvStren.IsEnabled = true;
+                    labelRttNom.IsEnabled = true;
+                    labelRttWr.IsEnabled = true;
+                    labelRttPark.IsEnabled = true;
+                    labelAddrCmdSetup.IsEnabled = true;
+                    labelCsOdtSetup.IsEnabled = true;
+                    labelCkeSetup.IsEnabled = true;
+                    textBoxProcODT.Text = BMC.GetProcODTString(BMC.Config.ProcODT);
+
+                    textBoxClkDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.ClkDrvStren);
+                    textBoxAddrCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.AddrCmdDrvStren);
+                    textBoxCsOdtCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CsOdtCmdDrvStren);
+                    textBoxCkeDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CkeDrvStren);
+
+                    textBoxRttNom.Text = BMC.GetRttString(BMC.Config.RttNom);
+                    textBoxRttWr.Text = BMC.GetRttWrString(BMC.Config.RttWr);
+                    textBoxRttPark.Text = BMC.GetRttString(BMC.Config.RttPark);
+
+                    textBoxAddrCmdSetup.Text = $"{BMC.Config.AddrCmdSetup}";
+                    textBoxCsOdtSetup.Text = $"{BMC.Config.CsOdtSetup}";
+                    textBoxCkeSetup.Text = $"{BMC.Config.CkeSetup}";
                 }
                 else
                 {
-                    labelMemVddio.IsEnabled = false;
+                    if (Utils.AllZero(cpu.info.aod.Table.RawAodTable))
+                        return;
+
+                    AodData Data = cpu.info.aod.Table.Data;
+
+                    labelMemVdd.IsEnabled = true;
+                    labelMemVddq.IsEnabled = true;
+                    labelMemVpp.IsEnabled = true;
+
+                    labelProcODT.IsEnabled = true;
+                    labelProcCaDs.IsEnabled = true;
+                    labelProcDqDs.IsEnabled = true;
+                    labelDramDqDs.IsEnabled = true;
+                    labelRttWrD5.IsEnabled = true;
+                    labelRttNomWr.IsEnabled = true;
+                    labelRttNomRd.IsEnabled = true;
+                    labelRttParkD5.IsEnabled = true;
+                    labelRttParkDqs.IsEnabled = true;
+
+                    textBoxMemVddio.Text = $"{Data.MemVddio / 1000.0:F4}V";
+                    textBoxMemVddq.Text = $"{Data.MemVddq / 1000.0:F4}V";
+                    textBoxMemVpp.Text = $"{Data.MemVpp / 1000.0:F4}V";
+
+                    textBoxProcODT.Text = AOD.GetProcODTString(Data.ProcODT);
+                    textBoxCadBusDrvStren.Text = AOD.GetCadBusDrvStrenString(Data.CadBusDrvStren);
+                    textBoxDramDataDrvStren.Text = AOD.GetDramDataDrvStrenString(Data.DramDataDrvStren);
+                    textBoxProcDataDrvStren.Text = AOD.GetProcDataDrvStrenString(Data.ProcDataDrvStren);
+
+                    textBoxRttWrD5.Text = RttToString(Data.RttWr);
+                    textBoxRttNomWr.Text = RttToString(Data.RttNomWr);
+                    textBoxRttNomRd.Text = RttToString(Data.RttNomRd);
+                    textBoxRttParkD5.Text = RttToString(Data.RttPark);
+                    textBoxRttParkDqs.Text = RttToString(Data.RttParkDqs);
                 }
-
-                var vtt = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVtt) / 1000);
-                if (vtt > 0)
-                    textBoxMemVtt.Text = $"{vtt:F4}V";
-                else
-                    labelMemVtt.IsEnabled = false;
-
-                textBoxProcODT.Text = BMC.GetProcODTString(BMC.Config.ProcODT);
-
-                textBoxClkDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.ClkDrvStren);
-                textBoxAddrCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.AddrCmdDrvStren);
-                textBoxCsOdtCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CsOdtCmdDrvStren);
-                textBoxCkeDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CkeDrvStren);
-
-                textBoxRttNom.Text = BMC.GetRttString(BMC.Config.RttNom);
-                textBoxRttWr.Text = BMC.GetRttWrString(BMC.Config.RttWr);
-                textBoxRttPark.Text = BMC.GetRttString(BMC.Config.RttPark);
-
-                textBoxAddrCmdSetup.Text = $"{BMC.Config.AddrCmdSetup}";
-                textBoxCsOdtSetup.Text = $"{BMC.Config.CsOdtSetup}";
-                textBoxCkeSetup.Text = $"{BMC.Config.CkeSetup}";
             }
             catch (Exception ex)
             {
                 compatMode = true;
 
                 MessageBox.Show(
-                    "Failed to read AMD ACPI. Odt, Setup and Drive strength parameters will be empty.",
+                    ex.Message,
                     "Warning",
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
@@ -446,6 +540,10 @@ namespace ZenTimings
 
         private void ReadTimings(uint offset = 0)
         {
+            uint config = cpu.ReadDword(offset | 0x50100);
+
+            MEMCFG.Type = (MemType)Utils.GetBits(config, 0, 2);
+
             uint powerDown = cpu.ReadDword(offset | 0x5012C);
             uint umcBase = cpu.ReadDword(offset | 0x50200);
             uint bgsa0 = cpu.ReadDword(offset | 0x500D0);
@@ -467,13 +565,32 @@ namespace ZenTimings
             uint timings17 = cpu.ReadDword(offset | 0x50250);
             uint timings18 = cpu.ReadDword(offset | 0x50254);
             uint timings19 = cpu.ReadDword(offset | 0x50258);
-            uint timings20 = cpu.ReadDword(offset | 0x50260);
-            uint timings21 = cpu.ReadDword(offset | 0x50264);
+            uint trfcTimings0 = cpu.ReadDword(offset | 0x50260);
+            uint trfcTimings1 = cpu.ReadDword(offset | 0x50264);
+            uint trfcTimings2 = cpu.ReadDword(offset | 0x50268);
+            uint trfcTimings3 = cpu.ReadDword(offset | 0x5026C);
             uint timings22 = cpu.ReadDword(offset | 0x5028C);
-            uint timings23 = timings20 != timings21 ? (timings20 != 0x21060138 ? timings20 : timings21) : timings20;
+            uint trfcRegValue = 0;
+
+            if (MEMCFG.Type == MemType.DDR4)
+            {
+                trfcRegValue = trfcTimings0 != trfcTimings1 ? (trfcTimings0 != 0x21060138 ? trfcTimings0 : trfcTimings1) : trfcTimings0;
+            }
+            else if (MEMCFG.Type == MemType.DDR5)
+            {
+                uint[] ddr5Regs = { trfcTimings0, trfcTimings1, trfcTimings2, trfcTimings3 };
+                foreach (uint reg in ddr5Regs)
+                {
+                    if (reg != 0x00C00138)
+                    {
+                        trfcRegValue = reg;
+                        break;
+                    }
+                }
+            }
 
             float configured = MEMCFG.Frequency;
-            float ratio = Utils.GetBits(umcBase, 0, 7) / 3.0f;
+            float ratio = MEMCFG.Type == MemType.DDR4 ? Utils.GetBits(umcBase, 0, 7) / 3.0f : Utils.GetBits(umcBase, 0, 16) / 100.0f;
             float freqFromRatio = ratio * 200;
 
             MEMCFG.Ratio = ratio;
@@ -488,8 +605,10 @@ namespace ZenTimings
             MEMCFG.BGSAlt = Utils.GetBits(bgsa0, 4, 7) > 0 || Utils.GetBits(bgsa1, 4, 7) > 0
                 ? "Enabled"
                 : "Disabled";
-            MEMCFG.GDM = Utils.GetBits(umcBase, 11, 1) > 0 ? "Enabled" : "Disabled";
-            MEMCFG.Cmd2T = Utils.GetBits(umcBase, 10, 1) > 0 ? "2T" : "1T";
+            int GDM_BIT = MEMCFG.Type == MemType.DDR4 ? 11 : 18;
+            MEMCFG.GDM = Utils.GetBits(umcBase, GDM_BIT, 1) > 0 ? "Enabled" : "Disabled";
+            int CMD2T_BIT = MEMCFG.Type == MemType.DDR4 ? 10 : 17;
+            MEMCFG.Cmd2T = Utils.GetBits(umcBase, CMD2T_BIT, 1) > 0 ? "2T" : "1T";
 
             MEMCFG.CL = Utils.GetBits(timings5, 0, 6);
             MEMCFG.RAS = Utils.GetBits(timings5, 8, 7);
@@ -503,13 +622,13 @@ namespace ZenTimings
             MEMCFG.RRDL = Utils.GetBits(timings7, 8, 5);
             MEMCFG.RTP = Utils.GetBits(timings7, 24, 5);
 
-            MEMCFG.FAW = Utils.GetBits(timings8, 0, 8);
+            MEMCFG.FAW = Utils.GetBits(timings8, 0, 7);
 
             MEMCFG.CWL = Utils.GetBits(timings9, 0, 6);
             MEMCFG.WTRS = Utils.GetBits(timings9, 8, 5);
             MEMCFG.WTRL = Utils.GetBits(timings9, 16, 7);
 
-            MEMCFG.WR = Utils.GetBits(timings10, 0, 8);
+            MEMCFG.WR = Utils.GetBits(timings10, 0, 7);
 
             MEMCFG.TRCPAGE = Utils.GetBits(timings11, 20, 12);
 
@@ -523,7 +642,7 @@ namespace ZenTimings
             MEMCFG.WRWRSC = Utils.GetBits(timings13, 16, 4);
             MEMCFG.WRWRSCL = Utils.GetBits(timings13, 24, 6);
 
-            MEMCFG.RDWR = Utils.GetBits(timings14, 8, 5);
+            MEMCFG.RDWR = Utils.GetBits(timings14, 8, 6);
             MEMCFG.WRRD = Utils.GetBits(timings14, 0, 4);
 
             MEMCFG.REFI = Utils.GetBits(timings15, 0, 16);
@@ -533,18 +652,41 @@ namespace ZenTimings
             MEMCFG.MOD = Utils.GetBits(timings16, 8, 6);
             MEMCFG.MRD = Utils.GetBits(timings16, 0, 6);
 
-            MEMCFG.STAG = Utils.GetBits(timings17, 16, 8);
+            MEMCFG.STAG = Utils.GetBits(timings17, 16, 11);
 
             MEMCFG.XP = Utils.GetBits(timings18, 0, 6);
             MEMCFG.CKE = Utils.GetBits(timings18, 24, 5);
 
-            MEMCFG.PHYWRL = Utils.GetBits(timings19, 8, 5);
-            MEMCFG.PHYRDL = Utils.GetBits(timings19, 16, 6);
+            MEMCFG.PHYWRL = Utils.GetBits(timings19, 8, 8);
+            MEMCFG.PHYRDL = Utils.GetBits(timings19, 16, 8);
             MEMCFG.PHYWRD = Utils.GetBits(timings19, 24, 3);
 
-            MEMCFG.RFC = Utils.GetBits(timings23, 0, 11);
-            MEMCFG.RFC2 = Utils.GetBits(timings23, 11, 11);
-            MEMCFG.RFC4 = Utils.GetBits(timings23, 22, 11);
+            if (MEMCFG.Type == MemType.DDR4)
+            {
+                MEMCFG.RFC = Utils.GetBits(trfcRegValue, 0, 11);
+                MEMCFG.RFC2 = Utils.GetBits(trfcRegValue, 11, 11);
+                MEMCFG.RFC4 = Utils.GetBits(trfcRegValue, 22, 11);
+            }
+
+            if (MEMCFG.Type == MemType.DDR5)
+            {
+                MEMCFG.RFC = Utils.GetBits(trfcRegValue, 0, 16);
+                MEMCFG.RFC2 = Utils.GetBits(trfcRegValue, 16, 16);
+                uint[] temp = {
+                    Utils.GetBits(cpu.ReadDword(offset | 0x502c0), 0, 11),
+                    Utils.GetBits(cpu.ReadDword(offset | 0x502c4), 0, 11),
+                    Utils.GetBits(cpu.ReadDword(offset | 0x502c8), 0, 11),
+                    Utils.GetBits(cpu.ReadDword(offset | 0x502cc), 0, 11),
+                };
+                foreach (uint value in temp)
+                {
+                    if (value != 0)
+                    {
+                        MEMCFG.RFCsb = value;
+                        break;
+                    }
+                }
+            }
 
             MEMCFG.PowerDown = Utils.GetBits(powerDown, 28, 1) == 1 ? "Enabled" : "Disabled";
         }
@@ -552,7 +694,7 @@ namespace ZenTimings
 
         private bool WaitForDriverLoad()
         {
-            var timer = new Stopwatch();
+            Stopwatch timer = new Stopwatch();
             timer.Start();
 
             bool temp;
@@ -567,6 +709,13 @@ namespace ZenTimings
             return temp;
         }
 
+        private void SetFrequencyString()
+        {
+            if (cpu.powerTable.MCLK > 0)
+            {
+                MEMCFG.Frequency = cpu.powerTable.MCLK * 2;
+            }
+        }
         private bool WaitForPowerTable()
         {
             if (cpu.powerTable == null || cpu.powerTable.DramBaseAddress == 0)
@@ -577,8 +726,8 @@ namespace ZenTimings
 
             if (WaitForDriverLoad())
             {
-                var timer = new Stopwatch();
-                var timeout = 10000;
+                Stopwatch timer = new Stopwatch();
+                int timeout = 10000;
 
                 cpu.powerTable.ConfiguredClockSpeed = MEMCFG.Frequency;
                 cpu.powerTable.MemRatio = MEMCFG.Ratio;
@@ -601,6 +750,8 @@ namespace ZenTimings
                     HandleError("Could not get power table.\nSkipping.");
                     return false;
                 }
+
+                SetFrequencyString();
 
                 return true;
             }
@@ -638,18 +789,24 @@ namespace ZenTimings
                     if (AsusWmi != null && AsusWmi.Status == 1)
                     {
                         AsusWmi.UpdateSensors();
-                        var sensor = AsusWmi.FindSensorByName("DRAM Voltage");
+                        AsusSensorInfo sensor = AsusWmi.FindSensorByName("DRAM Voltage");
                         if (sensor != null)
                             Dispatcher.Invoke(DispatcherPriority.ApplicationIdle,
-                                new Action(() => { textBoxMemVddio.Text = sensor.Value; }));
+                                new Action(() =>
+                                {
+                                    textBoxMemVddio.Text = sensor.Value;
+                                    labelMemVddio.IsEnabled = true;
+                                }));
                     }
 
                     Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() =>
                     {
                         //ReadTimings();
                         //ReadMemoryConfig();
-                        RefreshPowerTable();
+                        cpu.RefreshPowerTable();
                         ReadSVI();
+                        SetFrequencyString();
+                        // RefreshSensors();
                     }));
                 }).Start();
             }
@@ -692,30 +849,35 @@ namespace ZenTimings
 
         public void SetWindowTitle()
         {
-            var AssemblyTitle = "ZT";
+            string AssemblyTitle = "ZT";
 
             if (settings.AdvancedMode)
                 AssemblyTitle = ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(
                     Assembly.GetExecutingAssembly(),
                     typeof(AssemblyTitleAttribute), false)).Title;
 
-            var AssemblyVersion = ((AssemblyFileVersionAttribute)Attribute.GetCustomAttribute(
+            string AssemblyVersion = ((AssemblyFileVersionAttribute)Attribute.GetCustomAttribute(
                 Assembly.GetExecutingAssembly(),
                 typeof(AssemblyFileVersionAttribute), false)).Version;
 
-            Title = $"{AssemblyTitle} {AssemblyVersion.Substring(0, AssemblyVersion.LastIndexOf('.'))}";
+            Title = $"{AssemblyTitle} {AssemblyVersion.Substring(0, AssemblyVersion.LastIndexOf('.'))}L";
 #if BETA
-            Title = $@"{AssemblyTitle} {AssemblyVersion} beta";
+            Title += @" beta";
 
             MessageBox.Show("This is a BETA version of the application. Some functions might be working incorrectly.\n\n" +
                 "Please report if something is not working as expected.", "Beta version", MessageBoxButton.OK);
 #else
 #if DEBUG
-            Title = $@"{AssemblyTitle} {AssemblyVersion} (debug)";
+            Title += $@"{AssemblyVersion.Substring(AssemblyVersion.LastIndexOf('.'))}";
+
+            if (settings.AdvancedMode)
+            {
+                Title += @" (debug)";
+            }
 #endif
 #endif
             if (compatMode && settings.AdvancedMode)
-                Title += " (compatibility)";
+                Title += @" (compatibility)";
         }
 
         private void Window_Initialized(object sender, EventArgs e)
@@ -728,9 +890,12 @@ namespace ZenTimings
             }
 
             SetWindowTitle();
-            labelCPU.Text = cpu.systemInfo.CpuName;
-            labelMB.Text =
-                $"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} | SMU {cpu.systemInfo.GetSmuVersionString()}";
+            if (cpu != null)
+            {
+                labelCPU.Text = cpu.systemInfo.CpuName;
+                labelMB.Text =
+                    $"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} | SMU {cpu.systemInfo.GetSmuVersionString()}";
+            }
             //ShowWindow();
 
             MinimizeFootprint();
@@ -748,10 +913,10 @@ namespace ZenTimings
         {
             if (settings.AdvancedMode)
             {
-                var parent = Application.Current.MainWindow;
+                Window parent = Application.Current.MainWindow;
                 if (parent != null)
                 {
-                    var debugWnd = new DebugDialog(cpu, modules, MEMCFG, BMC, AsusWmi)
+                    DebugDialog debugWnd = new DebugDialog(cpu, modules, MEMCFG, BMC, AsusWmi)
                     {
                         Owner = parent,
                         Width = parent.Width,
@@ -821,7 +986,7 @@ namespace ZenTimings
 
         private void OptionsToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            var optionsWnd = new OptionsDialog(PowerCfgTimer)
+            OptionsDialog optionsWnd = new OptionsDialog(PowerCfgTimer)
             {
                 Owner = Application.Current.MainWindow
             };
@@ -830,7 +995,7 @@ namespace ZenTimings
 
         private void AboutToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            var aboutWnd = new AboutDialog()
+            AboutDialog aboutWnd = new AboutDialog()
             {
                 Owner = Application.Current.MainWindow
             };
@@ -839,10 +1004,10 @@ namespace ZenTimings
 
         private void ButtonScreenshot_Click(object sender, RoutedEventArgs e)
         {
-            var screenshot = new Screenshot();
-            var bitmap = screenshot.CaptureActiveWindow();
+            Screenshot screenshot = new Screenshot();
+            System.Drawing.Bitmap bitmap = screenshot.CaptureActiveWindow();
 
-            using (var saveWnd = new SaveWindow(bitmap))
+            using (SaveWindow saveWnd = new SaveWindow(bitmap))
             {
                 saveWnd.Owner = Application.Current.MainWindow;
                 saveWnd.ShowDialog();
@@ -857,62 +1022,68 @@ namespace ZenTimings
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-			if (settings.SaveWindowPosition)
+            if (settings.SaveWindowPosition)
             {
                 settings.WindowLeft = Left;
                 settings.WindowTop = Top;
                 settings.Save();
             }
 
-            _notifyIcon.Dispose();
-            AsusWmi?.Dispose();
-            cpu?.Dispose();
-
-        }
-    }
-    public class FloatToNAConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value != null && (float) value == 0)
-                return "N/A";
-            return value;
+            Dispose();
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter,
-            CultureInfo culture)
+        protected virtual void Dispose(bool disposing)
         {
-            return Binding.DoNothing;
-        }
-    }
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    foreach (var plugin in plugins)
+                        plugin?.Close();
 
-    public class FloatToVoltageConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value != null && (float) value == 0)
-                return "N/A";
-            return $"{value:F4}V";
-        }
+                    _notifyIcon.Dispose();
+                    BMC?.Dispose();
+                    AsusWmi?.Dispose();
+                    cpu?.Dispose();
+                }
 
-        public object ConvertBack(object value, Type targetType, object parameter,
-            CultureInfo culture)
-        {
-            return Binding.DoNothing;
-        }
-    }
-
-    public class FloatToBoolConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return value != null && (float) value != 0;
+                disposedValue = true;
+            }
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter,
-            CultureInfo culture)
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~MainWindow()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
         {
-            return Binding.DoNothing;
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://www.paypal.com/donate/?hosted_button_id=NLSRLE9MVDPCW");
+        }
+
+        private void MenuItem_Click_1(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://revolut.me/ivanrusanov");
+        }
+
+        private void MenuItem_Click_2(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://discord.gg/8cfR3UZ");
+        }
+
+        private void MenuItem_Click_3(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://github.com/irusanov/ZenTimings");
+
         }
     }
 }

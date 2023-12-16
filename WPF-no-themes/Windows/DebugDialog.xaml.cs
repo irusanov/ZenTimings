@@ -1,11 +1,11 @@
+using Microsoft.VisualBasic.Devices;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Management;
 using System.Windows;
-using Microsoft.VisualBasic.Devices;
-using Microsoft.Win32;
 using ZenStates.Core;
 
 namespace ZenTimings.Windows
@@ -78,7 +78,7 @@ namespace ZenTimings.Windows
                     null);
 
                 // Get function names with their IDs
-                string[] functionObjects = {"GetObjectID", "GetObjectID2"};
+                string[] functionObjects = { "GetObjectID", "GetObjectID2" };
                 var index = 1;
 
                 foreach (var functionObject in functionObjects)
@@ -87,18 +87,18 @@ namespace ZenTimings.Windows
 
                     try
                     {
-                        pack = WMI.InvokeMethod(classInstance, functionObject, "pack", null, 0);
+                        pack = WMI.InvokeMethodAndGetValue(classInstance, functionObject, "pack", null, 0);
 
                         if (pack != null)
                         {
-                            var ID = (uint[]) pack.GetPropertyValue("ID");
-                            var IDString = (string[]) pack.GetPropertyValue("IDString");
-                            var Length = (byte) pack.GetPropertyValue("Length");
+                            var ID = (uint[])pack.GetPropertyValue("ID");
+                            var IDString = (string[])pack.GetPropertyValue("IDString");
+                            var Length = (byte)pack.GetPropertyValue("Length");
 
                             for (var i = 0; i < Length; ++i)
                             {
                                 if (IDString[i] == "")
-                                    return;
+                                    break;
                                 AddLine($"{IDString[i] + ":",-30}{ID[i]:X8}");
                             }
                         }
@@ -201,6 +201,7 @@ namespace ZenTimings.Windows
                         AddLine($"{property.Name + ":",-19}{property.GetValue(SI, null)}");
 
                 }
+                AddLine($"{"DRAM Base Address:",-19}{((long)CPU.powerTable.DramBaseAddressHi << 32) | CPU.powerTable.DramBaseAddress:X16}");
             }
             catch
             {
@@ -215,7 +216,7 @@ namespace ZenTimings.Windows
             {
                 AddLine($"{module.BankLabel} | {module.DeviceLocator}");
                 AddLine($"-- Slot: {module.Slot}");
-                if (module.DualRank)
+                if (module.Rank == MemRank.DR)
                     AddLine("-- Dual Rank");
                 else
                     AddLine("-- Single Rank");
@@ -235,7 +236,7 @@ namespace ZenTimings.Windows
             try
             {
                 foreach (var property in properties)
-                    AddLine($"{property.Name + ":",-16}{ property.GetValue(MEMCFG, null)}");
+                    AddLine($"{property.Name + ":",-16}{property.GetValue(MEMCFG, null)}");
             }
             catch
             {
@@ -357,7 +358,7 @@ namespace ZenTimings.Windows
                 uint startAddress = 0x0005A000;
                 uint endAddress = 0x0005A0FF;
 
-                if (CPU.smu.SMU_TYPE == SMU.SmuType.TYPE_APU1)
+                if (CPU.smu.SMU_TYPE == SMU.SmuType.TYPE_APU1 || CPU.smu.SMU_TYPE == SMU.SmuType.TYPE_APU2)
                 {
                     startAddress = 0x0006F000;
                     endAddress = 0x0006F0FF;
@@ -414,8 +415,8 @@ namespace ZenTimings.Windows
 
         private void ButtonDebug_Click(object sender, RoutedEventArgs e)
         {
-        	Debug();
-		}
+            Debug();
+        }
 
         private void ButtonDebugCancel_Click(object sender, RoutedEventArgs e)
         {

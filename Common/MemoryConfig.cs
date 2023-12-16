@@ -20,6 +20,7 @@ namespace ZenTimings
         {
             DDR4 = 0,
             DDR5 = 1,
+            LPDDR5 = 2,
         }
 
         public MemType Type { get; set; }
@@ -29,7 +30,18 @@ namespace ZenTimings
         public float Frequency
         {
             get => frequency;
-            set => SetProperty(ref frequency, value, InternalEventArgsCache.Frequency);
+            set
+            {
+                SetProperty(ref frequency, value, InternalEventArgsCache.Frequency);
+                FrequencyString = $"{Math.Floor(value)} MT/s";
+            }
+        }
+
+        private string frequencyString;
+        public string FrequencyString
+        {
+            set => SetProperty(ref frequencyString, value, InternalEventArgsCache.FrequencyString);
+            get => frequencyString;
         }
 
         private float ratio;
@@ -376,6 +388,15 @@ namespace ZenTimings
             set => SetProperty(ref rfc4, value, InternalEventArgsCache.RFC4);
         }
 
+
+        private uint rfcsb;
+
+        public uint RFCsb
+        {
+            get => rfcsb;
+            set => SetProperty(ref rfcsb, value, InternalEventArgsCache.RFCsb);
+        }
+
         private uint refi;
 
         public uint REFI
@@ -441,6 +462,7 @@ namespace ZenTimings
     {
         internal static PropertyChangedEventArgs TotalCapacity = new PropertyChangedEventArgs("TotalCapacity");
         internal static PropertyChangedEventArgs Frequency = new PropertyChangedEventArgs("Frequency");
+        internal static PropertyChangedEventArgs FrequencyString = new PropertyChangedEventArgs("FrequencyString");
         internal static PropertyChangedEventArgs Ratio = new PropertyChangedEventArgs("Ratio");
         internal static PropertyChangedEventArgs BGS = new PropertyChangedEventArgs("BGS");
         internal static PropertyChangedEventArgs BGSAlt = new PropertyChangedEventArgs("BGSAlt");
@@ -480,6 +502,7 @@ namespace ZenTimings
         internal static PropertyChangedEventArgs RFC = new PropertyChangedEventArgs("RFC");
         internal static PropertyChangedEventArgs RFC2 = new PropertyChangedEventArgs("RFC2");
         internal static PropertyChangedEventArgs RFC4 = new PropertyChangedEventArgs("RFC4");
+        internal static PropertyChangedEventArgs RFCsb = new PropertyChangedEventArgs("RFCsb");
         internal static PropertyChangedEventArgs REFI = new PropertyChangedEventArgs("REFI");
         internal static PropertyChangedEventArgs RFCns = new PropertyChangedEventArgs("RFCns");
         internal static PropertyChangedEventArgs REFIns = new PropertyChangedEventArgs("REFIns");

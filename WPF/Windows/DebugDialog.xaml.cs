@@ -1,3 +1,5 @@
+using Microsoft.VisualBasic.Devices;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -5,9 +7,8 @@ using System.IO;
 using System.Management;
 using System.Threading.Tasks;
 using System.Windows;
-using Microsoft.VisualBasic.Devices;
-using Microsoft.Win32;
 using ZenStates.Core;
+using static ZenTimings.MemoryConfig;
 using MessageBox = AdonisUI.Controls.MessageBox;
 
 namespace ZenTimings.Windows
@@ -79,7 +80,7 @@ namespace ZenTimings.Windows
                     null);
 
                 // Get function names with their IDs
-                string[] functionObjects = {"GetObjectID", "GetObjectID2"};
+                string[] functionObjects = { "GetObjectID", "GetObjectID2" };
                 var index = 1;
 
                 foreach (var functionObject in functionObjects)
@@ -92,14 +93,14 @@ namespace ZenTimings.Windows
 
                         if (pack != null)
                         {
-                            var ID = (uint[]) pack.GetPropertyValue("ID");
-                            var IDString = (string[]) pack.GetPropertyValue("IDString");
-                            var Length = (byte) pack.GetPropertyValue("Length");
+                            var ID = (uint[])pack.GetPropertyValue("ID");
+                            var IDString = (string[])pack.GetPropertyValue("IDString");
+                            var Length = (byte)pack.GetPropertyValue("Length");
 
                             for (var i = 0; i < Length; ++i)
                             {
                                 if (IDString[i] == "")
-                                    return;
+                                    break;
                                 AddLine($"{IDString[i] + ":",-30}{ID[i]:X8}");
                             }
                         }
@@ -142,8 +143,10 @@ namespace ZenTimings.Windows
 
         private void PrintChannels()
         {
+            uint channelsPerDimm = MEMCFG.Type >= MemType.DDR5 ? 2u : 1u;
             AddHeading("Memory Channels Info");
-            for (var i = 0u; i < 8u; i++)
+
+            for (var i = 0u; i < 8u * channelsPerDimm; i += channelsPerDimm)
             {
                 try
                 {
@@ -153,7 +156,7 @@ namespace ZenTimings.Windows
                     var dimm2 = Utils.GetBits(CPU.ReadDword(offset | 0x50008), 0, 1) == 1;
                     var enabled = channel && (dimm1 || dimm2);
 
-                    AddLine($"Channel{i}: {enabled}");
+                    AddLine($"Channel{i / channelsPerDimm}: {enabled}");
                     if (enabled)
                     {
                         AddLine("-- UMC Registers");
@@ -169,7 +172,7 @@ namespace ZenTimings.Windows
                 }
                 catch
                 {
-                    AddLine($"Channel{i}: <FAILED>");
+                    AddLine($"Channel{i / channelsPerDimm}: <FAILED>");
                 }
             }
             AddLine();
@@ -181,6 +184,8 @@ namespace ZenTimings.Windows
 
             result =
                 $"{System.Windows.Forms.Application.ProductName} {System.Windows.Forms.Application.ProductVersion} Debug Report" +
+                Environment.NewLine +
+                $"{"Core Version: "}{CPU.Version}" +
                 Environment.NewLine +
                 Environment.NewLine;
 
@@ -202,6 +207,7 @@ namespace ZenTimings.Windows
                         AddLine($"{property.Name + ":",-19}{property.GetValue(SI, null)}");
 
                 }
+                AddLine($"{"DRAM Base Address:",-19}{((long)CPU.powerTable.DramBaseAddressHi << 32) | CPU.powerTable.DramBaseAddress:X16}");
             }
             catch
             {
@@ -217,7 +223,7 @@ namespace ZenTimings.Windows
             {
                 AddLine($"{module.BankLabel} | {module.DeviceLocator}");
                 AddLine($"-- Slot: {module.Slot}");
-                if (module.DualRank)
+                if (module.Rank == MemRank.DR)
                     AddLine("-- Dual Rank");
                 else
                     AddLine("-- Single Rank");
@@ -237,7 +243,38 @@ namespace ZenTimings.Windows
             try
             {
                 foreach (var property in properties)
-                    AddLine($"{property.Name + ":",-16}{ property.GetValue(MEMCFG, null)}");
+                    AddLine($"{property.Name + ":",-16}{property.GetValue(MEMCFG, null)}");
+            }
+            catch
+            {
+                AddLine("<FAILED>");
+            }
+
+            AddLine();
+
+            // AOD Table
+            AddHeading("ACPI: AOD Table");
+            type = CPU.info.aod.Table.GetType();
+            properties = type.GetProperties();
+            try
+            {
+                foreach (var property in properties)
+                {
+                    AddLine($"{property.Name + ":",-19}{property.GetValue(CPU.info.aod.Table, null)}");
+                }
+            }
+            catch
+            {
+                AddLine("<FAILED>");
+            }
+
+            AddLine();
+
+            AddHeading("ACPI: Raw AOD Table");
+            try
+            {
+                for (var i = 0; i < CPU.info.aod.Table.RawAodTable.Length; ++i)
+                    AddLine($"Index {i:D3}: {CPU.info.aod.Table.RawAodTable[i]:X2} ({CPU.info.aod.Table.RawAodTable[i]})");
             }
             catch
             {
@@ -365,7 +402,7 @@ namespace ZenTimings.Windows
                 uint startAddress = 0x0005A000;
                 uint endAddress = 0x0005A0FF;
 
-                if (CPU.smu.SMU_TYPE == SMU.SmuType.TYPE_APU1)
+                if (CPU.smu.SMU_TYPE == SMU.SmuType.TYPE_APU1 || CPU.smu.SMU_TYPE == SMU.SmuType.TYPE_APU2)
                 {
                     startAddress = 0x0006F000;
                     endAddress = 0x0006F0FF;

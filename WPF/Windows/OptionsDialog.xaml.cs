@@ -1,7 +1,10 @@
 using System;
+using System.Diagnostics;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using static ZenTimings.AppSettings;
 
 namespace ZenTimings.Windows
 {
@@ -14,13 +17,13 @@ namespace ZenTimings.Windows
         internal readonly AppSettings appSettings = (Application.Current as App)?.settings;
         private readonly DispatcherTimer timerInstance;
         private DispatcherTimer notificationTimer;
-        private bool _DarkMode;
+        private Theme _Theme;
         private readonly bool _AdvancedMode;
 
         public OptionsDialog(DispatcherTimer timer)
         {
             timerInstance = timer;
-            _DarkMode = appSettings.DarkMode;
+            _Theme = appSettings.AppTheme;
             _AdvancedMode = appSettings.AdvancedMode;
 
             InitializeComponent();
@@ -34,36 +37,36 @@ namespace ZenTimings.Windows
             numericUpDownRefreshInterval.IsEnabled = appSettings.AutoRefresh && appSettings.AdvancedMode;
             numericUpDownRefreshInterval.Text = appSettings.AutoRefreshInterval.ToString();
             msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
-            comboBoxTheme.IsChecked = appSettings.DarkMode;
+            comboBoxTheme.SelectedIndex = (int)_Theme;
         }
 
         private void CheckBoxAutoRefresh_Click(object sender, RoutedEventArgs e)
         {
-            numericUpDownRefreshInterval.IsEnabled = (bool) checkBoxAutoRefresh.IsChecked;
+            numericUpDownRefreshInterval.IsEnabled = (bool)checkBoxAutoRefresh.IsChecked;
             msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
         }
 
         private void CheckBoxAdvancedMode_Click(object sender, RoutedEventArgs e)
         {
-            checkBoxAutoRefresh.IsEnabled = (bool) checkBoxAdvancedMode.IsChecked;
+            checkBoxAutoRefresh.IsEnabled = (bool)checkBoxAdvancedMode.IsChecked;
             numericUpDownRefreshInterval.IsEnabled =
-                (bool) checkBoxAutoRefresh.IsChecked && checkBoxAutoRefresh.IsEnabled;
+                (bool)checkBoxAutoRefresh.IsChecked && checkBoxAutoRefresh.IsEnabled;
             msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
         }
 
         private void ButtonSettingsApply_Click(object sender, RoutedEventArgs e)
         {
-            appSettings.AutoRefresh = (bool) checkBoxAutoRefresh.IsChecked;
+            appSettings.AutoRefresh = (bool)checkBoxAutoRefresh.IsChecked;
             appSettings.AutoRefreshInterval = Convert.ToInt32(numericUpDownRefreshInterval.Text);
-            appSettings.AdvancedMode = (bool) checkBoxAdvancedMode.IsChecked;
-            appSettings.CheckForUpdates = (bool) checkBoxCheckUpdate.IsChecked;
+            appSettings.AdvancedMode = (bool)checkBoxAdvancedMode.IsChecked;
+            appSettings.CheckForUpdates = (bool)checkBoxCheckUpdate.IsChecked;
             appSettings.SaveWindowPosition = (bool)checkBoxSavePosition.IsChecked;
             appSettings.MinimizeToTray = (bool)checkBoxMinimizeToTray.IsChecked;
 
             appSettings.Save();
 
             timerInstance.Interval = TimeSpan.FromMilliseconds(appSettings.AutoRefreshInterval);
-            _DarkMode = appSettings.DarkMode;
+            _Theme = appSettings.AppTheme;
 
             if (notificationTimer != null)
                 if (notificationTimer.IsEnabled)
@@ -103,29 +106,47 @@ namespace ZenTimings.Windows
 
         private void ComboBoxTheme_CheckedChanged(object sender, RoutedEventArgs e)
         {
-            appSettings.DarkMode = (bool) comboBoxTheme.IsChecked;
-            appSettings.ChangeTheme();
+            //appSettings.DarkMode = (bool)comboBoxTheme.IsChecked;
+            //appSettings.ChangeTheme();
         }
 
         private void ButtonSettingsCancel_Click(object sender, RoutedEventArgs e)
         {
-            // Restore theme on close if not saved
-            if (appSettings.DarkMode != _DarkMode)
-            {
-                appSettings.DarkMode = _DarkMode;
-                appSettings.ChangeTheme();
-            }
+            Close();
         }
 
         private void ButtonSettingsRestart_Click(object sender, RoutedEventArgs e)
         {
-            System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
+            ProcessStartInfo Info = new ProcessStartInfo
+            {
+                Arguments = "/C choice /C Y /N /D Y /T 1 & START \"\" \"" + Assembly.GetEntryAssembly().Location + "\"",
+                WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true,
+                FileName = "cmd.exe"
+            };
+            Process.Start(Info);
             Application.Current.Shutdown();
         }
 
         private void OptionsPopup_MouseDown(object sender, MouseButtonEventArgs e)
         {
             OptionsPopup.IsOpen = false;
+        }
+
+        private void OptionsWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            // Restore theme on close if not saved
+            if (appSettings.AppTheme != _Theme)
+            {
+                appSettings.AppTheme = _Theme;
+                appSettings.ChangeTheme();
+            }
+        }
+
+        private void ComboBoxTheme_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            appSettings.AppTheme = (Theme)comboBoxTheme.SelectedIndex;
+            appSettings.ChangeTheme();
         }
     }
 }

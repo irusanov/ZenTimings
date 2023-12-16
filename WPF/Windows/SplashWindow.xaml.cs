@@ -17,7 +17,7 @@ namespace ZenTimings.Windows
         private static void Refresh(DependencyObject obj)
         {
             obj.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Render,
-                (RefreshDelegate) delegate { });
+                (RefreshDelegate)delegate { });
         }
 
         public SplashWindow()
@@ -29,7 +29,7 @@ namespace ZenTimings.Windows
         {
             splash.Show();
 
-            if (appSettings.DarkMode)
+            if (appSettings.AppTheme != AppSettings.Theme.Light)
                 appSettings.ChangeTheme();
 
             if (appSettings.CheckForUpdates) updater.CheckForUpdate();

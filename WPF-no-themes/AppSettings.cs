@@ -13,12 +13,21 @@ namespace ZenTimings
 
         private const string filename = "settings.xml";
 
+        public enum THEME : int
+        {
+            LIGHT,
+            DARK,
+            DARK_MINT,
+        }
+
         public AppSettings Create()
         {
+            Version = $"{VERSION_MAJOR}.{VERSION_MINOR}";
+            AppTheme = THEME.LIGHT;
             AutoRefresh = true;
             AutoRefreshInterval = 2000;
             AdvancedMode = true;
-            DarkMode = false;
+            // DarkMode = false;
             CheckForUpdates = true;
             SaveWindowPosition = false;
             WindowLeft = 0;
@@ -26,6 +35,8 @@ namespace ZenTimings
             SysInfoWindowLeft = 0;
             SysInfoWindowHeight = 0;
             SysInfoWindowWidth = 0;
+            NotifiedChangelog = "";
+            NotifiedRembrandt = "";
 
             Save();
 
@@ -84,10 +95,12 @@ namespace ZenTimings
             }
         }
 
+        public string Version { get; set; } = $"{VERSION_MAJOR}.{VERSION_MINOR}";
         public bool AutoRefresh { get; set; } = true;
         public int AutoRefreshInterval { get; set; } = 2000;
         public bool AdvancedMode { get; set; } = true;
-        public bool DarkMode { get; set; }
+        // public bool DarkMode { get; set; }
+        public THEME AppTheme { get; set; } = THEME.LIGHT;
         public bool CheckForUpdates { get; set; } = true;
         public string UpdaterSkippedVersion { get; set; } = "";
         public string UpdaterRemindLaterAt { get; set; } = "";
@@ -99,5 +112,7 @@ namespace ZenTimings
         public double SysInfoWindowTop { get; set; }
         public double SysInfoWindowWidth { get; set; }
         public double SysInfoWindowHeight { get; set; }
+        public string NotifiedChangelog { get; set; } = "";
+        public string NotifiedRembrandt { get; set; } = "";
     }
 }

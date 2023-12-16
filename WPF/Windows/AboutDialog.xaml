@@ -12,7 +12,7 @@
     mc:Ignorable="d"
     Title="About"
     Height="250"
-     Width="300"
+    Width="300"
     ResizeMode="NoResize"
     SizeToContent="WidthAndHeight"
     ShowInTaskbar="False"
@@ -20,7 +20,7 @@
     Icon="/ZenTimings;component/Resources/new-icon/16.png"
     BorderThickness="1"
     UseLayoutRounding="True"
-    BorderBrush="{DynamicResource WindowBorderColor}" WindowStyle="ToolWindow">
+    BorderBrush="{DynamicResource WindowBorderColor}">
 
     <StackPanel x:Name="AboutWindowContent">
         <Popup
@@ -46,6 +46,7 @@
         </Popup>
         <Grid>
             <Grid.ColumnDefinitions>
+                <ColumnDefinition  Width="auto"/>
                 <ColumnDefinition />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
@@ -59,7 +60,7 @@
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Grid.Column="0"
-                Grid.ColumnSpan="2"
+                Grid.ColumnSpan="3"
                 Padding="0"
                 Background="{DynamicResource PanelBackgound}"
                 Grid.Row="0"
@@ -76,7 +77,7 @@
                 	Background="{DynamicResource PanelBackgound}"
                 	BorderThickness="0,1,1,1"
                     BorderBrush="{DynamicResource SeparatorColor}">
-                    <Grid>
+                    <Grid Margin="0 10 0 0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto" />
                             <ColumnDefinition />
@@ -127,7 +128,7 @@
 
             <Button
                 x:Name="CheckUpdateBtn"
-                Grid.Column="0"
+                Grid.Column="1"
                 Grid.Row="1"
                 Content="Check for Update"
                 IsCancel="False"
@@ -138,7 +139,7 @@
                 Click="CheckUpdateBtn_Click" />
 
             <Button
-                Grid.Column="1"
+                Grid.Column="2"
                 Grid.Row="1"
                 Content="OK"
                 IsCancel="True"
@@ -146,6 +147,7 @@
                 HorizontalAlignment="Right"
                 Width="60"
                 Margin="10" />
+
         </Grid>
     </StackPanel>
 </adonisControls:AdonisWindow>
