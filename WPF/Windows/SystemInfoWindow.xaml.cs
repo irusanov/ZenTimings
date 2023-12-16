@@ -49,11 +49,11 @@ namespace ZenTimings.Windows
                 // ignored
             }
 
-            type = mc.GetType();
-            properties = type.GetProperties();
-
             try
             {
+
+                type = mc.GetType();
+                properties = type.GetProperties();
                 items = new List<GridItem>();
                 foreach (PropertyInfo property in properties)
                     items.Add(new GridItem() { Name = property.Name, Value = property.GetValue(mc, null).ToString() });
@@ -67,10 +67,10 @@ namespace ZenTimings.Windows
 
             if (mc.Type == MemoryConfig.MemType.DDR4)
             {
-                type = mcConfig.GetType();
-                FieldInfo[] fields = type.GetFields();
                 try
                 {
+                    type = mcConfig.GetType();
+                    FieldInfo[] fields = type.GetFields();
                     items = new List<GridItem>();
                     foreach (FieldInfo property in fields)
                         items.Add(new GridItem() { Name = property.Name, Value = property.GetValue(mcConfig).ToString() });
@@ -84,10 +84,10 @@ namespace ZenTimings.Windows
             }
             else
             {
-                type = aodData.GetType();
-                PropertyInfo[] fields = type.GetProperties();
                 try
                 {
+                    type = aodData.GetType();
+                    PropertyInfo[] fields = type.GetProperties();
                     items = new List<GridItem>();
                     foreach (PropertyInfo property in fields)
                         items.Add(new GridItem() { Name = property.Name, Value = property.GetValue(aodData).ToString() });
