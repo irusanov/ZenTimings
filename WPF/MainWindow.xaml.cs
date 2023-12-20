@@ -259,13 +259,6 @@ namespace ZenTimings
             }
         }
 
-        private string RttToString(int rtt)
-        {
-            if (rtt > 0)
-                return $"{AOD.GetRttString(rtt)} ({240 / rtt})";
-            return $"{AOD.GetRttString(rtt)}";
-        }
-
         private void ReadMemoryConfig()
         {
             string scope = @"root\wmi";
@@ -435,21 +428,21 @@ namespace ZenTimings
                     labelRttParkD5.IsEnabled = true;
                     labelRttParkDqs.IsEnabled = true;
 
-                    textBoxMemVddio.Text = $"{Data.MemVddio / 1000.0:F4}V";
-                    textBoxMemVddq.Text = $"{Data.MemVddq / 1000.0:F4}V";
-                    textBoxMemVpp.Text = $"{Data.MemVpp / 1000.0:F4}V";
-                    textBoxApuVddio.Text = $"{Data.ApuVddio / 1000.0:F4}V";
+                    textBoxMemVddio.Text = Data.MemVddio.ToString();
+                    textBoxMemVddq.Text = Data.MemVddq.ToString();
+                    textBoxMemVpp.Text = Data.MemVpp.ToString();
+                    textBoxApuVddio.Text = Data.ApuVddio.ToString();
 
-                    textBoxProcODT.Text = AOD.GetProcODTString(Data.ProcODT);
-                    textBoxCadBusDrvStren.Text = AOD.GetCadBusDrvStrenString(Data.CadBusDrvStren);
-                    textBoxDramDataDrvStren.Text = AOD.GetDramDataDrvStrenString(Data.DramDataDrvStren);
-                    textBoxProcDataDrvStren.Text = AOD.GetProcDataDrvStrenString(Data.ProcDataDrvStren);
+                    textBoxProcODT.Text = Data.ProcODT.ToString();
+                    textBoxCadBusDrvStren.Text = Data.CadBusDrvStren.ToString();
+                    textBoxDramDataDrvStren.Text = Data.DramDataDrvStren.ToString();
+                    textBoxProcDataDrvStren.Text = Data.ProcDataDrvStren.ToString();
 
-                    textBoxRttWrD5.Text = RttToString(Data.RttWr);
-                    textBoxRttNomWr.Text = RttToString(Data.RttNomWr);
-                    textBoxRttNomRd.Text = RttToString(Data.RttNomRd);
-                    textBoxRttParkD5.Text = RttToString(Data.RttPark);
-                    textBoxRttParkDqs.Text = RttToString(Data.RttParkDqs);
+                    textBoxRttWrD5.Text = Data.RttWr.ToString();
+                    textBoxRttNomWr.Text = Data.RttNomWr.ToString();
+                    textBoxRttNomRd.Text = Data.RttNomRd.ToString();
+                    textBoxRttParkD5.Text = Data.RttPark.ToString();
+                    textBoxRttParkDqs.Text = Data.RttParkDqs.ToString();
                 }
             }
             catch (Exception ex)
@@ -619,6 +612,8 @@ namespace ZenTimings
             }
 
             MEMCFG.PowerDown = Utils.GetBits(powerDown, 28, 1) == 1 ? "Enabled" : "Disabled";
+
+            cpu.memoryConfig.ReadTimings(offset);
         }
 
         private bool WaitForDriverLoad()
@@ -735,7 +730,7 @@ namespace ZenTimings
                         var modules = cpu.memoryConfig.Modules;
                         MemoryModule module = modules.Count > 0 ? modules[selectedIndex] : null;
                         ReadTimings(module?.DctOffset ?? 0);
-                        // ReadMemoryConfig();
+                        ReadMemoryConfig();
                         cpu.RefreshPowerTable();
                         ReadSVI();
                         SetFrequencyString();
