@@ -8,6 +8,7 @@ using System.Management;
 using System.Threading.Tasks;
 using System.Windows;
 using ZenStates.Core;
+using ZenStates.Core.DRAM;
 using static ZenTimings.MemoryConfig;
 using MessageBox = AdonisUI.Controls.MessageBox;
 
@@ -229,7 +230,7 @@ namespace ZenTimings.Windows
                     AddLine("-- Single Rank");
                 AddLine($"-- DCT Offset: 0x{module.DctOffset >> 20:X}");
                 AddLine($"-- Manufacturer: {module.Manufacturer}");
-                AddLine($"-- {module.PartNumber} {module.Capacity / 1024 / (1024 * 1024)}GB {module.ClockSpeed}MHz");
+                AddLine($"-- {module.PartNumber} {module.Capacity} {module.ClockSpeed}MHz");
                 AddLine();
             }
 

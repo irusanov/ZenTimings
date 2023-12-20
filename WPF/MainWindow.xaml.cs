@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using ZenStates.Core;
+using ZenStates.Core.DRAM;
 using ZenTimings.Plugin;
 using ZenTimings.Windows;
 using static ZenTimings.MemoryConfig;
@@ -37,7 +38,7 @@ namespace ZenTimings
         private readonly BiosMemController BMC;
         private readonly Cpu cpu;
         private readonly MemoryConfig MEMCFG = new MemoryConfig();
-        private readonly List<MemoryModule> modules = new List<MemoryModule>();
+        // private readonly List<MemoryModule> modules = new List<MemoryModule>();
         private readonly DispatcherTimer PowerCfgTimer = new DispatcherTimer();
         private readonly AppSettings settings = (Application.Current as App)?.settings;
         private readonly List<IPlugin> plugins = new List<IPlugin>();
@@ -102,8 +103,8 @@ namespace ZenTimings
                 SplashWindow.Loading("Timings");
 
                 // Read from first enabled DCT
-                if (modules.Count > 0)
-                    ReadTimings(modules[0].DctOffset);
+                if (cpu.memoryConfig.Modules.Count > 0)
+                    ReadTimings(cpu.memoryConfig.Modules[0].DctOffset);
                 else
                     ReadTimings();
 
@@ -214,125 +215,22 @@ namespace ZenTimings
             return biosFunctions.Find(x => x.IDString == name);
         }
 
-        private void ReadChannelsInfo()
-        {
-            int dimmIndex = 0;
-            uint channelsPerDimm = MEMCFG.Type >= MemType.DDR5 ? 2u : 1u;
-
-            // Get the offset by probing the IMC0 to IMC7
-            // It appears that offsets 0x80 and 0x84 are DIMM config registers
-            // When a DIMM is DR, bit 0 is set to 1
-            // 0x50000
-            // offset 0, bit 0 when set to 1 means DIMM1 is installed
-            // offset 8, bit 0 when set to 1 means DIMM2 is installed
-            for (uint i = 0; i < 8u * channelsPerDimm; i += channelsPerDimm)
-            {
-                uint channelOffset = i << 20;
-                bool channel = Utils.GetBits(cpu.ReadDword(channelOffset | 0x50DF0), 19, 1) == 0;
-                bool dimm1 = Utils.GetBits(cpu.ReadDword(channelOffset | 0x50000), 0, 1) == 1;
-                bool dimm2 = Utils.GetBits(cpu.ReadDword(channelOffset | 0x50008), 0, 1) == 1;
-                try
-                {
-                    if (channel && (dimm1 || dimm2))
-                    {
-                        if (dimm1)
-                        {
-                            MemoryModule module = modules[dimmIndex++];
-                            module.Slot = $"{Convert.ToChar(i / channelsPerDimm + 65)}1";
-                            module.DctOffset = channelOffset;
-                            module.Rank = (MemRank)Utils.GetBits(cpu.ReadDword(channelOffset | 0x50080), 0, 1);
-                        }
-
-                        if (dimm2)
-                        {
-                            MemoryModule module = modules[dimmIndex++];
-                            module.Slot = $"{Convert.ToChar(i / channelsPerDimm + 65)}2";
-                            module.DctOffset = channelOffset;
-                            module.Rank = (MemRank)Utils.GetBits(cpu.ReadDword(channelOffset | 0x50084), 0, 1);
-                        }
-                    }
-                }
-                catch { }
-            }
-        }
-
         private void ReadMemoryModulesInfo()
         {
-            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("select * from Win32_PhysicalMemory"))
-            {
-                bool connected = false;
-                try
-                {
-                    WMI.Connect(@"root\cimv2");
-
-                    connected = true;
-
-                    foreach (ManagementObject queryObject in searcher.Get().Cast<ManagementObject>())
-                    {
-                        ulong capacity = 0UL;
-                        uint clockSpeed = 0U;
-                        string partNumber = "N/A";
-                        string bankLabel = "";
-                        string manufacturer = "";
-                        string deviceLocator = "";
-
-                        object temp = WMI.TryGetProperty(queryObject, "Capacity");
-                        if (temp != null) capacity = (ulong)temp;
-
-                        temp = WMI.TryGetProperty(queryObject, "ConfiguredClockSpeed");
-                        if (temp != null) clockSpeed = (uint)temp;
-
-                        temp = WMI.TryGetProperty(queryObject, "partNumber");
-                        if (temp != null) partNumber = (string)temp;
-
-                        temp = WMI.TryGetProperty(queryObject, "BankLabel");
-                        if (temp != null) bankLabel = (string)temp;
-
-                        temp = WMI.TryGetProperty(queryObject, "Manufacturer");
-                        if (temp != null) manufacturer = (string)temp;
-
-                        temp = WMI.TryGetProperty(queryObject, "DeviceLocator");
-                        if (temp != null) deviceLocator = (string)temp;
-
-                        modules.Add(new MemoryModule(partNumber.Trim(), bankLabel.Trim(), manufacturer.Trim(),
-                            deviceLocator, capacity, clockSpeed));
-
-                        //string bl = bankLabel.Length > 0 ? new string(bankLabel.Where(char.IsDigit).ToArray()) : "";
-                        //string dl = deviceLocator.Length > 0 ? new string(deviceLocator.Where(char.IsDigit).ToArray()) : "";
-
-                        //comboBoxPartNumber.Items.Add($"#{bl}: {partNumber}");
-                        //comboBoxPartNumber.SelectedIndex = 0;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    string text = connected ? @"Failed to get installed memory parameters." : $@"{ex.Message}";
-                    MessageBox.Show(
-                        text,
-                        "Warning",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Warning);
-                }
-            }
+            var modules = cpu.memoryConfig.Modules;
 
             if (modules.Count > 0)
             {
-                ReadChannelsInfo();
-
-                ulong totalCapacity = 0UL;
-
                 foreach (MemoryModule module in modules)
                 {
-                    totalCapacity += module.Capacity;
-                    comboBoxPartNumber.Items.Add(
-                        $"{module.Slot}: {module.PartNumber} ({module.Capacity / 1024 / (1024 * 1024)}GB, {module.Rank})");
+                    comboBoxPartNumber.Items.Add(module.ToString());
                 }
 
                 if (modules[0].ClockSpeed != 0)
                     MEMCFG.Frequency = modules[0].ClockSpeed;
 
-                if (totalCapacity != 0)
-                    MEMCFG.TotalCapacity = $"{totalCapacity / 1024 / (1024 * 1024)}GB";
+                if (cpu.memoryConfig.TotalCapacity.SizeInBytes != 0)
+                    MEMCFG.TotalCapacity = cpu.memoryConfig.TotalCapacity.ToString();
 
                 if (comboBoxPartNumber.Items.Count > 0)
                 {
@@ -834,6 +732,7 @@ namespace ZenTimings
                     Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() =>
                     {
                         int selectedIndex = comboBoxPartNumber?.SelectedIndex ?? 0;
+                        var modules = cpu.memoryConfig.Modules;
                         MemoryModule module = modules.Count > 0 ? modules[selectedIndex] : null;
                         ReadTimings(module?.DctOffset ?? 0);
                         // ReadMemoryConfig();
@@ -979,7 +878,7 @@ namespace ZenTimings
                 Window parent = Application.Current.MainWindow;
                 if (parent != null)
                 {
-                    DebugDialog debugWnd = new DebugDialog(cpu, modules, MEMCFG, BMC, AsusWmi)
+                    DebugDialog debugWnd = new DebugDialog(cpu, cpu.memoryConfig.Modules, MEMCFG, BMC, AsusWmi)
                     {
                         Owner = parent,
                         Width = parent.Width,
@@ -1096,7 +995,7 @@ namespace ZenTimings
 
         private void ComboBoxPartNumber_SelectionChanged(object sender, RoutedEventArgs e)
         {
-            if (sender is ComboBox combo) ReadTimings(modules[combo.SelectedIndex].DctOffset);
+            if (sender is ComboBox combo) ReadTimings(cpu.memoryConfig.Modules[combo.SelectedIndex].DctOffset);
         }
 
         private void SystemInfoToolstripMenuItem_Click(object sender, RoutedEventArgs e)
