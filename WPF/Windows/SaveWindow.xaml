@@ -12,10 +12,10 @@
     SizeToContent="WidthAndHeight"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterOwner"
-    Icon="/ZenTimings;component/Resources/new-icon/16.png"
+    Icon="/Resources/ZenTimings2022.ico"
     BorderThickness="1"
     UseLayoutRounding="True"
-    BorderBrush="{DynamicResource WindowBorderColor}">
+    BorderBrush="{DynamicResource WindowBorderColor}" ShowInTaskbar="False">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
