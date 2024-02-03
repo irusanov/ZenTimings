@@ -5,10 +5,5 @@
 
 using System.Reflection;
 
-<<<<<<< HEAD
-[assembly: AssemblyVersion("1.31.1192")]
-[assembly: AssemblyFileVersion("1.31.1192")]
-=======
-[assembly: AssemblyVersion("1.31.1217")]
-[assembly: AssemblyFileVersion("1.31.1217")]
->>>>>>> 1eb89ab (update for year 2024)
+[assembly: AssemblyVersion("1.31.1250")]
+[assembly: AssemblyFileVersion("1.31.1250")]

@@ -111,9 +111,6 @@
     <Compile Include="..\Common\UpdaterPersistenceProvider.cs">
       <Link>Common\UpdaterPersistenceProvider.cs</Link>
     </Compile>
-    <Compile Include="..\Common\WMI.cs">
-      <Link>Common\WMI.cs</Link>
-    </Compile>
     <Compile Include="AppSettings.cs" />
     <Compile Include="Common\ISensor.cs" />
     <Compile Include="Common\Sensor.cs" />
