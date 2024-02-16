@@ -154,6 +154,7 @@ namespace ZenTimings
                 {
                     timings = MEMCFG,
                     cpu.powerTable,
+                    cpu.info.codeName,
                     WMIPresent = !compatMode && MEMCFG.Type == MemType.DDR4,
                     settings,
                     plugins
@@ -535,7 +536,21 @@ namespace ZenTimings
                     textBoxMemVpp.Text = Data.MemVpp.ToString();
                     textBoxApuVddio.Text = Data.ApuVddio.ToString();
 
-                    textBoxProcODT.Text = Data.ProcODT.ToString();
+                    try
+                    {
+                        if (cpu.info.codeName == Cpu.CodeName.Phoenix || cpu.info.codeName == Cpu.CodeName.Phoenix2 || cpu.info.codeName == Cpu.CodeName.HawkPoint)
+                        {
+                            textBoxProcCaOdt.Text = Data.ProcCaOdt.ToString();
+                            textBoxProcCkOdt.Text = Data.ProcCkOdt.ToString();
+                            textBoxProcDqOdt.Text = Data.ProcDqOdt.ToString();
+                            textBoxProcDqsOdt.Text = Data.ProcDqsOdt.ToString();
+                        }
+                        else
+                        {
+                            textBoxProcODT.Text = Data.ProcOdt.ToString();
+                        }
+                    } catch { }
+
                     textBoxCadBusDrvStren.Text = Data.CadBusDrvStren.ToString();
                     textBoxDramDataDrvStren.Text = Data.DramDataDrvStren.ToString();
                     textBoxProcDataDrvStren.Text = Data.ProcDataDrvStren.ToString();
