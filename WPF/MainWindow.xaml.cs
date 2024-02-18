@@ -521,7 +521,6 @@ namespace ZenTimings
                     labelMemVpp.IsEnabled = true;
                     labelApuVddio.IsEnabled = true;
 
-                    labelProcODT.IsEnabled = true;
                     labelProcCaDs.IsEnabled = true;
                     labelProcDqDs.IsEnabled = true;
                     labelDramDqDs.IsEnabled = true;
@@ -540,6 +539,10 @@ namespace ZenTimings
                     {
                         if (cpu.info.codeName == Cpu.CodeName.Phoenix || cpu.info.codeName == Cpu.CodeName.Phoenix2 || cpu.info.codeName == Cpu.CodeName.HawkPoint)
                         {
+                            labelProcCaOdt.IsEnabled = true;
+                            labelProcCkOdt.IsEnabled = true;
+                            labelProcDqOdt.IsEnabled = true;
+                            labelProcDqsOdt.IsEnabled = true;
                             textBoxProcCaOdt.Text = Data.ProcCaOdt.ToString();
                             textBoxProcCkOdt.Text = Data.ProcCkOdt.ToString();
                             textBoxProcDqOdt.Text = Data.ProcDqOdt.ToString();
@@ -547,6 +550,7 @@ namespace ZenTimings
                         }
                         else
                         {
+                            labelProcODT.IsEnabled = true;
                             textBoxProcODT.Text = Data.ProcOdt.ToString();
                         }
                     } catch { }
