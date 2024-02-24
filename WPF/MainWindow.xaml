@@ -21,7 +21,7 @@
     Loaded="AdonisWindow_Loaded"
     BorderThickness="1"
     UseLayoutRounding="True"
-    BorderBrush="{DynamicResource WindowBorderColor}" Closing="AdonisWindow_Closing" Height="538" SizeToContent="WidthAndHeight">
+    BorderBrush="{DynamicResource WindowBorderColor}" Closing="AdonisWindow_Closing" Height="876" SizeToContent="WidthAndHeight">
 
     <!--Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
@@ -138,6 +138,9 @@
                             <TextBlock Text="tMODPDA" TextAlignment="Right" />
                             <TextBlock Text="tPHYWRD" TextAlignment="Right" />
                             <TextBlock Text="tPHYWRL" TextAlignment="Right" />
+                            <TextBlock Text="" Style="{DynamicResource DividerTextBlock}" />
+                            <TextBlock Text="NITRO" TextAlignment="Right" />
+                            <TextBlock Text="RX Data" TextAlignment="Right" />
                             <!--TextBlock Text="tXP"
                                        TextAlignment="Right"
                                        Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}"/-->
@@ -197,6 +200,10 @@
                                        Style="{DynamicResource ValueStyles}" />
                             <TextBlock Text="{Binding timings.PHYWRL, FallbackValue='N/A'}"
                                        Style="{DynamicResource ValueStyles}" />
+                            <TextBlock Text="" Style="{DynamicResource DividerTextBlock}" />
+                            <TextBlock Text="SETTINGS"/>
+                            <TextBlock Text="{Binding timings.RXValue, FallbackValue='N/A'}"
+                                       Style="{DynamicResource ValueStyles}" />
                             <!--TextBlock Text="{Binding timings.XP, FallbackValue='N/A'}"
                                        Style="{DynamicResource ValueStyles}"
                                        Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}"/-->
@@ -237,6 +244,12 @@
                             <TextBlock Text="tMRDPDA" TextAlignment="Right" />
                             <TextBlock Text="tPHYRDL" TextAlignment="Right" />
                             <TextBlock Text="PowerDown" TextAlignment="Right" />
+
+                            <TextBlock Text="" Style="{DynamicResource DividerTextBlock}" Height="18" />
+                            <TextBlock Text="" Style="{DynamicResource DividerTextBlock}" />
+
+
+                            <TextBlock Text="TX Data" TextAlignment="Right" />
                         </StackPanel>
 
                         <StackPanel Grid.Column="1">
@@ -289,6 +302,13 @@
                                        Style="{DynamicResource ValueStyles}" />
                             <TextBlock Text="{Binding timings.PowerDown, FallbackValue='N/A'}"
                                        Style="{DynamicResource ValueStyles}" />
+
+                            <TextBlock Text="" Style="{DynamicResource DividerTextBlock}" Height="18" />
+                            <TextBlock Text="" Style="{DynamicResource DividerTextBlock}" />
+
+                            <TextBlock Text="{Binding timings.TXValue, FallbackValue='N/A'}"
+                                       Style="{DynamicResource ValueStyles}" />
+
                         </StackPanel>
                     </Grid>
 
@@ -402,6 +422,8 @@
                             <TextBlock x:Name="labelCsOdtSetup" Text="CsOdtSetup" TextAlignment="Right" IsEnabled="False" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
                             <TextBlock x:Name="labelCkeSetup" Text="CkeSetup" TextAlignment="Right" IsEnabled="False" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
                             <!-- DDR5 -->
+                            <TextBlock Text="" TextAlignment="Right" Height="28" />
+                            <TextBlock Text="Control Line" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="1">
@@ -502,7 +524,11 @@
                             <TextBlock x:Name="textBoxAddrCmdSetup" Text="N/A" Style="{DynamicResource ValueStyles}" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}"  />
                             <TextBlock x:Name="textBoxCsOdtSetup" Text="N/A" Style="{DynamicResource ValueStyles}" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
                             <TextBlock x:Name="textBoxCkeSetup" Text="N/A" Style="{DynamicResource ValueStyles}" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
+                            
                             <!-- DDR5 -->
+                            <TextBlock Text="" TextAlignment="Right" Height="28" />
+                            
+                            <TextBlock Text="{Binding timings.ControlLineValue, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}"/>
                         </StackPanel>
                     </Grid>
                 </StackPanel>

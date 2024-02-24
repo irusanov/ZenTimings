@@ -451,8 +451,71 @@ namespace ZenTimings
             get => phyrdl;
             set => SetProperty(ref phyrdl, value, InternalEventArgsCache.PHYRDL);
         }
+       
+        private uint rx;
 
-        protected void OnPropertyChanged(PropertyChangedEventArgs eventArgs)
+        public uint RX
+        {
+            get => rx;
+            set
+            {
+                SetProperty(ref rx, value, InternalEventArgsCache.RX);
+                rxValue = RX.ToString("X");
+                rxValue = rxValue.Substring(0, 1);
+            }
+        }
+
+        private string rxValue;
+
+        public string RXValue
+        {
+            get => rxValue;
+            set => SetProperty(ref rxValue, value, InternalEventArgsCache.RXValue);
+        }
+
+        private uint tx;
+
+        public uint TX
+        {
+            get => tx;
+            set
+            {
+                SetProperty(ref tx, value, InternalEventArgsCache.TX);
+                txValue = TX.ToString("X");
+                txValue = txValue.Substring(1, 1);
+            }
+        }
+
+        private string txValue;
+
+        public string TXValue
+        {
+            get => txValue;
+            set => SetProperty(ref txValue, value, InternalEventArgsCache.TXValue);
+        }
+
+        private uint controlline;
+        
+        public uint CONTROLLINE
+        {
+            get => controlline;
+            set
+            {
+                SetProperty(ref controlline, value, InternalEventArgsCache.CONTROLLINE);
+                controllineValue = CONTROLLINE.ToString("X");
+                controllineValue = controllineValue.Substring(2, 1);
+            }
+        }
+
+        private string controllineValue;
+
+        public string ControlLineValue
+        {
+            get => controllineValue;
+            set => SetProperty(ref controllineValue, value, InternalEventArgsCache.ControlLineValue);
+        }
+
+    protected void OnPropertyChanged(PropertyChangedEventArgs eventArgs)
         {
             PropertyChanged?.Invoke(this, eventArgs);
         }
@@ -511,5 +574,11 @@ namespace ZenTimings
         internal static PropertyChangedEventArgs PHYWRD = new PropertyChangedEventArgs("PHYWRD");
         internal static PropertyChangedEventArgs PHYWRL = new PropertyChangedEventArgs("PHYWRL");
         internal static PropertyChangedEventArgs PHYRDL = new PropertyChangedEventArgs("PHYRDL");
+        internal static PropertyChangedEventArgs RX = new PropertyChangedEventArgs("RX");
+        internal static PropertyChangedEventArgs RXValue = new PropertyChangedEventArgs("RXValue");
+        internal static PropertyChangedEventArgs TX = new PropertyChangedEventArgs("TX");
+        internal static PropertyChangedEventArgs TXValue = new PropertyChangedEventArgs("TXValue");
+        internal static PropertyChangedEventArgs ControlLineValue = new PropertyChangedEventArgs("ControlLineValue");
+        internal static PropertyChangedEventArgs CONTROLLINE = new PropertyChangedEventArgs("CONTROLLINE");
     }
 }
