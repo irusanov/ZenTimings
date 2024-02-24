@@ -451,7 +451,7 @@ namespace ZenTimings
             get => phyrdl;
             set => SetProperty(ref phyrdl, value, InternalEventArgsCache.PHYRDL);
         }
-       
+
         private uint rx;
 
         public uint RX
@@ -495,7 +495,7 @@ namespace ZenTimings
         }
 
         private uint controlline;
-        
+
         public uint CONTROLLINE
         {
             get => controlline;
@@ -515,7 +515,7 @@ namespace ZenTimings
             set => SetProperty(ref controllineValue, value, InternalEventArgsCache.ControlLineValue);
         }
 
-    protected void OnPropertyChanged(PropertyChangedEventArgs eventArgs)
+        protected void OnPropertyChanged(PropertyChangedEventArgs eventArgs)
         {
             PropertyChanged?.Invoke(this, eventArgs);
         }

@@ -553,7 +553,8 @@ namespace ZenTimings
                             labelProcODT.IsEnabled = true;
                             textBoxProcODT.Text = Data.ProcOdt.ToString();
                         }
-                    } catch { }
+                    }
+                    catch { }
 
                     textBoxCadBusDrvStren.Text = Data.CadBusDrvStren.ToString();
                     textBoxDramDataDrvStren.Text = Data.DramDataDrvStren.ToString();
