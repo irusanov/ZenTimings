@@ -5,7 +5,7 @@ using ZenStates.Core;
 
 namespace ZenTimings.Converters
 {
-    public class PhoenixToVisConverter: IValueConverter
+    public class PhoenixToVisConverter : IValueConverter
     {
         enum Parameters
         {

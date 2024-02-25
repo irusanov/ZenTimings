@@ -452,6 +452,27 @@ namespace ZenTimings
             set => SetProperty(ref phyrdl, value, InternalEventArgsCache.PHYRDL);
         }
 
+        private uint nitro;
+
+        public uint NITRO
+        {
+            get => nitro;
+            set
+            {
+                SetProperty(ref nitro, value, InternalEventArgsCache.NITRO);
+                nitrovalue = NITRO.ToString("X");
+                nitrovalue = String.Join("/", nitrovalue.ToCharArray());
+            }
+        }
+
+        private string nitrovalue;
+
+        public string NITROValue
+        {
+            get => nitrovalue;
+            set => SetProperty(ref nitrovalue, value, InternalEventArgsCache.NITROValue);
+        }
+
         protected void OnPropertyChanged(PropertyChangedEventArgs eventArgs)
         {
             PropertyChanged?.Invoke(this, eventArgs);
@@ -511,5 +532,7 @@ namespace ZenTimings
         internal static PropertyChangedEventArgs PHYWRD = new PropertyChangedEventArgs("PHYWRD");
         internal static PropertyChangedEventArgs PHYWRL = new PropertyChangedEventArgs("PHYWRL");
         internal static PropertyChangedEventArgs PHYRDL = new PropertyChangedEventArgs("PHYRDL");
+        internal static PropertyChangedEventArgs NITRO = new PropertyChangedEventArgs("NITRO");
+        internal static PropertyChangedEventArgs NITROValue = new PropertyChangedEventArgs("NITROValue");
     }
 }
