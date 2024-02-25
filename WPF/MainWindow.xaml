@@ -21,7 +21,7 @@
     Loaded="AdonisWindow_Loaded"
     BorderThickness="1"
     UseLayoutRounding="True"
-    BorderBrush="{DynamicResource WindowBorderColor}" Closing="AdonisWindow_Closing" Height="533" SizeToContent="WidthAndHeight">
+    BorderBrush="{DynamicResource WindowBorderColor}" Closing="AdonisWindow_Closing" Height="538" SizeToContent="WidthAndHeight">
 
     <!--Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
@@ -138,7 +138,6 @@
                             <TextBlock Text="tMODPDA" TextAlignment="Right" />
                             <TextBlock Text="tPHYWRD" TextAlignment="Right" />
                             <TextBlock Text="tPHYWRL" TextAlignment="Right" />
-                            <TextBlock Text="" Style="{DynamicResource DividerTextBlock}" />
                             <!--TextBlock Text="tXP"
                                        TextAlignment="Right"
                                        Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}"/-->
@@ -198,7 +197,6 @@
                                        Style="{DynamicResource ValueStyles}" />
                             <TextBlock Text="{Binding timings.PHYWRL, FallbackValue='N/A'}"
                                        Style="{DynamicResource ValueStyles}" />
-                          
                             <!--TextBlock Text="{Binding timings.XP, FallbackValue='N/A'}"
                                        Style="{DynamicResource ValueStyles}"
                                        Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}"/-->
@@ -319,7 +317,7 @@
                             <TextBlock Text="VSOC (SMU)"
                                        TextAlignment="Right"
                                        Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}"/>
-                            
+
                             <TextBlock Text="CLDO VDDP" TextAlignment="Right"
                                        IsEnabled="{Binding powerTable.CLDO_VDDP, Mode=OneWay, Converter={StaticResource FloatToBool}}" />
                             <TextBlock Text="VDDG CCD" TextAlignment="Right"
@@ -341,7 +339,7 @@
                             <TextBlock x:Name="labelMemVpp" Text="MEM VPP" IsEnabled="False" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
                             <TextBlock x:Name="labelVddMisc" Text="VDD MISC" IsEnabled="{Binding powerTable.VDD_MISC}" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
 
-                            <!-- <TextBlock Text="" TextAlignment="Right" /> -->
+                            <TextBlock Text="" TextAlignment="Right" />
                             <TextBlock
                                 x:Name="labelProcODT"
                                 Text="ProcOdt"
@@ -382,10 +380,7 @@
                             <TextBlock x:Name="labelProcDqDs" Text="ProcDqDs" IsEnabled="False" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
                             <TextBlock x:Name="labelDramDqDs" Text="DramDqDs" IsEnabled="False" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
 
-                            <TextBlock
-                                Text=""
-                                TextAlignment="Right"
-                                Visibility="{Binding codeName, Mode=OneWay, Converter={StaticResource PhoenixToBool}, ConverterParameter=Invisible}" />
+                            <!-- TextBlock Text="" TextAlignment="Right" Visibility="{Binding codeName, Mode=OneWay, Converter={StaticResource PhoenixToBool}, ConverterParameter=Invisible}" /-->
                             <!-- DDR4 -->
                             <TextBlock x:Name="labelClkDrvStren" Text="ClkDrvStr" TextAlignment="Right" IsEnabled="False" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
                             <TextBlock x:Name="labelAddrCmdDrvStren" Text="AddrCmdDrvStr" TextAlignment="Right" IsEnabled="False" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
@@ -404,10 +399,7 @@
                             <TextBlock x:Name="labelCsOdtSetup" Text="CsOdtSetup" TextAlignment="Right" IsEnabled="False" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
                             <TextBlock x:Name="labelCkeSetup" Text="CkeSetup" TextAlignment="Right" IsEnabled="False" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
                             <!-- DDR5 -->
-                            <TextBlock
-                            Text="RX/TX/Ctrl. Line" TextAlignment="Right"
-                            Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}"
-                            />                            
+                            <TextBlock Text="RX/TX/Ctrl. Line" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
                         </StackPanel>
 
                         <StackPanel Grid.Column="1">
@@ -451,7 +443,7 @@
                             <TextBlock x:Name="textBoxMemVpp" Text="N/A" Style="{DynamicResource ValueStyles}" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
                             <TextBlock x:Name="textBoxVddMisc" Text="{Binding powerTable.VDD_MISC, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" Style="{DynamicResource ValueStyles}" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
 
-                            <!-- <TextBlock Text="" /> -->
+                            <TextBlock Text="" />
                             <!-- DDR4 + DDR5 -->
                             <TextBlock
                                 x:Name="textBoxProcODT"
@@ -488,9 +480,7 @@
                             <TextBlock x:Name="textBoxProcDataDrvStren" Text="N/A" Style="{DynamicResource ValueStyles}" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
                             <TextBlock x:Name="textBoxDramDataDrvStren" Text="N/A" Style="{DynamicResource ValueStyles}" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
 
-                            <TextBlock
-                                Text=""
-                                Visibility="{Binding codeName, Mode=OneWay, Converter={StaticResource PhoenixToBool}, ConverterParameter=Invisible}" />       
+                            <!-- TextBlock Text="" Visibility="{Binding codeName, Mode=OneWay, Converter={StaticResource PhoenixToBool}, ConverterParameter=Invisible}" /-->
                             <!-- DDR4 -->
                             <TextBlock x:Name="textBoxClkDrvStren" Text="N/A" Style="{DynamicResource ValueStyles}" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
                             <TextBlock x:Name="textBoxAddrCmdDrvStren" Text="N/A" Style="{DynamicResource ValueStyles}" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
@@ -508,13 +498,8 @@
                             <TextBlock x:Name="textBoxAddrCmdSetup" Text="N/A" Style="{DynamicResource ValueStyles}" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}"  />
                             <TextBlock x:Name="textBoxCsOdtSetup" Text="N/A" Style="{DynamicResource ValueStyles}" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
                             <TextBlock x:Name="textBoxCkeSetup" Text="N/A" Style="{DynamicResource ValueStyles}" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR4ToBool}}" />
-                            
                             <!-- DDR5 -->
-                          
-                            <TextBlock
-                                Text="{Binding timings.NITROValue, FallbackValue='N/A'}"
-                                Style="{DynamicResource ValueStyles}"
-                                Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}"
+                            <TextBlock Text="{Binding timings.NITROValue, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}"
                                 />
                         </StackPanel>
                     </Grid>
@@ -535,7 +520,11 @@
                         Text="{Binding timings.Type, FallbackValue=''}"
                         Style="{DynamicResource ValueStyles}"
                         Visibility="{Binding settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}"
-                        />
+                        Grid.Column="1"
+                        TextAlignment="Right"
+                        Margin="0,0,5,0"
+                        IsEnabled="False"
+                    />
 
                     <!-- Button Grid.Column="1"
                             Width="20"
