@@ -718,9 +718,7 @@ namespace ZenTimings
             {
                 MEMCFG.RFC = Utils.GetBits(trfcRegValue, 0, 16);
                 MEMCFG.RFC2 = Utils.GetBits(trfcRegValue, 16, 16);
-                MEMCFG.RX = Utils.GetBits(nitroSettings, 0, 16);
-                MEMCFG.TX = Utils.GetBits(nitroSettings, 0, 16);
-                MEMCFG.CONTROLLINE = Utils.GetBits(nitroSettings, 0, 16);
+                MEMCFG.NITRO = Utils.GetBits(nitroSettings, 0, 16);
                 uint[] temp = {
                     Utils.GetBits(cpu.ReadDword(offset | 0x502c0), 0, 11),
                     Utils.GetBits(cpu.ReadDword(offset | 0x502c4), 0, 11),

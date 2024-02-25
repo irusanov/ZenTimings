@@ -452,67 +452,25 @@ namespace ZenTimings
             set => SetProperty(ref phyrdl, value, InternalEventArgsCache.PHYRDL);
         }
 
-        private uint rx;
+        private uint nitro;
 
-        public uint RX
+        public uint NITRO
         {
-            get => rx;
+            get => nitro;
             set
             {
-                SetProperty(ref rx, value, InternalEventArgsCache.RX);
-                rxValue = RX.ToString("X");
-                rxValue = rxValue.Substring(0, 1);
+                SetProperty(ref nitro, value, InternalEventArgsCache.NITRO);
+                nitrovalue = NITRO.ToString("X");
+                nitrovalue = String.Join("/", nitrovalue.ToCharArray());
             }
         }
 
-        private string rxValue;
+        private string nitrovalue;
 
-        public string RXValue
+        public string NITROValue
         {
-            get => rxValue;
-            set => SetProperty(ref rxValue, value, InternalEventArgsCache.RXValue);
-        }
-
-        private uint tx;
-
-        public uint TX
-        {
-            get => tx;
-            set
-            {
-                SetProperty(ref tx, value, InternalEventArgsCache.TX);
-                txValue = TX.ToString("X");
-                txValue = txValue.Substring(1, 1);
-            }
-        }
-
-        private string txValue;
-
-        public string TXValue
-        {
-            get => txValue;
-            set => SetProperty(ref txValue, value, InternalEventArgsCache.TXValue);
-        }
-
-        private uint controlline;
-
-        public uint CONTROLLINE
-        {
-            get => controlline;
-            set
-            {
-                SetProperty(ref controlline, value, InternalEventArgsCache.CONTROLLINE);
-                controllineValue = CONTROLLINE.ToString("X");
-                controllineValue = controllineValue.Substring(2, 1);
-            }
-        }
-
-        private string controllineValue;
-
-        public string ControlLineValue
-        {
-            get => controllineValue;
-            set => SetProperty(ref controllineValue, value, InternalEventArgsCache.ControlLineValue);
+            get => nitrovalue;
+            set => SetProperty(ref nitrovalue, value, InternalEventArgsCache.NITROValue);
         }
 
         protected void OnPropertyChanged(PropertyChangedEventArgs eventArgs)
@@ -574,11 +532,7 @@ namespace ZenTimings
         internal static PropertyChangedEventArgs PHYWRD = new PropertyChangedEventArgs("PHYWRD");
         internal static PropertyChangedEventArgs PHYWRL = new PropertyChangedEventArgs("PHYWRL");
         internal static PropertyChangedEventArgs PHYRDL = new PropertyChangedEventArgs("PHYRDL");
-        internal static PropertyChangedEventArgs RX = new PropertyChangedEventArgs("RX");
-        internal static PropertyChangedEventArgs RXValue = new PropertyChangedEventArgs("RXValue");
-        internal static PropertyChangedEventArgs TX = new PropertyChangedEventArgs("TX");
-        internal static PropertyChangedEventArgs TXValue = new PropertyChangedEventArgs("TXValue");
-        internal static PropertyChangedEventArgs ControlLineValue = new PropertyChangedEventArgs("ControlLineValue");
-        internal static PropertyChangedEventArgs CONTROLLINE = new PropertyChangedEventArgs("CONTROLLINE");
+        internal static PropertyChangedEventArgs NITRO = new PropertyChangedEventArgs("NITRO");
+        internal static PropertyChangedEventArgs NITROValue = new PropertyChangedEventArgs("NITROValue");
     }
 }
