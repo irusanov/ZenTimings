@@ -410,8 +410,30 @@ namespace ZenTimings.Windows
 
                 while (startAddress <= endAddress)
                 {
+                    uint data = 0xFFFFFFFF;
+                    bool success = CPU.ReadDwordEx(startAddress, ref data);
+                    if (success)
+                    {
+                        AddLine($"0x{startAddress:X8}: 0x{data:X8}");
+                    }
+                    startAddress += 4;
+                }
+            }
+            catch
+            {
+                AddLine("<FAILED>");
+            }
+
+            AddHeading("SMU: SMUFUSE NBSMNIND");
+            try
+            {
+                uint startAddress = 0x0005D200;
+                uint endAddress = 0x0005D5FF;
+
+                while (startAddress <= endAddress)
+                {
                     var data = CPU.ReadDword(startAddress);
-                    if (data != 0xFFFFFFFF)
+                    // if (data != 0xFFFFFFFF)
                     {
                         AddLine($"0x{startAddress:X8}: 0x{data:X8}");
                     }

@@ -13,7 +13,6 @@
     Height="550"
     Width="406"
     Icon="/Resources/ZenTimings2022.ico"
-    ResizeMode="CanMinimize"
     WindowStartupLocation="CenterOwner"
     BorderThickness="1"
     UseLayoutRounding="True"
