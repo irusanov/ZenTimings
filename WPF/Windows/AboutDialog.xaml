@@ -99,9 +99,9 @@
                                 <TextBlock x:Name="labelCopyright" Text="" Padding="0 2 5 2" />
                                 <TextBlock x:Name="labelCompanyName" Text="" Padding="0 2 5 2" />
                                 <TextBlock Padding="0 2 5 2">
-                                    <Hyperlink NavigateUri="https://zentimings.protonrom.com"
+                                    <Hyperlink NavigateUri="https://zentimings.com"
                                                RequestNavigate="Hyperlink_RequestNavigate">
-                                        <Run Text="https://zentimings.protonrom.com" />
+                                        <Run Text="https://zentimings.com" />
                                     </Hyperlink>
                                 </TextBlock>
                             </StackPanel>
