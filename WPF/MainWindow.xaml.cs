@@ -940,6 +940,22 @@ namespace ZenTimings
                 Title += @" (compatibility)";
         }
 
+        private static string GetCpuNameString(SystemInfo info) {
+            try
+            {
+                var name = info.CpuName;
+                if (name.Contains("Eng Sample"))
+                {
+                    return $"{name} | {info.CodeName} | 0x{info.CpuId:X6}";
+                }
+                return name;
+            }
+            catch
+            {
+                return "Error getting CPU name";
+            }
+        }
+
         private void Window_Initialized(object sender, EventArgs e)
         {
             if (settings.SaveWindowPosition)
@@ -969,7 +985,7 @@ namespace ZenTimings
             SetWindowTitle();
             if (cpu != null)
             {
-                labelCPU.Text = cpu.systemInfo.CpuName;
+                labelCPU.Text = GetCpuNameString(cpu.systemInfo);
                 labelMB.Text =
                     $"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} | SMU {cpu.systemInfo.GetSmuVersionString()}";
             }
@@ -1098,7 +1114,9 @@ namespace ZenTimings
         private void ButtonScreenshot_Click(object sender, RoutedEventArgs e)
         {
             Screenshot screenshot = new Screenshot();
-            System.Drawing.Bitmap bitmap = screenshot.CaptureActiveWindow();
+            System.Drawing.Bitmap bitmap = (settings.ScreenshotMode == AppSettings.ScreenshotType.Desktop) 
+                ? screenshot.CaptureDekstop() 
+                : screenshot.CaptureActiveWindow();
 
             using (SaveWindow saveWnd = new SaveWindow(bitmap))
             {

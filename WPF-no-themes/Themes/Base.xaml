@@ -21,20 +21,20 @@
     </Style>
 
     <Style x:Key="MainMenuStyles" TargetType="Border">
-        <Setter Property="Background" Value="{DynamicResource PanelBackgound}" />
+        <Setter Property="Background" Value="{DynamicResource PanelBackground}" />
         <Setter Property="Padding" Value="5 2 7 2" />
     </Style>
 
     <Style x:Key="MenuBackground" TargetType="Menu">
-        <Setter Property="Background" Value="{DynamicResource PanelBackgound}" />
+        <Setter Property="Background" Value="{DynamicResource PanelBackground}" />
     </Style>
 
     <Style x:Key="PanelBackground" TargetType="Border">
-        <Setter Property="Background" Value="{DynamicResource PanelBackgound}" />
+        <Setter Property="Background" Value="{DynamicResource PanelBackground}" />
     </Style>
 
     <Style x:Key="StackPanelBackground" TargetType="StackPanel">
-        <Setter Property="Background" Value="{DynamicResource PanelBackgound}" />
+        <Setter Property="Background" Value="{DynamicResource PanelBackground}" />
     </Style>
 
     <Style x:Key="TimingsStackPanelStyles" TargetType="StackPanel">
@@ -76,7 +76,7 @@
 
     <Style x:Key="BottomPanelStyles" TargetType="Border">
         <Setter Property="Padding" Value="5" />
-        <Setter Property="Background" Value="{DynamicResource PanelBackgound}" />
+        <Setter Property="Background" Value="{DynamicResource PanelBackground}" />
     </Style>
     
     <Style x:Key="CameraButtonStyle" TargetType="Button">

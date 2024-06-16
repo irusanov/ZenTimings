@@ -106,7 +106,7 @@ namespace ZenTimings
 
         private void AutoUpdaterOnCheckForUpdateEvent(UpdateInfoEventArgs args)
         {
-            if (args.Error == null)
+            if (args != null && args.Error == null)
             {
                 Version currentVersion = new Version(args.CurrentVersion);
                 if (args.IsUpdateAvailable && (manual || !AutoUpdater.PersistenceProvider.GetSkippedVersion().Equals(currentVersion)))
@@ -186,8 +186,8 @@ namespace ZenTimings
                 else
                 {
                     MessageBox.Show(
-                        args.Error.Message,
-                        args.Error.GetType().ToString(),
+                        @"There is a problem reaching update server. The reason is unknown.",
+                        @"Update Check Failed",
                         MessageBoxButton.OK,
                         MessageBoxImage.Error);
                 }

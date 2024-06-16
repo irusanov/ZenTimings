@@ -96,6 +96,9 @@
     <Compile Include="..\Common\BiosMemController.cs">
       <Link>Common\BiosMemController.cs</Link>
     </Compile>
+    <Compile Include="..\Common\MemoryConfig.cs">
+      <Link>Common\MemoryConfig.cs</Link>
+    </Compile>
     <Compile Include="..\Common\MemoryModule.cs">
       <Link>Common\MemoryModule.cs</Link>
     </Compile>
@@ -172,6 +175,22 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
+    <Page Include="Themes\BurntOrange.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\DarkRed.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\RetroWave.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Dracula.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Windows\AboutDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

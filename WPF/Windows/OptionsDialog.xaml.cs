@@ -38,6 +38,7 @@ namespace ZenTimings.Windows
             numericUpDownRefreshInterval.Text = appSettings.AutoRefreshInterval.ToString();
             msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
             comboBoxTheme.SelectedIndex = (int)_Theme;
+            comboBoxScreenshot.SelectedIndex = (int)appSettings.ScreenshotMode;
         }
 
         private void CheckBoxAutoRefresh_Click(object sender, RoutedEventArgs e)
@@ -62,6 +63,7 @@ namespace ZenTimings.Windows
             appSettings.CheckForUpdates = (bool)checkBoxCheckUpdate.IsChecked;
             appSettings.SaveWindowPosition = (bool)checkBoxSavePosition.IsChecked;
             appSettings.MinimizeToTray = (bool)checkBoxMinimizeToTray.IsChecked;
+            appSettings.ScreenshotMode = (ScreenshotType)comboBoxScreenshot.SelectedIndex;
 
             appSettings.Save();
 

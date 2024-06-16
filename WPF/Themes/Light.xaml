@@ -12,7 +12,10 @@
     <SolidColorBrush x:Key="TextColor" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
     <SolidColorBrush x:Key="AccentTextColor" Color="#004b84" />
     <SolidColorBrush x:Key="SeparatorColor" Color="#e5e5e5" />
-    <SolidColorBrush x:Key="PanelBackgound" Color="#f3f3f3" />
+    <SolidColorBrush x:Key="PanelBackground" Color="#f3f3f3" />
+    <SolidColorBrush x:Key="BottomPanelBackground" Color="#f3f3f3" />
+    <SolidColorBrush x:Key="MainMenuPanelBackground" Color="#f3f3f3" />
+    <SolidColorBrush x:Key="MenuItemBackground" Color="#f3f3f3" />
     <SolidColorBrush x:Key="ContentBackground" Color="#f7f7f7" />
     <SolidColorBrush x:Key="SuccessBackground" Color="#d4edda" />
     <SolidColorBrush x:Key="DisabledColor" Color="#a0a0a0" />

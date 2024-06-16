@@ -62,7 +62,7 @@
                 Grid.Column="0"
                 Grid.ColumnSpan="3"
                 Padding="0"
-                Background="{DynamicResource PanelBackgound}"
+                Background="{DynamicResource PanelBackground}"
                 Grid.Row="0"
                 BorderThickness="0,1"
                 ClipToBounds="True"
@@ -74,7 +74,7 @@
                 Template="{DynamicResource TabControlControlTemplate}">
                 <TabItem
                 	Header="General"
-                	Background="{DynamicResource PanelBackgound}"
+                	Background="{DynamicResource PanelBackground}"
                 	BorderThickness="0,1,1,1"
                     BorderBrush="{DynamicResource SeparatorColor}">
                     <Grid Margin="0 10 0 0">
@@ -108,7 +108,7 @@
                         </Border>
                     </Grid>
                 </TabItem>
-                <TabItem Header="Modules" Background="{DynamicResource PanelBackgound}" BorderThickness="1"
+                <TabItem Header="Modules" Background="{DynamicResource PanelBackground}" BorderThickness="1"
                          Margin="-1,0,0,0" BorderBrush="{DynamicResource SeparatorColor}">
                     <DataGrid
                     	x:Name="Modules"

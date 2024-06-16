@@ -10,45 +10,42 @@
     <BitmapImage x:Key="CameraImage" UriSource="../Resources/camera-light.png" />
 
     <!-- Text color -->
-    <Color x:Key="{x:Static adonisUi:Colors.ForegroundColor}">#D1D4C9</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.ForegroundColor}">#d3a892</Color>
     <!-- Window title background -->
-    <Color x:Key="{x:Static adonisUi:Colors.Layer0BorderColor}">#1f2029</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer0BorderColor}">#25171e</Color>
     <!-- Window background -->
-    <Color x:Key="{x:Static adonisUi:Colors.Layer0BackgroundColor}">#1f2029</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer0BackgroundColor}">#25171e</Color>
 
-    <Color x:Key="{x:Static adonisUi:Colors.Layer3BorderColor}">#14151a</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer3BorderColor}">#422133</Color>
 
     <!-- Accent button and toggles -->
-    <Color x:Key="{x:Static adonisUi:Colors.AccentColor}">#7ccaa2</Color>
-    <Color x:Key="{x:Static adonisUi:Colors.AccentForegroundColor}">#1f2029</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.AccentColor}">#d07a6e</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.AccentForegroundColor}">#25171e</Color>
     <!-- Accent button and toggles hover -->
-    <Color x:Key="{x:Static adonisUi:Colors.AccentHighlightColor}">#60cd95</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.AccentHighlightColor}">#d77f73</Color>
     <!-- Accent button and toggles active -->
-    <Color x:Key="{x:Static adonisUi:Colors.AccentInteractionColor}">#5ad394</Color>
-    <Color x:Key="{x:Static adonisUi:Colors.AccentInteractionBorderColor}">#5ad394</Color>
-    <Color x:Key="{x:Static adonisUi:Colors.AccentIntenseHighlightBorderColor}">#5ad394</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.AccentInteractionColor}">#fab18b</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.AccentInteractionBorderColor}">#fab18b</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.AccentIntenseHighlightBorderColor}">#fab18b</Color>
     <!-- Dropdown and menu background, 5% lighter than window -->
-    <Color x:Key="{x:Static adonisUi:Colors.Layer1BackgroundColor}">#2a2b37</Color>
-    <Color x:Key="{x:Static adonisUi:Colors.Layer1BorderColor}">#2a2b37</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer1BackgroundColor}">#3c1d2f</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer1BorderColor}">#3c1d2f</Color>
     <!-- Dropdown and menu hover background -->
-    <Color x:Key="{x:Static adonisUi:Colors.Layer1HighlightColor}">#353746</Color>
-    <Color x:Key="{x:Static adonisUi:Colors.Layer1HighlightBorderColor}">#404255</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer1HighlightColor}">#3d1d2f</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer1HighlightBorderColor}">#3d1d2f</Color>
     <!-- Window button hover color -->
-    <Color x:Key="{x:Static adonisUi:Colors.WindowButtonHighlightColor}">#353746</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.WindowButtonHighlightColor}">#3d1d2f</Color>
 
-    <Color x:Key="{x:Static adonisUi:Colors.Layer2HighlightColor}">#353746</Color>
-    <Color x:Key="{x:Static adonisUi:Colors.Layer2HighlightBorderColor}">#353746</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer2HighlightColor}">#3d1d2f</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer2HighlightBorderColor}">#3d1d2f</Color>
 
     <CornerRadius x:Key="{x:Static adonisUi:Dimensions.CornerRadius}">2</CornerRadius>
 
     <SolidColorBrush x:Key="AccentTextColor" Color="{StaticResource {x:Static adonisUi:Colors.AccentColor}}" />
-
-    <!-- Panels -->
     <SolidColorBrush x:Key="PanelBackground" Color="{StaticResource {x:Static adonisUi:Colors.Layer0BackgroundColor}}" />
     <SolidColorBrush x:Key="BottomPanelBackground" Color="{StaticResource {x:Static adonisUi:Colors.Layer0BackgroundColor}}" />
     <SolidColorBrush x:Key="MainMenuPanelBackground" Color="{StaticResource {x:Static adonisUi:Colors.Layer0BackgroundColor}}" />
     <SolidColorBrush x:Key="MenuItemBackground" Color="{StaticResource {x:Static adonisUi:Colors.Layer0BackgroundColor}}" />
-    
     <SolidColorBrush x:Key="TextColor" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
     <SolidColorBrush x:Key="SeparatorColor" Color="{StaticResource {x:Static adonisUi:Colors.Layer3BorderColor}}" />
     <!-- SolidColorBrush x:Key="SuccessBackground" Color="{DynamicResource {x:Static adonisUi:Colors.Layer3BorderColor}}" /-->

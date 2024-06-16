@@ -45,7 +45,7 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="20" />
                     </Grid.ColumnDefinitions>
-                    <Menu x:Name="MainMenu" Grid.Column="0" Style="{DynamicResource MenuBackground}">
+                    <Menu x:Name="MainMenu" Grid.Column="0" Style="{DynamicResource MenuStyles}">
                         <MenuItem Header="_File">
                             <MenuItem Header="E_xit" Click="ExitToolStripMenuItem_Click" />
                             <!-- MenuItem Header="Export..." HorizontalAlignment="Left" Click="ExportToolStripMenuItem_Click" /-->
@@ -85,7 +85,7 @@
             <Border Style="{DynamicResource Separator}" />
 
             <!-- System Info Panel -->
-            <Border Style="{DynamicResource PanelBackground}"
+            <Border Style="{DynamicResource PanelStyles}"
                     Visibility="{Binding settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
                 <StackPanel>
                     <TextBlock x:Name="labelCPU" Text="N/A" Padding="12 5 12 0" />

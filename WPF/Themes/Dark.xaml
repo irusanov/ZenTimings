@@ -14,7 +14,10 @@
     <SolidColorBrush x:Key="TextColor" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
     <SolidColorBrush x:Key="AccentTextColor" Color="#7facff" />
     <SolidColorBrush x:Key="SeparatorColor" Color="{StaticResource {x:Static adonisUi:Colors.Layer3BorderColor}}" />
-    <SolidColorBrush x:Key="PanelBackgound" Color="{StaticResource {x:Static adonisUi:Colors.Layer0BackgroundColor}}" />
+    <SolidColorBrush x:Key="PanelBackground" Color="{StaticResource {x:Static adonisUi:Colors.Layer0BackgroundColor}}" />
+    <SolidColorBrush x:Key="BottomPanelBackground" Color="{StaticResource {x:Static adonisUi:Colors.Layer0BackgroundColor}}" />
+    <SolidColorBrush x:Key="MainMenuPanelBackground" Color="{StaticResource {x:Static adonisUi:Colors.Layer0BackgroundColor}}" />
+    <SolidColorBrush x:Key="MenuItemBackground" Color="{StaticResource {x:Static adonisUi:Colors.Layer0BackgroundColor}}" />
     <!-- SolidColorBrush x:Key="SuccessBackground" Color="{DynamicResource {x:Static adonisUi:Colors.Layer3BorderColor}}" /-->
     <SolidColorBrush x:Key="SuccessBackground" Color="#00661c" />
     <SolidColorBrush x:Key="DisabledColor" Color="#5b5b70" />
