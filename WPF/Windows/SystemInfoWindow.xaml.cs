@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Windows;
 using ZenStates.Core;
+using ZenStates.Core.DRAM;
 using static ZenTimings.BiosMemController;
 
 namespace ZenTimings.Windows
@@ -19,9 +20,11 @@ namespace ZenTimings.Windows
             public string Value { get; set; }
         }
 
-        public SystemInfoWindow(SystemInfo si, MemoryConfig mc, Resistances mcConfig, AodData aodData, List<AsusSensorInfo> asusSensors)
+        public SystemInfoWindow(Cpu cpu, MemoryConfig mc, Resistances mcConfig, List<AsusSensorInfo> asusSensors)
         {
             InitializeComponent();
+            SystemInfo si = cpu.systemInfo;
+            AodData aodData = cpu.info.aod.Table.Data;
             Type type = si.GetType();
             PropertyInfo[] properties = type.GetProperties();
             List<GridItem> items;
@@ -51,12 +54,20 @@ namespace ZenTimings.Windows
 
             try
             {
-
                 type = mc.GetType();
+
                 properties = type.GetProperties();
                 items = new List<GridItem>();
                 foreach (PropertyInfo property in properties)
                     items.Add(new GridItem() { Name = property.Name, Value = property.GetValue(mc, null).ToString() });
+
+                if (mc.Type == MemoryConfig.MemType.DDR5)
+                {
+                    List<KeyValuePair<uint, BaseDramTimings>> timingsConfig = cpu.GetMemoryConfig().Timings;
+                    Ddr5Timings timings = timingsConfig[0].Value as Ddr5Timings;
+
+                    items.Add(new GridItem() { Name = "Nitro Settings", Value = timings.Nitro.ToString() });
+                }
 
                 MemCfgGrid.ItemsSource = items;
             }

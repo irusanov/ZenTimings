@@ -206,7 +206,9 @@ namespace ZenTimings
 
             _notifyIcon?.Dispose();
             AsusWmi?.Dispose();
+            //cpu?.io?.Close(settings.AutoUninstallDriver);
             cpu?.Dispose();
+            settings.Save();
             Application.Current.Shutdown();
         }
 
@@ -553,7 +555,8 @@ namespace ZenTimings
                             labelProcODT.IsEnabled = true;
                             textBoxProcODT.Text = Data.ProcOdt.ToString();
                         }
-                    } catch { }
+                    }
+                    catch { }
 
                     textBoxCadBusDrvStren.Text = Data.CadBusDrvStren.ToString();
                     textBoxDramDataDrvStren.Text = Data.DramDataDrvStren.ToString();
@@ -940,7 +943,8 @@ namespace ZenTimings
                 Title += @" (compatibility)";
         }
 
-        private static string GetCpuNameString(SystemInfo info) {
+        private static string GetCpuNameString(SystemInfo info)
+        {
             try
             {
                 var name = info.CpuName;
@@ -1114,8 +1118,8 @@ namespace ZenTimings
         private void ButtonScreenshot_Click(object sender, RoutedEventArgs e)
         {
             Screenshot screenshot = new Screenshot();
-            System.Drawing.Bitmap bitmap = (settings.ScreenshotMode == AppSettings.ScreenshotType.Desktop) 
-                ? screenshot.CaptureDekstop() 
+            System.Drawing.Bitmap bitmap = (settings.ScreenshotMode == AppSettings.ScreenshotType.Desktop)
+                ? screenshot.CaptureDekstop()
                 : screenshot.CaptureActiveWindow();
 
             using (SaveWindow saveWnd = new SaveWindow(bitmap))
@@ -1148,7 +1152,7 @@ namespace ZenTimings
                 sysInfoWindowWidth = settings.SysInfoWindowWidth;
             }
 
-            siWnd = new SystemInfoWindow(cpu.systemInfo, MEMCFG, BMC.Config, cpu.info.aod.Table.Data, AsusWmi?.sensors)
+            siWnd = new SystemInfoWindow(cpu, MEMCFG, BMC.Config, AsusWmi?.sensors)
             {
                 Width = sysInfoWindowWidth,
                 Height = sysInfoWindowHeight,

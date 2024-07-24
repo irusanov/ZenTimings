@@ -10,7 +10,7 @@ namespace ZenTimings
     public sealed class AppSettings
     {
         public const int VersionMajor = 1;
-        public const int VersionMinor = 3;
+        public const int VersionMinor = 4;
 
         private static readonly string Filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.xml");
 
@@ -31,7 +31,7 @@ namespace ZenTimings
             Desktop,
         }
 
-        public AppSettings Create()
+        public AppSettings Create(bool save = true)
         {
             Version = $"{VersionMajor}.{VersionMinor}";
             AppTheme = Theme.Light;
@@ -41,6 +41,7 @@ namespace ZenTimings
             AdvancedMode = true;
             CheckForUpdates = true;
             SaveWindowPosition = false;
+            AutoUninstallDriver = true;
             WindowLeft = 0;
             WindowTop = 0;
             SysInfoWindowLeft = 0;
@@ -49,7 +50,7 @@ namespace ZenTimings
             NotifiedChangelog = "";
             NotifiedRembrandt = "";
 
-            Save();
+            if (save) Save();
 
             return this;
         }
@@ -86,6 +87,7 @@ namespace ZenTimings
         {
             try
             {
+                Version = $"{VersionMajor}.{VersionMinor}";
                 using (StreamWriter sw = new StreamWriter(Filename))
                 {
                     XmlSerializer xmls = new XmlSerializer(typeof(AppSettings));
@@ -130,6 +132,7 @@ namespace ZenTimings
         public string UpdaterRemindLaterAt { get; set; } = "";
         public bool MinimizeToTray { get; set; }
         public bool SaveWindowPosition { get; set; }
+        public bool AutoUninstallDriver { get; set; } = true;
         public double WindowLeft { get; set; }
         public double WindowTop { get; set; }
         public double SysInfoWindowLeft { get; set; }

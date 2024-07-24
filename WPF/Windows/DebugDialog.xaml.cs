@@ -1,5 +1,4 @@
 using Microsoft.VisualBasic.Devices;
-using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,8 +7,11 @@ using System.Management;
 using System.Threading.Tasks;
 using System.Windows;
 using ZenStates.Core;
+using ZenStates.Core.DRAM;
 using static ZenTimings.MemoryConfig;
+using Application = System.Windows.Application;
 using MessageBox = AdonisUI.Controls.MessageBox;
+using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace ZenTimings.Windows
 {
@@ -243,7 +245,15 @@ namespace ZenTimings.Windows
             try
             {
                 foreach (var property in properties)
-                    AddLine($"{property.Name + ":",-16}{property.GetValue(MEMCFG, null)}");
+                    AddLine($"{property.Name + ":",-18}{property.GetValue(MEMCFG, null)}");
+
+                if (MEMCFG.Type == MemoryConfig.MemType.DDR5)
+                {
+                    List<KeyValuePair<uint, BaseDramTimings>> timingsConfig = CPU.GetMemoryConfig().Timings;
+                    Ddr5Timings timings = timingsConfig[0].Value as Ddr5Timings;
+
+                    AddLine($"{"Nitro Settings:",-18}{timings.Nitro}");
+                }
             }
             catch
             {

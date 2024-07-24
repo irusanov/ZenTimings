@@ -34,6 +34,7 @@ namespace ZenTimings.Windows
             checkBoxCheckUpdate.IsChecked = appSettings.CheckForUpdates;
             checkBoxSavePosition.IsChecked = appSettings.SaveWindowPosition;
             checkBoxMinimizeToTray.IsChecked = appSettings.MinimizeToTray;
+            checkBoxAutoUninstallDriver.IsChecked = appSettings.AutoUninstallDriver;
             numericUpDownRefreshInterval.IsEnabled = appSettings.AutoRefresh && appSettings.AdvancedMode;
             numericUpDownRefreshInterval.Text = appSettings.AutoRefreshInterval.ToString();
             msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
@@ -63,6 +64,7 @@ namespace ZenTimings.Windows
             appSettings.CheckForUpdates = (bool)checkBoxCheckUpdate.IsChecked;
             appSettings.SaveWindowPosition = (bool)checkBoxSavePosition.IsChecked;
             appSettings.MinimizeToTray = (bool)checkBoxMinimizeToTray.IsChecked;
+            appSettings.AutoUninstallDriver = (bool)checkBoxAutoUninstallDriver.IsChecked;
             appSettings.ScreenshotMode = (ScreenshotType)comboBoxScreenshot.SelectedIndex;
 
             appSettings.Save();
