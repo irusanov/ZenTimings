@@ -185,14 +185,14 @@
                         Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
                         Content="Check for updates on startup" />
 
-            <ToggleButton
+            <!--ToggleButton
                         x:Name="checkBoxAutoUninstallDriver"
                         Grid.Column="0"
                         Grid.Row="7"
                         Grid.ColumnSpan="3"
                         Margin="0 5 5 5"
                         Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
-                        Content="Uninstall driver on close" />
+                        Content="Uninstall driver on close" /-->
         </Grid>
         <!--/TabItem>
             <TabItem

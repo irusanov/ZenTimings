@@ -31,13 +31,13 @@
     <Color x:Key="{x:Static adonisUi:Colors.Layer1BackgroundColor}">#3c1d2f</Color>
     <Color x:Key="{x:Static adonisUi:Colors.Layer1BorderColor}">#3c1d2f</Color>
     <!-- Dropdown and menu hover background -->
-    <Color x:Key="{x:Static adonisUi:Colors.Layer1HighlightColor}">#3d1d2f</Color>
-    <Color x:Key="{x:Static adonisUi:Colors.Layer1HighlightBorderColor}">#3d1d2f</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer1HighlightColor}">#2d1d2f</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer1HighlightBorderColor}">#5d1d2f</Color>
     <!-- Window button hover color -->
     <Color x:Key="{x:Static adonisUi:Colors.WindowButtonHighlightColor}">#3d1d2f</Color>
 
     <Color x:Key="{x:Static adonisUi:Colors.Layer2HighlightColor}">#3d1d2f</Color>
-    <Color x:Key="{x:Static adonisUi:Colors.Layer2HighlightBorderColor}">#3d1d2f</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer2HighlightBorderColor}">#4d1d2f</Color>
 
     <CornerRadius x:Key="{x:Static adonisUi:Dimensions.CornerRadius}">2</CornerRadius>
 
