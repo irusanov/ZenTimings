@@ -27,24 +27,24 @@
     </Style>
 
     <Style x:Key="MainMenuStyles" TargetType="{x:Type Border}">
-        <Setter Property="Background" Value="{DynamicResource PanelBackgound}" />
+        <Setter Property="Background" Value="{DynamicResource MainMenuPanelBackground}" />
         <Setter Property="Padding" Value="5 2 7 2" />
     </Style>
 
-    <Style x:Key="MenuBackground" TargetType="{x:Type Menu}">
-        <Setter Property="Background" Value="{DynamicResource PanelBackgound}" />
+    <Style x:Key="MenuStyles" TargetType="{x:Type Menu}">
+        <Setter Property="Background" Value="{DynamicResource MenuItemBackground}" />
     </Style>
 
-    <Style x:Key="PanelBackground" TargetType="{x:Type Border}">
-        <Setter Property="Background" Value="{DynamicResource PanelBackgound}" />
+    <Style x:Key="PanelStyles" TargetType="{x:Type Border}">
+        <Setter Property="Background" Value="{DynamicResource PanelBackground}" />
     </Style>
 
     <Style x:Key="StackPanelBackground" TargetType="{x:Type StackPanel}">
-        <Setter Property="Background" Value="{DynamicResource PanelBackgound}" />
+        <Setter Property="Background" Value="{DynamicResource PanelBackground}" />
     </Style>
 
     <Style x:Key="SystemInfoGridStyles" TargetType="{x:Type DataGrid}">
-        <Setter Property="Background" Value="{DynamicResource PanelBackgound}" />
+        <Setter Property="Background" Value="{DynamicResource PanelBackground}" />
         <Setter Property="BorderThickness" Value="0" />
     </Style>
 
@@ -90,7 +90,7 @@
 
     <Style x:Key="BottomPanelStyles" TargetType="{x:Type Border}">
         <Setter Property="Padding" Value="5" />
-        <Setter Property="Background" Value="{DynamicResource PanelBackgound}" />
+        <Setter Property="Background" Value="{DynamicResource BottomPanelBackground}" />
     </Style>
 
     <Style x:Key="CameraButtonStyle" TargetType="{x:Type Button}">
@@ -105,6 +105,7 @@
             </Setter.Value>
         </Setter>
     </Style>
+ 
     <ControlTemplate x:Key="TabControlControlTemplate" TargetType="{x:Type TabControl}">
         <Grid KeyboardNavigation.TabNavigation="Local">
             <Grid.RowDefinitions>

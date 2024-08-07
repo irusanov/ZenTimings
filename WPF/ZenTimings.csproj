@@ -111,9 +111,6 @@
     <Compile Include="..\Common\UpdaterPersistenceProvider.cs">
       <Link>Common\UpdaterPersistenceProvider.cs</Link>
     </Compile>
-    <Compile Include="..\Common\WMI.cs">
-      <Link>Common\WMI.cs</Link>
-    </Compile>
     <Compile Include="AppSettings.cs" />
     <Compile Include="Common\ISensor.cs" />
     <Compile Include="Common\Sensor.cs" />
@@ -122,6 +119,7 @@
     <Compile Include="Converters\FloatToNAConverter.cs" />
     <Compile Include="Converters\FloatToVoltageConverter.cs" />
     <Compile Include="Converters\DDR5ToVisConverter.cs" />
+    <Compile Include="Converters\PhoenixToVisConverter.cs" />
     <Compile Include="Plugin\IPlugin.cs" />
     <Compile Include="Plugin\OHWMPlugin.cs" />
     <Compile Include="Plugin\SVI2Plugin.cs" />
@@ -177,6 +175,22 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
+    <Page Include="Themes\BurntOrange.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\DarkRed.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\RetroWave.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Dracula.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Windows\AboutDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

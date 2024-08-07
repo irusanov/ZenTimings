@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Management;
+using ZenStates.Core;
 
 namespace ZenTimings
 {

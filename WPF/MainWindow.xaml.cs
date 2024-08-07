@@ -154,6 +154,7 @@ namespace ZenTimings
                 {
                     timings = MEMCFG,
                     cpu.powerTable,
+                    cpu.info.codeName,
                     WMIPresent = !compatMode && MEMCFG.Type == MemType.DDR4,
                     settings,
                     plugins
@@ -205,7 +206,9 @@ namespace ZenTimings
 
             _notifyIcon?.Dispose();
             AsusWmi?.Dispose();
+            //cpu?.io?.Close(settings.AutoUninstallDriver);
             cpu?.Dispose();
+            settings.Save();
             Application.Current.Shutdown();
         }
 
@@ -359,13 +362,6 @@ namespace ZenTimings
             {
                 textBoxVSOC_SVI2.Text = $"{plugins[0].Sensors[0].Value:F4}V";
             }
-        }
-
-        private string RttToString(int rtt)
-        {
-            if (rtt > 0)
-                return $"{AOD.GetRttString(rtt)} ({240 / rtt})";
-            return $"{AOD.GetRttString(rtt)}";
         }
 
         private void ReadMemoryConfig()
@@ -527,7 +523,6 @@ namespace ZenTimings
                     labelMemVpp.IsEnabled = true;
                     labelApuVddio.IsEnabled = true;
 
-                    labelProcODT.IsEnabled = true;
                     labelProcCaDs.IsEnabled = true;
                     labelProcDqDs.IsEnabled = true;
                     labelDramDqDs.IsEnabled = true;
@@ -537,21 +532,41 @@ namespace ZenTimings
                     labelRttParkD5.IsEnabled = true;
                     labelRttParkDqs.IsEnabled = true;
 
-                    textBoxMemVddio.Text = $"{Data.MemVddio / 1000.0:F4}V";
-                    textBoxMemVddq.Text = $"{Data.MemVddq / 1000.0:F4}V";
-                    textBoxMemVpp.Text = $"{Data.MemVpp / 1000.0:F4}V";
-                    textBoxApuVddio.Text = $"{Data.ApuVddio / 1000.0:F4}V";
+                    textBoxMemVddio.Text = Data.MemVddio.ToString();
+                    textBoxMemVddq.Text = Data.MemVddq.ToString();
+                    textBoxMemVpp.Text = Data.MemVpp.ToString();
+                    textBoxApuVddio.Text = Data.ApuVddio.ToString();
 
-                    textBoxProcODT.Text = AOD.GetProcODTString(Data.ProcODT);
-                    textBoxCadBusDrvStren.Text = AOD.GetCadBusDrvStrenString(Data.CadBusDrvStren);
-                    textBoxDramDataDrvStren.Text = AOD.GetDramDataDrvStrenString(Data.DramDataDrvStren);
-                    textBoxProcDataDrvStren.Text = AOD.GetProcDataDrvStrenString(Data.ProcDataDrvStren);
+                    try
+                    {
+                        if (cpu.info.codeName == Cpu.CodeName.Phoenix || cpu.info.codeName == Cpu.CodeName.Phoenix2 || cpu.info.codeName == Cpu.CodeName.HawkPoint)
+                        {
+                            labelProcCaOdt.IsEnabled = true;
+                            labelProcCkOdt.IsEnabled = true;
+                            labelProcDqOdt.IsEnabled = true;
+                            labelProcDqsOdt.IsEnabled = true;
+                            textBoxProcCaOdt.Text = Data.ProcCaOdt.ToString();
+                            textBoxProcCkOdt.Text = Data.ProcCkOdt.ToString();
+                            textBoxProcDqOdt.Text = Data.ProcDqOdt.ToString();
+                            textBoxProcDqsOdt.Text = Data.ProcDqsOdt.ToString();
+                        }
+                        else
+                        {
+                            labelProcODT.IsEnabled = true;
+                            textBoxProcODT.Text = Data.ProcOdt.ToString();
+                        }
+                    }
+                    catch { }
 
-                    textBoxRttWrD5.Text = RttToString(Data.RttWr);
-                    textBoxRttNomWr.Text = RttToString(Data.RttNomWr);
-                    textBoxRttNomRd.Text = RttToString(Data.RttNomRd);
-                    textBoxRttParkD5.Text = RttToString(Data.RttPark);
-                    textBoxRttParkDqs.Text = RttToString(Data.RttParkDqs);
+                    textBoxCadBusDrvStren.Text = Data.CadBusDrvStren.ToString();
+                    textBoxDramDataDrvStren.Text = Data.DramDataDrvStren.ToString();
+                    textBoxProcDataDrvStren.Text = Data.ProcDataDrvStren.ToString();
+
+                    textBoxRttWrD5.Text = Data.RttWr.ToString();
+                    textBoxRttNomWr.Text = Data.RttNomWr.ToString();
+                    textBoxRttNomRd.Text = Data.RttNomRd.ToString();
+                    textBoxRttParkD5.Text = Data.RttPark.ToString();
+                    textBoxRttParkDqs.Text = Data.RttParkDqs.ToString();
                 }
             }
             catch (Exception ex)
@@ -721,6 +736,8 @@ namespace ZenTimings
             }
 
             MEMCFG.PowerDown = Utils.GetBits(powerDown, 28, 1) == 1 ? "Enabled" : "Disabled";
+
+            cpu.memoryConfig.ReadTimings(offset);
         }
 
         private bool WaitForDriverLoad()
@@ -836,7 +853,7 @@ namespace ZenTimings
                         int selectedIndex = comboBoxPartNumber?.SelectedIndex ?? 0;
                         MemoryModule module = modules.Count > 0 ? modules[selectedIndex] : null;
                         ReadTimings(module?.DctOffset ?? 0);
-                        // ReadMemoryConfig();
+                        ReadMemoryConfig();
                         cpu.RefreshPowerTable();
                         ReadSVI();
                         SetFrequencyString();
@@ -926,6 +943,23 @@ namespace ZenTimings
                 Title += @" (compatibility)";
         }
 
+        private static string GetCpuNameString(SystemInfo info)
+        {
+            try
+            {
+                var name = info.CpuName;
+                if (name.Contains("Eng Sample"))
+                {
+                    return $"{name} | {info.CodeName} | 0x{info.CpuId:X6}";
+                }
+                return name;
+            }
+            catch
+            {
+                return "Error getting CPU name";
+            }
+        }
+
         private void Window_Initialized(object sender, EventArgs e)
         {
             if (settings.SaveWindowPosition)
@@ -955,7 +989,7 @@ namespace ZenTimings
             SetWindowTitle();
             if (cpu != null)
             {
-                labelCPU.Text = cpu.systemInfo.CpuName;
+                labelCPU.Text = GetCpuNameString(cpu.systemInfo);
                 labelMB.Text =
                     $"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} | SMU {cpu.systemInfo.GetSmuVersionString()}";
             }
@@ -1084,7 +1118,9 @@ namespace ZenTimings
         private void ButtonScreenshot_Click(object sender, RoutedEventArgs e)
         {
             Screenshot screenshot = new Screenshot();
-            System.Drawing.Bitmap bitmap = screenshot.CaptureActiveWindow();
+            System.Drawing.Bitmap bitmap = (settings.ScreenshotMode == AppSettings.ScreenshotType.Desktop)
+                ? screenshot.CaptureDekstop()
+                : screenshot.CaptureActiveWindow();
 
             using (SaveWindow saveWnd = new SaveWindow(bitmap))
             {
@@ -1116,7 +1152,7 @@ namespace ZenTimings
                 sysInfoWindowWidth = settings.SysInfoWindowWidth;
             }
 
-            siWnd = new SystemInfoWindow(cpu.systemInfo, MEMCFG, BMC.Config, cpu.info.aod.Table.Data, AsusWmi?.sensors)
+            siWnd = new SystemInfoWindow(cpu, MEMCFG, BMC.Config, AsusWmi?.sensors)
             {
                 Width = sysInfoWindowWidth,
                 Height = sysInfoWindowHeight,
