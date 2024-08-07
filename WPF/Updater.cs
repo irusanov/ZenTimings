@@ -21,9 +21,9 @@ namespace ZenTimings
         private static bool manual;
         private static string ChangelogText { get; set; }
 #if DEBUG
-        private const string url = "https://zentimings.protonrom.com/AutoUpdater_debug.xml";
+        private const string url = "https://zentimings.com/AutoUpdater_debug.xml";
 #else
-        private const string url = "https://zentimings.protonrom.com/AutoUpdater.xml";
+        private const string url = "https://zentimings.com/AutoUpdater.xml";
 #endif
         protected virtual void OnUpdateCheckCompleteEvent(EventArgs e)
         {
