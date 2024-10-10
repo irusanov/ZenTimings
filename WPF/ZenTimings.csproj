@@ -99,9 +99,6 @@
     <Compile Include="..\Common\MemoryConfig.cs">
       <Link>Common\MemoryConfig.cs</Link>
     </Compile>
-    <Compile Include="..\Common\MemoryModule.cs">
-      <Link>Common\MemoryModule.cs</Link>
-    </Compile>
     <Compile Include="..\Common\Screenshot.cs">
       <Link>Common\Screenshot.cs</Link>
     </Compile>

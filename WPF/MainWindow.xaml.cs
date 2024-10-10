@@ -15,9 +15,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using ZenStates.Core;
+using ZenStates.Core.DRAM;
 using ZenTimings.Plugin;
 using ZenTimings.Windows;
-using static ZenTimings.MemoryConfig;
+using static ZenStates.Core.DRAM.MemoryConfig;
 using Forms = System.Windows.Forms;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
@@ -98,14 +99,21 @@ namespace ZenTimings
 
                 InitializeComponent();
                 SplashWindow.Loading("Memory modules");
+                modules = cpu.GetMemoryConfig().Modules;
                 ReadMemoryModulesInfo();
                 SplashWindow.Loading("Timings");
 
                 // Read from first enabled DCT
                 if (modules.Count > 0)
+                {
                     ReadTimings(modules[0].DctOffset);
+                }
                 else
+                {
                     ReadTimings();
+                }
+
+                MEMCFG.TotalCapacity = cpu.GetMemoryConfig().TotalCapacity.ToString();
 
                 if (cpu != null && settings.AdvancedMode)
                 {
@@ -155,7 +163,7 @@ namespace ZenTimings
                     timings = MEMCFG,
                     cpu.powerTable,
                     cpu.info.codeName,
-                    WMIPresent = !compatMode && MEMCFG.Type == MemType.DDR4,
+                    WMIPresent = !compatMode && cpu.GetMemoryConfig().Type == MemType.DDR4,
                     settings,
                     plugins
                 };
@@ -217,125 +225,14 @@ namespace ZenTimings
             return biosFunctions.Find(x => x.IDString == name);
         }
 
-        private void ReadChannelsInfo()
-        {
-            int dimmIndex = 0;
-            uint channelsPerDimm = MEMCFG.Type >= MemType.DDR5 ? 2u : 1u;
-
-            // Get the offset by probing the IMC0 to IMC7
-            // It appears that offsets 0x80 and 0x84 are DIMM config registers
-            // When a DIMM is DR, bit 0 is set to 1
-            // 0x50000
-            // offset 0, bit 0 when set to 1 means DIMM1 is installed
-            // offset 8, bit 0 when set to 1 means DIMM2 is installed
-            for (uint i = 0; i < 8u * channelsPerDimm; i += channelsPerDimm)
-            {
-                uint channelOffset = i << 20;
-                bool channel = Utils.GetBits(cpu.ReadDword(channelOffset | 0x50DF0), 19, 1) == 0;
-                bool dimm1 = Utils.GetBits(cpu.ReadDword(channelOffset | 0x50000), 0, 1) == 1;
-                bool dimm2 = Utils.GetBits(cpu.ReadDword(channelOffset | 0x50008), 0, 1) == 1;
-                try
-                {
-                    if (channel && (dimm1 || dimm2))
-                    {
-                        if (dimm1)
-                        {
-                            MemoryModule module = modules[dimmIndex++];
-                            module.Slot = $"{Convert.ToChar(i / channelsPerDimm + 65)}1";
-                            module.DctOffset = channelOffset;
-                            module.Rank = (MemRank)Utils.GetBits(cpu.ReadDword(channelOffset | 0x50080), 0, 1);
-                        }
-
-                        if (dimm2)
-                        {
-                            MemoryModule module = modules[dimmIndex++];
-                            module.Slot = $"{Convert.ToChar(i / channelsPerDimm + 65)}2";
-                            module.DctOffset = channelOffset;
-                            module.Rank = (MemRank)Utils.GetBits(cpu.ReadDword(channelOffset | 0x50084), 0, 1);
-                        }
-                    }
-                }
-                catch { }
-            }
-        }
-
         private void ReadMemoryModulesInfo()
         {
-            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("select * from Win32_PhysicalMemory"))
-            {
-                bool connected = false;
-                try
-                {
-                    WMI.Connect(@"root\cimv2");
-
-                    connected = true;
-
-                    foreach (ManagementObject queryObject in searcher.Get().Cast<ManagementObject>())
-                    {
-                        ulong capacity = 0UL;
-                        uint clockSpeed = 0U;
-                        string partNumber = "N/A";
-                        string bankLabel = "";
-                        string manufacturer = "";
-                        string deviceLocator = "";
-
-                        object temp = WMI.TryGetProperty(queryObject, "Capacity");
-                        if (temp != null) capacity = (ulong)temp;
-
-                        temp = WMI.TryGetProperty(queryObject, "ConfiguredClockSpeed");
-                        if (temp != null) clockSpeed = (uint)temp;
-
-                        temp = WMI.TryGetProperty(queryObject, "partNumber");
-                        if (temp != null) partNumber = (string)temp;
-
-                        temp = WMI.TryGetProperty(queryObject, "BankLabel");
-                        if (temp != null) bankLabel = (string)temp;
-
-                        temp = WMI.TryGetProperty(queryObject, "Manufacturer");
-                        if (temp != null) manufacturer = (string)temp;
-
-                        temp = WMI.TryGetProperty(queryObject, "DeviceLocator");
-                        if (temp != null) deviceLocator = (string)temp;
-
-                        modules.Add(new MemoryModule(partNumber.Trim(), bankLabel.Trim(), manufacturer.Trim(),
-                            deviceLocator, capacity, clockSpeed));
-
-                        //string bl = bankLabel.Length > 0 ? new string(bankLabel.Where(char.IsDigit).ToArray()) : "";
-                        //string dl = deviceLocator.Length > 0 ? new string(deviceLocator.Where(char.IsDigit).ToArray()) : "";
-
-                        //comboBoxPartNumber.Items.Add($"#{bl}: {partNumber}");
-                        //comboBoxPartNumber.SelectedIndex = 0;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    string text = connected ? @"Failed to get installed memory parameters." : $@"{ex.Message}";
-                    MessageBox.Show(
-                        text,
-                        "Warning",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Warning);
-                }
-            }
-
             if (modules.Count > 0)
             {
-                ReadChannelsInfo();
-
-                ulong totalCapacity = 0UL;
-
                 foreach (MemoryModule module in modules)
                 {
-                    totalCapacity += module.Capacity;
-                    comboBoxPartNumber.Items.Add(
-                        $"{module.Slot}: {module.PartNumber} ({module.Capacity / 1024 / (1024 * 1024)}GB, {module.Rank})");
+                    comboBoxPartNumber.Items.Add(module.ToString());
                 }
-
-                if (modules[0].ClockSpeed != 0)
-                    MEMCFG.Frequency = modules[0].ClockSpeed;
-
-                if (totalCapacity != 0)
-                    MEMCFG.TotalCapacity = $"{totalCapacity / 1024 / (1024 * 1024)}GB";
 
                 if (comboBoxPartNumber.Items.Count > 0)
                 {
@@ -418,7 +315,7 @@ namespace ZenTimings
 
                 AOD aod = cpu.info.aod;
 
-                if (MEMCFG.Type == MemType.DDR4)
+                if (cpu.GetMemoryConfig().Type == MemType.DDR4)
                 {
 
                     // Get APCB config from BIOS. Holds memory parameters.
@@ -588,7 +485,7 @@ namespace ZenTimings
         {
             uint config = cpu.ReadDword(offset | 0x50100);
 
-            MEMCFG.Type = (MemType)Utils.GetBits(config, 0, 2);
+            MEMCFG.Type = (MemoryConfig.MemType)(MemType)Utils.GetBits(config, 0, 2);
 
             uint powerDown = cpu.ReadDword(offset | 0x5012C);
             uint umcBase = cpu.ReadDword(offset | 0x50200);
@@ -618,11 +515,11 @@ namespace ZenTimings
             uint timings22 = cpu.ReadDword(offset | 0x5028C);
             uint trfcRegValue = 0;
 
-            if (MEMCFG.Type == MemType.DDR4)
+            if (cpu.GetMemoryConfig().Type == MemType.DDR4)
             {
                 trfcRegValue = trfcTimings0 != trfcTimings1 ? (trfcTimings0 != 0x21060138 ? trfcTimings0 : trfcTimings1) : trfcTimings0;
             }
-            else if (MEMCFG.Type >= MemType.DDR5)
+            else if (cpu.GetMemoryConfig().Type >= MemType.DDR5)
             {
                 uint[] ddr5Regs = { trfcTimings0, trfcTimings1, trfcTimings2, trfcTimings3 };
                 foreach (uint reg in ddr5Regs)
@@ -636,7 +533,7 @@ namespace ZenTimings
             }
 
             float configured = MEMCFG.Frequency;
-            float ratio = MEMCFG.Type == MemType.DDR4 ? Utils.GetBits(umcBase, 0, 7) / 3.0f : Utils.GetBits(umcBase, 0, 16) / 100.0f;
+            float ratio = cpu.GetMemoryConfig().Type == MemType.DDR4 ? Utils.GetBits(umcBase, 0, 7) / 3.0f : Utils.GetBits(umcBase, 0, 16) / 100.0f;
             float freqFromRatio = ratio * 200;
 
             MEMCFG.Ratio = ratio;
@@ -652,9 +549,9 @@ namespace ZenTimings
             MEMCFG.BGSAlt = Utils.GetBits(bgsa0, 4, 7) > 0 || Utils.GetBits(bgsa1, 4, 7) > 0
                 ? "Enabled"
                 : "Disabled";
-            int GDM_BIT = MEMCFG.Type == MemType.DDR4 ? 11 : 18;
+            int GDM_BIT = cpu.GetMemoryConfig().Type == MemType.DDR4 ? 11 : 18;
             MEMCFG.GDM = Utils.GetBits(umcBase, GDM_BIT, 1) > 0 ? "Enabled" : "Disabled";
-            int CMD2T_BIT = MEMCFG.Type == MemType.DDR4 ? 10 : 17;
+            int CMD2T_BIT = cpu.GetMemoryConfig().Type == MemType.DDR4 ? 10 : 17;
             MEMCFG.Cmd2T = Utils.GetBits(umcBase, CMD2T_BIT, 1) > 0 ? "2T" : "1T";
 
             MEMCFG.CL = Utils.GetBits(timings5, 0, 6);
@@ -708,14 +605,14 @@ namespace ZenTimings
             MEMCFG.PHYRDL = Utils.GetBits(timings19, 16, 8);
             MEMCFG.PHYWRD = Utils.GetBits(timings19, 24, 3);
 
-            if (MEMCFG.Type == MemType.DDR4)
+            if (cpu.GetMemoryConfig().Type == MemType.DDR4)
             {
                 MEMCFG.RFC = Utils.GetBits(trfcRegValue, 0, 11);
                 MEMCFG.RFC2 = Utils.GetBits(trfcRegValue, 11, 11);
                 MEMCFG.RFC4 = Utils.GetBits(trfcRegValue, 22, 11);
             }
 
-            if (MEMCFG.Type >= MemType.DDR5)
+            if (cpu.GetMemoryConfig().Type >= MemType.DDR5)
             {
                 MEMCFG.RFC = Utils.GetBits(trfcRegValue, 0, 16);
                 MEMCFG.RFC2 = Utils.GetBits(trfcRegValue, 16, 16);
