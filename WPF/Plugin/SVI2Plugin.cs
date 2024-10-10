@@ -20,18 +20,18 @@ namespace ZenTimings.Plugin
 
         public List<Sensor> Sensors { get; private set; }
 
-        private Cpu _cpu;
+        private Cpu cpuInstance;
 
         public SVI2Plugin(Cpu cpu)
         {
-            InitializeSensors(cpu);
+            cpuInstance = cpu;
+            InitializeSensors();
         }
 
-        private void InitializeSensors(Cpu cpu)
+        private void InitializeSensors()
         {
-            if (cpu != null && cpu.Status == IOModule.LibStatus.OK)
+            if (cpuInstance != null && cpuInstance.Status == IOModule.LibStatus.OK)
             {
-                _cpu = cpu;
                 Sensors = new List<Sensor>
                 {
                     new Sensor("VSOC", 0),
@@ -42,7 +42,7 @@ namespace ZenTimings.Plugin
 
         public bool Update()
         {
-            if (Sensors?.Count > 0 && _cpu != null)
+            if (Sensors?.Count > 0 && cpuInstance != null)
             {
                 uint socPlaneValue;
                 uint vcorePlaneValue;
@@ -65,8 +65,8 @@ namespace ZenTimings.Plugin
 
         private void ReadSensorValues(out uint socPlaneValue, out uint vcorePlaneValue)
         {
-            socPlaneValue = _cpu.ReadDword(_cpu.info.svi2.socAddress);
-            vcorePlaneValue = _cpu.ReadDword(_cpu.info.svi2.coreAddress);
+            socPlaneValue = cpuInstance.ReadDword(cpuInstance.info.svi2.socAddress);
+            vcorePlaneValue = cpuInstance.ReadDword(cpuInstance.info.svi2.coreAddress);
         }
 
         private void UpdateSensorValue(uint planeValue, Sensor sensor)
@@ -84,7 +84,7 @@ namespace ZenTimings.Plugin
 
         public void Close()
         {
-            _cpu = null;
+            cpuInstance = null;
             Sensors = null;
         }
     }

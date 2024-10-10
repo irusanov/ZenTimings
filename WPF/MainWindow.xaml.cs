@@ -59,7 +59,7 @@ namespace ZenTimings
             try
             {
                 SplashWindow.Loading("CPU");
-                cpu = new Cpu();
+                cpu = CpuSingleton.Instance;
 
                 if (cpu.info.family.Equals(Cpu.Family.UNSUPPORTED))
                 {
@@ -1013,7 +1013,7 @@ namespace ZenTimings
                 Window parent = Application.Current.MainWindow;
                 if (parent != null)
                 {
-                    DebugDialog debugWnd = new DebugDialog(cpu, modules, MEMCFG, BMC, AsusWmi)
+                    DebugDialog debugWnd = new DebugDialog(BMC, AsusWmi)
                     {
                         Owner = parent,
                         Width = parent.Width,
