@@ -35,7 +35,7 @@ namespace ZenTimings
         public AppSettings Create(bool save = true)
         {
             Version = $"{VersionMajor}.{VersionMinor}";
-            AppTheme = Theme.Light;
+            AppTheme = Theme.DarkMintGradient;
             ScreenshotMode = ScreenshotType.Window;
             AutoRefresh = true;
             AutoRefreshInterval = 2000;
@@ -127,7 +127,7 @@ namespace ZenTimings
         public bool AutoRefresh { get; set; } = true;
         public int AutoRefreshInterval { get; set; } = 2000;
         public bool AdvancedMode { get; set; } = true;
-        public Theme AppTheme { get; set; } = Theme.Light;
+        public Theme AppTheme { get; set; } = Theme.DarkMintGradient;
         public ScreenshotType ScreenshotMode { get; set; } = ScreenshotType.Window;
         public bool CheckForUpdates { get; set; } = true;
         public string UpdaterSkippedVersion { get; set; } = "";

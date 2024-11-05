@@ -14,9 +14,11 @@
     <!-- Window title background -->
     <Color x:Key="{x:Static adonisUi:Colors.Layer0BorderColor}">#1A0302</Color>
     <!-- Window background -->
-    <Color x:Key="{x:Static adonisUi:Colors.Layer0BackgroundColor}">#0D0101</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer0BackgroundColor}">#0B1215</Color>
 
     <Color x:Key="{x:Static adonisUi:Colors.Layer3BorderColor}">#420704</Color>
+
+    <Color x:Key="{x:Static adonisUi:Colors.Layer3BackgroundColor}">#0B1215</Color>
 
     <!-- Accent button and toggles -->
     <Color x:Key="{x:Static adonisUi:Colors.AccentColor}">#A71C1E</Color>
@@ -44,7 +46,7 @@
     <SolidColorBrush x:Key="AccentTextColor" Color="#DE272C" />
 
     <!-- Panels -->
-    <SolidColorBrush x:Key="PanelBackground" Color="#6b0000" />
+    <SolidColorBrush x:Key="PanelBackground" Color="{StaticResource {x:Static adonisUi:Colors.Layer0BackgroundColor}}" />
     <SolidColorBrush x:Key="BottomPanelBackground" Color="#1A0302" />
     <SolidColorBrush x:Key="MainMenuPanelBackground" Color="#420704" />
     <SolidColorBrush x:Key="MenuItemBackground" Color="#420704" />
@@ -56,6 +58,29 @@
     <SolidColorBrush x:Key="DisabledColor" Color="#847676" />
     <SolidColorBrush x:Key="WindowBorderColor" Color="{StaticResource {x:Static adonisUi:Colors.Layer3BorderColor}}" />
 
+    <LinearGradientBrush x:Key="BackgroundGradientBrush" StartPoint="0.5,1" EndPoint="0.5,0">
+        <GradientStop Color="#1A0302" Offset="1.0" />
+        <GradientStop Color="#0B1215" Offset="0.0" />
+    </LinearGradientBrush>
+
+    <Style x:Key="MainMenuStyles" TargetType="{x:Type Border}">
+        <Setter Property="Background" Value="#1A0302" />
+        <Setter Property="Padding" Value="5 2 7 2" />
+    </Style>
+    <Style x:Key="MenuStyles" TargetType="{x:Type Menu}">
+        <Setter Property="Background" Value="{x:Null}" />
+    </Style>
+    <Style x:Key="BottomPanelStyles" TargetType="{x:Type Border}">
+        <Setter Property="Padding" Value="5" />
+        <Setter Property="Background" Value="{x:Null}" />
+    </Style>
+    <Style x:Key="PanelStyles" TargetType="{x:Type Border}">
+        <Setter Property="Background" Value="#1A0302" />
+    </Style>
+    <Style x:Key="WindowStyles" TargetType="{x:Type Window}">
+        <Setter Property="BorderBrush" Value="{DynamicResource WindowBorderColor}" />
+        <Setter Property="Background" Value="{StaticResource BackgroundGradientBrush}" />
+    </Style>
 </ResourceDictionary>
 
 <!--
