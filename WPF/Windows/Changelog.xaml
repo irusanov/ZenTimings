@@ -8,6 +8,7 @@
         xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
         xmlns:converters="clr-namespace:ZenTimings.Converters"
         mc:Ignorable="d"
+        Style="{DynamicResource WindowStyles}"
         Title="What's New" Height="329" Width="454" UseLayoutRounding="True" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Topmost="True" Icon="/ZenTimings;component/Resources/new-icon/16.png" SizeToContent="WidthAndHeight">
     
     <Window.Resources>

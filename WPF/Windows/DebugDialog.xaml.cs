@@ -139,7 +139,7 @@ namespace ZenTimings.Windows
 
         private void PrintChannels()
         {
-            uint channelsPerDimm = memoryConfig.Type >= ZenStates.Core.DRAM.MemoryConfig.MemType.DDR5 ? 2u : 1u;
+            uint channelsPerDimm = 1; // memoryConfig.Type >= ZenStates.Core.DRAM.MemoryConfig.MemType.DDR5 ? 2u : 1u;
             AddHeading("Memory Channels Info");
 
             for (var i = 0u; i < 8u * channelsPerDimm; i += channelsPerDimm)
@@ -269,13 +269,13 @@ namespace ZenTimings.Windows
             AddHeading("ACPI: Raw AOD Table");
             try
             {
-                for (var i = 0; i < cpu.info.aod.Table.RawAodTable.Length; ++i)
+                for (var i = 0; i < cpu.info.aod.Table.RawAodTable.Length; i++)
                     AddLine($"Index {i:D3}: {cpu.info.aod.Table.RawAodTable[i]:X2} ({cpu.info.aod.Table.RawAodTable[i]})");
             }
             catch
             {
                 AddLine("<FAILED>");
-            }
+            }   
 
             AddLine();
 
@@ -283,7 +283,7 @@ namespace ZenTimings.Windows
             AddHeading("BIOS: Memory Controller Config");
             try
             {
-                for (var i = 0; i < BMC.Table.Length; ++i)
+                for (var i = 0; i < BMC.Table.Length; i++)
                     AddLine($"Index {i:D3}: {BMC.Table[i]:X2} ({BMC.Table[i]})");
             }
             catch
@@ -297,7 +297,7 @@ namespace ZenTimings.Windows
             AddHeading("SMU: Power Table");
             try
             {
-                for (var i = 0; i < cpu.powerTable.Table.Length; ++i)
+                for (var i = 0; i < cpu.powerTable.Table.Length; i++)
                 {
                     var temp = BitConverter.GetBytes(cpu.powerTable.Table[i]);
                     AddLine($"Offset {i * 0x4:X3}: {BitConverter.ToSingle(temp, 0):F8}");

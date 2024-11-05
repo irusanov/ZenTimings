@@ -1,0 +1,149 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/AdonisUI;component/ColorSchemes/Dark.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Themes/Base.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <BitmapImage x:Key="CameraImage" UriSource="../Resources/camera-light.png" />
+
+    <!-- Text color -->
+    <Color x:Key="{x:Static adonisUi:Colors.ForegroundColor}">#D1D4C9</Color>
+    <!-- Window title background -->
+    <Color x:Key="{x:Static adonisUi:Colors.Layer0BorderColor}">#161b37</Color>
+    <!-- Window background -->
+    <Color x:Key="{x:Static adonisUi:Colors.Layer0BackgroundColor}">#092237</Color>
+
+    <Color x:Key="{x:Static adonisUi:Colors.Layer3BorderColor}">#14151a</Color>
+
+    <Color x:Key="{x:Static adonisUi:Colors.Layer3BackgroundColor}">#161b37</Color>
+
+    <!-- Accent button and toggles -->
+    <Color x:Key="{x:Static adonisUi:Colors.AccentColor}">#7ccaa2</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.AccentForegroundColor}">#1f2029</Color>
+    <!-- Accent button and toggles hover -->
+    <Color x:Key="{x:Static adonisUi:Colors.AccentHighlightColor}">#60cd95</Color>
+    <!-- Accent button and toggles active -->
+    <Color x:Key="{x:Static adonisUi:Colors.AccentInteractionColor}">#5ad394</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.AccentInteractionBorderColor}">#5ad394</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.AccentIntenseHighlightBorderColor}">#5ad394</Color>
+    <!-- Dropdown and menu background, 5% lighter than window -->
+    <Color x:Key="{x:Static adonisUi:Colors.Layer1BackgroundColor}">#0c2d4a</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer1BorderColor}">#0c2d4a</Color>
+    <!-- Dropdown and menu hover background -->
+    <Color x:Key="{x:Static adonisUi:Colors.Layer1HighlightColor}">#0e385c</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer1HighlightBorderColor}">#0e385c</Color>
+    <!-- Window button hover color -->
+    <Color x:Key="{x:Static adonisUi:Colors.WindowButtonHighlightColor}">#092237</Color>
+
+    <Color x:Key="{x:Static adonisUi:Colors.Layer2HighlightColor}">#092237</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer2HighlightBorderColor}">#092237</Color>
+
+    <CornerRadius x:Key="{x:Static adonisUi:Dimensions.CornerRadius}">2</CornerRadius>
+
+    <SolidColorBrush x:Key="AccentTextColor" Color="{StaticResource {x:Static adonisUi:Colors.AccentColor}}" />
+
+    <!-- Panels -->
+    <SolidColorBrush x:Key="PanelBackground" Color="{StaticResource {x:Static adonisUi:Colors.Layer0BackgroundColor}}" />
+    <SolidColorBrush x:Key="BottomPanelBackground" Color="{StaticResource {x:Static adonisUi:Colors.Layer0BackgroundColor}}" />
+    <SolidColorBrush x:Key="MainMenuPanelBackground" Color="{StaticResource {x:Static adonisUi:Colors.Layer0BackgroundColor}}" />
+    <SolidColorBrush x:Key="MenuItemBackground" Color="{StaticResource {x:Static adonisUi:Colors.Layer0BackgroundColor}}" />
+
+    <SolidColorBrush x:Key="TextColor" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
+    <SolidColorBrush x:Key="SeparatorColor" Color="{StaticResource {x:Static adonisUi:Colors.Layer3BorderColor}}" />
+    <!-- SolidColorBrush x:Key="SuccessBackground" Color="{DynamicResource {x:Static adonisUi:Colors.Layer3BorderColor}}" /-->
+    <SolidColorBrush x:Key="SuccessBackground" Color="#327b56" />
+    <SolidColorBrush x:Key="DisabledColor" Color="#5b6c70" />
+    <SolidColorBrush x:Key="WindowBorderColor" Color="{StaticResource {x:Static adonisUi:Colors.Layer3BorderColor}}" />
+
+    <LinearGradientBrush x:Key="BackgroundGradientBrush" StartPoint="0.5,1" EndPoint="0.5,0">
+        <GradientStop Color="#092237" Offset="0.0" />
+        <GradientStop Color="#161b37" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <Style x:Key="MainMenuStyles" TargetType="{x:Type Border}">
+        <Setter Property="Background" Value="{x:Null}" />
+        <Setter Property="Padding" Value="5 2 7 2" />
+    </Style>
+    <Style x:Key="MenuStyles" TargetType="{x:Type Menu}">
+        <Setter Property="Background" Value="{x:Null}" />
+    </Style>
+    <Style x:Key="BottomPanelStyles" TargetType="{x:Type Border}">
+        <Setter Property="Padding" Value="5" />
+        <Setter Property="Background" Value="{x:Null}" />
+    </Style>
+    <Style x:Key="PanelStyles" TargetType="{x:Type Border}">
+        <Setter Property="Background" Value="{x:Null}" />
+    </Style>
+    <Style x:Key="WindowStyles" TargetType="{x:Type Window}">
+        <Setter Property="BorderBrush" Value="{DynamicResource WindowBorderColor}" />
+        <Setter Property="Background" Value="{StaticResource BackgroundGradientBrush}" />
+    </Style>
+</ResourceDictionary>
+
+<!--
+Layer 0
+Layer0BackgroundColor
+Layer0BorderColor
+Layer 1
+Layer1BackgroundColor
+Layer1BorderColor
+Layer1HighlightColor
+Layer1HighlightBorderColor
+Layer1IntenseHighlightColor
+Layer1IntenseHighlightBorderColor
+Layer1InteractionColor
+Layer1InteractionBorderColor
+Layer1InteractionForegroundColor
+Layer 2
+Layer2BackgroundColor
+Layer2BorderColor
+Layer2HighlightColor
+Layer2HighlightBorderColor
+Layer2IntenseHighlightColor
+Layer2IntenseHighlightBorderColor
+Layer2InteractionColor
+Layer2InteractionBorderColor
+Layer2InteractionForegroundColor
+Layer 3
+Layer3BackgroundColor
+Layer3BorderColor
+Layer3HighlightColor
+Layer3HighlightBorderColor
+Layer3IntenseHighlightColor
+Layer3IntenseHighlightBorderColor
+Layer3InteractionColor
+Layer3InteractionBorderColor
+Layer3InteractionForegroundColor
+Layer 4
+Layer4BackgroundColor
+Layer4BorderColor
+Layer4HighlightColor
+Layer4HighlightBorderColor
+Layer4IntenseHighlightColor
+Layer4IntenseHighlightBorderColor
+Layer4InteractionColor
+Layer4InteractionBorderColor
+Layer4InteractionForegroundColor
+Accent
+AccentColor
+AccentForegroundColor
+AccentHighlightColor
+AccentIntenseHighlightColor
+AccentIntenseHighlightBorderColor
+AccentInteractionColor
+AccentInteractionBorderColor
+AccentInteractionForegroundColor
+Misc
+ForegroundColor
+DisabledForegroundColor
+DisabledAccentForegroundColor
+ErrorColor
+AlertColor
+SuccessColor
+HyperlinkColor
+WindowButtonHighlightColor
+WindowButtonInteractionColor
+-->
