@@ -27,14 +27,11 @@
         </Grid.RowDefinitions>
         <StackPanel Orientation="Vertical" Margin="15" Grid.ColumnSpan="2" Grid.Row="0" Width="424">
             <!-- TextBlock Text="Changelog" FontSize="14" FontWeight="Bold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" /-->
-            <TextBlock Text="v1.32 Aug 7, 2024" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" />
+            <TextBlock Text="v1.33 Nov 14 2024" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" />
             <TextBlock Text="" />
-            <TextBlock Text="  - Add support for Granite Ridge (Ryzen 9000 series)" TextWrapping="WrapWithOverflow" />
-            <TextBlock Text="  - Extend Phoenix support (Ryzen 8000 series)" TextWrapping="WrapWithOverflow" />
-            <TextBlock Text="  - Add experimental Nitro settings reading in System Info dialog" TextWrapping="WrapWithOverflow" />
-            <TextBlock Text="  - Add setting to control screenshot mode (window or desktop)" TextWrapping="WrapWithOverflow" />
+            <TextBlock Text="  - Update for AGESA 1.2.0.2a" TextWrapping="WrapWithOverflow" />
+            <TextBlock Text="  - Fixed detection of dual rank DDR5 memory sticks" TextWrapping="WrapWithOverflow" />
             <TextBlock Text="  - Update themes" TextWrapping="WrapWithOverflow" />
-            <TextBlock Text="  - Update site url" TextWrapping="WrapWithOverflow" />
             <TextBlock Text="" />
         </StackPanel>
         <Border Grid.Row="1" Grid.ColumnSpan="2" Margin="15">
