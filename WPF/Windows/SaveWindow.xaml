@@ -19,7 +19,9 @@
     Icon="/Resources/ZenTimings2022.ico"
     BorderThickness="1"
     UseLayoutRounding="True"
-    BorderBrush="{DynamicResource WindowBorderColor}" ShowInTaskbar="False">
+    BorderBrush="{DynamicResource WindowBorderColor}"
+    Style="{DynamicResource WindowStyles}"
+    ShowInTaskbar="False">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />

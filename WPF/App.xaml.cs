@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Globalization;
 using System.Threading;
 using System.Windows;
+using System.Windows.Markup;
 using ZenStates.Core;
 using ZenTimings.Windows;
 
@@ -29,6 +31,11 @@ namespace ZenTimings
                 Current.Shutdown();
                 Environment.Exit(0);
             }
+
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
+            FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(
+                        XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
 
             updater = new Updater();
 

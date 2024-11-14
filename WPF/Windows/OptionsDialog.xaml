@@ -20,7 +20,9 @@
     ShowInTaskbar="False"
     BorderThickness="1"
     UseLayoutRounding="True"
-    BorderBrush="{DynamicResource WindowBorderColor}" Closing="OptionsWindow_Closing">
+    BorderBrush="{DynamicResource WindowBorderColor}"
+    Style="{DynamicResource WindowStyles}"
+    Closing="OptionsWindow_Closing">
 
     <StackPanel x:Name="OptionWindowContent">
         <Popup
@@ -101,6 +103,7 @@
                 <ComboBoxItem Content="Light" />
                 <ComboBoxItem Content="Dark" />
                 <ComboBoxItem Content="Dark Mint" />
+                <ComboBoxItem Content="Dark Mint Gradient" />
                 <ComboBoxItem Content="Dark Red" />
                 <ComboBoxItem Content="Dracula" />
                 <ComboBoxItem Content="Retro Wave" />
