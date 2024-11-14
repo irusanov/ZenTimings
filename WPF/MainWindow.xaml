@@ -348,6 +348,9 @@
                             <TextBlock x:Name="labelVddMisc" Text="VDD MISC" IsEnabled="{Binding powerTable.VDD_MISC}" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
 
                             <TextBlock Text="" TextAlignment="Right" />
+                        
+                            <TextBlock x:Name="labelProcOdtPullUp" ToolTip="Processor Odt Impedance Pull Up" Text="ProcOdt Pu" IsEnabled="False" TextAlignment="Right" Visibility="Collapsed" />
+                            <TextBlock x:Name="labelProcOdtPullDown" Text="ProcOdt Pd" ToolTip="Processor Odt Impedance Pull Down" IsEnabled="False" TextAlignment="Right" Visibility="Collapsed" />
                             <TextBlock
                                 x:Name="labelProcODT"
                                 Text="ProcOdt"
@@ -389,6 +392,7 @@
                             <TextBlock x:Name="labelDramDqDs" Text="DramDqDs" IsEnabled="False" TextAlignment="Right" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
 
                             <TextBlock
+                                x:Name="procOdtDivider1"
                                 Text=""
                                 TextAlignment="Right"
                                 Visibility="{Binding codeName, Mode=OneWay, Converter={StaticResource PhoenixToBool}, ConverterParameter=Invisible}" />
@@ -454,7 +458,18 @@
                             <TextBlock x:Name="textBoxVddMisc" Text="{Binding powerTable.VDD_MISC, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" Style="{DynamicResource ValueStyles}" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
 
                             <TextBlock Text="" />
+
                             <!-- DDR4 + DDR5 -->
+                            <TextBlock
+                                x:Name="textBoxProcOdtPullUp"
+                                Text="N/A"
+                                Style="{DynamicResource ValueStyles}"
+                                Visibility="Collapsed" />
+                            <TextBlock
+                                x:Name="textBoxProcOdtPullDown"
+                                Text="N/A"
+                                Style="{DynamicResource ValueStyles}"
+                                Visibility="Collapsed" />
                             <TextBlock
                                 x:Name="textBoxProcODT"
                                 Text="N/A"
@@ -491,6 +506,7 @@
                             <TextBlock x:Name="textBoxDramDataDrvStren" Text="N/A" Style="{DynamicResource ValueStyles}" Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}" />
 
                             <TextBlock
+                                x:Name="procOdtDivider2"
                                 Text=""
                                 Visibility="{Binding codeName, Mode=OneWay, Converter={StaticResource PhoenixToBool}, ConverterParameter=Invisible}" />       
                             <!-- DDR4 -->

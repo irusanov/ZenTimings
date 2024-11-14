@@ -165,7 +165,7 @@ namespace ZenTimings
                     cpu.info.codeName,
                     WMIPresent = !compatMode && cpu.GetMemoryConfig().Type == MemType.DDR4,
                     settings,
-                    plugins
+                    plugins,
                 };
             }
             catch (Exception ex)
@@ -217,6 +217,9 @@ namespace ZenTimings
             //cpu?.io?.Close(settings.AutoUninstallDriver);
             cpu?.Dispose();
             settings.Save();
+
+            //Driver.Cleanup();
+
             Application.Current.Shutdown();
         }
 
@@ -436,7 +439,8 @@ namespace ZenTimings
 
                     try
                     {
-                        if (cpu.info.codeName == Cpu.CodeName.Phoenix || cpu.info.codeName == Cpu.CodeName.Phoenix2 || cpu.info.codeName == Cpu.CodeName.HawkPoint)
+                        Cpu.CodeName codeName = cpu.info.codeName;
+                        if (codeName == Cpu.CodeName.Phoenix || codeName == Cpu.CodeName.Phoenix2 || codeName == Cpu.CodeName.HawkPoint)
                         {
                             labelProcCaOdt.IsEnabled = true;
                             labelProcCkOdt.IsEnabled = true;
@@ -446,6 +450,21 @@ namespace ZenTimings
                             textBoxProcCkOdt.Text = Data.ProcCkOdt.ToString();
                             textBoxProcDqOdt.Text = Data.ProcDqOdt.ToString();
                             textBoxProcDqsOdt.Text = Data.ProcDqsOdt.ToString();
+                        }
+                        else if (cpu.info.family == Cpu.Family.FAMILY_1AH && Data.ProcOdtPullUp != null)
+                        {
+                            labelProcODT.Visibility = Visibility.Collapsed;
+                            textBoxProcODT.Visibility = Visibility.Collapsed;
+                            procOdtDivider1.Visibility = Visibility.Collapsed;
+                            procOdtDivider2.Visibility = Visibility.Collapsed;
+                            labelProcOdtPullUp.Visibility = Visibility.Visible;
+                            labelProcOdtPullUp.IsEnabled = true;
+                            labelProcOdtPullDown.Visibility = Visibility.Visible;
+                            labelProcOdtPullDown.IsEnabled = true;
+                            textBoxProcOdtPullUp.Visibility = Visibility.Visible;
+                            textBoxProcOdtPullDown.Visibility = Visibility.Visible;
+                            textBoxProcOdtPullUp.Text = Data.ProcOdtPullUp.ToString();
+                            textBoxProcOdtPullDown.Text = Data.ProcOdtPullDown.ToString();
                         }
                         else
                         {

@@ -142,7 +142,18 @@ namespace ZenTimings.Windows
             uint channelsPerDimm = 1; // memoryConfig.Type >= ZenStates.Core.DRAM.MemoryConfig.MemType.DDR5 ? 2u : 1u;
             AddHeading("Memory Channels Info");
 
-            for (var i = 0u; i < 8u * channelsPerDimm; i += channelsPerDimm)
+            AddLine("-- UMC Configuration");
+
+            for (var i = 0u; i < 0xC; i += 1)
+            {
+                var offset = i << 20;
+                var reg = offset | 0x50100;
+                AddLine($"0x{reg:X8}: 0x{cpu.ReadDword(reg):X8}");
+            }
+
+            AddLine();
+
+            for (var i = 0u; i < 0xC * channelsPerDimm; i += channelsPerDimm)
             {
                 try
                 {
@@ -226,6 +237,7 @@ namespace ZenTimings.Windows
                 AddLine($"-- DCT Offset: 0x{module.DctOffset >> 20:X}");
                 AddLine($"-- Manufacturer: {module.Manufacturer}");
                 AddLine($"-- {module.PartNumber} {module.Capacity} {module.ClockSpeed}MHz");
+                AddLine($"-- {module.AddressConfig}");
                 AddLine();
             }
 
