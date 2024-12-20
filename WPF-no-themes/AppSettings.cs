@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Windows;
 using System.Xml.Serialization;
@@ -8,37 +8,49 @@ namespace ZenTimings
     [Serializable]
     public sealed class AppSettings
     {
-        private const int VERSION_MAJOR = 1;
-        private const int VERSION_MINOR = 1;
+        public const int VersionMajor = 1;
+        public const int VersionMinor = 4;
 
-        private const string filename = "settings.xml";
+        private static readonly string Filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.xml");
 
-        public enum THEME : int
+        private static AppSettings _instance = null;
+
+        private AppSettings() { }
+
+        public static AppSettings Instance
         {
-            LIGHT,
-            DARK,
-            DARK_MINT,
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new AppSettings().Load();
+                }
+
+                return _instance;
+            }
         }
 
-        public AppSettings Create()
+        public enum Theme : int
         {
-            Version = $"{VERSION_MAJOR}.{VERSION_MINOR}";
-            AppTheme = THEME.LIGHT;
-            AutoRefresh = true;
-            AutoRefreshInterval = 2000;
-            AdvancedMode = true;
-            // DarkMode = false;
-            CheckForUpdates = true;
-            SaveWindowPosition = false;
-            WindowLeft = 0;
-            WindowTop = 0;
-            SysInfoWindowLeft = 0;
-            SysInfoWindowHeight = 0;
-            SysInfoWindowWidth = 0;
-            NotifiedChangelog = "";
-            NotifiedRembrandt = "";
+            Light,
+            Dark,
+            DarkMint,
+            DarkMintGradient,
+            DarkRed,
+            Dracula,
+            RetroWave,
+            BurntOrange,
+        }
 
-            Save();
+        public enum ScreenshotType : int
+        {
+            Window,
+            Desktop,
+        }
+
+        public AppSettings Create(bool save = true)
+        {
+            if (save) Save();
 
             return this;
         }
@@ -47,46 +59,44 @@ namespace ZenTimings
 
         public AppSettings Load()
         {
-            if (File.Exists(filename))
+            try
             {
-                using (StreamReader sr = new StreamReader(filename))
+                if (File.Exists(Filename))
                 {
-                    try
+                    using (StreamReader sr = new StreamReader(Filename))
                     {
                         XmlSerializer xmls = new XmlSerializer(typeof(AppSettings));
                         return xmls.Deserialize(sr) as AppSettings;
                     }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                        sr.Close();
-                        MessageBox.Show(
-                            "Invalid settings file!\nSettings will be reset to defaults.",
-                            "Error",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Error);
-                        return Create();
-                    }
                 }
             }
-            else
+            catch (Exception ex)
             {
-                return Create();
+                Console.WriteLine(ex.Message);
+                MessageBox.Show(
+                    "Invalid or outdated settings file!\nSettings will be reset to defaults.",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
             }
+
+            return Create();
         }
 
         public void Save()
         {
             try
             {
-                using (StreamWriter sw = new StreamWriter(filename))
+                Version = $"{VersionMajor}.{VersionMinor}";
+                using (StreamWriter sw = new StreamWriter(Filename))
                 {
                     XmlSerializer xmls = new XmlSerializer(typeof(AppSettings));
                     xmls.Serialize(sw, this);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 MessageBox.Show(
                     "Could not save settings to file!",
                     "Error",
@@ -95,17 +105,18 @@ namespace ZenTimings
             }
         }
 
-        public string Version { get; set; } = $"{VERSION_MAJOR}.{VERSION_MINOR}";
+        public string Version { get; set; } = $"{VersionMajor}.{VersionMinor}";
         public bool AutoRefresh { get; set; } = true;
         public int AutoRefreshInterval { get; set; } = 2000;
         public bool AdvancedMode { get; set; } = true;
-        // public bool DarkMode { get; set; }
-        public THEME AppTheme { get; set; } = THEME.LIGHT;
+        public Theme AppTheme { get; set; } = Theme.DarkMintGradient;
+        public ScreenshotType ScreenshotMode { get; set; } = ScreenshotType.Window;
         public bool CheckForUpdates { get; set; } = true;
         public string UpdaterSkippedVersion { get; set; } = "";
         public string UpdaterRemindLaterAt { get; set; } = "";
         public bool MinimizeToTray { get; set; }
         public bool SaveWindowPosition { get; set; }
+        public bool AutoUninstallDriver { get; set; } = true;
         public double WindowLeft { get; set; }
         public double WindowTop { get; set; }
         public double SysInfoWindowLeft { get; set; }

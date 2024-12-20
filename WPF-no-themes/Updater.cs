@@ -16,9 +16,9 @@ namespace ZenTimings
         private static bool manual;
         private static string ChangelogText { get; set; }
 #if DEBUG
-        private const string url = "https://zentimings.protonrom.com/AutoUpdater_debug.xml";
+        private const string url = "https://zentimings.com/AutoUpdater_debug.xml";
 #else
-        private const string url = "https://zentimings.protonrom.com/AutoUpdater.xml";
+        private const string url = "https://zentimings.com/AutoUpdater.xml";
 #endif
         protected virtual void OnUpdateCheckCompleteEvent(EventArgs e)
         {
@@ -30,7 +30,6 @@ namespace ZenTimings
 
         public Updater()
         {
-
             AutoUpdater.RunUpdateAsAdmin = true;
             AutoUpdater.Synchronous = true;
             AutoUpdater.LetUserSelectRemindLater = false;
@@ -102,7 +101,7 @@ namespace ZenTimings
 
         private void AutoUpdaterOnCheckForUpdateEvent(UpdateInfoEventArgs args)
         {
-            if (args.Error == null)
+            if (args != null && args.Error == null)
             {
                 if (args.IsUpdateAvailable)
                 {
@@ -158,8 +157,8 @@ namespace ZenTimings
                 else
                 {
                     MessageBox.Show(
-                        args.Error.Message,
-                        args.Error.GetType().ToString(),
+                        @"There is a problem reaching update server. The reason is unknown.",
+                        @"Update Check Failed",
                         MessageBoxButton.OK,
                         MessageBoxImage.Error);
                 }

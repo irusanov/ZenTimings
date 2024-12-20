@@ -6,7 +6,7 @@ namespace ZenTimings
 {
     public sealed class UpdaterPersistenceProvider : IPersistenceProvider
     {
-        internal readonly AppSettings appSettings = (Application.Current as App)?.settings;
+        internal readonly AppSettings appSettings = AppSettings.Instance;
         public UpdaterPersistenceProvider() { }
 
         /// <summary>

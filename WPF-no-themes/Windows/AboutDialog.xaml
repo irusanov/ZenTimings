@@ -27,7 +27,7 @@
             StaysOpen="False"
             ScrollViewer.VerticalScrollBarVisibility="Disabled" MouseDown="AboutWindowPopup_MouseDown">
             <TextBlock
-                Name="optionsPopupText" 
+                Name="optionsPopupText"
                 Background="{DynamicResource SuccessBackground}"
                 Padding="10" Opacity="0.95">
                 ZenTimings is up to date.
@@ -45,8 +45,8 @@
                 <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
 
-            <TabControl 
-                HorizontalAlignment="Left" 
+            <TabControl
+                HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Grid.Column="0"
                 Grid.ColumnSpan="3"
@@ -88,9 +88,9 @@
                                 <TextBlock x:Name="labelCopyright" Text="" Padding="0 2 5 2" />
                                 <TextBlock x:Name="labelCompanyName" Text="" Padding="0 2 5 2" />
                                 <TextBlock Padding="0 2 5 2">
-                                    <Hyperlink NavigateUri="https://zentimings.protonrom.com"
+                                    <Hyperlink NavigateUri="https://zentimings.com"
                                                RequestNavigate="Hyperlink_RequestNavigate">
-                                        <Run Text="https://zentimings.protonrom.com" />
+                                        <Run Text="https://zentimings.com" />
                                     </Hyperlink>
                                 </TextBlock>
                             </StackPanel>
@@ -139,6 +139,7 @@
                 HorizontalAlignment="Right"
                 Width="60"
                 Margin="10" />
+
         </Grid>
     </StackPanel>
 </Window>
