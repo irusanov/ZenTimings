@@ -40,7 +40,7 @@ namespace ZenTimings
         private readonly MemoryConfig MEMCFG = new MemoryConfig();
         private readonly List<MemoryModule> modules = new List<MemoryModule>();
         private readonly DispatcherTimer PowerCfgTimer = new DispatcherTimer();
-        private readonly AppSettings settings = (Application.Current as App)?.settings;
+        private readonly AppSettings settings = AppSettings.Instance;
         private readonly List<IPlugin> plugins = new List<IPlugin>();
         private SystemInfoWindow siWnd = null;
         internal readonly Forms.NotifyIcon _notifyIcon;

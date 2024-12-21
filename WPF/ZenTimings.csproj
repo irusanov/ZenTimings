@@ -96,6 +96,9 @@
     <Compile Include="..\Common\BiosMemController.cs">
       <Link>Common\BiosMemController.cs</Link>
     </Compile>
+    <Compile Include="..\Common\CpuSingleton.cs">
+      <Link>Common\CpuSingleton.cs</Link>
+    </Compile>
     <Compile Include="..\Common\MemoryConfig.cs">
       <Link>Common\MemoryConfig.cs</Link>
     </Compile>
@@ -117,7 +120,6 @@
     <Compile Include="Converters\FloatToVoltageConverter.cs" />
     <Compile Include="Converters\DDR5ToVisConverter.cs" />
     <Compile Include="Converters\PhoenixToVisConverter.cs" />
-    <Compile Include="CpuSingleton.cs" />
     <Compile Include="Plugin\IPlugin.cs" />
     <Compile Include="Plugin\OHWMPlugin.cs" />
     <Compile Include="Plugin\SVI2Plugin.cs" />
@@ -140,8 +142,8 @@
     <Compile Include="Windows\OptionsDialog.xaml.cs">
       <DependentUpon>OptionsDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\SaveWindow.xaml.cs">
-      <DependentUpon>SaveWindow.xaml</DependentUpon>
+    <Compile Include="Windows\SaveScreenshotWindow.xaml.cs">
+      <DependentUpon>SaveScreenshotWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\SplashWindow.xaml.cs">
       <DependentUpon>SplashWindow.xaml</DependentUpon>
@@ -209,7 +211,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\SaveWindow.xaml">
+    <Page Include="Windows\SaveScreenshotWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -251,6 +253,12 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\ROG\ROG-logo-mint-40.png" />
+    <Resource Include="Resources\ROG\ROG-logo-retro-40.png" />
+    <Resource Include="Resources\ROG\ROG-logo-burnt-40.png" />
+    <Resource Include="Resources\ROG\ROG-logo-dracula-40.png" />
+    <Resource Include="Resources\ROG\ROG-logo-white-40.png" />
+    <Resource Include="Resources\ROG\ROG-logo-red-40.png" />
     <Resource Include="Resources\new-icon\64.png" />
     <Resource Include="Resources\new-icon\16.png" />
     <Resource Include="Resources\ZenTimings2022.ico" />

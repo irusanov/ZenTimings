@@ -13,7 +13,6 @@ namespace ZenTimings.Windows
     /// </summary>
     public partial class SystemInfoWindow
     {
-        internal readonly AppSettings appSettings = (Application.Current as App)?.settings;
         private class GridItem
         {
             public string Name { get; set; }
@@ -126,6 +125,7 @@ namespace ZenTimings.Windows
 
         private void AdonisWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            AppSettings appSettings = AppSettings.Instance;
             if (appSettings.SaveWindowPosition)
             {
                 appSettings.SysInfoWindowLeft = Left;

@@ -7,7 +7,7 @@ namespace ZenTimings.Windows
     /// </summary>
     public partial class SplashWindow
     {
-        internal static readonly AppSettings appSettings = (Application.Current as App)?.settings;
+        internal static readonly AppSettings appSettings = AppSettings.Instance;
         internal static readonly Updater updater = (Application.Current as App)?.updater;
         public static readonly SplashWindow splash = new SplashWindow();
 
