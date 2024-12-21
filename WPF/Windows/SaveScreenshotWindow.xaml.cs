@@ -50,7 +50,7 @@ namespace ZenTimings.Windows
 
         private void ButtonCopyToClipboard_Click(object sender, RoutedEventArgs e)
         {
-            Clipboard.SetDataObject(screenshot);
+            Clipboard.SetDataObject(screenshot, true);
             statusStrip1.Visibility = Visibility.Visible;
         }
 
