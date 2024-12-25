@@ -166,6 +166,8 @@ namespace ZenTimings
                     WMIPresent = !compatMode && cpu.GetMemoryConfig().Type == MemType.DDR4,
                     settings,
                     plugins,
+                    IsRogMotherboard = IsRogMotherboard(cpu.systemInfo),
+                    RogLogoTooltip = $"Click to visit {cpu.systemInfo.MbName} page",
                 };
             }
             catch (Exception ex)
@@ -876,6 +878,28 @@ namespace ZenTimings
             }
         }
 
+        private static bool IsRogMotherboard(SystemInfo info)
+        {
+            return info.MbVendor.ToLower().Contains("asus") && info.MbName.ToLower().StartsWith("rog");
+        }
+
+        private static string GetMotherboardLink(SystemInfo info)
+        {
+            if (!IsRogMotherboard(info))
+                return null;
+
+            string[] mbNameParts = info.MbName.ToLower().Split(' ');
+            string series = $"{mbNameParts[0]}-{mbNameParts[1]}";
+            string name = string.Join("-", mbNameParts);
+
+            if (!mbNameParts.Contains("870"))
+            {
+                name = $"{name}-model";
+            }
+
+            return $"https://rog.asus.com/motherboards/{series}/{name}";
+        }
+
         private void Window_Initialized(object sender, EventArgs e)
         {
             if (settings.SaveWindowPosition)
@@ -906,8 +930,13 @@ namespace ZenTimings
             if (cpu != null)
             {
                 labelCPU.Text = GetCpuNameString(cpu.systemInfo);
-                labelMB.Text =
-                    $"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} | SMU {cpu.systemInfo.GetSmuVersionString()}";
+                //string mbLabel = $@"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} | SMU {cpu.systemInfo.GetSmuVersionString()}";
+                
+                //if (mbLabel.Length > 58)
+                //{
+                //    mbLabel = $@"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} ({cpu.systemInfo.GetSmuVersionString()})";
+                //}
+                labelMB.Text = $@"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} ({cpu.systemInfo.GetSmuVersionString()})";
             }
             //ShowWindow();
 
@@ -1068,7 +1097,7 @@ namespace ZenTimings
                 sysInfoWindowWidth = settings.SysInfoWindowWidth;
             }
 
-            siWnd = new SystemInfoWindow(cpu, MEMCFG, BMC.Config, AsusWmi?.sensors)
+            siWnd = new SystemInfoWindow(MEMCFG, BMC.Config, AsusWmi?.sensors)
             {
                 Width = sysInfoWindowWidth,
                 Height = sysInfoWindowHeight,
@@ -1118,6 +1147,11 @@ namespace ZenTimings
         {
             Config Config = new Config(MEMCFG, BMC.Config/*, cpu.powerTable*/);
             Console.WriteLine(Config.GetXML());
+        }
+
+        private void RogLogoButton_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(GetMotherboardLink(cpu.systemInfo));
         }
     }
 }
