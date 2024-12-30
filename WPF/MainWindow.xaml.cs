@@ -1151,7 +1151,9 @@ namespace ZenTimings
 
         private void RogLogoButton_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(GetMotherboardLink(cpu.systemInfo));
+            var link = GetMotherboardLink(cpu.systemInfo);
+            if (link != null && link.Length > 0)
+                Process.Start(link);
         }
     }
 }
