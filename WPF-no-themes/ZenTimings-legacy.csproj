@@ -87,11 +87,11 @@
     <Compile Include="..\Common\BiosMemController.cs">
       <Link>Common\BiosMemController.cs</Link>
     </Compile>
+    <Compile Include="..\Common\CpuSingleton.cs">
+      <Link>Common\CpuSingleton.cs</Link>
+    </Compile>
     <Compile Include="..\Common\MemoryConfig.cs">
       <Link>Common\MemoryConfig.cs</Link>
-    </Compile>
-    <Compile Include="..\Common\MemoryModule.cs">
-      <Link>Common\MemoryModule.cs</Link>
     </Compile>
     <Compile Include="..\Common\Screenshot.cs">
       <Link>Common\Screenshot.cs</Link>
@@ -101,9 +101,6 @@
     </Compile>
     <Compile Include="..\Common\UpdaterPersistenceProvider.cs">
       <Link>Common\UpdaterPersistenceProvider.cs</Link>
-    </Compile>
-    <Compile Include="..\Common\WMI.cs">
-      <Link>Common\WMI.cs</Link>
     </Compile>
     <Compile Include="..\WPF\Common\ISensor.cs">
       <Link>Common\ISensor.cs</Link>
@@ -122,6 +119,9 @@
     </Compile>
     <Compile Include="..\WPF\Converters\FloatToNAConverter.cs">
       <Link>Converters\FloatToNAConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\WPF\Converters\PhoenixToVisConverter.cs">
+      <Link>Converters\PhoenixToVisConverter.cs</Link>
     </Compile>
     <Compile Include="..\WPF\Converters\FloatToVoltageConverter.cs">
       <Link>Converters\FloatToVoltageConverter.cs</Link>

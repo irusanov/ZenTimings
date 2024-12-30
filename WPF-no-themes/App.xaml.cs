@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Globalization;
 using System.Threading;
 using System.Windows;
+using System.Windows.Markup;
 using ZenStates.Core;
 using ZenTimings.Windows;
 
@@ -14,7 +16,6 @@ namespace ZenTimings
         internal const string mutexName = "Local\\ZenTimings";
         internal static Mutex instanceMutex;
         internal bool createdNew;
-        public readonly AppSettings settings = new AppSettings().Load();
         public Updater updater;
 
         protected override void OnStartup(StartupEventArgs e)
@@ -29,6 +30,11 @@ namespace ZenTimings
                 Current.Shutdown();
                 Environment.Exit(0);
             }
+
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
+            FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(
+                        XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
 
             updater = new Updater();
 

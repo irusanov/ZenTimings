@@ -13,18 +13,17 @@ namespace ZenTimings.Windows
     /// </summary>
     public partial class SystemInfoWindow
     {
-        internal readonly AppSettings appSettings = (Application.Current as App)?.settings;
         private class GridItem
         {
             public string Name { get; set; }
             public string Value { get; set; }
         }
 
-        public SystemInfoWindow(Cpu cpu, MemoryConfig mc, Resistances mcConfig, List<AsusSensorInfo> asusSensors)
+        public SystemInfoWindow(MemoryConfig mc, Resistances mcConfig, List<AsusSensorInfo> asusSensors)
         {
             InitializeComponent();
-            SystemInfo si = cpu.systemInfo;
-            AodData aodData = cpu.info.aod.Table.Data;
+            SystemInfo si = CpuSingleton.Instance.systemInfo;
+            AodData aodData = CpuSingleton.Instance.info.aod.Table.Data;
             Type type = si.GetType();
             PropertyInfo[] properties = type.GetProperties();
             List<GridItem> items;
@@ -63,7 +62,7 @@ namespace ZenTimings.Windows
 
                 if (mc.Type == MemoryConfig.MemType.DDR5)
                 {
-                    List<KeyValuePair<uint, BaseDramTimings>> timingsConfig = cpu.GetMemoryConfig().Timings;
+                    List<KeyValuePair<uint, BaseDramTimings>> timingsConfig = CpuSingleton.Instance.GetMemoryConfig().Timings;
                     Ddr5Timings timings = timingsConfig[0].Value as Ddr5Timings;
 
                     items.Add(new GridItem() { Name = "Nitro Settings", Value = timings.Nitro.ToString() });
@@ -126,6 +125,7 @@ namespace ZenTimings.Windows
 
         private void AdonisWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            AppSettings appSettings = AppSettings.Instance;
             if (appSettings.SaveWindowPosition)
             {
                 appSettings.SysInfoWindowLeft = Left;

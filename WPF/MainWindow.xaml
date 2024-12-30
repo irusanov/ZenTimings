@@ -49,6 +49,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="3" />
                     </Grid.ColumnDefinitions>
                     <Menu x:Name="MainMenu" Grid.Column="0" Style="{DynamicResource MenuStyles}">
                         <MenuItem Header="_File">
@@ -95,10 +96,33 @@
             <!-- System Info Panel -->
             <Border Style="{DynamicResource PanelStyles}"
                     Visibility="{Binding settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
-                <StackPanel>
-                    <TextBlock x:Name="labelCPU" Text="N/A" Padding="12 5 12 0" />
-                    <TextBlock x:Name="labelMB" Text="N/A" Padding="12 0 12 5" />
-                </StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock x:Name="labelCPU" Text="N/A" Padding="12 5 5 0" />
+                        <TextBlock x:Name="labelMB" Text="N/A" Padding="12 0 5 5" />
+                    </StackPanel>
+                    <Border Padding="0 0 5 0" Grid.Column="2"
+                            Visibility="{Binding IsRogMotherboard, Mode=OneTime, Converter={StaticResource BoolToVis}}">
+
+                        <Button
+                            BorderThickness="0"
+                            Padding="0"
+                            Style="{DynamicResource CameraButtonStyle}"
+                            ForceCursor="True"
+                            Cursor="Hand"
+                            Click="RogLogoButton_Click"
+                            ToolTip="{Binding RogLogoTooltip, Mode=OneTime}">
+                            <Image Source="{DynamicResource ROGLogo}"
+                               Height="40"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Right"/>
+                        </Button>
+                    </Border>
+                </Grid>
             </Border>
 
             <Border Style="{DynamicResource Separator}"
@@ -538,6 +562,8 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="240" />
+                        <ColumnDefinition Width="5" />
+                        <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
@@ -546,7 +572,7 @@
                         Text="{Binding timings.Type, FallbackValue=''}"
                         Style="{DynamicResource ValueStyles}"
                         Visibility="{Binding settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}"
-                        Grid.Column="1"
+                        Grid.Column="3"
                         TextAlignment="Right"
                         Margin="0,0,5,0"
                         IsEnabled="False"

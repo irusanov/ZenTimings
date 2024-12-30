@@ -12,6 +12,7 @@ namespace ZenTimings.Windows
     public partial class SaveWindow : IDisposable
     {
         private static Bitmap screenshot;
+
         public SaveWindow(Bitmap bitmap)
         {
             screenshot = bitmap;

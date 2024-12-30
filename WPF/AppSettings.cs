@@ -1,8 +1,10 @@
 using AdonisUI;
 using System;
 using System.IO;
+using System.Management.Instrumentation;
 using System.Windows;
 using System.Xml.Serialization;
+using ZenStates.Core;
 
 namespace ZenTimings
 {
@@ -13,6 +15,23 @@ namespace ZenTimings
         public const int VersionMinor = 4;
 
         private static readonly string Filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.xml");
+
+        private static AppSettings _instance = null;
+
+        private AppSettings() { }
+
+        public static AppSettings Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new AppSettings().Load();
+                }
+
+                return _instance;
+            }
+        }
 
         public enum Theme : int
         {

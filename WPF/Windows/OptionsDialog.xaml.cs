@@ -14,7 +14,7 @@ namespace ZenTimings.Windows
     public partial class OptionsDialog
     {
         //private const string Caption = "Disabling auto-refresh might lead to inaccurate voltages and frequencies on first launch";
-        internal readonly AppSettings appSettings = (Application.Current as App)?.settings;
+        internal readonly AppSettings appSettings = AppSettings.Instance;
         private readonly DispatcherTimer timerInstance;
         private DispatcherTimer notificationTimer;
         private Theme _Theme;

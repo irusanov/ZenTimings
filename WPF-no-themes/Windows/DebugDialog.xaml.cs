@@ -7,24 +7,23 @@ using System.IO;
 using System.Management;
 using System.Windows;
 using ZenStates.Core;
-
+using ZenStates.Core.DRAM;
+using Application = System.Windows.Application;
 namespace ZenTimings.Windows
 {
     /// <summary>
-    /// Interaction logic for DebugDialog.xaml
+    ///     Interaction logic for DebugDialog.xaml
     /// </summary>
     public partial class DebugDialog
     {
         private readonly AsusWMI AWMI;
         private readonly BiosMemController BMC;
-        private readonly Cpu CPU;
+        private readonly Cpu cpu;
 
-        private readonly MemoryConfig MEMCFG;
-        private readonly List<MemoryModule> modules;
-        private readonly PowerTable PT;
+        private readonly ZenStates.Core.DRAM.MemoryConfig memoryConfig;
+        //private readonly List<MemoryModule> modules;
 
         //private readonly uint baseAddress;
-        private readonly SystemInfo SI;
         private readonly string wmiAMDACPI = "AMD_ACPI";
         private readonly string wmiScope = "root\\wmi";
         private ManagementObject classInstance;
@@ -33,16 +32,13 @@ namespace ZenTimings.Windows
         private string result = "";
         private delegate void Action();
 
-        public DebugDialog(Cpu cpu, List<MemoryModule> memModules, MemoryConfig memCfg,
-            BiosMemController biosMemCtrl, AsusWMI asusWmi)
+        public DebugDialog(BiosMemController biosMemCtrl, AsusWMI asusWmi)
         {
             InitializeComponent();
-            modules = memModules;
-            SI = cpu.systemInfo;
-            MEMCFG = memCfg;
-            PT = cpu.powerTable;
+            cpu = CpuSingleton.Instance;
+            //modules = memModules;
+            memoryConfig = cpu.GetMemoryConfig();
             BMC = biosMemCtrl;
-            CPU = cpu;
             AWMI = asusWmi;
         }
 
@@ -141,18 +137,31 @@ namespace ZenTimings.Windows
 
         private void PrintChannels()
         {
+            uint channelsPerDimm = 1; // memoryConfig.Type >= ZenStates.Core.DRAM.MemoryConfig.MemType.DDR5 ? 2u : 1u;
             AddHeading("Memory Channels Info");
-            for (var i = 0u; i < 8u; i++)
+
+            AddLine("-- UMC Configuration");
+
+            for (var i = 0u; i < 0xC; i += 1)
+            {
+                var offset = i << 20;
+                var reg = offset | 0x50100;
+                AddLine($"0x{reg:X8}: 0x{cpu.ReadDword(reg):X8}");
+            }
+
+            AddLine();
+
+            for (var i = 0u; i < 0xC * channelsPerDimm; i += channelsPerDimm)
             {
                 try
                 {
                     var offset = i << 20;
-                    var channel = Utils.GetBits(CPU.ReadDword(offset | 0x50DF0), 19, 1) == 0;
-                    var dimm1 = Utils.GetBits(CPU.ReadDword(offset | 0x50000), 0, 1) == 1;
-                    var dimm2 = Utils.GetBits(CPU.ReadDword(offset | 0x50008), 0, 1) == 1;
+                    var channel = Utils.GetBits(cpu.ReadDword(offset | 0x50DF0), 19, 1) == 0;
+                    var dimm1 = Utils.GetBits(cpu.ReadDword(offset | 0x50000), 0, 1) == 1;
+                    var dimm2 = Utils.GetBits(cpu.ReadDword(offset | 0x50008), 0, 1) == 1;
                     var enabled = channel && (dimm1 || dimm2);
 
-                    AddLine($"Channel{i}: {enabled}");
+                    AddLine($"Channel{i / channelsPerDimm}: {enabled}");
                     if (enabled)
                     {
                         AddLine("-- UMC Registers");
@@ -160,7 +169,7 @@ namespace ZenTimings.Windows
                         var endReg = offset | 0x50300;
                         while (startReg <= endReg)
                         {
-                            var data = CPU.ReadDword(startReg);
+                            var data = cpu.ReadDword(startReg);
                             AddLine($"   0x{startReg:X8}: 0x{data:X8}");
                             startReg += 4;
                         }
@@ -168,7 +177,7 @@ namespace ZenTimings.Windows
                 }
                 catch
                 {
-                    AddLine($"Channel{i}: <FAILED>");
+                    AddLine($"Channel{i / channelsPerDimm}: <FAILED>");
                 }
             }
             AddLine();
@@ -181,9 +190,11 @@ namespace ZenTimings.Windows
             result =
                 $"{System.Windows.Forms.Application.ProductName} {System.Windows.Forms.Application.ProductVersion} Debug Report" +
                 Environment.NewLine +
+                $"{"Core Version: "}{cpu.Version}" +
+                Environment.NewLine +
                 Environment.NewLine;
 
-            var type = SI.GetType();
+            var type = cpu.systemInfo.GetType();
             var properties = type.GetProperties();
 
             AddHeading("System Info");
@@ -194,35 +205,37 @@ namespace ZenTimings.Windows
                 foreach (var property in properties)
                 {
                     if (property.Name == "CpuId" || property.Name == "PatchLevel" || property.Name == "SmuTableVersion")
-                        AddLine($"{property.Name + ":",-19}{property.GetValue(SI, null):X8}");
+                        AddLine($"{property.Name + ":",-19}{property.GetValue(cpu.systemInfo, null):X8}");
                     else if (property.Name == "SmuVersion")
-                        AddLine($"{property.Name + ":",-19}{SI.GetSmuVersionString()}");
+                        AddLine($"{property.Name + ":",-19}{cpu.systemInfo.GetSmuVersionString()}");
                     else
-                        AddLine($"{property.Name + ":",-19}{property.GetValue(SI, null)}");
+                        AddLine($"{property.Name + ":",-19}{property.GetValue(cpu.systemInfo, null)}");
 
                 }
-                AddLine($"{"DRAM Base Address:",-19}{((long)CPU.powerTable.DramBaseAddressHi << 32) | CPU.powerTable.DramBaseAddress:X16}");
+                AddLine($"{"DRAM Base Address:",-19}{((long)cpu.powerTable.DramBaseAddressHi << 32) | cpu.powerTable.DramBaseAddress:X16}");
             }
             catch
             {
                 AddLine("<FAILED>");
             }
+
             AddLine();
 
             // DRAM modules info
             AddHeading("Memory Modules");
 
-            foreach (var module in modules)
+            foreach (var module in memoryConfig.Modules)
             {
                 AddLine($"{module.BankLabel} | {module.DeviceLocator}");
                 AddLine($"-- Slot: {module.Slot}");
-                if (module.Rank == MemRank.DR)
+                if (module.Rank == ZenStates.Core.DRAM.MemRank.DR)
                     AddLine("-- Dual Rank");
                 else
                     AddLine("-- Single Rank");
                 AddLine($"-- DCT Offset: 0x{module.DctOffset >> 20:X}");
                 AddLine($"-- Manufacturer: {module.Manufacturer}");
-                AddLine($"-- {module.PartNumber} {module.Capacity / 1024 / (1024 * 1024)}GB {module.ClockSpeed}MHz");
+                AddLine($"-- {module.PartNumber} {module.Capacity} {module.ClockSpeed}MHz");
+                AddLine($"-- {module.AddressConfig}");
                 AddLine();
             }
 
@@ -230,40 +243,73 @@ namespace ZenTimings.Windows
 
             // Memory timings info
             AddHeading("Memory Config");
-            type = MEMCFG.GetType();
+            type = memoryConfig.Timings[0].Value.GetType();
             properties = type.GetProperties();
 
             try
             {
                 foreach (var property in properties)
-                    AddLine($"{property.Name + ":",-16}{property.GetValue(MEMCFG, null)}");
+                    AddLine($"{property.Name + ":",-18}{memoryConfig.Timings[0].Value[property.Name]}");
             }
             catch
             {
                 AddLine("<FAILED>");
             }
+
+            AddLine();
+
+            // AOD Table
+            AddHeading("ACPI: AOD Table");
+            type = cpu.info.aod.Table.GetType();
+            properties = type.GetProperties();
+            try
+            {
+                foreach (var property in properties)
+                {
+                    AddLine($"{property.Name + ":",-19}{property.GetValue(cpu.info.aod.Table, null)}");
+                }
+            }
+            catch
+            {
+                AddLine("<FAILED>");
+            }
+
+            AddLine();
+
+            AddHeading("ACPI: Raw AOD Table");
+            try
+            {
+                for (var i = 0; i < cpu.info.aod.Table.RawAodTable.Length; i++)
+                    AddLine($"Index {i:D3}: {cpu.info.aod.Table.RawAodTable[i]:X2} ({cpu.info.aod.Table.RawAodTable[i]})");
+            }
+            catch
+            {
+                AddLine("<FAILED>");
+            }   
+
             AddLine();
 
             // Configured DRAM memory controller settings from BIOS
             AddHeading("BIOS: Memory Controller Config");
             try
             {
-                for (var i = 0; i < BMC.Table.Length; ++i)
+                for (var i = 0; i < BMC.Table.Length; i++)
                     AddLine($"Index {i:D3}: {BMC.Table[i]:X2} ({BMC.Table[i]})");
             }
             catch
             {
                 AddLine("<FAILED>");
             }
+
             AddLine();
 
             // SMU power table
             AddHeading("SMU: Power Table");
             try
             {
-                for (var i = 0; i < PT.Table.Length; ++i)
+                for (var i = 0; i < cpu.powerTable.Table.Length; i++)
                 {
-                    var temp = BitConverter.GetBytes(PT.Table[i]);
+                    var temp = BitConverter.GetBytes(cpu.powerTable.Table[i]);
                     AddLine($"Offset {i * 0x4:X3}: {BitConverter.ToSingle(temp, 0):F8}");
                 }
             }
@@ -271,21 +317,22 @@ namespace ZenTimings.Windows
             {
                 AddLine("<FAILED>");
             }
+
             AddLine();
 
             // SMU power table
             AddHeading("SMU: Power Table Detected Values");
             try
             {
-                type = PT.GetType();
+                type = cpu.powerTable.GetType();
                 properties = type.GetProperties();
 
                 foreach (var property in properties)
                 {
                     if (property.Name == "TableVersion")
-                        AddLine($"{property.Name + ":",-25}{property.GetValue(PT, null):X8}");
+                        AddLine($"{property.Name + ":",-25}{property.GetValue(cpu.powerTable, null):X8}");
                     else if (property.Name != "Table")
-                        AddLine($"{property.Name + ":",-25}{property.GetValue(PT, null)}");
+                        AddLine($"{property.Name + ":",-25}{property.GetValue(cpu.powerTable, null)}");
                 }
 
                 /*AddLine($"MCLK: {PT.MCLK}");
@@ -300,6 +347,7 @@ namespace ZenTimings.Windows
             {
                 AddLine("<FAILED>");
             }
+
             AddLine();
 
             // All WMI classes in root namespace
@@ -332,6 +380,7 @@ namespace ZenTimings.Windows
             {
                 AddLine("<FAILED>");
             }
+
             AddLine();
 
             PrintWmiFunctions();
@@ -349,6 +398,7 @@ namespace ZenTimings.Windows
                 {
                     AddLine("<FAILED>");
                 }
+
                 AddLine();
             }
 
@@ -358,7 +408,7 @@ namespace ZenTimings.Windows
                 uint startAddress = 0x0005A000;
                 uint endAddress = 0x0005A0FF;
 
-                if (CPU.smu.SMU_TYPE == SMU.SmuType.TYPE_APU1 || CPU.smu.SMU_TYPE == SMU.SmuType.TYPE_APU2)
+                if (cpu.smu.SMU_TYPE == SMU.SmuType.TYPE_APU1 || cpu.smu.SMU_TYPE == SMU.SmuType.TYPE_APU2)
                 {
                     startAddress = 0x0006F000;
                     endAddress = 0x0006F0FF;
@@ -366,8 +416,30 @@ namespace ZenTimings.Windows
 
                 while (startAddress <= endAddress)
                 {
-                    var data = CPU.ReadDword(startAddress);
-                    if (data != 0xFFFFFFFF)
+                    uint data = 0xFFFFFFFF;
+                    bool success = cpu.ReadDwordEx(startAddress, ref data);
+                    if (success)
+                    {
+                        AddLine($"0x{startAddress:X8}: 0x{data:X8}");
+                    }
+                    startAddress += 4;
+                }
+            }
+            catch
+            {
+                AddLine("<FAILED>");
+            }
+
+            AddHeading("SMU: SMUFUSE NBSMNIND");
+            try
+            {
+                uint startAddress = 0x0005D200;
+                uint endAddress = 0x0005D5FF;
+
+                while (startAddress <= endAddress)
+                {
+                    var data = cpu.ReadDword(startAddress);
+                    // if (data != 0xFFFFFFFF)
                     {
                         AddLine($"0x{startAddress:X8}: 0x{data:X8}");
                     }

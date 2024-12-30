@@ -16,7 +16,7 @@
     BorderBrush="{DynamicResource WindowBorderColor}"
     Style="{DynamicResource WindowStyles}"
     Activated="AdonisWindow_Activated"
-    Icon="/Resources/ZenTimings2022.ico"
+    Icon="/ZenTimings;component/Resources/new-icon/16.png"
     Closing="AdonisWindow_Closing">
 
     <Window.Resources>

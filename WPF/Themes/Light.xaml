@@ -8,6 +8,7 @@
     </ResourceDictionary.MergedDictionaries>
 
     <BitmapImage x:Key="CameraImage" UriSource="../Resources/camera-dark.png" />
+    <BitmapImage x:Key="ROGLogo" UriSource="/Resources/ROG/ROG-logo-red-40.png" />
 
     <SolidColorBrush x:Key="TextColor" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
     <SolidColorBrush x:Key="AccentTextColor" Color="#004b84" />

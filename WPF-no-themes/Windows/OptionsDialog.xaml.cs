@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -12,10 +14,10 @@ namespace ZenTimings.Windows
     public partial class OptionsDialog
     {
         //private const string Caption = "Disabling auto-refresh might lead to inaccurate voltages and frequencies on first launch";
-        internal readonly AppSettings appSettings = (Application.Current as App)?.settings;
+        internal readonly AppSettings appSettings = AppSettings.Instance;
         private readonly DispatcherTimer timerInstance;
         private DispatcherTimer notificationTimer;
-        private THEME _Theme;
+        private Theme _Theme;
         private readonly bool _AdvancedMode;
 
         public OptionsDialog(DispatcherTimer timer)
@@ -32,9 +34,12 @@ namespace ZenTimings.Windows
             checkBoxCheckUpdate.IsChecked = appSettings.CheckForUpdates;
             checkBoxSavePosition.IsChecked = appSettings.SaveWindowPosition;
             checkBoxMinimizeToTray.IsChecked = appSettings.MinimizeToTray;
+            //checkBoxAutoUninstallDriver.IsChecked = appSettings.AutoUninstallDriver;
             numericUpDownRefreshInterval.IsEnabled = appSettings.AutoRefresh && appSettings.AdvancedMode;
             numericUpDownRefreshInterval.Text = appSettings.AutoRefreshInterval.ToString();
             msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
+            //comboBoxTheme.SelectedIndex = (int)_Theme;
+            //comboBoxScreenshot.SelectedIndex = (int)appSettings.ScreenshotMode;
         }
 
         private void CheckBoxAutoRefresh_Click(object sender, RoutedEventArgs e)
@@ -59,12 +64,13 @@ namespace ZenTimings.Windows
             appSettings.CheckForUpdates = (bool)checkBoxCheckUpdate.IsChecked;
             appSettings.SaveWindowPosition = (bool)checkBoxSavePosition.IsChecked;
             appSettings.MinimizeToTray = (bool)checkBoxMinimizeToTray.IsChecked;
+            //appSettings.AutoUninstallDriver = (bool)checkBoxAutoUninstallDriver.IsChecked;
+            //appSettings.ScreenshotMode = (ScreenshotType)comboBoxScreenshot.SelectedIndex;
 
             appSettings.Save();
 
             timerInstance.Interval = TimeSpan.FromMilliseconds(appSettings.AutoRefreshInterval);
             _Theme = appSettings.AppTheme;
-
 
             if (notificationTimer != null)
                 if (notificationTimer.IsEnabled)
@@ -104,22 +110,41 @@ namespace ZenTimings.Windows
 
         private void ButtonSettingsCancel_Click(object sender, RoutedEventArgs e)
         {
-            // Restore theme on close if not saved
-            if (appSettings.AppTheme != _Theme)
-            {
-                appSettings.AppTheme = _Theme;
-            }
+            Close();
         }
 
         private void ButtonSettingsRestart_Click(object sender, RoutedEventArgs e)
         {
-            System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
+            ProcessStartInfo Info = new ProcessStartInfo
+            {
+                Arguments = "/C choice /C Y /N /D Y /T 1 & START \"\" \"" + Assembly.GetEntryAssembly().Location + "\"",
+                WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true,
+                FileName = "cmd.exe"
+            };
+            Process.Start(Info);
             Application.Current.Shutdown();
         }
 
         private void OptionsPopup_MouseDown(object sender, MouseButtonEventArgs e)
         {
             OptionsPopup.IsOpen = false;
+        }
+
+        private void OptionsWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            // Restore theme on close if not saved
+            if (appSettings.AppTheme != _Theme)
+            {
+                appSettings.AppTheme = _Theme;
+                //appSettings.ChangeTheme();
+            }
+        }
+
+        private void ComboBoxTheme_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            //appSettings.AppTheme = (Theme)comboBoxTheme.SelectedIndex;
+            //appSettings.ChangeTheme();
         }
     }
 }
