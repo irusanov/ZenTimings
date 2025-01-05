@@ -892,7 +892,7 @@ namespace ZenTimings
             string series = $"{mbNameParts[0]}-{mbNameParts[1]}";
             string name = string.Join("-", mbNameParts);
 
-            if (!mbNameParts.Contains("870"))
+            if (!(info.MbName.Contains("X870") || info.MbName.Contains("B850") || info.MbName.Contains("B840")))
             {
                 name = $"{name}-model";
             }
