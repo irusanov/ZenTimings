@@ -84,9 +84,8 @@
                         <Image Source="{DynamicResource CameraImage}"
                                Height="16"
                                Width="16"
-                               Stretch="None"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center" />
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center" />
                     </Button>
                 </Grid>
             </Border>

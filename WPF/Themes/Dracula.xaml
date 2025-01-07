@@ -5,10 +5,9 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/AdonisUI;component/ColorSchemes/Dark.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Themes/Base.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/camera-light.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/ROG/ROG-logo-dracula-40.xaml" />
     </ResourceDictionary.MergedDictionaries>
-
-    <BitmapImage x:Key="CameraImage" UriSource="../Resources/camera-light.png" />
-    <BitmapImage x:Key="ROGLogo" UriSource="/Resources/ROG/ROG-logo-dracula-40.png" />
 
     <!-- Text color -->
     <Color x:Key="{x:Static adonisUi:Colors.ForegroundColor}">#bd93f9</Color>
