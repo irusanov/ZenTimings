@@ -29,10 +29,9 @@
             <!-- TextBlock Text="Changelog" FontSize="14" FontWeight="Bold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" /-->
             <TextBlock Text="v1.35 Jan 10 2025" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" />
             <TextBlock Text="" />
-            <TextBlock Text="  - Update for AGESA 1.2.0.2b" TextWrapping="WrapWithOverflow" />
-            <TextBlock Text="  - Fixed Mendocino core detection" TextWrapping="WrapWithOverflow" />
-            <TextBlock Text="  - Fixed issue with captured screenshot not persisting in clipboard" TextWrapping="WrapWithOverflow" />
-            <TextBlock Text="  - Add ROG logo for applicable motherboards" TextWrapping="WrapWithOverflow" />
+            <TextBlock Text="  - Update for new 800-series chipsets" TextWrapping="WrapWithOverflow" />
+            <TextBlock Text="  - Fixed blurry icons on some systems" TextWrapping="WrapWithOverflow" />
+            <TextBlock Text="  - Improved 32GB dual rank modules impedance table" TextWrapping="WrapWithOverflow" />
             <TextBlock Text="" />
         </StackPanel>
         <Border Grid.Row="1" Grid.ColumnSpan="2" Margin="15">
