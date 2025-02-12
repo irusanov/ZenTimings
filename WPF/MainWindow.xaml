@@ -102,7 +102,8 @@
                     </Grid.ColumnDefinitions>
                     <StackPanel Orientation="Vertical">
                         <TextBlock x:Name="labelCPU" Text="N/A" Padding="12 5 5 0" />
-                        <TextBlock x:Name="labelMB" Text="N/A" Padding="12 0 5 5" />
+                        <TextBlock x:Name="labelMB" Text="N/A" Padding="12 0 5 0" />
+                        <TextBlock x:Name="labelAgesaVersion" Text="N/A" Padding="12 0 5 5" />
                     </StackPanel>
                     <Border Padding="0 0 5 0" Grid.Column="2"
                             Visibility="{Binding IsRogMotherboard, Mode=OneTime, Converter={StaticResource BoolToVis}}">
