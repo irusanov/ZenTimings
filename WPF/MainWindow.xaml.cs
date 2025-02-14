@@ -99,12 +99,12 @@ namespace ZenTimings
 
                 InitializeComponent();
                 SplashWindow.Loading("Memory modules");
-                modules = cpu.GetMemoryConfig().Modules;
+                modules = cpu.GetMemoryConfig()?.Modules ?? new List<MemoryModule>();
                 ReadMemoryModulesInfo();
                 SplashWindow.Loading("Timings");
 
                 // Read from first enabled DCT
-                if (modules.Count > 0)
+                if (modules?.Count > 0)
                 {
                     ReadTimings(modules[0].DctOffset);
                 }
@@ -232,7 +232,7 @@ namespace ZenTimings
 
         private void ReadMemoryModulesInfo()
         {
-            if (modules.Count > 0)
+            if (modules?.Count > 0)
             {
                 foreach (MemoryModule module in modules)
                 {
@@ -769,7 +769,7 @@ namespace ZenTimings
                     Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() =>
                     {
                         int selectedIndex = comboBoxPartNumber?.SelectedIndex ?? 0;
-                        MemoryModule module = modules.Count > 0 ? modules[selectedIndex] : null;
+                        MemoryModule module = modules?.Count > 0 ? modules[selectedIndex] : null;
                         ReadTimings(module?.DctOffset ?? 0);
                         ReadMemoryConfig();
                         cpu.RefreshPowerTable();
@@ -927,16 +927,25 @@ namespace ZenTimings
             }
 
             SetWindowTitle();
-            if (cpu != null)
+            if (cpu?.systemInfo != null)
             {
                 labelCPU.Text = GetCpuNameString(cpu.systemInfo);
                 //string mbLabel = $@"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} | SMU {cpu.systemInfo.GetSmuVersionString()}";
-                
+
                 //if (mbLabel.Length > 58)
                 //{
                 //    mbLabel = $@"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} ({cpu.systemInfo.GetSmuVersionString()})";
                 //}
-                labelMB.Text = $@"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} ({cpu.systemInfo.GetSmuVersionString()})";
+                if (String.IsNullOrEmpty(cpu.systemInfo.AgesaVersion))
+                {
+                    labelMB.Text = $@"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} ({cpu.systemInfo.GetSmuVersionString()})";
+                    labelAgesaVersion.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    labelMB.Text = $@"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion}";
+                    labelAgesaVersion.Text = $"AGESA {cpu.systemInfo.AgesaVersion} (SMU version {cpu.systemInfo.GetSmuVersionString()})";
+                }
             }
             //ShowWindow();
 
@@ -1077,7 +1086,8 @@ namespace ZenTimings
 
         private void ComboBoxPartNumber_SelectionChanged(object sender, RoutedEventArgs e)
         {
-            if (sender is ComboBox combo) ReadTimings(modules[combo.SelectedIndex].DctOffset);
+            if (sender is ComboBox combo && combo.Items.Count > 0)
+                ReadTimings(modules[combo.SelectedIndex].DctOffset);
         }
 
         private void SystemInfoToolstripMenuItem_Click(object sender, RoutedEventArgs e)

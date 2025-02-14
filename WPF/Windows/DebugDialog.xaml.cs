@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Management;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using ZenStates.Core;
@@ -262,6 +263,20 @@ namespace ZenTimings.Windows
 
             // AOD Table
             AddHeading("ACPI: AOD Table");
+            var aodAcpiTableHeader = cpu.info.aod.Table.AcpiTable.GetValueOrDefault().Header;
+            type = aodAcpiTableHeader.GetType();
+            try
+            {
+                foreach (FieldInfo field in type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public))
+                {
+                    AddLine($"{field.Name + ":",-19}{field.GetValue(aodAcpiTableHeader)}");
+                }
+            }
+            catch
+            {
+                AddLine("<FAILED>");
+            }
+
             type = cpu.info.aod.Table.GetType();
             properties = type.GetProperties();
             try
