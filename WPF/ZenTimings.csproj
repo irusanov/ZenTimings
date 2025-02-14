@@ -59,11 +59,13 @@
     <Reference Include="AutoUpdater.NET, Version=1.6.4.0, Culture=neutral, PublicKeyToken=501435c91b35f4bc, processorArchitecture=MSIL">
       <HintPath>packages\Autoupdater.NET.Official.1.6.4\lib\net45\AutoUpdater.NET.dll</HintPath>
     </Reference>
+    <Reference Include="EasyCompressor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -120,6 +122,22 @@
     <Compile Include="Converters\FloatToVoltageConverter.cs" />
     <Compile Include="Converters\DDR5ToVisConverter.cs" />
     <Compile Include="Converters\PhoenixToVisConverter.cs" />
+    <Compile Include="Decompressor\7zip\Common\CommandLineParser.cs" />
+    <Compile Include="Decompressor\7zip\Common\CRC.cs" />
+    <Compile Include="Decompressor\7zip\Common\InBuffer.cs" />
+    <Compile Include="Decompressor\7zip\Common\OutBuffer.cs" />
+    <Compile Include="Decompressor\7zip\Compress\LZMA\LzmaBase.cs" />
+    <Compile Include="Decompressor\7zip\Compress\LZMA\LzmaDecoder.cs" />
+    <Compile Include="Decompressor\7zip\Compress\LZMA\LzmaEncoder.cs" />
+    <Compile Include="Decompressor\7zip\Compress\LZ\IMatchFinder.cs" />
+    <Compile Include="Decompressor\7zip\Compress\LZ\LzBinTree.cs" />
+    <Compile Include="Decompressor\7zip\Compress\LZ\LzInWindow.cs" />
+    <Compile Include="Decompressor\7zip\Compress\LZ\LzOutWindow.cs" />
+    <Compile Include="Decompressor\7zip\Compress\RangeCoder\RangeCoder.cs" />
+    <Compile Include="Decompressor\7zip\Compress\RangeCoder\RangeCoderBit.cs" />
+    <Compile Include="Decompressor\7zip\Compress\RangeCoder\RangeCoderBitTree.cs" />
+    <Compile Include="Decompressor\7zip\Engine.cs" />
+    <Compile Include="Decompressor\7zip\ICoder.cs" />
     <Compile Include="Plugin\IPlugin.cs" />
     <Compile Include="Plugin\OHWMPlugin.cs" />
     <Compile Include="Plugin\SVI2Plugin.cs" />

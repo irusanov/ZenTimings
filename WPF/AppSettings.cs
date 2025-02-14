@@ -12,7 +12,7 @@ namespace ZenTimings
     public sealed class AppSettings
     {
         public const int VersionMajor = 1;
-        public const int VersionMinor = 4;
+        public const int VersionMinor = 5;
 
         private static readonly string Filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.xml");
 
@@ -69,6 +69,10 @@ namespace ZenTimings
             SysInfoWindowWidth = 0;
             NotifiedChangelog = "";
             NotifiedRembrandt = "";
+            MbName = "";
+            BiosVersion = "";
+            SmuVersion = "";
+            AgesaVersion = "";
 
             if (save) Save();
 
@@ -108,6 +112,15 @@ namespace ZenTimings
             try
             {
                 Version = $"{VersionMajor}.{VersionMinor}";
+
+                if (CpuSingleton.Instance?.systemInfo != null)
+                {
+                    MbName = CpuSingleton.Instance.systemInfo.MbName;
+                    BiosVersion = CpuSingleton.Instance.systemInfo.BiosVersion;
+                    SmuVersion = CpuSingleton.Instance.systemInfo.GetSmuVersionString();
+                    AgesaVersion = CpuSingleton.Instance.systemInfo.AgesaVersion;
+                }
+
                 using (StreamWriter sw = new StreamWriter(Filename))
                 {
                     XmlSerializer xmls = new XmlSerializer(typeof(AppSettings));
@@ -162,5 +175,9 @@ namespace ZenTimings
         public double SysInfoWindowHeight { get; set; }
         public string NotifiedChangelog { get; set; } = "";
         public string NotifiedRembrandt { get; set; } = "";
+        public string MbName { get; set; } = "";
+        public string BiosVersion { get; set; } = "";
+        public string SmuVersion { get; set; } = "";
+        public string AgesaVersion { get; set; } = "";
     }
 }
