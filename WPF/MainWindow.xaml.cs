@@ -18,6 +18,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using ZenStates.Core;
 using ZenStates.Core.DRAM;
+using ZenTimings.Decompressor;
 using ZenTimings.Plugin;
 using ZenTimings.Windows;
 using static ZenStates.Core.DRAM.MemoryConfig;
@@ -160,7 +161,7 @@ namespace ZenTimings
 
                 if (settings.AdvancedMode)
                 {
-                    SplashWindow.Loading("AGESA version");
+                    SplashWindow.Loading("AGESA version, hold tight...");
                     GetAgesaVersion();
                 }
 
@@ -1019,23 +1020,20 @@ namespace ZenTimings
         {
             if (settings.AdvancedMode && cpu?.systemInfo != null)
             {
-                labelCPU.Text = GetCpuNameString(cpu.systemInfo);
-                //string mbLabel = $@"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} | SMU {cpu.systemInfo.GetSmuVersionString()}";
-
-                //if (mbLabel.Length > 58)
-                //{
-                //    mbLabel = $@"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} ({cpu.systemInfo.GetSmuVersionString()})";
-                //}
-                if (String.IsNullOrEmpty(cpu.systemInfo.AgesaVersion))
+                Dispatcher.Invoke(() =>
                 {
-                    labelMB.Text = $@"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} ({cpu.systemInfo.GetSmuVersionString()})";
-                    labelAgesaVersion.Visibility = Visibility.Collapsed;
-                }
-                else
-                {
-                    labelMB.Text = $@"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion}";
-                    labelAgesaVersion.Text = $"AGESA {cpu.systemInfo.AgesaVersion} (SMU {cpu.systemInfo.GetSmuVersionString()})";
-                }
+                    labelCPU.Text = GetCpuNameString(cpu.systemInfo);
+                    if (String.IsNullOrEmpty(cpu.systemInfo.AgesaVersion))
+                    {
+                        labelMB.Text = $@"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} ({cpu.systemInfo.GetSmuVersionString()})";
+                        labelAgesaVersion.Visibility = Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        labelMB.Text = $@"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion}";
+                        labelAgesaVersion.Text = $"AGESA {cpu.systemInfo.AgesaVersion} (SMU {cpu.systemInfo.GetSmuVersionString()})";
+                    }
+                });
             }
 
             SplashWindow.Stop();
@@ -1197,6 +1195,9 @@ namespace ZenTimings
 
             string agesaVersion = "";
 
+            byte[] agesaString = Encoding.ASCII.GetBytes("AGESA!V9");
+            int offset = Utils.FindSequence(cpu.info.aod.Table.RawAodTable, 0, agesaString);
+
             if (IsAgesaVersionUpdateNeeded())
             {
                 try
@@ -1226,39 +1227,14 @@ namespace ZenTimings
                     byte[] buffer = new byte[4];
                     Buffer.BlockCopy(image, fileOffset + headerSize, buffer, 0, 3);
                     int compressedSize = BitConverter.ToInt32(buffer, 0);
-                    int decompressedSize = BitConverter.ToInt32(image, fileOffset + 0x35);
+                    //int decompressedSize = BitConverter.ToInt32(image, fileOffset + 0x35);
 
                     // Start of lzma block
                     fileOffset += 0x30;
                     byte[] body = new byte[compressedSize];
                     Buffer.BlockCopy(image, fileOffset, body, 0, compressedSize);
 
-                    byte[] decompressedData = new byte[0];
-
-                    using (MemoryStream inputStream = new MemoryStream(body))
-                    using (MemoryStream outputStream = new MemoryStream(decompressedSize))
-                    {
-                        var decoder = new SevenZip.Compression.LZMA.Decoder();
-
-                        var properties = new byte[5];
-
-                        // Read the decoder properties
-                        inputStream.Read(properties, 0, 5);
-                        decoder.SetDecoderProperties(properties);
-
-                        // Read in the decompress file size.
-
-                        var fileLengthBytes = new byte[8];
-                        inputStream.Read(fileLengthBytes, 0, 8);
-                        var fileLength = BitConverter.ToInt64(fileLengthBytes, 0);
-
-                        // Decode
-                        decoder.Code(inputStream, outputStream, inputStream.Length, fileLength, null);
-
-                        outputStream.Flush();
-
-                        decompressedData = outputStream.ToArray();
-                    }
+                    byte[] decompressedData = LZMACompressor.Decompress(body);
 
                     byte[] targetSequence = Encoding.ASCII.GetBytes("AGESA!V9");
                     int targetOffset = Utils.FindSequence(decompressedData, 0, targetSequence);

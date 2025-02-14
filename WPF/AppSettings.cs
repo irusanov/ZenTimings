@@ -1,10 +1,8 @@
 using AdonisUI;
 using System;
 using System.IO;
-using System.Management.Instrumentation;
 using System.Windows;
-using System.Xml.Serialization;
-using ZenStates.Core;
+using ZenTimings.Encryption;
 
 namespace ZenTimings
 {
@@ -15,8 +13,10 @@ namespace ZenTimings
         public const int VersionMinor = 5;
 
         private static readonly string Filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.xml");
+        private static readonly string EncryptedFilename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.enc");
 
         private static AppSettings _instance = null;
+        private readonly AesEncryption aesEncryption = new AesEncryption();
 
         private AppSettings() { }
 
@@ -53,26 +53,10 @@ namespace ZenTimings
 
         public AppSettings Create(bool save = true)
         {
-            Version = $"{VersionMajor}.{VersionMinor}";
-            AppTheme = Theme.DarkMintGradient;
-            ScreenshotMode = ScreenshotType.Window;
-            AutoRefresh = true;
-            AutoRefreshInterval = 2000;
-            AdvancedMode = true;
-            CheckForUpdates = true;
-            SaveWindowPosition = false;
-            AutoUninstallDriver = true;
-            WindowLeft = 0;
-            WindowTop = 0;
-            SysInfoWindowLeft = 0;
-            SysInfoWindowHeight = 0;
-            SysInfoWindowWidth = 0;
-            NotifiedChangelog = "";
-            NotifiedRembrandt = "";
-            MbName = "";
-            BiosVersion = "";
-            SmuVersion = "";
-            AgesaVersion = "";
+            if (File.Exists(EncryptedFilename))
+            {
+                AgesaVersion = aesEncryption.DecryptStringInMemory(EncryptedFilename);
+            }
 
             if (save) Save();
 
@@ -85,13 +69,23 @@ namespace ZenTimings
         {
             try
             {
+                var decryptedAgesa = String.Empty;
+                if (File.Exists(EncryptedFilename))
+                {
+                    try {
+                        decryptedAgesa = aesEncryption.DecryptStringInMemory(EncryptedFilename);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+
                 if (File.Exists(Filename))
                 {
-                    using (StreamReader sr = new StreamReader(Filename))
-                    {
-                        XmlSerializer xmls = new XmlSerializer(typeof(AppSettings));
-                        return xmls.Deserialize(sr) as AppSettings;
-                    }
+                    var deserializedSettings = XmlUtils.DeserializeFromXml<AppSettings>(Filename);
+                    deserializedSettings.AgesaVersion = decryptedAgesa;
+                    return deserializedSettings;
                 }
             }
             catch (Exception ex)
@@ -118,14 +112,15 @@ namespace ZenTimings
                     MbName = CpuSingleton.Instance.systemInfo.MbName;
                     BiosVersion = CpuSingleton.Instance.systemInfo.BiosVersion;
                     SmuVersion = CpuSingleton.Instance.systemInfo.GetSmuVersionString();
-                    AgesaVersion = CpuSingleton.Instance.systemInfo.AgesaVersion;
+                    if (!string.IsNullOrEmpty(CpuSingleton.Instance.systemInfo.AgesaVersion))
+                    {
+                        AgesaVersion = CpuSingleton.Instance.systemInfo.AgesaVersion;
+                    }
                 }
 
-                using (StreamWriter sw = new StreamWriter(Filename))
-                {
-                    XmlSerializer xmls = new XmlSerializer(typeof(AppSettings));
-                    xmls.Serialize(sw, this);
-                }
+                File.WriteAllBytes(EncryptedFilename, aesEncryption.EncryptString(this.AgesaVersion));
+                string xmlContent = XmlUtils.SerializeToXml<AppSettings>(this);
+                File.WriteAllText(Filename, xmlContent);
             }
             catch (Exception ex)
             {
@@ -165,12 +160,12 @@ namespace ZenTimings
         public string UpdaterSkippedVersion { get; set; } = "";
         public string UpdaterRemindLaterAt { get; set; } = "";
         public bool MinimizeToTray { get; set; }
-        public bool SaveWindowPosition { get; set; }
+        public bool SaveWindowPosition { get; set; } = true;
         public bool AutoUninstallDriver { get; set; } = true;
-        public double WindowLeft { get; set; }
-        public double WindowTop { get; set; }
-        public double SysInfoWindowLeft { get; set; }
-        public double SysInfoWindowTop { get; set; }
+        public double WindowLeft { get; set; } = -1; 
+        public double WindowTop { get; set; } = -1;
+        public double SysInfoWindowLeft { get; set; } = -1;
+        public double SysInfoWindowTop { get; set; } = -1;
         public double SysInfoWindowWidth { get; set; }
         public double SysInfoWindowHeight { get; set; }
         public string NotifiedChangelog { get; set; } = "";
