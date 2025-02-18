@@ -73,7 +73,8 @@ namespace ZenTimings
                 var decryptedAgesa = String.Empty;
                 if (File.Exists(EncryptedFilename))
                 {
-                    try {
+                    try
+                    {
                         decryptedAgesa = aesEncryption.DecryptStringInMemory(EncryptedFilename);
                     }
                     catch (Exception ex)
@@ -163,7 +164,7 @@ namespace ZenTimings
         public bool MinimizeToTray { get; set; }
         public bool SaveWindowPosition { get; set; } = true;
         public bool AutoUninstallDriver { get; set; } = true;
-        public double WindowLeft { get; set; } = -1; 
+        public double WindowLeft { get; set; } = -1;
         public double WindowTop { get; set; } = -1;
         public double SysInfoWindowLeft { get; set; } = -1;
         public double SysInfoWindowTop { get; set; } = -1;

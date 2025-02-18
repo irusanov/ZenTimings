@@ -1,6 +1,5 @@
 using Microsoft.VisualBasic.Devices;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Management;
@@ -8,7 +7,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using ZenStates.Core;
-using ZenStates.Core.DRAM;
 using Application = System.Windows.Application;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
@@ -302,7 +300,7 @@ namespace ZenTimings.Windows
             catch
             {
                 AddLine("<FAILED>");
-            }   
+            }
 
             AddLine();
 

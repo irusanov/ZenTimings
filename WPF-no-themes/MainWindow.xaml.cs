@@ -1034,7 +1034,7 @@ namespace ZenTimings
                 settings.Save();
             }
 
-			ExitApplication();
+            ExitApplication();
             Dispose();
         }
 

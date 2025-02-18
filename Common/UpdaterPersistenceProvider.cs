@@ -1,6 +1,5 @@
 using AutoUpdaterDotNET;
 using System;
-using System.Windows;
 
 namespace ZenTimings
 {
