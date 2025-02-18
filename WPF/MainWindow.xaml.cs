@@ -161,7 +161,7 @@ namespace ZenTimings
 
                 if (settings.AdvancedMode)
                 {
-                    SplashWindow.Loading("AGESA version, hold tight...");
+                    SplashWindow.Loading("Searching for AGESA version, hold tight...");
                     GetAgesaVersion();
                 }
 
@@ -1023,7 +1023,7 @@ namespace ZenTimings
                 Dispatcher.Invoke(() =>
                 {
                     labelCPU.Text = GetCpuNameString(cpu.systemInfo);
-                    if (String.IsNullOrEmpty(cpu.systemInfo.AgesaVersion))
+                    if (String.IsNullOrEmpty(cpu.systemInfo.AgesaVersion) || cpu.systemInfo.AgesaVersion.Equals(AppSettings.AGESA_UNKNOWN))
                     {
                         labelMB.Text = $@"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} ({cpu.systemInfo.GetSmuVersionString()})";
                         labelAgesaVersion.Visibility = Visibility.Collapsed;
@@ -1188,180 +1188,30 @@ namespace ZenTimings
 
         private string GetAgesaVersion()
         {
-            if (!String.IsNullOrEmpty(cpu.systemInfo.AgesaVersion))
+            if (!string.IsNullOrEmpty(cpu.systemInfo.AgesaVersion))
             {
                 return cpu.systemInfo.AgesaVersion;
             }
 
-            string agesaVersion = "";
-
-            byte[] agesaString = Encoding.ASCII.GetBytes("AGESA!V9");
-            int offset = Utils.FindSequence(cpu.info.aod.Table.RawAodTable, 0, agesaString);
+            string agesaVersion = AppSettings.AGESA_UNKNOWN;
 
             if (IsAgesaVersionUpdateNeeded())
             {
-                try
-                {
-                    byte[] image = new byte[0x800000 - 0xC0800];
-                    uint dataChunk = 0;
-                    int headerSize = 0x18;
-
-                    for (uint i = 0; i < image.Length - 4; i += 4)
-                    {
-                        cpu.ReadDwordEx(0x450C0800 + i, ref dataChunk);
-                        var buf = BitConverter.GetBytes(dataChunk);
-                        Buffer.BlockCopy(buf, 0, image, (int)i, buf.Length);
-                    }
-
-                    // File-specific information from UEFI Tool
-                    byte[] fileGuid = new Guid("9E21FD93-9C72-4C15-8C4B-E77F1DB2D792").ToByteArray();
-
-                    // Step 1: Find the GUID in the BIOS data
-                    int fileOffset = Utils.FindSequence(image, 0, fileGuid);
-                    if (fileOffset == -1)
-                    {
-                        Console.WriteLine("File GUID not found.");
-                        return "";
-                    }
-
-                    byte[] buffer = new byte[4];
-                    Buffer.BlockCopy(image, fileOffset + headerSize, buffer, 0, 3);
-                    int compressedSize = BitConverter.ToInt32(buffer, 0);
-                    //int decompressedSize = BitConverter.ToInt32(image, fileOffset + 0x35);
-
-                    // Start of lzma block
-                    fileOffset += 0x30;
-                    byte[] body = new byte[compressedSize];
-                    Buffer.BlockCopy(image, fileOffset, body, 0, compressedSize);
-
-                    byte[] decompressedData = LZMACompressor.Decompress(body);
-
-                    byte[] targetSequence = Encoding.ASCII.GetBytes("AGESA!V9");
-                    int targetOffset = Utils.FindSequence(decompressedData, 0, targetSequence);
-                    if (targetOffset != -1)
-                    {
-                        Console.WriteLine($"Found target sequence at offset 0x{targetOffset:X}");
-                        // Find the end of the string (null-terminated sequence)
-                        int endPos = Utils.FindSequence(decompressedData, targetOffset, new byte[] { 0x00, 0x00, 0x00, 0x00 });
-                        if (endPos > targetOffset)
-                        {
-                            agesaVersion = Encoding.ASCII.GetString(decompressedData, targetOffset + targetSequence.Length, endPos - targetOffset).Trim('\0');
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Target sequence not found.");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
+                var agesaHelper = new AgesaHelper();
+                byte[] image = agesaHelper.DumpImage();
+                agesaVersion = agesaHelper.FindAgesaVersion(image);
             }
             else
             {
-                agesaVersion = settings?.AgesaVersion ?? "";
+                agesaVersion = settings?.AgesaVersion ?? AppSettings.AGESA_UNKNOWN;
             }
 
-            if (!String.IsNullOrEmpty(agesaVersion))
+            if (!string.IsNullOrEmpty(agesaVersion))
             {
                 cpu.systemInfo.AgesaVersion = agesaVersion;
             }
 
             return agesaVersion;
         }
-/*
-        private string GetAgesaVersionWithSdk()
-        {
-            string agesaVersion = "";
-
-            try
-            {
-                byte[] image = new byte[0xFFFFFF - 0x0C0800];
-                uint dataChunk = 0;
-                int headerSize = 0x18;
-
-                for (uint i = 0; i < image.Length - 4; i += 4)
-                {
-                    cpu.ReadDwordEx(0x450C0800 + i, ref dataChunk);
-                    var buf = BitConverter.GetBytes(dataChunk);
-                    Buffer.BlockCopy(buf, 0, image, (int)i, buf.Length);
-                }
-
-                // File-specific information from UEFI Tool
-                byte[] fileGuid = new Guid("9E21FD93-9C72-4C15-8C4B-E77F1DB2D792").ToByteArray();
-
-                // Step 1: Find the GUID in the BIOS data
-                int fileOffset = Utils.FindSequence(image, 0, fileGuid);
-                if (fileOffset == -1)
-                {
-                    Console.WriteLine("File GUID not found.");
-                    return "";
-                }
-
-                byte[] buffer = new byte[4];
-                Buffer.BlockCopy(image, fileOffset + headerSize, buffer, 0, 3);
-                int compressedSize = BitConverter.ToInt32(buffer, 0);
-                int decompressedSize = BitConverter.ToInt32(image, fileOffset + 0x35);
-
-                // Start of lzma block
-                fileOffset += 0x30;
-                byte[] body = new byte[compressedSize];
-                Buffer.BlockCopy(image, fileOffset, body, 0, compressedSize);
-
-                byte[] decompressedData = new byte[0];
-                //byte[] decompressedData = Engine.Decompress(body);
-
-                using (MemoryStream compressedStream = new MemoryStream(body))
-                using (MemoryStream decompressedStream = new MemoryStream(decompressedSize))
-                {
-                    //byte[] properties = new byte[5] { 0x5d, 0, 0, 0, 0x10 };
-                    byte[] properties = new byte[5];
-                    compressedStream.Read(properties, 0, 5);
-
-                    var fileLengthBytes = new byte[8];
-                    compressedStream.Read(fileLengthBytes, 0, 8);
-                    var fileLength = BitConverter.ToInt64(fileLengthBytes, 0);
-
-                    SevenZip.Compression.LZMA.Decoder decoder = new SevenZip.Compression.LZMA.Decoder();
-                    decoder.SetDecoderProperties(properties);
-
-                    try
-                    {
-                        compressedStream.Seek(0, SeekOrigin.Begin);
-                        decoder.Code(compressedStream, decompressedStream, compressedSize, decompressedSize, null);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Decompression error: {ex.Message}");
-                    }
-
-                    decompressedData = decompressedStream.ToArray();
-                }
-
-                byte[] targetSequence = Encoding.ASCII.GetBytes("AGESA!V9");
-                int targetOffset = Utils.FindSequence(decompressedData, 0, targetSequence);
-                if (targetOffset != -1)
-                {
-                    Console.WriteLine($"Found target sequence at offset 0x{targetOffset:X}");
-                    // Find the end of the string (null-terminated sequence)
-                    int endPos = Utils.FindSequence(decompressedData, targetOffset, new byte[] { 0x00, 0x00, 0x00, 0x00 });
-                    if (endPos > targetOffset)
-                    {
-                        agesaVersion = Encoding.ASCII.GetString(decompressedData, targetOffset + targetSequence.Length, endPos - targetOffset).Trim();
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Target sequence not found.");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-
-            return agesaVersion;
-        }*/
     }
 }

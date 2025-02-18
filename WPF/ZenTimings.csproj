@@ -114,6 +114,7 @@
     <Compile Include="..\Common\UpdaterPersistenceProvider.cs">
       <Link>Common\UpdaterPersistenceProvider.cs</Link>
     </Compile>
+    <Compile Include="AgesaHelper.cs" />
     <Compile Include="AppSettings.cs" />
     <Compile Include="Common\ISensor.cs" />
     <Compile Include="Common\Sensor.cs" />

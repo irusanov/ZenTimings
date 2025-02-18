@@ -14,6 +14,7 @@ namespace ZenTimings
 
         private static readonly string Filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.xml");
         private static readonly string EncryptedFilename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.enc");
+        public const string AGESA_UNKNOWN = "Unknown";
 
         private static AppSettings _instance = null;
         private readonly AesEncryption aesEncryption = new AesEncryption();
