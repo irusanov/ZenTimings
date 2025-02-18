@@ -277,13 +277,13 @@ namespace ZenTimings.Windows
                 AddLine("<FAILED>");
             }
 
-            type = cpu.info.aod.Table.GetType();
-            properties = type.GetProperties();
+            properties = cpu.info.aod.Table.Data.GetType().GetProperties();
             try
             {
-                foreach (var property in properties)
+                foreach (PropertyInfo property in properties)
                 {
-                    AddLine($"{property.Name + ":",-19}{property.GetValue(cpu.info.aod.Table, null)}");
+                    object value = property.GetValue(cpu.info.aod.Table.Data);
+                    AddLine($"{property.Name + ":",-19}{value}");
                 }
             }
             catch

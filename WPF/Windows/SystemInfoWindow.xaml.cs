@@ -96,11 +96,13 @@ namespace ZenTimings.Windows
             {
                 try
                 {
-                    type = aodData.GetType();
-                    PropertyInfo[] fields = type.GetProperties();
+                    properties = aodData.GetType().GetProperties();
                     items = new List<GridItem>();
-                    foreach (PropertyInfo property in fields)
-                        items.Add(new GridItem() { Name = property.Name, Value = property.GetValue(aodData).ToString() });
+                    foreach (PropertyInfo property in properties)
+                    {
+                        object value = property.GetValue(aodData);
+                        items.Add(new GridItem() { Name = property.Name, Value = $"{value}" });
+                    }
 
                     MemControllerGrid.ItemsSource = items;
                 }
