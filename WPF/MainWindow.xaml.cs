@@ -1194,9 +1194,8 @@ namespace ZenTimings
 
             if (IsAgesaVersionUpdateNeeded())
             {
-                var agesaHelper = new AgesaHelper();
-                byte[] image = agesaHelper.DumpImage();
-                agesaVersion = agesaHelper.FindAgesaVersion(image);
+                byte[] image = AgesaHelper.DumpImage();
+                agesaVersion = AgesaHelper.FindAgesaVersion(image);
             }
             else
             {

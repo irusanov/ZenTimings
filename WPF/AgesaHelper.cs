@@ -6,15 +6,11 @@ using ZenTimings.Decompressor;
 
 namespace ZenTimings
 {
-    internal class AgesaHelper
+    internal static class AgesaHelper
     {
         public const int HeaderSize = 0x18;
 
-        public AgesaHelper()
-        {
-        }
-
-        public byte[] DumpImage()
+        public static byte[] DumpImage()
         {
             uint start = 0x45000000;
             uint end = 0x45BB0000;
@@ -46,7 +42,7 @@ namespace ZenTimings
             return image;
         }
 
-        public string FindAgesaVersion(byte[] image)
+        public static string FindAgesaVersion(byte[] image)
         {
             string agesaVersion = AppSettings.AGESA_UNKNOWN;
 
