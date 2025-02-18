@@ -1,4 +1,7 @@
-﻿using System.Windows;
+﻿using System;
+using System.Threading;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace ZenTimings.Windows
 {
@@ -39,8 +42,11 @@ namespace ZenTimings.Windows
 
         public static void Loading(string status)
         {
-            splash.status.Content = status;
-            Refresh(splash.status);
+            splash.Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() =>
+            {
+                splash.status.Content = status;
+                Refresh(splash.status);
+            }));
         }
     }
 }

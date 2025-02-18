@@ -1,4 +1,4 @@
-//#define BETA
+#define BETA
 
 using AdonisUI.Controls;
 using System;
@@ -154,10 +154,7 @@ namespace ZenTimings
                     SplashWindow.Loading("Memory controller");
                     BMC = new BiosMemController();
                     ReadMemoryConfig();
-                }
 
-                if (settings.AdvancedMode)
-                {
                     SplashWindow.Loading("Searching for AGESA version, hold tight...");
                     GetAgesaVersion();
                 }
@@ -847,24 +844,20 @@ namespace ZenTimings
                 Assembly.GetExecutingAssembly(),
                 typeof(AssemblyFileVersionAttribute), false)).Version;
 
-            Title = $"{AssemblyTitle} {AssemblyVersion.Substring(0, AssemblyVersion.LastIndexOf('.'))}";
-#if BETA
-            Title += @" beta";
-
-            MessageBox.Show("This is a BETA version of the application. Some functions might be working incorrectly.\n\n" +
-                "Please report if something is not working as expected.", "Beta version", MessageBoxButton.OK);
-#else
-#if DEBUG
-            Title += $@"{AssemblyVersion.Substring(AssemblyVersion.LastIndexOf('.'))}";
-
-            if (settings.AdvancedMode)
+            Dispatcher.Invoke(() =>
             {
-                Title += @" (debug)";
-            }
+                Title = $"{AssemblyTitle} {AssemblyVersion.Substring(0, AssemblyVersion.LastIndexOf('.'))}";
+#if DEBUG && !BETA
+                Title += $@"{AssemblyVersion.Substring(AssemblyVersion.LastIndexOf('.'))} - debug";
 #endif
+
+#if BETA
+                Title += $@"{AssemblyVersion.Substring(AssemblyVersion.LastIndexOf('.'))} - beta";
 #endif
-            if (compatMode && settings.AdvancedMode)
-                Title += @" (compatibility)";
+
+                if (compatMode && settings.AdvancedMode)
+                    Title += @" (compatibility)";
+            });
         }
 
         private static string GetCpuNameString(SystemInfo info)
@@ -908,34 +901,29 @@ namespace ZenTimings
 
         private void Window_Initialized(object sender, EventArgs e)
         {
-            if (settings.SaveWindowPosition)
-            {
-                WindowStartupLocation = WindowStartupLocation.Manual;
+            //if (settings.SaveWindowPosition)
+            //{
+            //    WindowStartupLocation = WindowStartupLocation.Manual;
 
-                // Get the current screen bounds
-                System.Windows.Forms.Screen screen = System.Windows.Forms.Screen.FromHandle(new System.Windows.Interop.WindowInteropHelper(this).Handle);
-                System.Drawing.Rectangle screenBounds = screen.Bounds;
+            //    // Get the current screen bounds
+            //    System.Windows.Forms.Screen screen = System.Windows.Forms.Screen.FromHandle(new System.Windows.Interop.WindowInteropHelper(this).Handle);
+            //    System.Drawing.Rectangle screenBounds = screen.Bounds;
 
-                // Check if the saved window position is outside the screen bounds
-                if (settings.WindowLeft < screenBounds.Left || settings.WindowLeft + Width > screenBounds.Right ||
-                    settings.WindowTop < screenBounds.Top || settings.WindowTop + Height > screenBounds.Bottom)
-                {
-                    // Reset the window position to a default value
-                    Left = (screenBounds.Width - Width) / 2 + screenBounds.Left;
-                    Top = (screenBounds.Height - Height) / 2 + screenBounds.Top;
-                }
-                else
-                {
-                    // Set the window position to the saved values
-                    Left = settings.WindowLeft;
-                    Top = settings.WindowTop;
-                }
-            }
-
-            SetWindowTitle();
-            //ShowWindow();
-
-            MinimizeFootprint();
+            //    // Check if the saved window position is outside the screen bounds
+            //    if (settings.WindowLeft < screenBounds.Left || settings.WindowLeft + Width > screenBounds.Right ||
+            //        settings.WindowTop < screenBounds.Top || settings.WindowTop + Height > screenBounds.Bottom)
+            //    {
+            //        // Reset the window position to a default value
+            //        Left = (screenBounds.Width - Width) / 2 + screenBounds.Left;
+            //        Top = (screenBounds.Height - Height) / 2 + screenBounds.Top;
+            //    }
+            //    else
+            //    {
+            //        // Set the window position to the saved values
+            //        Left = settings.WindowLeft;
+            //        Top = settings.WindowTop;
+            //    }
+            //}
         }
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
@@ -1015,6 +1003,8 @@ namespace ZenTimings
 
         private void AdonisWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            this.Topmost = true;
+
             if (settings.AdvancedMode && cpu?.systemInfo != null)
             {
                 Dispatcher.Invoke(() =>
@@ -1033,9 +1023,38 @@ namespace ZenTimings
                 });
             }
 
+            if (settings.SaveWindowPosition)
+            {
+                WindowStartupLocation = WindowStartupLocation.Manual;
+
+                // Get the current screen bounds
+                System.Windows.Forms.Screen screen = System.Windows.Forms.Screen.FromHandle(new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                System.Drawing.Rectangle screenBounds = screen.Bounds;
+
+                // Check if the saved window position is outside the screen bounds
+                if (settings.WindowLeft < screenBounds.Left || settings.WindowLeft + Width > screenBounds.Right ||
+                    settings.WindowTop < screenBounds.Top || settings.WindowTop + Height > screenBounds.Bottom)
+                {
+                    // Reset the window position to a default value
+                    Left = (screenBounds.Width - Width) / 2 + screenBounds.Left;
+                    Top = (screenBounds.Height - Height) / 2 + screenBounds.Top;
+                }
+                else
+                {
+                    // Set the window position to the saved values
+                    Left = settings.WindowLeft;
+                    Top = settings.WindowTop;
+                }
+            }
+
+            SetWindowTitle();
+            //ShowWindow();
+
             SplashWindow.Stop();
 
             Application.Current.MainWindow = this;
+
+            this.Topmost = false;
 
             IntPtr handle = new WindowInteropHelper(Application.Current.MainWindow).Handle;
             HwndSource source = HwndSource.FromHwnd(handle);
@@ -1053,6 +1072,11 @@ namespace ZenTimings
                 settings.Save();
             }
 #endif
+//#if BETA
+//            MessageBox.Show("This is a BETA version of the application. Some functions might be working incorrectly.\n\n" +
+//                    "Please report if something is not working as expected.", "Beta version", MessageBoxButton.OK);
+//#endif
+            MinimizeFootprint();
         }
 
         private void OptionsToolStripMenuItem_Click(object sender, RoutedEventArgs e)
@@ -1173,14 +1197,14 @@ namespace ZenTimings
         private bool IsAgesaVersionUpdateNeeded()
         {
             string smuVersion = cpu.systemInfo.GetSmuVersionString();
-            bool biosVersionMatches = !string.IsNullOrEmpty(cpu.systemInfo.BiosVersion) && cpu.systemInfo.BiosVersion.Equals(settings.BiosVersion);
-            bool mbNameMatches = !string.IsNullOrEmpty(cpu.systemInfo.MbName) && cpu.systemInfo.MbName.Equals(settings.MbName);
-            bool smuVersionMatches = !string.IsNullOrEmpty(smuVersion) && smuVersion.Equals(settings.SmuVersion);
+            bool biosVersionMatches = !string.IsNullOrEmpty(cpu.systemInfo.BiosVersion) 
+                && string.Equals(cpu.systemInfo.BiosVersion, settings.BiosVersion, StringComparison.Ordinal);
+            bool mbNameMatches = !string.IsNullOrEmpty(cpu.systemInfo.MbName) 
+                && string.Equals(cpu.systemInfo.MbName, settings.MbName, StringComparison.Ordinal);
+            bool smuVersionMatches = !string.IsNullOrEmpty(smuVersion) 
+                && string.Equals(smuVersion, settings.SmuVersion, StringComparison.Ordinal);
 
-            if (biosVersionMatches && mbNameMatches && smuVersionMatches && !string.IsNullOrEmpty(settings.AgesaVersion))
-                return false;
-
-            return true;
+            return string.IsNullOrEmpty(settings.AgesaVersion) || !biosVersionMatches || !mbNameMatches || !smuVersionMatches;
         }
 
         private string GetAgesaVersion()

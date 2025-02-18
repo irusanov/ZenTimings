@@ -1,13 +1,11 @@
 using Microsoft.VisualBasic.Devices;
 using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Management;
 using System.Windows;
 using ZenStates.Core;
-using ZenStates.Core.DRAM;
 using Application = System.Windows.Application;
 namespace ZenTimings.Windows
 {
@@ -285,7 +283,7 @@ namespace ZenTimings.Windows
             catch
             {
                 AddLine("<FAILED>");
-            }   
+            }
 
             AddLine();
 
