@@ -1023,30 +1023,7 @@ namespace ZenTimings
                 });
             }
 
-            if (settings.SaveWindowPosition)
-            {
-                WindowStartupLocation = WindowStartupLocation.Manual;
-
-                // Get the current screen bounds
-                System.Windows.Forms.Screen screen = System.Windows.Forms.Screen.FromHandle(new System.Windows.Interop.WindowInteropHelper(this).Handle);
-                System.Drawing.Rectangle screenBounds = screen.Bounds;
-
-                // Check if the saved window position is outside the screen bounds
-                if (settings.WindowLeft < screenBounds.Left || settings.WindowLeft + Width > screenBounds.Right ||
-                    settings.WindowTop < screenBounds.Top || settings.WindowTop + Height > screenBounds.Bottom)
-                {
-                    // Reset the window position to a default value
-                    Left = (screenBounds.Width - Width) / 2 + screenBounds.Left;
-                    Top = (screenBounds.Height - Height) / 2 + screenBounds.Top;
-                }
-                else
-                {
-                    // Set the window position to the saved values
-                    Left = settings.WindowLeft;
-                    Top = settings.WindowTop;
-                }
-            }
-
+            RestoreWindowPosition();
             SetWindowTitle();
             //ShowWindow();
 
@@ -1126,7 +1103,11 @@ namespace ZenTimings
             double sysInfoWindowLeft = 0;
             WindowStartupLocation location = WindowStartupLocation.CenterScreen;
 
-            if (settings.SaveWindowPosition && settings.SysInfoWindowHeight != 0 && settings.SysInfoWindowWidth != 0)
+            if (settings.SaveWindowPosition 
+                && settings?.SysInfoWindowHeight != 0
+                && settings?.SysInfoWindowWidth != 0
+                && settings?.SysInfoWindowLeft != -1
+                && settings?.SysInfoWindowTop != -1)
             {
                 location = WindowStartupLocation.Manual;
                 sysInfoWindowLeft = settings.SysInfoWindowLeft;
@@ -1232,6 +1213,38 @@ namespace ZenTimings
             }
 
             return agesaVersion;
+        }
+
+        private void RestoreWindowPosition()
+        {
+            if (settings.SaveWindowPosition)
+            {
+                if (settings?.WindowLeft == -1 || settings?.WindowTop == -1)
+                {
+                    return;
+                }
+
+                WindowStartupLocation = WindowStartupLocation.Manual;
+
+                // Get the current screen bounds
+                System.Windows.Forms.Screen screen = System.Windows.Forms.Screen.FromHandle(new System.Windows.Interop.WindowInteropHelper(this).Handle);
+                System.Drawing.Rectangle screenBounds = screen.Bounds;
+
+                // Check if the saved window position is outside the screen bounds
+                if (settings.WindowLeft < screenBounds.Left || settings.WindowLeft + Width > screenBounds.Right ||
+                    settings.WindowTop < screenBounds.Top || settings.WindowTop + Height > screenBounds.Bottom)
+                {
+                    // Reset the window position to a default value
+                    Left = (screenBounds.Width - Width) / 2 + screenBounds.Left;
+                    Top = (screenBounds.Height - Height) / 2 + screenBounds.Top;
+                }
+                else
+                {
+                    // Set the window position to the saved values
+                    Left = settings.WindowLeft;
+                    Top = settings.WindowTop;
+                }
+            }
         }
     }
 }

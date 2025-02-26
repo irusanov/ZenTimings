@@ -75,7 +75,7 @@ namespace ZenTimings
                         targetOffset += targetSequence.Length;
                         Console.WriteLine($"Found target sequence at offset 0x{targetOffset:X}");
                         // Find the end of the string (null-terminated sequence)
-                        int endPos = Utils.FindSequence(decompressedData, targetOffset, new byte[] { 0x00, 0x00, 0x00, 0x00 });
+                        int endPos = Utils.FindSequence(decompressedData, targetOffset, new byte[] { 0x00, 0x00 });
                         if (endPos > targetOffset)
                         {
                             agesaVersion = Encoding.ASCII.GetString(decompressedData, targetOffset, endPos - targetOffset).Trim('\0').Trim();
