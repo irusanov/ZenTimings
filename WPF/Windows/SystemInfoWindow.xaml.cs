@@ -52,21 +52,31 @@ namespace ZenTimings.Windows
 
             try
             {
-                type = mc.GetType();
-
-                properties = type.GetProperties();
                 items = new List<GridItem>();
-                foreach (PropertyInfo property in properties)
-                    items.Add(new GridItem() { Name = property.Name, Value = property.GetValue(mc, null).ToString() });
 
                 if (mc.Type == MemoryConfig.MemType.DDR5)
                 {
-                    List<KeyValuePair<uint, BaseDramTimings>> timingsConfig = CpuSingleton.Instance.GetMemoryConfig().Timings;
-                    Ddr5Timings timings = timingsConfig[0].Value as Ddr5Timings;
+                    var timings = CpuSingleton.Instance.GetMemoryConfig().Timings[0].Value;
+                    type = timings.GetType();
+                    properties = type.GetProperties();
 
-                    items.Add(new GridItem() { Name = "Nitro Settings", Value = timings.Nitro.ToString() });
+                    foreach (PropertyInfo property in properties)
+                    {
+                        if (property.Name != "Item")
+                            items.Add(new GridItem() { Name = property.Name, Value = $"{timings[property.Name]}" });
+                    }
                 }
-
+                else
+                {
+                    type = mc.GetType();
+                    properties = type.GetProperties();
+                    foreach (PropertyInfo property in properties)
+                    {
+                        if (property.Name != "Item")
+                            items.Add(new GridItem() { Name = property.Name, Value = property.GetValue(mc, null).ToString() });
+                    }
+                }
+                
                 MemCfgGrid.ItemsSource = items;
             }
             catch
