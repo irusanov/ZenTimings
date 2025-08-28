@@ -7,6 +7,7 @@
         <ResourceDictionary Source="pack://application:,,,/Themes/Base.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/camera-light.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/ROG/ROG-logo-burnt-40.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/GSKILL/gskill-logo-burnt.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <!-- Text color -->

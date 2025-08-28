@@ -239,7 +239,48 @@ namespace ZenTimings
             {
                 foreach (MemoryModule module in modules)
                 {
-                    comboBoxPartNumber.Items.Add(module.ToString());
+                    if (IsGSkillModule(module))
+                    {
+                        var stackPanel = new StackPanel
+                        {
+                            Orientation = Orientation.Horizontal
+                        };
+
+                        var image = new Image
+                        {
+                            Height = 18,
+                            Margin = new Thickness(5, 0, 5, 0)
+                        };
+
+                        image.SetResourceReference(Image.SourceProperty, "GskillLogo");
+
+                        var moduleStrings = module.ToString().Split(':');
+
+                        var textBlock = new TextBlock
+                        {
+                            Text = $"{moduleStrings[0]}: ",
+                            VerticalAlignment = VerticalAlignment.Center
+                        };
+
+                        var textBlock2 = new TextBlock
+                        {
+                            Text = moduleStrings[1].Trim(),
+                            VerticalAlignment = VerticalAlignment.Center
+                        };
+
+                        stackPanel.Children.Add(textBlock);
+                        stackPanel.Children.Add(image);
+                        stackPanel.Children.Add(textBlock2);
+                        comboBoxPartNumber.Items.Add(stackPanel);
+                    }
+                    else
+                    {
+                        comboBoxPartNumber.Items.Add(new ComboBoxItem
+                        {
+                            Content = module.ToString(),
+                            Tag = module.PartNumber
+                        });
+                    }
                 }
 
                 if (comboBoxPartNumber.Items.Count > 0)
@@ -897,6 +938,13 @@ namespace ZenTimings
             }
 
             return $"https://rog.asus.com/motherboards/{series}/{name}";
+        }
+
+        private bool IsGSkillModule(MemoryModule module)
+        {
+            return module.Manufacturer.ToLowerInvariant().Contains("skill")
+                || module.PartNumber.StartsWith("F5-")
+                || module.PartNumber.StartsWith("F4-");
         }
 
         private void Window_Initialized(object sender, EventArgs e)

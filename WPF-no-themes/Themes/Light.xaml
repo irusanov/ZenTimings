@@ -5,8 +5,6 @@
         <ResourceDictionary Source="pack://application:,,,/Themes/Base.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
-    <BitmapImage x:Key="CameraImage" UriSource="../Resources/camera-dark.png" />
-    
     <SolidColorBrush x:Key="TextColor" Color="#212529" />
     <SolidColorBrush x:Key="AccentTextColor" Color="#004b84" />
     <SolidColorBrush x:Key="SeparatorColor" Color="#e5e5e5" />

@@ -561,7 +561,7 @@
             <Border Style="{DynamicResource BottomPanelStyles}">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="240" />
+                        <ColumnDefinition Width="260" />
                         <ColumnDefinition Width="5" />
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
