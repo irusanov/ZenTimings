@@ -118,6 +118,15 @@
     <Compile Include="AppSettings.cs" />
     <Compile Include="Common\ISensor.cs" />
     <Compile Include="Common\Sensor.cs" />
+    <Compile Include="Controls\DDR4TimingsPanel.xaml.cs">
+      <DependentUpon>DDR4TimingsPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\DDR5APUTimingsPanel.xaml.cs">
+      <DependentUpon>DDR5APUTimingsPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\DDR5TimingsPanel.xaml.cs">
+      <DependentUpon>DDR5TimingsPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\DDR4ToVisConverter.cs" />
     <Compile Include="Converters\FloatToBoolConverter.cs" />
     <Compile Include="Converters\FloatToNAConverter.cs" />
@@ -175,6 +184,18 @@
     <Compile Include="Windows\SystemInfoWindow.xaml.cs">
       <DependentUpon>SystemInfoWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="Controls\DDR4TimingsPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\DDR5APUTimingsPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\DDR5TimingsPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -304,12 +304,13 @@ namespace ZenTimings
 
         private void ReadSVI()
         {
-            if (plugins[0].Update())
+            /*if (plugins[0].Update())
             {
-                textBoxVSOC_SVI2.Text = $"{plugins[0].Sensors[0].Value:F4}V";
-            }
+                timingsPanel.textBoxVSOC_SVI2.Text = $"{plugins[0].Sensors[0].Value:F4}V";
+            }*/
         }
 
+        // TODO: Replace with a call to DLL
         private void ReadMemoryConfig()
         {
             string scope = @"root\wmi";
@@ -363,10 +364,9 @@ namespace ZenTimings
                 }
 
                 AOD aod = cpu.info.aod;
-
+/*
                 if (cpu.GetMemoryConfig().Type == MemType.DDR4)
                 {
-
                     // Get APCB config from BIOS. Holds memory parameters.
                     BiosACPIFunction cmd = GetFunctionByIdString("Get APCB Config");
                     if (cmd == null)
@@ -400,7 +400,7 @@ namespace ZenTimings
                     float vdimm = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVddio) / 1000);
                     if (vdimm > 0 && vdimm < 3)
                     {
-                        textBoxMemVddio.Text = $"{vdimm:F4}V";
+                        timingsPanel.textBoxMemVddio.Text = $"{vdimm:F4}V";
                     }
                     else if (AsusWmi != null && AsusWmi.Status == 1)
                     {
@@ -409,20 +409,20 @@ namespace ZenTimings
                         bool valid = sensor != null && float.TryParse(sensor.Value, out temp);
 
                         if (valid && temp > 0 && temp < 3)
-                            textBoxMemVddio.Text = sensor.Value;
+                            timingsPanel.textBoxMemVddio.Text = sensor.Value;
                         else
-                            labelMemVddio.IsEnabled = false;
+                            timingsPanel.labelMemVddio.IsEnabled = false;
                     }
                     else
                     {
-                        labelMemVddio.IsEnabled = false;
+                        timingsPanel.labelMemVddio.IsEnabled = false;
                     }
 
                     float vtt = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVtt) / 1000);
                     if (vtt > 0)
-                        textBoxMemVtt.Text = $"{vtt:F4}V";
+                        timingsPanel.textBoxMemVtt.Text = $"{vtt:F4}V";
                     else
-                        labelMemVtt.IsEnabled = false;
+                        timingsPanel.labelMemVtt.IsEnabled = false;
 
                     // When ProcODT is 0, then all other resistance values are 0
                     // Happens when one DIMM installed in A1 or A2 slot
@@ -430,106 +430,33 @@ namespace ZenTimings
                         // throw new Exception("Failed to read AMD ACPI. Odt, Setup and Drive strength parameters will be empty.");
                         return;
 
-                    labelProcODT.IsEnabled = true;
-                    labelClkDrvStren.IsEnabled = true;
-                    labelAddrCmdDrvStren.IsEnabled = true;
-                    labelCsOdtDrvStren.IsEnabled = true;
-                    labelCkeDrvStren.IsEnabled = true;
-                    labelRttNom.IsEnabled = true;
-                    labelRttWr.IsEnabled = true;
-                    labelRttPark.IsEnabled = true;
-                    labelAddrCmdSetup.IsEnabled = true;
-                    labelCsOdtSetup.IsEnabled = true;
-                    labelCkeSetup.IsEnabled = true;
+                    timingsPanel.labelProcODT.IsEnabled = true;
+                    timingsPanel.labelClkDrvStren.IsEnabled = true;
+                    timingsPanel.labelAddrCmdDrvStren.IsEnabled = true;
+                    timingsPanel.labelCsOdtDrvStren.IsEnabled = true;
+                    timingsPanel.labelCkeDrvStren.IsEnabled = true;
+                    timingsPanel.labelRttNom.IsEnabled = true;
+                    timingsPanel.labelRttWr.IsEnabled = true;
+                    timingsPanel.labelRttPark.IsEnabled = true;
+                    timingsPanel.labelAddrCmdSetup.IsEnabled = true;
+                    timingsPanel.labelCsOdtSetup.IsEnabled = true;
+                    timingsPanel.labelCkeSetup.IsEnabled = true;
 
-                    textBoxProcODT.Text = BMC.GetProcODTString(BMC.Config.ProcODT);
+                    timingsPanel.textBoxProcODT.Text = BMC.GetProcODTString(BMC.Config.ProcODT);
 
-                    textBoxClkDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.ClkDrvStren);
-                    textBoxAddrCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.AddrCmdDrvStren);
-                    textBoxCsOdtCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CsOdtCmdDrvStren);
-                    textBoxCkeDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CkeDrvStren);
+                    timingsPanel.textBoxClkDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.ClkDrvStren);
+                    timingsPanel.textBoxAddrCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.AddrCmdDrvStren);
+                    timingsPanel.textBoxCsOdtCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CsOdtCmdDrvStren);
+                    timingsPanel.textBoxCkeDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CkeDrvStren);
 
-                    textBoxRttNom.Text = BMC.GetRttString(BMC.Config.RttNom);
-                    textBoxRttWr.Text = BMC.GetRttWrString(BMC.Config.RttWr);
-                    textBoxRttPark.Text = BMC.GetRttString(BMC.Config.RttPark);
+                    timingsPanel.textBoxRttNom.Text = BMC.GetRttString(BMC.Config.RttNom);
+                    timingsPanel.textBoxRttWr.Text = BMC.GetRttWrString(BMC.Config.RttWr);
+                    timingsPanel.textBoxRttPark.Text = BMC.GetRttString(BMC.Config.RttPark);
 
-                    textBoxAddrCmdSetup.Text = $"{BMC.Config.AddrCmdSetup}";
-                    textBoxCsOdtSetup.Text = $"{BMC.Config.CsOdtSetup}";
-                    textBoxCkeSetup.Text = $"{BMC.Config.CkeSetup}";
-                }
-                else
-                {
-                    if (cpu.info.aod == null || Utils.AllZero(cpu.info.aod.Table.RawAodTable))
-                        return;
-
-                    AodData Data = cpu.info.aod.Table.Data;
-
-                    labelMemVdd.IsEnabled = true;
-                    labelMemVddq.IsEnabled = true;
-                    labelMemVpp.IsEnabled = true;
-                    labelApuVddio.IsEnabled = true;
-
-                    labelProcCaDs.IsEnabled = true;
-                    labelProcDqDs.IsEnabled = true;
-                    labelDramDqDs.IsEnabled = true;
-                    labelRttWrD5.IsEnabled = true;
-                    labelRttNomWr.IsEnabled = true;
-                    labelRttNomRd.IsEnabled = true;
-                    labelRttParkD5.IsEnabled = true;
-                    labelRttParkDqs.IsEnabled = true;
-
-                    textBoxMemVddio.Text = Data.MemVddio.ToString();
-                    textBoxMemVddq.Text = Data.MemVddq.ToString();
-                    textBoxMemVpp.Text = Data.MemVpp.ToString();
-                    textBoxApuVddio.Text = Data.ApuVddio.ToString();
-
-                    try
-                    {
-                        Cpu.CodeName codeName = cpu.info.codeName;
-                        if (codeName == Cpu.CodeName.Phoenix || codeName == Cpu.CodeName.Phoenix2 || codeName == Cpu.CodeName.HawkPoint)
-                        {
-                            labelProcCaOdt.IsEnabled = true;
-                            labelProcCkOdt.IsEnabled = true;
-                            labelProcDqOdt.IsEnabled = true;
-                            labelProcDqsOdt.IsEnabled = true;
-                            textBoxProcCaOdt.Text = Data.ProcCaOdt.ToString();
-                            textBoxProcCkOdt.Text = Data.ProcCkOdt.ToString();
-                            textBoxProcDqOdt.Text = Data.ProcDqOdt.ToString();
-                            textBoxProcDqsOdt.Text = Data.ProcDqsOdt.ToString();
-                        }
-                        else if (cpu.info.family == Cpu.Family.FAMILY_1AH && Data.ProcOdtPullUp != null)
-                        {
-                            labelProcODT.Visibility = Visibility.Collapsed;
-                            textBoxProcODT.Visibility = Visibility.Collapsed;
-                            procOdtDivider1.Visibility = Visibility.Collapsed;
-                            procOdtDivider2.Visibility = Visibility.Collapsed;
-                            labelProcOdtPullUp.Visibility = Visibility.Visible;
-                            labelProcOdtPullUp.IsEnabled = true;
-                            labelProcOdtPullDown.Visibility = Visibility.Visible;
-                            labelProcOdtPullDown.IsEnabled = true;
-                            textBoxProcOdtPullUp.Visibility = Visibility.Visible;
-                            textBoxProcOdtPullDown.Visibility = Visibility.Visible;
-                            textBoxProcOdtPullUp.Text = Data.ProcOdtPullUp.ToString();
-                            textBoxProcOdtPullDown.Text = Data.ProcOdtPullDown.ToString();
-                        }
-                        else
-                        {
-                            labelProcODT.IsEnabled = true;
-                            textBoxProcODT.Text = Data.ProcOdt.ToString();
-                        }
-                    }
-                    catch { }
-
-                    textBoxCadBusDrvStren.Text = Data.CadBusDrvStren.ToString();
-                    textBoxDramDataDrvStren.Text = Data.DramDataDrvStren.ToString();
-                    textBoxProcDataDrvStren.Text = Data.ProcDataDrvStren.ToString();
-
-                    textBoxRttWrD5.Text = Data.RttWr.ToString();
-                    textBoxRttNomWr.Text = Data.RttNomWr.ToString();
-                    textBoxRttNomRd.Text = Data.RttNomRd.ToString();
-                    textBoxRttParkD5.Text = Data.RttPark.ToString();
-                    textBoxRttParkDqs.Text = Data.RttParkDqs.ToString();
-                }
+                    timingsPanel.textBoxAddrCmdSetup.Text = $"{BMC.Config.AddrCmdSetup}";
+                    timingsPanel.textBoxCsOdtSetup.Text = $"{BMC.Config.CsOdtSetup}";
+                    timingsPanel.textBoxCkeSetup.Text = $"{BMC.Config.CkeSetup}";
+                }*/
             }
             catch (Exception ex)
             {
@@ -546,6 +473,7 @@ namespace ZenTimings
             BMC.Dispose();
         }
 
+        //TODO: Replace with a call to DLL
         private void ReadTimings(uint offset = 0)
         {
             uint config = cpu.ReadDword(offset | 0x50100);
@@ -805,8 +733,8 @@ namespace ZenTimings
                             Dispatcher.Invoke(DispatcherPriority.ApplicationIdle,
                                 new Action(() =>
                                 {
-                                    textBoxMemVddio.Text = sensor.Value;
-                                    labelMemVddio.IsEnabled = true;
+                                    timingsPanel.textBoxMemVddio.Text = sensor.Value;
+                                    //timingsPanel.labelMemVddio.IsEnabled = true;
                                 }));
                     }
 
