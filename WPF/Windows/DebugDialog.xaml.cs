@@ -209,6 +209,8 @@ namespace ZenTimings.Windows
                         AddLine($"{property.Name + ":",-19}{property.GetValue(cpu.systemInfo, null):X8}");
                     else if (property.Name == "SmuVersion")
                         AddLine($"{property.Name + ":",-19}{cpu.systemInfo.GetSmuVersionString()}");
+                    else if (property.Name == "Model" || property.Name == "ExtendedModel" || property.Name == "BaseModel")
+                        AddLine($"{property.Name + ":",-19}{property.GetValue(cpu.systemInfo, null)} (0x{property.GetValue(cpu.systemInfo, null):X})");
                     else
                         AddLine($"{property.Name + ":",-19}{property.GetValue(cpu.systemInfo, null)}");
 
