@@ -124,7 +124,7 @@
             <Border Style="{DynamicResource Separator}"
                     Visibility="{Binding settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
 
-            <controls:DDR5TimingsPanel x:Name="timingsPanel" DataContext="{Binding}" />
+            <StackPanel x:Name="timingsPanelSlot" Margin="0" Orientation="Vertical" />
 
             <Border Style="{DynamicResource Separator}" />
 

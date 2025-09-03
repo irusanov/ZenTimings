@@ -4,6 +4,7 @@ using AdonisUI.Controls;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Management;
 using System.Reflection;
@@ -16,6 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using ZenStates.Core;
 using ZenStates.Core.DRAM;
+using ZenTimings.Controls;
 using ZenTimings.Plugin;
 using ZenTimings.Windows;
 using static ZenStates.Core.DRAM.MemoryConfig;
@@ -45,6 +47,7 @@ namespace ZenTimings
         private SystemInfoWindow siWnd = null;
         internal readonly Forms.NotifyIcon _notifyIcon;
         private bool compatMode;
+        private readonly Control timingsPanel;
         //private Computer computer;
 
         private readonly string AssemblyProduct = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(
@@ -101,6 +104,23 @@ namespace ZenTimings
                 SplashWindow.Loading("Memory modules");
                 modules = cpu.GetMemoryConfig()?.Modules ?? new List<MemoryModule>();
                 ReadMemoryModulesInfo();
+
+                var memoryType = cpu.GetMemoryConfig().Type;
+                if (memoryType == MemType.DDR4)
+                {
+                    timingsPanel = new DDR4TimingsPanel();
+                }
+                else if (cpu.smu.SMU_TYPE == SMU.SmuType.TYPE_APU2)
+                {
+                    timingsPanel = new DDR5APUTimingsPanel();
+                }
+                else if (memoryType == MemType.DDR5)
+                {
+                    timingsPanel = new DDR5TimingsPanel();
+                }
+
+                timingsPanelSlot.Children.Add(timingsPanel);
+
                 SplashWindow.Loading("Timings");
 
                 // Read from first enabled DCT
@@ -136,12 +156,14 @@ namespace ZenTimings
                     }
 
                     SplashWindow.Loading("Plugins");
-                    SplashWindow.Loading("SVI2 Plugin");
-                    plugins.Add(new SVI2Plugin(cpu));
+                    if (memoryType == MemType.DDR4)
+                    {
+                        SplashWindow.Loading("SVI2 Plugin");
+                        plugins.Add(new SVI2Plugin(cpu));
+                        ReadSVI();
+                    }
                     //plugins.Add(new OHWMPlugin());
                     //plugins[1].Open();
-
-                    ReadSVI();
 
                     if (!AsusWmi.Init())
                     {
@@ -304,10 +326,10 @@ namespace ZenTimings
 
         private void ReadSVI()
         {
-            /*if (plugins[0].Update())
+            if (plugins.Count > 0 && plugins[0].Update())
             {
-                timingsPanel.textBoxVSOC_SVI2.Text = $"{plugins[0].Sensors[0].Value:F4}V";
-            }*/
+                (timingsPanel as DDR4TimingsPanel).textBoxVSOC_SVI2.Text = $"{plugins[0].Sensors[0].Value:F4}V";
+            }
         }
 
         // TODO: Replace with a call to DLL
@@ -364,7 +386,7 @@ namespace ZenTimings
                 }
 
                 AOD aod = cpu.info.aod;
-/*
+
                 if (cpu.GetMemoryConfig().Type == MemType.DDR4)
                 {
                     // Get APCB config from BIOS. Holds memory parameters.
@@ -400,7 +422,7 @@ namespace ZenTimings
                     float vdimm = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVddio) / 1000);
                     if (vdimm > 0 && vdimm < 3)
                     {
-                        timingsPanel.textBoxMemVddio.Text = $"{vdimm:F4}V";
+                        (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = $"{vdimm:F4}V";
                     }
                     else if (AsusWmi != null && AsusWmi.Status == 1)
                     {
@@ -409,20 +431,20 @@ namespace ZenTimings
                         bool valid = sensor != null && float.TryParse(sensor.Value, out temp);
 
                         if (valid && temp > 0 && temp < 3)
-                            timingsPanel.textBoxMemVddio.Text = sensor.Value;
+                            (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = sensor.Value;
                         else
-                            timingsPanel.labelMemVddio.IsEnabled = false;
+                            (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = false;
                     }
                     else
                     {
-                        timingsPanel.labelMemVddio.IsEnabled = false;
+                        (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = false;
                     }
 
                     float vtt = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVtt) / 1000);
                     if (vtt > 0)
-                        timingsPanel.textBoxMemVtt.Text = $"{vtt:F4}V";
+                        (timingsPanel as DDR4TimingsPanel).textBoxMemVtt.Text = $"{vtt:F4}V";
                     else
-                        timingsPanel.labelMemVtt.IsEnabled = false;
+                        (timingsPanel as DDR4TimingsPanel).labelMemVtt.IsEnabled = false;
 
                     // When ProcODT is 0, then all other resistance values are 0
                     // Happens when one DIMM installed in A1 or A2 slot
@@ -430,33 +452,33 @@ namespace ZenTimings
                         // throw new Exception("Failed to read AMD ACPI. Odt, Setup and Drive strength parameters will be empty.");
                         return;
 
-                    timingsPanel.labelProcODT.IsEnabled = true;
-                    timingsPanel.labelClkDrvStren.IsEnabled = true;
-                    timingsPanel.labelAddrCmdDrvStren.IsEnabled = true;
-                    timingsPanel.labelCsOdtDrvStren.IsEnabled = true;
-                    timingsPanel.labelCkeDrvStren.IsEnabled = true;
-                    timingsPanel.labelRttNom.IsEnabled = true;
-                    timingsPanel.labelRttWr.IsEnabled = true;
-                    timingsPanel.labelRttPark.IsEnabled = true;
-                    timingsPanel.labelAddrCmdSetup.IsEnabled = true;
-                    timingsPanel.labelCsOdtSetup.IsEnabled = true;
-                    timingsPanel.labelCkeSetup.IsEnabled = true;
+                    (timingsPanel as DDR4TimingsPanel).labelProcODT.IsEnabled = true;
+                    (timingsPanel as DDR4TimingsPanel).labelClkDrvStren.IsEnabled = true;
+                    (timingsPanel as DDR4TimingsPanel).labelAddrCmdDrvStren.IsEnabled = true;
+                    (timingsPanel as DDR4TimingsPanel).labelCsOdtDrvStren.IsEnabled = true;
+                    (timingsPanel as DDR4TimingsPanel).labelCkeDrvStren.IsEnabled = true;
+                    (timingsPanel as DDR4TimingsPanel).labelRttNom.IsEnabled = true;
+                    (timingsPanel as DDR4TimingsPanel).labelRttWr.IsEnabled = true;
+                    (timingsPanel as DDR4TimingsPanel).labelRttPark.IsEnabled = true;
+                    (timingsPanel as DDR4TimingsPanel).labelAddrCmdSetup.IsEnabled = true;
+                    (timingsPanel as DDR4TimingsPanel).labelCsOdtSetup.IsEnabled = true;
+                    (timingsPanel as DDR4TimingsPanel).labelCkeSetup.IsEnabled = true;
 
-                    timingsPanel.textBoxProcODT.Text = BMC.GetProcODTString(BMC.Config.ProcODT);
+                    (timingsPanel as DDR4TimingsPanel).textBoxProcODT.Text = BMC.GetProcODTString(BMC.Config.ProcODT);
 
-                    timingsPanel.textBoxClkDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.ClkDrvStren);
-                    timingsPanel.textBoxAddrCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.AddrCmdDrvStren);
-                    timingsPanel.textBoxCsOdtCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CsOdtCmdDrvStren);
-                    timingsPanel.textBoxCkeDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CkeDrvStren);
+                    (timingsPanel as DDR4TimingsPanel).textBoxClkDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.ClkDrvStren);
+                    (timingsPanel as DDR4TimingsPanel).textBoxAddrCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.AddrCmdDrvStren);
+                    (timingsPanel as DDR4TimingsPanel).textBoxCsOdtCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CsOdtCmdDrvStren);
+                    (timingsPanel as DDR4TimingsPanel).textBoxCkeDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CkeDrvStren);
 
-                    timingsPanel.textBoxRttNom.Text = BMC.GetRttString(BMC.Config.RttNom);
-                    timingsPanel.textBoxRttWr.Text = BMC.GetRttWrString(BMC.Config.RttWr);
-                    timingsPanel.textBoxRttPark.Text = BMC.GetRttString(BMC.Config.RttPark);
+                    (timingsPanel as DDR4TimingsPanel).textBoxRttNom.Text = BMC.GetRttString(BMC.Config.RttNom);
+                    (timingsPanel as DDR4TimingsPanel).textBoxRttWr.Text = BMC.GetRttWrString(BMC.Config.RttWr);
+                    (timingsPanel as DDR4TimingsPanel).textBoxRttPark.Text = BMC.GetRttString(BMC.Config.RttPark);
 
-                    timingsPanel.textBoxAddrCmdSetup.Text = $"{BMC.Config.AddrCmdSetup}";
-                    timingsPanel.textBoxCsOdtSetup.Text = $"{BMC.Config.CsOdtSetup}";
-                    timingsPanel.textBoxCkeSetup.Text = $"{BMC.Config.CkeSetup}";
-                }*/
+                    (timingsPanel as DDR4TimingsPanel).textBoxAddrCmdSetup.Text = $"{BMC.Config.AddrCmdSetup}";
+                    (timingsPanel as DDR4TimingsPanel).textBoxCsOdtSetup.Text = $"{BMC.Config.CsOdtSetup}";
+                    (timingsPanel as DDR4TimingsPanel).textBoxCkeSetup.Text = $"{BMC.Config.CkeSetup}";
+                }
             }
             catch (Exception ex)
             {
@@ -733,7 +755,7 @@ namespace ZenTimings
                             Dispatcher.Invoke(DispatcherPriority.ApplicationIdle,
                                 new Action(() =>
                                 {
-                                    timingsPanel.textBoxMemVddio.Text = sensor.Value;
+                                    (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = sensor.Value;
                                     //timingsPanel.labelMemVddio.IsEnabled = true;
                                 }));
                     }
