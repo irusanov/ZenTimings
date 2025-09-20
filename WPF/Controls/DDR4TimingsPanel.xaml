@@ -54,7 +54,7 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" MinWidth="60">
-                    <TextBlock Text="{Binding timings.FrequencyString, FallbackValue='N/A', StringFormat={}{0:F0}}"
+                    <TextBlock Text="{Binding memoryFrequency, FallbackValue='N/A', StringFormat={}{0:F0}}"
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding timings.BGS, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
@@ -143,7 +143,7 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="1">
-                    <TextBlock Text="{Binding timings.TotalCapacity, FallbackValue='N/A'}"
+                    <TextBlock Text="{Binding totalCapacity, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding timings.BGSAlt, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />

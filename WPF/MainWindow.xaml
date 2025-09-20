@@ -15,7 +15,6 @@
     WindowStartupLocation="CenterScreen"
     ResizeMode="CanMinimize"
     FontSize="11"
-    Initialized="Window_Initialized"
     StateChanged="AdonisWindow_StateChanged"
     SizeChanged="AdonisWindow_SizeChanged"
     Activated="AdonisWindow_Activated"
@@ -102,7 +101,7 @@
                         <TextBlock x:Name="labelAgesaVersion" Text="N/A" Padding="12 0 5 5" Margin="0 -5 0 0" />
                     </StackPanel>
                     <Border Padding="0 0 5 0" Grid.Column="2"
-                            Visibility="{Binding IsRogMotherboard, Mode=OneTime, Converter={StaticResource BoolToVis}}">
+                            Visibility="{Binding IsMotherboardLogoVisible, Mode=OneTime, Converter={StaticResource BoolToVis}}">
 
                         <Button
                             BorderThickness="0"
@@ -110,9 +109,10 @@
                             Style="{DynamicResource CameraButtonStyle}"
                             ForceCursor="True"
                             Cursor="Hand"
-                            Click="RogLogoButton_Click"
-                            ToolTip="{Binding RogLogoTooltip, Mode=OneTime}">
-                            <Image Source="{DynamicResource ROGLogo}"
+                            Click="MotherboardLinkButton_Click"
+                            ToolTip="{Binding MotherboardLogoTooltip, Mode=OneTime}">
+                            <Image
+                               x:Name="motherboardLogoImage"
                                Height="40"
                                VerticalAlignment="Center"
                                HorizontalAlignment="Right"/>

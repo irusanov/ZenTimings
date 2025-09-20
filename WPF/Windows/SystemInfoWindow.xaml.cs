@@ -18,7 +18,7 @@ namespace ZenTimings.Windows
             public string Value { get; set; }
         }
 
-        public SystemInfoWindow(MemoryConfig mc, Resistances mcConfig, List<AsusSensorInfo> asusSensors)
+        public SystemInfoWindow(MemoryConfig mc, Resistances? mcConfig, List<AsusSensorInfo> asusSensors)
         {
             InitializeComponent();
             SystemInfo si = CpuSingleton.Instance.systemInfo;
@@ -84,7 +84,7 @@ namespace ZenTimings.Windows
                 // ignored
             }
 
-            if (mc.Type == MemoryConfig.MemType.DDR4)
+            if (mcConfig != null && mc.Type == MemoryConfig.MemType.DDR4)
             {
                 try
                 {
