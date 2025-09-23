@@ -69,7 +69,7 @@ namespace ZenTimings
         {
             return module.Manufacturer.ToLowerInvariant().Contains("skill")
                 || module.PartNumber.ToLowerInvariant().StartsWith("f5-")
-                || module.PartNumber.ToLowerInvariant().StartsWith("F4-");
+                || module.PartNumber.ToLowerInvariant().StartsWith("f4-");
         }
 
         internal static bool IsBiwinModule(MemoryModule module)
