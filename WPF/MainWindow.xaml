@@ -139,7 +139,7 @@
 
                     <ComboBox x:Name="comboBoxPartNumber" IsReadOnly="True" Grid.Column="0" />
                     <TextBlock
-                        Text="{Binding timings.Type, FallbackValue=''}"
+                        Text="{Binding memoryType, FallbackValue=''}"
                         Style="{DynamicResource ValueStyles}"
                         Visibility="{Binding settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}"
                         Grid.Column="3"

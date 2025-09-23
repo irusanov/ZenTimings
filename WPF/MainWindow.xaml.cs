@@ -46,7 +46,7 @@ namespace ZenTimings
         internal readonly Forms.NotifyIcon _notifyIcon;
         private bool compatMode;
         private Control timingsPanel;
-        private float memoryFrequency = 0;
+        private float _memoryFrequency = 0;
         private BaseDramTimings Timings = null;
         private ViewData viewData = new ViewData();
         //private Computer computer;
@@ -174,7 +174,8 @@ namespace ZenTimings
                 {
                     timings = Timings,
                     totalCapacity = cpu.memoryConfig.TotalCapacity,
-                    memoryFrequency = $"{Math.Floor(memoryFrequency)} MT/s",
+                    memoryFrequency = $"{Math.Floor(_memoryFrequency)} MT/s",
+                    memoryType,
                     cpu.powerTable,
                     cpu.info.codeName,
                     WMIPresent = !compatMode && cpu.GetMemoryConfig().Type == MemType.DDR4,
@@ -519,14 +520,14 @@ namespace ZenTimings
 
             Timings = cpu.GetMemoryConfig().Timings[index].Value;
 
-            float configured = memoryFrequency;
+            float configured = _memoryFrequency;
             float ratio = Timings.Ratio;
             float freqFromRatio = ratio * 200;
 
             // Fallback to ratio when ConfiguredClockSpeed fails
             if (configured == 0.0f || freqFromRatio > configured)
             {
-                memoryFrequency = freqFromRatio;
+                _memoryFrequency = freqFromRatio;
             }
 
             // TODO: Implement property notifications
@@ -536,8 +537,10 @@ namespace ZenTimings
                 {
                     timings = Timings,
                     totalCapacity = cpu.memoryConfig.TotalCapacity,
-                    memoryFrequency = $"{Math.Floor(memoryFrequency)} MT/s",
+                    memoryFrequency = $"{Math.Floor(_memoryFrequency)} MT/s",
+                    memoryType = cpu.memoryConfig.Type,
                     cpu.powerTable,
+                    settings,
                 };
             }
         }
@@ -563,7 +566,7 @@ namespace ZenTimings
         {
             if (cpu.powerTable != null && cpu.powerTable.MCLK > 0)
             {
-                memoryFrequency = cpu.powerTable.MCLK * 2;
+                _memoryFrequency = cpu.powerTable.MCLK * 2;
             }
         }
 
