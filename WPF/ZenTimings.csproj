@@ -102,9 +102,6 @@
     <Compile Include="..\Common\CpuSingleton.cs">
       <Link>Common\CpuSingleton.cs</Link>
     </Compile>
-    <Compile Include="..\Common\MemoryConfig.cs">
-      <Link>Common\MemoryConfig.cs</Link>
-    </Compile>
     <Compile Include="..\Common\Screenshot.cs">
       <Link>Common\Screenshot.cs</Link>
     </Compile>

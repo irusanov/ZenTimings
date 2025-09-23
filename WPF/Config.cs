@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Xml.Serialization;
-using ZenStates.Core;
+using ZenStates.Core.DRAM;
 
 namespace ZenTimings
 {

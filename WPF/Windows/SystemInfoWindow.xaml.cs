@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using ZenStates.Core;
+using ZenStates.Core.DRAM;
 using static ZenTimings.BiosMemController;
 
 namespace ZenTimings.Windows

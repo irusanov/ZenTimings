@@ -39,7 +39,6 @@ namespace ZenTimings
         private readonly List<BiosACPIFunction> biosFunctions = new List<BiosACPIFunction>();
         private readonly BiosMemController BMC;
         private readonly Cpu cpu;
-        private readonly MemoryConfig MEMCFG = new MemoryConfig();
         private readonly DispatcherTimer PowerCfgTimer = new DispatcherTimer();
         private readonly AppSettings settings = AppSettings.Instance;
         private readonly List<IPlugin> plugins = new List<IPlugin>();
@@ -581,8 +580,12 @@ namespace ZenTimings
                 Stopwatch timer = new Stopwatch();
                 int timeout = 10000;
 
-                cpu.powerTable.ConfiguredClockSpeed = MEMCFG.Frequency;
-                cpu.powerTable.MemRatio = MEMCFG.Ratio;
+                var memoryConfig = cpu.memoryConfig.Timings.FirstOrDefault().Value;
+                if (memoryConfig != null)
+                {
+                    cpu.powerTable.ConfiguredClockSpeed = memoryConfig.Frequency;
+                    cpu.powerTable.MemRatio = memoryConfig.Ratio;
+                }
 
                 timer.Start();
 
@@ -977,7 +980,7 @@ namespace ZenTimings
                 sysInfoWindowWidth = settings.SysInfoWindowWidth;
             }
 
-            siWnd = new SystemInfoWindow(MEMCFG, BMC?.Config, AsusWmi?.sensors)
+            siWnd = new SystemInfoWindow(cpu.memoryConfig, BMC?.Config, AsusWmi?.sensors)
             {
                 Width = sysInfoWindowWidth,
                 Height = sysInfoWindowHeight,
@@ -1025,7 +1028,7 @@ namespace ZenTimings
 
         private void ExportToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            Config Config = new Config(MEMCFG, BMC.Config/*, cpu.powerTable*/);
+            Config Config = new Config(cpu.memoryConfig, BMC.Config/*, cpu.powerTable*/);
             Console.WriteLine(Config.GetXML());
         }
 
@@ -1112,7 +1115,7 @@ namespace ZenTimings
         {
             try
             {
-                Config Config = new Config(MEMCFG, BMC.Config/*, cpu.powerTable*/);
+                Config Config = new Config(cpu.memoryConfig, BMC.Config/*, cpu.powerTable*/);
                 // Generate HTML content
                 string htmlContent = Config.GetHTML();
 
