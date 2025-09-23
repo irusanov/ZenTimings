@@ -154,8 +154,8 @@ namespace ZenTimings
                     if (memoryType == MemType.DDR4)
                     {
                         BMC = new BiosMemController();
+                        ReadDDR4MemoryConfig();
                     }
-                    ReadMemoryConfig();
 
                     SplashWindow.Loading("Searching for AGESA version, hold tight...");
                     GetAgesaVersion();
@@ -349,8 +349,8 @@ namespace ZenTimings
             }
         }
 
-        // TODO: Replace with a call to DLL
-        private void ReadMemoryConfig()
+        // TODO: Handle in DLL or replace with read from memory
+        private void ReadDDR4MemoryConfig()
         {
             string scope = @"root\wmi";
             string className = "AMD_ACPI";
@@ -366,136 +366,115 @@ namespace ZenTimings
                     null);
 
                 /* // Get possible values (index) of a memory option in BIOS
-                 var dvaluesPack = WMI.InvokeMethod(classInstance, "Getdvalues", "pack", "ID", 0x20035);
-                 if (dvaluesPack != null)
-                 {
-                     uint[] DValuesBuffer = (uint[])dvaluesPack.GetPropertyValue("DValuesBuffer");
-                     for (var i = 0; i < DValuesBuffer.Length; i++)
-                     {
-                         Debug.WriteLine("{0}", DValuesBuffer[i]);
-                     }
-                 }*/
+                var dvaluesPack = WMI.InvokeMethodAndGetValue(classInstance, "Getdvalues", "pack", "ID", 0x20035);
+                if (dvaluesPack != null)
+                {
+                    uint[] DValuesBuffer = (uint[])dvaluesPack.GetPropertyValue("DValuesBuffer");
+                    for (var i = 0; i < DValuesBuffer.Length; i++)
+                    {
+                        Debug.WriteLine("{0}", DValuesBuffer[i]);
+                    }
+                }*/
 
                 // Get function names with their IDs
-                string[] functionObjects = { "GetObjectID", "GetObjectID2" };
-                foreach (string functionObject in functionObjects)
+                var wmiFunctionsDict = AOD.GetWmiFunctions();
+                if (wmiFunctionsDict != null)
                 {
-                    try
+                    foreach (var kvp in wmiFunctionsDict)
                     {
-                        ManagementBaseObject pack = WMI.InvokeMethodAndGetValue(classInstance, functionObject, "pack", null, 0);
-                        if (pack != null)
-                        {
-                            uint[] ID = (uint[])pack.GetPropertyValue("ID");
-                            string[] IDString = (string[])pack.GetPropertyValue("IDString");
-                            byte Length = (byte)pack.GetPropertyValue("Length");
-
-                            for (int i = 0; i < Length; ++i)
-                            {
-                                biosFunctions.Add(new BiosACPIFunction(IDString[i], ID[i]));
-                                Debug.WriteLine("{0}: {1:X8}", IDString[i], ID[i]);
-                            }
-                        }
-                    }
-                    catch
-                    {
-                        // ignored
+                        biosFunctions.Add(new BiosACPIFunction(kvp.Key, kvp.Value));
                     }
                 }
 
-                AOD aod = cpu.info.aod;
-
-                if (cpu.GetMemoryConfig().Type == MemType.DDR4)
+                // Get APCB config from BIOS. Holds memory parameters.
+                BiosACPIFunction cmd = GetFunctionByIdString("Get APCB Config");
+                if (cmd == null)
                 {
-                    // Get APCB config from BIOS. Holds memory parameters.
-                    BiosACPIFunction cmd = GetFunctionByIdString("Get APCB Config");
-                    if (cmd == null)
+                    // throw new Exception("Could not get memory controller config");
+                    // Use AOD table as an alternative path for now
+                    BMC.Table = cpu.info.aod.Table.RawAodTable;
+                }
+                else
+                {
+                    byte[] apcbConfig = WMI.RunCommand(classInstance, cmd.ID);
+                    // BiosACPIFunction cmd = new BiosACPIFunction("Get APCB Config", 0x00010001);
+                    cmd = GetFunctionByIdString("Get memory voltages");
+                    if (cmd != null)
                     {
-                        // throw new Exception("Could not get memory controller config");
-                        // Use AOD table as an alternative path for now
-                        BMC.Table = cpu.info.aod.Table.RawAodTable;
-                    }
-                    else
-                    {
-                        byte[] apcbConfig = WMI.RunCommand(classInstance, cmd.ID);
-                        // BiosACPIFunction cmd = new BiosACPIFunction("Get APCB Config", 0x00010001);
-                        cmd = GetFunctionByIdString("Get memory voltages");
-                        if (cmd != null)
+                        byte[] voltages = WMI.RunCommand(classInstance, cmd.ID);
+
+                        // MEM_VDDIO is ushort, offset 27
+                        // MEM_VTT is ushort, offset 29
+                        for (int i = 27; i <= 30; i++)
                         {
-                            byte[] voltages = WMI.RunCommand(classInstance, cmd.ID);
-
-                            // MEM_VDDIO is ushort, offset 27
-                            // MEM_VTT is ushort, offset 29
-                            for (int i = 27; i <= 30; i++)
-                            {
-                                byte value = voltages[i];
-                                if (value > 0)
-                                    apcbConfig[i] = value;
-                            }
+                            byte value = voltages[i];
+                            if (value > 0)
+                                apcbConfig[i] = value;
                         }
-
-                        BMC.Table = apcbConfig ?? new byte[] { };
                     }
 
-                    float vdimm = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVddio) / 1000);
-                    if (vdimm > 0 && vdimm < 3)
-                    {
-                        (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = $"{vdimm:F4}V";
-                    }
-                    else if (AsusWmi != null && AsusWmi.Status == 1)
-                    {
-                        AsusSensorInfo sensor = AsusWmi.FindSensorByName("DRAM Voltage");
-                        float temp = 0;
-                        bool valid = sensor != null && float.TryParse(sensor.Value, out temp);
+                    BMC.Table = apcbConfig ?? new byte[] { };
+                }
 
-                        if (valid && temp > 0 && temp < 3)
-                            (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = sensor.Value;
-                        else
-                            (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = false;
-                    }
+                float vdimm = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVddio) / 1000);
+                if (vdimm > 0 && vdimm < 3)
+                {
+                    (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = $"{vdimm:F4}V";
+                }
+                else if (AsusWmi != null && AsusWmi.Status == 1)
+                {
+                    AsusSensorInfo sensor = AsusWmi.FindSensorByName("DRAM Voltage");
+                    float temp = 0;
+                    bool valid = sensor != null && float.TryParse(sensor.Value, out temp);
+
+                    if (valid && temp > 0 && temp < 3)
+                        (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = sensor.Value;
                     else
-                    {
                         (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = false;
-                    }
-
-                    float vtt = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVtt) / 1000);
-                    if (vtt > 0)
-                        (timingsPanel as DDR4TimingsPanel).textBoxMemVtt.Text = $"{vtt:F4}V";
-                    else
-                        (timingsPanel as DDR4TimingsPanel).labelMemVtt.IsEnabled = false;
-
-                    // When ProcODT is 0, then all other resistance values are 0
-                    // Happens when one DIMM installed in A1 or A2 slot
-                    if (BMC.Table == null || Utils.AllZero(BMC.Table) || BMC.Config.ProcODT < 1)
-                        // throw new Exception("Failed to read AMD ACPI. Odt, Setup and Drive strength parameters will be empty.");
-                        return;
-
-                    (timingsPanel as DDR4TimingsPanel).labelProcODT.IsEnabled = true;
-                    (timingsPanel as DDR4TimingsPanel).labelClkDrvStren.IsEnabled = true;
-                    (timingsPanel as DDR4TimingsPanel).labelAddrCmdDrvStren.IsEnabled = true;
-                    (timingsPanel as DDR4TimingsPanel).labelCsOdtDrvStren.IsEnabled = true;
-                    (timingsPanel as DDR4TimingsPanel).labelCkeDrvStren.IsEnabled = true;
-                    (timingsPanel as DDR4TimingsPanel).labelRttNom.IsEnabled = true;
-                    (timingsPanel as DDR4TimingsPanel).labelRttWr.IsEnabled = true;
-                    (timingsPanel as DDR4TimingsPanel).labelRttPark.IsEnabled = true;
-                    (timingsPanel as DDR4TimingsPanel).labelAddrCmdSetup.IsEnabled = true;
-                    (timingsPanel as DDR4TimingsPanel).labelCsOdtSetup.IsEnabled = true;
-                    (timingsPanel as DDR4TimingsPanel).labelCkeSetup.IsEnabled = true;
-
-                    (timingsPanel as DDR4TimingsPanel).textBoxProcODT.Text = BMC.GetProcODTString(BMC.Config.ProcODT);
-
-                    (timingsPanel as DDR4TimingsPanel).textBoxClkDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.ClkDrvStren);
-                    (timingsPanel as DDR4TimingsPanel).textBoxAddrCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.AddrCmdDrvStren);
-                    (timingsPanel as DDR4TimingsPanel).textBoxCsOdtCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CsOdtCmdDrvStren);
-                    (timingsPanel as DDR4TimingsPanel).textBoxCkeDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CkeDrvStren);
-
-                    (timingsPanel as DDR4TimingsPanel).textBoxRttNom.Text = BMC.GetRttString(BMC.Config.RttNom);
-                    (timingsPanel as DDR4TimingsPanel).textBoxRttWr.Text = BMC.GetRttWrString(BMC.Config.RttWr);
-                    (timingsPanel as DDR4TimingsPanel).textBoxRttPark.Text = BMC.GetRttString(BMC.Config.RttPark);
-
-                    (timingsPanel as DDR4TimingsPanel).textBoxAddrCmdSetup.Text = $"{BMC.Config.AddrCmdSetup}";
-                    (timingsPanel as DDR4TimingsPanel).textBoxCsOdtSetup.Text = $"{BMC.Config.CsOdtSetup}";
-                    (timingsPanel as DDR4TimingsPanel).textBoxCkeSetup.Text = $"{BMC.Config.CkeSetup}";
                 }
+                else
+                {
+                    (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = false;
+                }
+
+                float vtt = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVtt) / 1000);
+                if (vtt > 0)
+                    (timingsPanel as DDR4TimingsPanel).textBoxMemVtt.Text = $"{vtt:F4}V";
+                else
+                    (timingsPanel as DDR4TimingsPanel).labelMemVtt.IsEnabled = false;
+
+                // When ProcODT is 0, then all other resistance values are 0
+                // Happens when one DIMM installed in A1 or A2 slot
+                if (BMC.Table == null || Utils.AllZero(BMC.Table) || BMC.Config.ProcODT < 1)
+                    // throw new Exception("Failed to read AMD ACPI. Odt, Setup and Drive strength parameters will be empty.");
+                    return;
+
+                (timingsPanel as DDR4TimingsPanel).labelProcODT.IsEnabled = true;
+                (timingsPanel as DDR4TimingsPanel).labelClkDrvStren.IsEnabled = true;
+                (timingsPanel as DDR4TimingsPanel).labelAddrCmdDrvStren.IsEnabled = true;
+                (timingsPanel as DDR4TimingsPanel).labelCsOdtDrvStren.IsEnabled = true;
+                (timingsPanel as DDR4TimingsPanel).labelCkeDrvStren.IsEnabled = true;
+                (timingsPanel as DDR4TimingsPanel).labelRttNom.IsEnabled = true;
+                (timingsPanel as DDR4TimingsPanel).labelRttWr.IsEnabled = true;
+                (timingsPanel as DDR4TimingsPanel).labelRttPark.IsEnabled = true;
+                (timingsPanel as DDR4TimingsPanel).labelAddrCmdSetup.IsEnabled = true;
+                (timingsPanel as DDR4TimingsPanel).labelCsOdtSetup.IsEnabled = true;
+                (timingsPanel as DDR4TimingsPanel).labelCkeSetup.IsEnabled = true;
+
+                (timingsPanel as DDR4TimingsPanel).textBoxProcODT.Text = BMC.GetProcODTString(BMC.Config.ProcODT);
+
+                (timingsPanel as DDR4TimingsPanel).textBoxClkDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.ClkDrvStren);
+                (timingsPanel as DDR4TimingsPanel).textBoxAddrCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.AddrCmdDrvStren);
+                (timingsPanel as DDR4TimingsPanel).textBoxCsOdtCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CsOdtCmdDrvStren);
+                (timingsPanel as DDR4TimingsPanel).textBoxCkeDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CkeDrvStren);
+
+                (timingsPanel as DDR4TimingsPanel).textBoxRttNom.Text = BMC.GetRttString(BMC.Config.RttNom);
+                (timingsPanel as DDR4TimingsPanel).textBoxRttWr.Text = BMC.GetRttWrString(BMC.Config.RttWr);
+                (timingsPanel as DDR4TimingsPanel).textBoxRttPark.Text = BMC.GetRttString(BMC.Config.RttPark);
+
+                (timingsPanel as DDR4TimingsPanel).textBoxAddrCmdSetup.Text = $"{BMC.Config.AddrCmdSetup}";
+                (timingsPanel as DDR4TimingsPanel).textBoxCsOdtSetup.Text = $"{BMC.Config.CsOdtSetup}";
+                (timingsPanel as DDR4TimingsPanel).textBoxCkeSetup.Text = $"{BMC.Config.CkeSetup}";
             }
             catch (Exception ex)
             {
@@ -663,7 +642,7 @@ namespace ZenTimings
                         int selectedIndex = comboBoxPartNumber?.SelectedIndex ?? 0;
                         MemoryModule module = modules?.Count > 0 ? modules[selectedIndex] : null;
                         ReadTimings(module?.DctOffset ?? 0);
-                        ReadMemoryConfig();
+                        //ReadDDR4MemoryConfig();
                         cpu.RefreshPowerTable();
                         ReadSVI();
                         SetFrequencyString();
