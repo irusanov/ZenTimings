@@ -109,7 +109,6 @@ namespace ZenTimings
                 SplashWindow.Loading("Timings");
 
                 var memoryType = cpu.GetMemoryConfig().Type;
-                AddTimingsPanel(memoryType);
 
                 ReadTimings();
 
@@ -185,6 +184,8 @@ namespace ZenTimings
                     IsMotherboardLogoVisible = motherboardLogoName != null,
                     MotherboardLogoTooltip = $"Click to visit {cpu.systemInfo.MbName} page",
                 };
+
+                AddTimingsPanel(memoryType);
             }
             catch (Exception ex)
             {
@@ -909,10 +910,10 @@ namespace ZenTimings
                 settings.Save();
             }
 #endif
-//#if BETA
-//            MessageBox.Show("This is a BETA version of the application. Some functions might be working incorrectly.\n\n" +
-//                    "Please report if something is not working as expected.", "Beta version", MessageBoxButton.OK);
-//#endif
+            //#if BETA
+            //            MessageBox.Show("This is a BETA version of the application. Some functions might be working incorrectly.\n\n" +
+            //                    "Please report if something is not working as expected.", "Beta version", MessageBoxButton.OK);
+            //#endif
             MinimizeFootprint();
         }
 

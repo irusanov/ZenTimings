@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using ZenStates.Core;
-using ZenStates.Core.DRAM;
 using static ZenTimings.BiosMemController;
 
 namespace ZenTimings.Windows
@@ -54,29 +53,16 @@ namespace ZenTimings.Windows
             {
                 items = new List<GridItem>();
 
-                if (mc.Type == MemoryConfig.MemType.DDR5)
-                {
-                    var timings = CpuSingleton.Instance.GetMemoryConfig().Timings[0].Value;
-                    type = timings.GetType();
-                    properties = type.GetProperties();
+                var timings = CpuSingleton.Instance.GetMemoryConfig().Timings[0].Value;
+                type = timings.GetType();
+                properties = type.GetProperties();
 
-                    foreach (PropertyInfo property in properties)
-                    {
-                        if (property.Name != "Item")
-                            items.Add(new GridItem() { Name = property.Name, Value = $"{timings[property.Name]}" });
-                    }
-                }
-                else
+                foreach (PropertyInfo property in properties)
                 {
-                    type = mc.GetType();
-                    properties = type.GetProperties();
-                    foreach (PropertyInfo property in properties)
-                    {
-                        if (property.Name != "Item")
-                            items.Add(new GridItem() { Name = property.Name, Value = property.GetValue(mc, null).ToString() });
-                    }
+                    if (property.Name != "Item")
+                        items.Add(new GridItem() { Name = property.Name, Value = $"{timings[property.Name]}" });
                 }
-                
+
                 MemCfgGrid.ItemsSource = items;
             }
             catch
