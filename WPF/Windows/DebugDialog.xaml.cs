@@ -193,6 +193,8 @@ namespace ZenTimings.Windows
                 Environment.NewLine +
                 $"{"Core Version: "}{cpu.Version}" +
                 Environment.NewLine +
+                $"{"PawnIO Version: "}{DriverHelper.Version}" +
+                Environment.NewLine +
                 Environment.NewLine;
 
             var type = cpu.systemInfo.GetType();
