@@ -1,5 +1,7 @@
+using AdonisUI.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using ZenStates.Core;
 using ZenStates.Core.DRAM;
@@ -52,19 +54,55 @@ namespace ZenTimings.Windows
 
             try
             {
-                items = new List<GridItem>();
+                var memConfigs = CpuSingleton.Instance.GetMemoryConfig();
+                var allTimings = memConfigs.Timings;
+                var props = allTimings[0].Value.GetType().GetProperties();
 
-                var timings = CpuSingleton.Instance.GetMemoryConfig().Timings[0].Value;
-                type = timings.GetType();
-                properties = type.GetProperties();
+                // Filter timings to only include unique DctOffset values
+                var uniqueTimings = allTimings
+                    .GroupBy(t => t.Key)
+                    .Select(g => g.First())
+                    .ToList();
 
-                foreach (PropertyInfo property in properties)
+                // Create dynamic object with properties for each timing column
+                var rows = props
+                    .Where(p => p.Name != "Item")
+                    .Select(property => new
+                    {
+                        PropertyName = property.Name,
+                        Values = uniqueTimings.Select(t => t.Value[property.Name].ToString()).ToArray()
+                    })
+                    .ToList();
+
+                MemCfgGrid.ItemsSource = rows;
+
+                // Ensure columns exist for each unique timing
+                if (MemCfgGrid.Columns.Count < uniqueTimings.Count + 1)
                 {
-                    if (property.Name != "Item")
-                        items.Add(new GridItem() { Name = property.Name, Value = $"{timings[property.Name]}" });
-                }
+                    MemCfgGrid.Columns.Clear();
 
-                MemCfgGrid.ItemsSource = items;
+                    // Add property name column with default text color
+                    var nameColumn = new System.Windows.Controls.DataGridTextColumn
+                    {
+                        Header = "Name",
+                        Binding = new System.Windows.Data.Binding("PropertyName"),
+                        Foreground = (System.Windows.Media.Brush)this.FindResource("TextColor"),
+                        Width = 150
+                    };
+                    MemCfgGrid.Columns.Add(nameColumn);
+
+                    // Add column for each unique timing with accent text color
+                    for (int i = 0; i < uniqueTimings.Count; i++)
+                    {
+                        var valueColumn = new System.Windows.Controls.DataGridTextColumn
+                        {
+                            Header = $"DCT {uniqueTimings[i].Key >> 20}",
+                            Binding = new System.Windows.Data.Binding($"Values[{i}]"),
+                            Foreground = (System.Windows.Media.Brush)this.FindResource("AccentTextColor")
+                        };
+                        MemCfgGrid.Columns.Add(valueColumn);
+                    }
+                }
             }
             catch
             {
