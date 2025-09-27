@@ -107,7 +107,7 @@ namespace ZenTimings
         {
             try
             {
-                Version = $"{VersionMajor}.{VersionMinor}";
+                Version = new Version(VersionMajor, VersionMinor).ToString();
 
                 if (CpuSingleton.Instance?.systemInfo != null)
                 {
@@ -152,7 +152,7 @@ namespace ZenTimings
             ResourceLocator.SetColorScheme(Application.Current.Resources, themeUri[(int)AppTheme]);
         }
 
-        public string Version { get; set; } = $"{VersionMajor}.{VersionMinor}";
+        public string Version { get; set; } = new Version(VersionMajor,VersionMinor).ToString();
         public bool AutoRefresh { get; set; } = true;
         public int AutoRefreshInterval { get; set; } = 2000;
         public bool AdvancedMode { get; set; } = true;

@@ -26,6 +26,34 @@ namespace ZenTimings.Windows
         public SplashWindow()
         {
             InitializeComponent();
+
+            if (DriverHelper.IsPawnIoInstalled)
+            {
+                if (DriverHelper.Version < new Version(2, 0, 0, 0))
+                {
+                    AdonisUI.Controls.MessageBoxResult result = AdonisUI.Controls.MessageBox.Show(
+                        "PawnIO is outdated, do you want to update it?",
+                        nameof(ZenTimings),
+                        AdonisUI.Controls.MessageBoxButton.OKCancel,
+                        AdonisUI.Controls.MessageBoxImage.Warning
+                    );
+                    if (result == AdonisUI.Controls.MessageBoxResult.OK)
+                        DriverHelper.InstallPawnIO();
+                }
+            }
+            else
+            {
+                {
+                    AdonisUI.Controls.MessageBoxResult result = AdonisUI.Controls.MessageBox.Show(
+                        "PawnIO is not installed, do you want to install it?",
+                        nameof(ZenTimings),
+                        AdonisUI.Controls.MessageBoxButton.OKCancel,
+                        AdonisUI.Controls.MessageBoxImage.Warning
+                    );
+                    if (result == AdonisUI.Controls.MessageBoxResult.OK)
+                        DriverHelper.InstallPawnIO();
+                }
+            }
         }
 
         public static void Start()

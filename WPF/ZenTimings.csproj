@@ -112,6 +112,7 @@
       <Link>Common\UpdaterPersistenceProvider.cs</Link>
     </Compile>
     <Compile Include="AgesaHelper.cs" />
+    <Compile Include="DriverHelper.cs" />
     <Compile Include="VendorUtils.cs" />
     <Compile Include="ViewData.cs" />
     <Compile Include="AppSettings.cs" />
@@ -393,6 +394,7 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\PawnIO\PawnIO_setup.exe" />
     <Resource Include="Resources\new-icon\64.png" />
     <Resource Include="Resources\new-icon\16.png" />
     <Resource Include="Resources\ZenTimings2022.ico" />
