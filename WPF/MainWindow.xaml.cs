@@ -136,7 +136,7 @@ namespace ZenTimings
                     {
                         SplashWindow.Loading("SVI2 Plugin");
                         plugins.Add(new SVI2Plugin(cpu));
-                        ReadSVI();
+                        //ReadSVI();
                     }
                     //plugins.Add(new OHWMPlugin());
                     //plugins[1].Open();
@@ -147,14 +147,10 @@ namespace ZenTimings
                         AsusWmi = null;
                     }
 
-                    StartAutoRefresh();
-
-                    SplashWindow.Loading("Memory controller");
-
                     if (memoryType == MemType.DDR4)
                     {
+                        SplashWindow.Loading("Memory controller");
                         BMC = new BiosMemController();
-                        ReadDDR4MemoryConfig();
                     }
 
                     SplashWindow.Loading("Searching for AGESA version, hold tight...");
@@ -186,6 +182,16 @@ namespace ZenTimings
                 };
 
                 AddTimingsPanel(memoryType);
+
+                if (settings.AdvancedMode)
+                {
+                    if (memoryType == MemType.DDR4)
+                    {
+                        ReadSVI();
+                        ReadDDR4MemoryConfig();
+                    }
+                    StartAutoRefresh();
+                }
             }
             catch (Exception ex)
             {
