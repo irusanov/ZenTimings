@@ -55,7 +55,11 @@ namespace ZenTimings
         {
             if (IsGSkillModule(module))
             {
-                return "GskillLogo";
+                return "gskillLogo";
+            }
+            else if (IsBiwinModule(module) && IsOriginCodeModule(module))
+            {
+                return "originCodeLogo";
             }
             else if (IsBiwinModule(module))
             {
@@ -79,6 +83,12 @@ namespace ZenTimings
                 || module.PartNumber.ToLowerInvariant().StartsWith("bx")
                 || module.PartNumber.ToLowerInvariant().StartsWith("ba")
                 || module.PartNumber.ToLowerInvariant().StartsWith("ocl")
+                || module.PartNumber.ToLowerInvariant().StartsWith("ocb");
+        }
+
+        internal static bool IsOriginCodeModule(MemoryModule module)
+        {
+            return module.PartNumber.ToLowerInvariant().StartsWith("ocl")
                 || module.PartNumber.ToLowerInvariant().StartsWith("ocb");
         }
     }

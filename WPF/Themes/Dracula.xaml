@@ -10,6 +10,7 @@
         <ResourceDictionary Source="pack://application:,,,/Resources/AYW/ayw-logo-dracula-40.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/GSKILL/gskill-logo-dracula.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/biwin/biwin-logo-dracula.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/biwin/origincode-logo-dracula.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <!-- Text color -->

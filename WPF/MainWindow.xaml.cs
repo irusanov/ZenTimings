@@ -861,6 +861,7 @@ namespace ZenTimings
             {
                 Dispatcher.Invoke(() =>
                 {
+                    //labelCPU.Text = "AMD Eng sample: 100-000000719-52_Y | GraniteRidge | 0xB40F40";
                     labelCPU.Text = GetCpuNameString(cpu.systemInfo);
                     if (String.IsNullOrEmpty(cpu.systemInfo.AgesaVersion) || cpu.systemInfo.AgesaVersion.Equals(AppSettings.AGESA_UNKNOWN))
                     {
