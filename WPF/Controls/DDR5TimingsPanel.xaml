@@ -51,6 +51,7 @@
                     <TextBlock Text="tMODPDA" TextAlignment="Right" />
                     <TextBlock Text="tPHYWRD" TextAlignment="Right" />
                     <TextBlock Text="tPHYWRL" TextAlignment="Right" />
+                    <TextBlock Text="tWRPRE" TextAlignment="Right" />
                     <!--TextBlock Text="tXP"
                            TextAlignment="Right"
                           /-->
@@ -106,6 +107,8 @@
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding timings.PHYWRL, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
+                    <TextBlock Text="{Binding timings.WRPRE, FallbackValue='N/A'}"
+                           Style="{DynamicResource ValueStyles}" />
                     <!--TextBlock Text="{Binding timings.XP, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}"
                           /-->
@@ -146,6 +149,7 @@
                     <TextBlock Text="tMRDPDA" TextAlignment="Right" />
                     <TextBlock Text="tPHYRDL" TextAlignment="Right" />
                     <TextBlock Text="PowerDown" TextAlignment="Right" />
+                    <TextBlock Text="tRDPRE" TextAlignment="Right" />
                 </StackPanel>
 
                 <StackPanel Grid.Column="1">
@@ -197,6 +201,8 @@
                     <TextBlock Text="{Binding timings.PHYRDL, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding timings.PowerDown, FallbackValue='N/A'}"
+                           Style="{DynamicResource ValueStyles}" />
+                    <TextBlock Text="{Binding timings.RDPRE, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
                 </StackPanel>
             </Grid>
@@ -259,6 +265,7 @@
                     <TextBlock x:Name="labelRttWrD5" Text="RttWr" TextAlignment="Right" IsEnabled="False" />
                     <TextBlock x:Name="labelRttParkD5" Text="RttPark" TextAlignment="Right" IsEnabled="False" />
                     <TextBlock x:Name="labelRttParkDqs" Text="RttParkDqs" TextAlignment="Right" IsEnabled="False" />
+                    <TextBlock Text="Nitro" ToolTip="RxData/TxData/ControlLine" TextAlignment="Right" />
                 </StackPanel>
 
                 <StackPanel Grid.Column="1">
@@ -323,6 +330,8 @@
                     <TextBlock x:Name="textBoxRttWrD5" Text="N/A" Style="{DynamicResource ValueStyles}" />
                     <TextBlock x:Name="textBoxRttParkD5" Text="N/A" Style="{DynamicResource ValueStyles}" />
                     <TextBlock x:Name="textBoxRttParkDqs" Text="N/A" Style="{DynamicResource ValueStyles}" />
+                    <TextBlock Text="{Binding timings.Nitro, FallbackValue='N/A'}"
+                        Style="{DynamicResource ValueStyles}" />
                 </StackPanel>
             </Grid>
         </StackPanel>

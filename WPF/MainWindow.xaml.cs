@@ -63,37 +63,6 @@ namespace ZenTimings
         {
             try
             {
-                if (!settings.NotifiedWinRing0)
-                {
-                    MessageBoxResult result = MessageBox.Show(
-                        "ZenTimings uses a kernel driver (WinRing0) which is classified as vulnerable."
-                        + Environment.NewLine
-                        + Environment.NewLine
-                        + "In order to successfully run the application you would need to add its folder to Windows Defender (or other AntiVirus software) exclusions list."
-                        + Environment.NewLine
-                        + Environment.NewLine
-                        + "By doing this, you agree that you understand the risks of excluding a folder from Windows Defender scans."
-                        + Environment.NewLine
-                        + "We are working on removing this dependency in future releases."
-                        + Environment.NewLine
-                        + Environment.NewLine
-                        + "If you do not agree, the application will now close.",
-
-                        nameof(ZenTimings),
-                        MessageBoxButton.OKCancel,
-                        MessageBoxImage.Warning);
-
-                    if (result.Equals(MessageBoxResult.OK))
-                    {
-                        settings.NotifiedWinRing0 = true;
-                        settings.Save();
-                    }
-                    else
-                    {
-                        ExitApplication();
-                    }
-                }
-
                 SplashWindow.Loading("CPU");
                 cpu = CpuSingleton.Instance;
 
