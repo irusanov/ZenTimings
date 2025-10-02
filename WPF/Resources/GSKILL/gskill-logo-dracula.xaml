@@ -25,5 +25,5 @@
             </DrawingGroup>
         </DrawingGroup>
     </DrawingGroup>
-    <DrawingImage Drawing="{StaticResource gskill_xaml}" x:Key="GskillLogo"/>
+    <DrawingImage Drawing="{StaticResource gskill_xaml}" x:Key="gskillLogo"/>
 </ResourceDictionary>

@@ -31,6 +31,7 @@
 
                     <TextBlock Text="" Style="{DynamicResource DividerTextBlock}" />
 
+                    <TextBlock Text="Cmd2T" TextAlignment="Right" />
                     <TextBlock Text="tCL" TextAlignment="Right" />
                     <TextBlock Text="tRCDWR" TextAlignment="Right" />
                     <TextBlock Text="tRCDRD" TextAlignment="Right" />
@@ -49,8 +50,8 @@
                     <TextBlock Text="tRFCsb" TextAlignment="Right" />
                     <TextBlock Text="tMOD" TextAlignment="Right" />
                     <TextBlock Text="tMODPDA" TextAlignment="Right" />
-                    <TextBlock Text="tPHYWRD" TextAlignment="Right" />
-                    <TextBlock Text="tPHYWRL" TextAlignment="Right" />
+                    <TextBlock Text="tRDPRE" TextAlignment="Right" />
+                    <TextBlock Text="tWRPRE" TextAlignment="Right" />
                     <!--TextBlock Text="tXP"
                            TextAlignment="Right"
                           /-->
@@ -66,6 +67,8 @@
 
                     <TextBlock Text="" Style="{DynamicResource DividerTextBlock}" />
 
+                    <TextBlock Text="{Binding timings.Cmd2T, FallbackValue='N/A'}"
+                           Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding timings.CL, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding timings.RCDWR, FallbackValue='N/A'}"
@@ -102,10 +105,11 @@
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding timings.MODPDA, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
-                    <TextBlock Text="{Binding timings.PHYWRD, FallbackValue='N/A'}"
+                    <TextBlock Text="{Binding timings.WRPRE, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
-                    <TextBlock Text="{Binding timings.PHYWRL, FallbackValue='N/A'}"
+                    <TextBlock Text="{Binding timings.RDPRE, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
+
                     <!--TextBlock Text="{Binding timings.XP, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}"
                           /-->
@@ -122,8 +126,8 @@
                 <StackPanel Grid.Column="0">
                     <TextBlock Text="Capacity" TextAlignment="Right" />
                     <TextBlock Text="BGS Alt" TextAlignment="Right" />
-                    <TextBlock Text="Cmd2T" TextAlignment="Right" />
-
+                    <TextBlock Text="PowerDown" TextAlignment="Right" />
+                    
                     <TextBlock Text="" Style="{DynamicResource DividerTextBlock}" />
 
                     <TextBlock Text="tRDRDSCL" TextAlignment="Right" />
@@ -145,7 +149,9 @@
                     <TextBlock Text="tMRD" TextAlignment="Right" />
                     <TextBlock Text="tMRDPDA" TextAlignment="Right" />
                     <TextBlock Text="tPHYRDL" TextAlignment="Right" />
-                    <TextBlock Text="PowerDown" TextAlignment="Right" />
+                    <TextBlock Text="tPHYWRD" TextAlignment="Right" />
+                    <TextBlock Text="tPHYWRL" TextAlignment="Right" />
+
                 </StackPanel>
 
                 <StackPanel Grid.Column="1">
@@ -153,7 +159,7 @@
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding timings.BGSAlt, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
-                    <TextBlock Text="{Binding timings.Cmd2T, FallbackValue='N/A'}"
+                    <TextBlock Text="{Binding timings.PowerDown, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
 
                     <TextBlock Text="" Style="{DynamicResource DividerTextBlock}" />
@@ -196,7 +202,9 @@
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding timings.PHYRDL, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
-                    <TextBlock Text="{Binding timings.PowerDown, FallbackValue='N/A'}"
+                    <TextBlock Text="{Binding timings.PHYWRD, FallbackValue='N/A'}"
+                           Style="{DynamicResource ValueStyles}" />
+                    <TextBlock Text="{Binding timings.PHYWRL, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
                 </StackPanel>
             </Grid>
@@ -259,6 +267,7 @@
                     <TextBlock x:Name="labelRttWrD5" Text="RttWr" TextAlignment="Right" IsEnabled="False" />
                     <TextBlock x:Name="labelRttParkD5" Text="RttPark" TextAlignment="Right" IsEnabled="False" />
                     <TextBlock x:Name="labelRttParkDqs" Text="RttParkDqs" TextAlignment="Right" IsEnabled="False" />
+                    <TextBlock Text="Nitro" ToolTip="RxData/TxData/ControlLine" TextAlignment="Right" />
                 </StackPanel>
 
                 <StackPanel Grid.Column="1">
@@ -323,6 +332,8 @@
                     <TextBlock x:Name="textBoxRttWrD5" Text="N/A" Style="{DynamicResource ValueStyles}" />
                     <TextBlock x:Name="textBoxRttParkD5" Text="N/A" Style="{DynamicResource ValueStyles}" />
                     <TextBlock x:Name="textBoxRttParkDqs" Text="N/A" Style="{DynamicResource ValueStyles}" />
+                    <TextBlock Text="{Binding timings.Nitro, FallbackValue='N/A'}"
+                        Style="{DynamicResource ValueStyles}" />
                 </StackPanel>
             </Grid>
         </StackPanel>

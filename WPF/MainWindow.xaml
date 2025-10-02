@@ -65,6 +65,7 @@
                             <MenuItem Header="GitHub" Click="MenuItem_Click_3" />
                             <MenuItem Header="Donate with _PayPal" Click="MenuItem_Click" />
                             <MenuItem Header="Donate with _Revolut" Click="MenuItem_Click_1" />
+                            <MenuItem Header="AM5 AGESA/UEFI/BIOS List by Reous" Click="MenuItem_Click_4" />
                         </MenuItem>
                     </Menu>
                     <Button Grid.Column="1"

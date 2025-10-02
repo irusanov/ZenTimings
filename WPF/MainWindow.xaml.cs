@@ -861,6 +861,7 @@ namespace ZenTimings
             {
                 Dispatcher.Invoke(() =>
                 {
+                    //labelCPU.Text = "AMD Eng sample: 100-000000719-52_Y | GraniteRidge | 0xB40F40";
                     labelCPU.Text = GetCpuNameString(cpu.systemInfo);
                     if (String.IsNullOrEmpty(cpu.systemInfo.AgesaVersion) || cpu.systemInfo.AgesaVersion.Equals(AppSettings.AGESA_UNKNOWN))
                     {
@@ -1012,6 +1013,10 @@ namespace ZenTimings
         private void MenuItem_Click_3(object sender, RoutedEventArgs e)
         {
             Process.Start("https://github.com/irusanov/ZenTimings");
+        }
+        private void MenuItem_Click_4(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://docs.google.com/spreadsheets/d/12zg6yT_H7H-W1voyw1ZoIrj0GSE7WI4Ug-uLlv-Asa8/edit?gid=937453961#gid=937453961");
         }
 
         private void ExportToolStripMenuItem_Click(object sender, RoutedEventArgs e)

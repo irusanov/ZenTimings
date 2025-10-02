@@ -10,6 +10,7 @@
         <ResourceDictionary Source="pack://application:,,,/Resources/AYW/ayw-logo-retro-40.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/GSKILL/gskill-logo-retro.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/biwin/biwin-logo-retro.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/biwin/origincode-logo-retro.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <!-- Text color -->

@@ -10,6 +10,7 @@
         <ResourceDictionary Source="pack://application:,,,/Resources/AYW/ayw-logo-black-40.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/GSKILL/gskill-logo-red.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/biwin/biwin-logo-black.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/biwin/origincode-logo-black.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <SolidColorBrush x:Key="TextColor" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
