@@ -10,7 +10,7 @@ namespace ZenTimings
     public sealed class AppSettings
     {
         public const int VersionMajor = 1;
-        public const int VersionMinor = 5;
+        public const int VersionMinor = 6;
 
         private static readonly string Filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.xml");
         private static readonly string EncryptedFilename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.enc");
@@ -177,5 +177,6 @@ namespace ZenTimings
         public string BiosVersion { get; set; } = "";
         public string SmuVersion { get; set; } = "";
         public string AgesaVersion { get; set; } = "";
+        public bool SingleInstance { get; set; } = true;
     }
 }
