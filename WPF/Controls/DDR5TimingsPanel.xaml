@@ -6,7 +6,7 @@
              xmlns:converters="clr-namespace:ZenTimings.Converters"
              xmlns:local="clr-namespace:ZenTimings.Controls"
              mc:Ignorable="d"
-             d:DesignHeight="800" d:DesignWidth="450">
+             d:DesignHeight="480" d:DesignWidth="450">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
@@ -105,9 +105,9 @@
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding timings.MODPDA, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
-                    <TextBlock Text="{Binding timings.WRPRE, FallbackValue='N/A'}"
-                           Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding timings.RDPRE, FallbackValue='N/A'}"
+                           Style="{DynamicResource ValueStyles}" />
+                    <TextBlock Text="{Binding timings.WRPRE, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
 
                     <!--TextBlock Text="{Binding timings.XP, FallbackValue='N/A'}"
