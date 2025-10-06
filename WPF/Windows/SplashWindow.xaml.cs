@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -58,33 +57,51 @@ namespace ZenTimings.Windows
 
             InitializeComponent();
 
-            if (DriverHelper.IsPawnIoInstalled)
+            if (!DriverHelper.IsPawnIoInstalled)
             {
-                if (DriverHelper.Version < new Version(2, 0, 0, 0))
-                {
-                    AdonisUI.Controls.MessageBoxResult result = AdonisUI.Controls.MessageBox.Show(
-                        "PawnIO is outdated, do you want to update it?",
-                        nameof(ZenTimings),
-                        AdonisUI.Controls.MessageBoxButton.OKCancel,
-                        AdonisUI.Controls.MessageBoxImage.Warning
-                    );
-                    if (result == AdonisUI.Controls.MessageBoxResult.OK)
-                        DriverHelper.InstallPawnIO();
-                }
+                AdonisUI.Controls.MessageBox.Show(
+                    "This is experimental build for testing purposes only." +
+                    Environment.NewLine +
+                    "PawnIO driver is required to be installed in dev mode " +
+                    "and Driver Signature Enforcement to be disabled." +
+                    Environment.NewLine + Environment.NewLine +
+                    "Please refer to the README_PawnIO.pdf file for instructions." +
+                    Environment.NewLine +
+                    "The application will now close.",
+                    nameof(ZenTimings),
+                    AdonisUI.Controls.MessageBoxButton.OK,
+                    AdonisUI.Controls.MessageBoxImage.Warning
+                );
+                Application.Current.Shutdown();
             }
-            else
-            {
-                {
-                    AdonisUI.Controls.MessageBoxResult result = AdonisUI.Controls.MessageBox.Show(
-                        "PawnIO is not installed, do you want to install it?",
-                        nameof(ZenTimings),
-                        AdonisUI.Controls.MessageBoxButton.OKCancel,
-                        AdonisUI.Controls.MessageBoxImage.Warning
-                    );
-                    if (result == AdonisUI.Controls.MessageBoxResult.OK)
-                        DriverHelper.InstallPawnIO();
-                }
-            }
+
+            //if (DriverHelper.IsPawnIoInstalled)
+            //{
+            //    if (DriverHelper.Version < new Version(2, 0, 0, 0))
+            //    {
+            //        AdonisUI.Controls.MessageBoxResult result = AdonisUI.Controls.MessageBox.Show(
+            //            "PawnIO is outdated, do you want to update it?",
+            //            nameof(ZenTimings),
+            //            AdonisUI.Controls.MessageBoxButton.OKCancel,
+            //            AdonisUI.Controls.MessageBoxImage.Warning
+            //        );
+            //        if (result == AdonisUI.Controls.MessageBoxResult.OK)
+            //            DriverHelper.InstallPawnIO();
+            //    }
+            //}
+            //else
+            //{
+            //    {
+            //        AdonisUI.Controls.MessageBoxResult result = AdonisUI.Controls.MessageBox.Show(
+            //            "PawnIO is not installed, do you want to install it?",
+            //            nameof(ZenTimings),
+            //            AdonisUI.Controls.MessageBoxButton.OKCancel,
+            //            AdonisUI.Controls.MessageBoxImage.Warning
+            //        );
+            //        if (result == AdonisUI.Controls.MessageBoxResult.OK)
+            //            DriverHelper.InstallPawnIO();
+            //    }
+            //}
         }
 
         public static void Start()

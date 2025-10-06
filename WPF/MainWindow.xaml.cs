@@ -722,7 +722,7 @@ namespace ZenTimings
             {
                 Title = $"{AssemblyTitle} {AssemblyVersion.Substring(0, AssemblyVersion.LastIndexOf('.'))}";
 #if DEBUG && !BETA
-                Title += $@"{AssemblyVersion.Substring(AssemblyVersion.LastIndexOf('.'))} - debug";
+                Title += $@"{AssemblyVersion.Substring(AssemblyVersion.LastIndexOf('.'))} - pawnio debug";
 #endif
 
 #if BETA
