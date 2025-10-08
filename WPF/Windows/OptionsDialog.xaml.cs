@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using ZenStates.Core;
 using static ZenTimings.AppSettings;
 
 namespace ZenTimings.Windows
@@ -15,10 +16,12 @@ namespace ZenTimings.Windows
     {
         //private const string Caption = "Disabling auto-refresh might lead to inaccurate voltages and frequencies on first launch";
         internal readonly AppSettings appSettings = AppSettings.Instance;
+        internal readonly SystemInfo _systemInfo = CpuSingleton.Instance.systemInfo;
         private readonly DispatcherTimer timerInstance;
         private DispatcherTimer notificationTimer;
         private Theme _Theme;
         private readonly bool _AdvancedMode;
+        private readonly bool _searchForAgesaSavedState;
 
         public OptionsDialog(DispatcherTimer timer)
         {
@@ -35,12 +38,15 @@ namespace ZenTimings.Windows
             checkBoxSavePosition.IsChecked = appSettings.SaveWindowPosition;
             checkBoxMinimizeToTray.IsChecked = appSettings.MinimizeToTray;
             checkBoxSingleInstance.IsChecked = appSettings.SingleInstance;
+            checkBoxAgesaSearch.IsChecked = appSettings.AgesaSearchOnStart;
             //checkBoxAutoUninstallDriver.IsChecked = appSettings.AutoUninstallDriver;
             numericUpDownRefreshInterval.IsEnabled = appSettings.AutoRefresh && appSettings.AdvancedMode;
             numericUpDownRefreshInterval.Text = appSettings.AutoRefreshInterval.ToString();
             msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
             comboBoxTheme.SelectedIndex = (int)_Theme;
             comboBoxScreenshot.SelectedIndex = (int)appSettings.ScreenshotMode;
+
+            _searchForAgesaSavedState = appSettings.AgesaSearchOnStart;
         }
 
         private void CheckBoxAutoRefresh_Click(object sender, RoutedEventArgs e)
@@ -68,6 +74,13 @@ namespace ZenTimings.Windows
             appSettings.SingleInstance = (bool)checkBoxSingleInstance.IsChecked;
             //appSettings.AutoUninstallDriver = (bool)checkBoxAutoUninstallDriver.IsChecked;
             appSettings.ScreenshotMode = (ScreenshotType)comboBoxScreenshot.SelectedIndex;
+            appSettings.AgesaSearchOnStart = (bool)checkBoxAgesaSearch.IsChecked;
+
+            if (!_searchForAgesaSavedState && appSettings.AgesaSearchOnStart && appSettings.AgesaVersion == AppSettings.AGESA_UNKNOWN)
+            {
+                _systemInfo.AgesaVersion = "";
+                appSettings.AgesaVersion = "";
+            }
 
             appSettings.Save();
 
