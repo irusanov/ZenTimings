@@ -153,7 +153,10 @@ namespace ZenTimings
                         BMC = new BiosMemController();
                     }
 
-                    SplashWindow.Loading("Searching for AGESA version, hold tight...");
+                    if (settings.AgesaSearchOnStart)
+                    {
+                        SplashWindow.Loading("Searching for AGESA version, hold tight...");
+                    }
                     GetAgesaVersion();
                 }
 
@@ -1052,9 +1055,8 @@ namespace ZenTimings
                 return cpu.systemInfo.AgesaVersion;
             }
 
-            string agesaVersion = AppSettings.AGESA_UNKNOWN;
-
-            if (IsAgesaVersionUpdateNeeded())
+            string agesaVersion;
+            if (IsAgesaVersionUpdateNeeded() && settings.AgesaSearchOnStart)
             {
                 byte[] image = AgesaHelper.DumpImage();
                 agesaVersion = AgesaHelper.FindAgesaVersion(image);
