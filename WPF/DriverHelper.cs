@@ -9,7 +9,7 @@ namespace ZenTimings
     {
         public static bool IsPawnIoInstalled => PawnIo.IsInstalled;
 
-        public static Version Version => PawnIo.Version();
+        public static Version Version => PawnIo.Version;
 
         public static bool UninstallWinRing0()
         {

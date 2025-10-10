@@ -98,6 +98,26 @@ namespace ZenTimings
                      settings.Save();
                  }*/
 
+                var report = "";
+                try
+                {
+                    report = cpu.RyzenSmu.GetReport();
+                }
+                catch (Exception ex)
+                {
+                    report += ex.Message;
+                }
+
+                try
+                {
+                    string filePath = System.IO.Path.Combine(
+                        AppDomain.CurrentDomain.BaseDirectory,
+                        "PawnIO.txt"
+                    );
+                    System.IO.File.WriteAllText(filePath, report);
+                }
+                catch { }
+
                 IconSource = GetIcon("pack://application:,,,/ZenTimings;component/Resources/ZenTimings2022.ico", 16);
                 _notifyIcon = GetTrayIcon();
 
