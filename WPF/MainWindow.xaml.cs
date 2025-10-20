@@ -79,6 +79,13 @@ namespace ZenTimings
                         MessageBoxImage.Warning
                     );
                 }
+
+                if (!cpu.RyzenSmu.IsLoaded)
+                {
+                    HandleError("Ryzen SMU module is not loaded.\nMake sure that the PawnIO driver is installed correctly.", "Driver Error");
+                    ExitApplication();
+                }
+
                 /* else if (cpu.info.codeName.Equals(Cpu.CodeName.Rembrandt) && !settings.NotifiedRembrandt.Equals(AssemblyVersion))
                  {
                      MessageBox.Show(
