@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using static ZenTimings.AsusWMI;
+﻿using static ZenTimings.AsusWMI;
 
 namespace ZenTimings
 {
@@ -12,89 +11,63 @@ namespace ZenTimings
      * Source: 1
      * Type: 0
      */
-    public class AsusSensorInfo : INotifyPropertyChanged
+    public class AsusSensorInfo : ObservableObject
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void OnPropertyChanged(PropertyChangedEventArgs eventArgs)
-        {
-            PropertyChanged?.Invoke(this, eventArgs);
-        }
-
-        protected bool SetProperty<T>(ref T storage, T value, PropertyChangedEventArgs args)
-        {
-            if (Equals(storage, value)) return false;
-            storage = value;
-            OnPropertyChanged(args);
-            return true;
-        }
-
-        private byte index;
+        private byte _index;
 
         public byte Index
         {
-            get => index;
-            set => SetProperty(ref index, value, InternalEventArgsCache.Index);
+            get => _index;
+            set => SetProperty(ref _index, value);
         }
 
-        private AsusSensorDataType dataType;
+        private AsusSensorDataType _dataType;
 
         public AsusSensorDataType DataType
         {
-            get => dataType;
-            set => SetProperty(ref dataType, value, InternalEventArgsCache.DataType);
+            get => _dataType;
+            set => SetProperty(ref _dataType, value);
         }
 
 
-        private AsusSensorLocation location;
+        private AsusSensorLocation _location;
 
         public AsusSensorLocation Location
         {
-            get => location;
-            set => SetProperty(ref location, value, InternalEventArgsCache.Location);
+            get => _location;
+            set => SetProperty(ref _location, value);
         }
 
-        private string name;
+        private string _name;
 
         public string Name
         {
-            get => name;
-            set => SetProperty(ref name, value, InternalEventArgsCache.Name);
+            get => _name;
+            set => SetProperty(ref _name, value);
         }
 
-        private AsusSensorSource source;
+        private AsusSensorSource _source;
 
         public AsusSensorSource Source
         {
-            get => source;
-            set => SetProperty(ref source, value, InternalEventArgsCache.Source);
+            get => _source;
+            set => SetProperty(ref _source, value);
         }
 
-        private AsusSensorType type;
+        private AsusSensorType _type;
 
         public AsusSensorType Type
         {
-            get => type;
-            set => SetProperty(ref type, value, InternalEventArgsCache.Type);
+            get => _type;
+            set => SetProperty(ref _type, value);
         }
 
-        private string val;
+        private string _val;
 
         public string Value
         {
-            get => val;
-            set => SetProperty(ref val, value, InternalEventArgsCache.Value);
-        }
-
-        internal static class InternalEventArgsCache
-        {
-            internal static PropertyChangedEventArgs Index = new PropertyChangedEventArgs("Index");
-            internal static PropertyChangedEventArgs DataType = new PropertyChangedEventArgs("DataType");
-            internal static PropertyChangedEventArgs Location = new PropertyChangedEventArgs("Location");
-            internal static PropertyChangedEventArgs Name = new PropertyChangedEventArgs("Name");
-            internal static PropertyChangedEventArgs Source = new PropertyChangedEventArgs("Source");
-            internal static PropertyChangedEventArgs Type = new PropertyChangedEventArgs("Type");
-            internal static PropertyChangedEventArgs Value = new PropertyChangedEventArgs("Value");
+            get => _val;
+            set => SetProperty(ref _val, value);
         }
     }
 }
