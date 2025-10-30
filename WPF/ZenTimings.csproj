@@ -232,7 +232,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Resource Include="Resources\vendor\asus\rog\rog-logo-red.xaml">
+    <Resource Include="Resources\vendor\asus\rog\rog-logo-alt.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
@@ -248,11 +248,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Page Include="Resources\vendor\biwin\biwin-logo-black.xaml">
+    <Resource Include="Resources\vendor\asus\proart\proart-logo.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Resources\vendor\asus\proart\proart-logo-alt.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Page Include="Resources\vendor\biwin\biwin-logo-alt.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Resources\vendor\gskill\gskill-logo-red.xaml">
+    <Page Include="Resources\vendor\gskill\gskill-logo-alt.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -350,9 +358,7 @@
     <Resource Include="Resources\warning-icon.png" />
     <Resource Include="Resources\splash.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\vendor\asus\proart\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TextTemplating\Microsoft.TextTemplating.targets" />
 </Project>

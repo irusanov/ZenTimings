@@ -8,6 +8,7 @@
         <ResourceDictionary Source="pack://application:,,,/Resources/camera-light.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/rog/rog-logo.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/ayw/ayw-logo.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/proart/proart-logo.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/gskill/gskill-logo.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/biwin/biwin-logo.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/biwin/origincode-logo.xaml" />
