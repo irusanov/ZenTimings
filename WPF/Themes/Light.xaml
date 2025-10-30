@@ -5,7 +5,7 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/AdonisUI;component/ColorSchemes/Light.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Themes/Base.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/camera-dark.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/camera.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/rog/rog-logo-alt.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/ayw/ayw-logo.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/proart/proart-logo-alt.xaml" />
