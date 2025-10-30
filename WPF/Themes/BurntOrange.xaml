@@ -6,11 +6,11 @@
         <ResourceDictionary Source="pack://application:,,,/AdonisUI;component/ColorSchemes/Dark.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Themes/Base.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/camera-light.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/ROG/ROG-logo-burnt-40.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/AYW/ayw-logo-burnt-40.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/GSKILL/gskill-logo-burnt.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/biwin/biwin-logo-burnt.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/biwin/origincode-logo-burnt.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/rog/rog-logo.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/ayw/ayw-logo.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/gskill/gskill-logo.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/biwin/biwin-logo.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/biwin/origincode-logo.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <!-- Text color -->
@@ -42,6 +42,9 @@
 
     <Color x:Key="{x:Static adonisUi:Colors.Layer2HighlightColor}">#3d1d2f</Color>
     <Color x:Key="{x:Static adonisUi:Colors.Layer2HighlightBorderColor}">#4d1d2f</Color>
+
+    <!-- logo -->
+    <SolidColorBrush x:Key="LogoColor" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
 
     <CornerRadius x:Key="{x:Static adonisUi:Dimensions.CornerRadius}">2</CornerRadius>
 

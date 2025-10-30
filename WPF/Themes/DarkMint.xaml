@@ -6,11 +6,11 @@
         <ResourceDictionary Source="pack://application:,,,/AdonisUI;component/ColorSchemes/Dark.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Themes/Base.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/camera-light.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/ROG/ROG-logo-white-40.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/AYW/ayw-logo-white-40.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/GSKILL/gskill-logo-white.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/biwin/biwin-logo-white.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/biwin/origincode-logo-white.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/rog/rog-logo.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/ayw/ayw-logo.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/gskill/gskill-logo.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/biwin/biwin-logo.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/biwin/origincode-logo.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <!-- Text color -->
@@ -60,6 +60,8 @@
     <SolidColorBrush x:Key="DisabledColor" Color="#5b5b70" />
     <SolidColorBrush x:Key="WindowBorderColor" Color="{StaticResource {x:Static adonisUi:Colors.Layer3BorderColor}}" />
 
+    <!-- logo -->
+    <SolidColorBrush x:Key="LogoColor" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
 </ResourceDictionary>
 
 <!--
