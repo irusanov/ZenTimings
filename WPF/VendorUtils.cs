@@ -14,6 +14,11 @@ namespace ZenTimings
             return info.MbVendor.ToLower().Contains("asus") && info.MbName.ToLower().Contains("ayw");
         }
 
+        internal static bool IsProArtMotherboard(SystemInfo info)
+        {
+            return info.MbVendor.ToLower().Contains("asus") && info.MbName.ToLower().Contains("proart");
+        }
+
         internal static string GetMotherboardLink(SystemInfo info)
         {
             if (!IsRogMotherboard(info) && !IsAYWMotherboard(info))
@@ -39,14 +44,9 @@ namespace ZenTimings
 
         internal static string GetMotherboardLogo(SystemInfo systemInfo)
         {
-            if (IsRogMotherboard(systemInfo))
-            {
-                return "ROGLogo";
-            }
-            else if (IsAYWMotherboard(systemInfo))
-            {
-                return "aywLogo";
-            }
+            if (IsRogMotherboard(systemInfo)) return "ROGLogo";
+            if (IsAYWMotherboard(systemInfo)) return "aywLogo";
+            if (IsProArtMotherboard(systemInfo)) return "proartLogo";
 
             return null;
         }

@@ -113,6 +113,7 @@
     </Compile>
     <Compile Include="AgesaHelper.cs" />
     <Compile Include="DriverHelper.cs" />
+    <Compile Include="ObservableObject.cs" />
     <Compile Include="VendorUtils.cs" />
     <Compile Include="ViewData.cs" />
     <Compile Include="AppSettings.cs" />
@@ -208,10 +209,6 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Resource Include="Resources\AYW\ayw-logo-white-40.xaml">
-      <SubType>Designer</SubType>
-      <Generator>XamlIntelliSenseFileGenerator</Generator>
-    </Resource>
     <Resource Include="Themes\Dark.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -224,142 +221,70 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Resource Include="Resources\camera-dark.xaml">
+    <Resource Include="Resources\camera.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Resource Include="Resources\camera-light.xaml">
+    <Resource Include="Resources\vendor\asus\ayw\ayw-logo.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Resource Include="Resources\ROG\ROG-logo-burnt-40.xaml">
+    <Resource Include="Resources\vendor\asus\rog\rog-logo-alt.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Resource Include="Resources\ROG\ROG-logo-dracula-40.xaml">
+    <Resource Include="Resources\vendor\asus\rog\rog-logo.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Resource Include="Resources\ROG\ROG-logo-mint-40.xaml">
+    <Resource Include="Resources\vendor\biwin\biwin-logo.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Resource Include="Resources\ROG\ROG-logo-red-40.xaml">
+    <Resource Include="Resources\vendor\biwin\origincode-logo.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Resource Include="Resources\ROG\ROG-logo-retro-40.xaml">
+    <Resource Include="Resources\vendor\asus\proart\proart-logo.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Resource Include="Resources\ROG\ROG-logo-white-40.xaml">
+    <Resource Include="Resources\vendor\asus\proart\proart-logo-alt.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Resource Include="Resources\GSKILL\gskill-logo-burnt.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Resource>
-    <Resource Include="Resources\GSKILL\gskill-logo-dracula.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Resource>
-    <Resource Include="Resources\GSKILL\gskill-logo-mint.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Resource>
-    <Resource Include="Resources\GSKILL\gskill-logo-red.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Resource>
-    <Resource Include="Resources\GSKILL\gskill-logo-retro.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Resource>
-    <Resource Include="Resources\GSKILL\gskill-logo-white.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Resource>
-    <Resource Include="Resources\AYW\ayw-logo-burnt-40.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Resource>
-    <Resource Include="Resources\AYW\ayw-logo-dracula-40.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Resource>
-    <Resource Include="Resources\AYW\ayw-logo-mint-40.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Resource>
-    <Resource Include="Resources\AYW\ayw-logo-retro-40.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Resource>
-    <Resource Include="Resources\AYW\ayw-logo-black-40.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Resource>
-    <Resource Include="Resources\biwin\biwin-logo-black.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Resource>
-    <Resource Include="Resources\biwin\biwin-logo-burnt.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Resource>
-    <Resource Include="Resources\biwin\biwin-logo-dracula.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Resource>
-    <Resource Include="Resources\biwin\biwin-logo-retro.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Resource>
-    <Resource Include="Resources\biwin\biwin-logo-white.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Resource>
-    <Resource Include="Resources\biwin\origincode-logo-white.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Resource>
-    <Resource Include="Resources\biwin\origincode-logo-black.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Resource>
-    <Resource Include="Resources\biwin\origincode-logo-burnt.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Resource>
-    <Resource Include="Resources\biwin\origincode-logo-dracula.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Resource>
-    <Resource Include="Resources\biwin\origincode-logo-retro.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Resource>
-    <Page Include="Themes\BurntOrange.xaml">
+    <Page Include="Resources\vendor\biwin\biwin-logo-alt.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Themes\DarkMintGradient.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Themes\DarkRed.xaml">
+    <Page Include="Resources\vendor\gskill\gskill-logo-alt.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Themes\RetroWave.xaml">
+    <Page Include="Resources\vendor\gskill\gskill-logo.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Themes\Dracula.xaml">
+    <Resource Include="Themes\BurntOrange.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
+    </Resource>
+    <Resource Include="Themes\DarkMintGradient.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
+    <Resource Include="Themes\DarkRed.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Themes\RetroWave.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Themes\Dracula.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
     <Page Include="Windows\AboutDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -415,6 +340,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\PawnIO\PawnIO_setup.exe" />
+    <Content Include="Resources\vendor\asus\ayw\ayw-logo.svg" />
+    <Content Include="Resources\vendor\asus\rog\rog-logo.svg" />
+    <Content Include="Resources\vendor\biwin\biwin-logo.svg" />
+    <Content Include="Resources\vendor\biwin\origincode-logo.svg" />
+    <Content Include="Resources\vendor\gskill\gskill-logo.svg" />
+    <Content Include="Resources\vendor\gskill\gskill.svg" />
     <Resource Include="Resources\new-icon\64.png" />
     <Resource Include="Resources\new-icon\16.png" />
     <Resource Include="Resources\ZenTimings2022.ico" />
@@ -425,6 +356,7 @@
     <Resource Include="Resources\warning-icon.png" />
     <Resource Include="Resources\splash.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TextTemplating\Microsoft.TextTemplating.targets" />
 </Project>

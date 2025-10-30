@@ -5,12 +5,13 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/AdonisUI;component/ColorSchemes/Light.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Themes/Base.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/camera-dark.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/ROG/ROG-logo-red-40.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/AYW/ayw-logo-black-40.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/GSKILL/gskill-logo-red.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/biwin/biwin-logo-black.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/biwin/origincode-logo-black.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/camera.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/rog/rog-logo-alt.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/ayw/ayw-logo.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/proart/proart-logo-alt.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/gskill/gskill-logo-alt.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/biwin/biwin-logo-alt.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/biwin/origincode-logo.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <SolidColorBrush x:Key="TextColor" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
@@ -31,4 +32,7 @@
     <Color x:Key="{x:Static adonisUi:Colors.Layer0BorderColor}">#f3f3f3</Color>
     <!-- Window text color -->
     <Color x:Key="{x:Static adonisUi:Colors.ForegroundColor}">#212529</Color>
+
+    <!-- logo -->
+    <SolidColorBrush x:Key="LogoColor" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
 </ResourceDictionary>
