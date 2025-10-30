@@ -48,7 +48,6 @@ namespace ZenTimings
         private Control timingsPanel;
         private float _memoryFrequency = 0;
         private BaseDramTimings Timings = null;
-        private ViewData viewData = new ViewData();
         //private Computer computer;
 
         private readonly string AssemblyProduct = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(

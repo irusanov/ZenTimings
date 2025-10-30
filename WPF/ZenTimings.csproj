@@ -114,7 +114,6 @@
     <Compile Include="AgesaHelper.cs" />
     <Compile Include="ObservableObject.cs" />
     <Compile Include="VendorUtils.cs" />
-    <Compile Include="ViewData.cs" />
     <Compile Include="AppSettings.cs" />
     <Compile Include="Common\ISensor.cs" />
     <Compile Include="Common\Sensor.cs" />

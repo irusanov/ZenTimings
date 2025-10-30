@@ -27,11 +27,21 @@
         </Grid.RowDefinitions>
         <StackPanel Orientation="Vertical" Margin="15" Grid.ColumnSpan="2" Grid.Row="0" Width="424">
             <!-- TextBlock Text="Changelog" FontSize="14" FontWeight="Bold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" /-->
-            <TextBlock Text="v1.35 Jan 10 2025" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" />
+            <TextBlock Text="v1.36 Oct 30 2025" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" />
             <TextBlock Text="" />
-            <TextBlock Text="  - Update for new 800-series chipsets" TextWrapping="WrapWithOverflow" />
-            <TextBlock Text="  - Fixed blurry icons on some systems" TextWrapping="WrapWithOverflow" />
-            <TextBlock Text="  - Improved 32GB dual rank modules impedance table" TextWrapping="WrapWithOverflow" />
+            <TextBlock Text="  - Support new CPUs" TextWrapping="WrapWithOverflow" />
+            <TextBlock Text="  - Update AOD tables" TextWrapping="WrapWithOverflow" />
+            <TextBlock Text="  - Update PMT tables" TextWrapping="WrapWithOverflow" />
+            <TextBlock Text="  - Display additional channels in System Info" TextWrapping="WrapWithOverflow" />
+            <TextBlock Text="  - Add read preamble, write preamble and STAGsb" TextWrapping="WrapWithOverflow" />
+            <TextBlock Text="  - Improve dual rank memory detection" TextWrapping="WrapWithOverflow" />
+            <TextBlock Text="  - Display VDDG IOD0 and VDDG CCD0 voltages" TextWrapping="WrapWithOverflow" />
+            <TextBlock Text="  - Add Asus logos - ROG, AYW, ProArt" TextWrapping="WrapWithOverflow" />
+            <TextBlock Text="  - Add G.Skill logos" TextWrapping="WrapWithOverflow" />
+            <TextBlock Text="  - Add Biwin and OriginCode logos" TextWrapping="WrapWithOverflow" />
+            <TextBlock Text="  - Optimize resources" TextWrapping="WrapWithOverflow" />
+            <TextBlock Text="  - Add link to Reous' bios spreadsheet" TextWrapping="WrapWithOverflow" />
+            <TextBlock Text="  - Allow multiple instances (enable in Options)" TextWrapping="WrapWithOverflow" />
             <TextBlock Text="" />
         </StackPanel>
         <Border Grid.Row="1" Grid.ColumnSpan="2" Margin="15">
