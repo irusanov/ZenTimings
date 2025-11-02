@@ -75,6 +75,8 @@ namespace ZenTimings.Windows
                 appModules.Add(new KeyValuePair<string, string>(file.Replace(".dll", ""), version));
             }
 
+            appModules.Add(new KeyValuePair<string, string>("PawnIO", DriverHelper.Version.ToString()));
+
             Modules.ItemsSource = appModules;
             updater.UpdateCheckCompleteEvent += Updater_UpdateCheckCompleteEvent;
         }

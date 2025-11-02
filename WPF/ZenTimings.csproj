@@ -112,6 +112,7 @@
       <Link>Common\UpdaterPersistenceProvider.cs</Link>
     </Compile>
     <Compile Include="AgesaHelper.cs" />
+    <Compile Include="DriverHelper.cs" />
     <Compile Include="ObservableObject.cs" />
     <Compile Include="VendorUtils.cs" />
     <Compile Include="AppSettings.cs" />
@@ -337,6 +338,7 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\PawnIO\PawnIO_setup.exe" />
     <Content Include="Resources\vendor\asus\ayw\ayw-logo.svg" />
     <Content Include="Resources\vendor\asus\rog\rog-logo.svg" />
     <Content Include="Resources\vendor\biwin\biwin-logo.svg" />

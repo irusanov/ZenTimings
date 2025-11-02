@@ -1,4 +1,4 @@
-//#define BETA
+#define BETA
 
 using AdonisUI.Controls;
 using System;
@@ -58,10 +58,60 @@ namespace ZenTimings
             Assembly.GetExecutingAssembly(),
             typeof(AssemblyFileVersionAttribute), false)).Version;
 
+
+        public void CheckForDriver()
+        {
+            if (DriverHelper.IsPawnIoInstalled)
+            {
+                if (DriverHelper.Version < new Version(2, 0, 1, 0))
+                {
+                    AdonisUI.Controls.MessageBoxResult result = AdonisUI.Controls.MessageBox.Show(
+                        "PawnIO is outdated, do you want to update it?",
+                        nameof(ZenTimings),
+                        AdonisUI.Controls.MessageBoxButton.OKCancel,
+                        AdonisUI.Controls.MessageBoxImage.Warning
+                    );
+
+                    if (result == AdonisUI.Controls.MessageBoxResult.OK)
+                    {
+                        SplashWindow.Stop();
+                        DriverHelper.InstallPawnIO();
+                        Restart(false);
+                    }
+                }
+            }
+            else
+            {
+                {
+                    AdonisUI.Controls.MessageBoxResult result = AdonisUI.Controls.MessageBox.Show(
+                        "PawnIO is not installed, do you want to install it?",
+                        nameof(ZenTimings),
+                        AdonisUI.Controls.MessageBoxButton.OKCancel,
+                        AdonisUI.Controls.MessageBoxImage.Warning
+                    );
+
+                    if (result == AdonisUI.Controls.MessageBoxResult.OK)
+                    {
+                        SplashWindow.Stop();
+                        DriverHelper.InstallPawnIO();
+                        Restart(false);
+                    }
+
+                    if (result == AdonisUI.Controls.MessageBoxResult.Cancel)
+                    {
+                        Application.Current.Shutdown();
+                    }
+                }
+            }
+        }
+
         public MainWindow()
         {
             try
             {
+                SplashWindow.Loading("PawnIO");
+                CheckForDriver();
+
                 SplashWindow.Loading("CPU");
                 cpu = CpuSingleton.Instance;
 
@@ -78,6 +128,13 @@ namespace ZenTimings
                         MessageBoxImage.Warning
                     );
                 }
+
+                if (!cpu.RyzenSmu.IsLoaded)
+                {
+                    HandleError("Ryzen SMU module is not loaded.\nMake sure that the PawnIO driver is installed correctly.", "Driver Error");
+                    ExitApplication();
+                }
+
                 /* else if (cpu.info.codeName.Equals(Cpu.CodeName.Rembrandt) && !settings.NotifiedRembrandt.Equals(AssemblyVersion))
                  {
                      MessageBox.Show(
@@ -96,6 +153,26 @@ namespace ZenTimings
                      settings.NotifiedRembrandt = AssemblyVersion;
                      settings.Save();
                  }*/
+
+                var report = "";
+                try
+                {
+                    report = cpu.RyzenSmu.GetReport();
+                }
+                catch (Exception ex)
+                {
+                    report += ex.Message;
+                }
+
+                try
+                {
+                    string filePath = System.IO.Path.Combine(
+                        AppDomain.CurrentDomain.BaseDirectory,
+                        "PawnIO.txt"
+                    );
+                    System.IO.File.WriteAllText(filePath, report);
+                }
+                catch { }
 
                 IconSource = GetIcon("pack://application:,,,/ZenTimings;component/Resources/ZenTimings2022.ico", 16);
                 _notifyIcon = GetTrayIcon();
@@ -257,7 +334,7 @@ namespace ZenTimings
             // else, default = show context menu
         }
 
-        private void ExitApplication()
+        private void ExitApplication(bool save = true)
         {
             foreach (IPlugin plugin in plugins)
                 plugin?.Close();
@@ -266,11 +343,11 @@ namespace ZenTimings
             AsusWmi?.Dispose();
             //cpu?.io?.Close(settings.AutoUninstallDriver);
             cpu?.Dispose();
-            settings.Save();
+            if (save) settings.Save();
 
             //Driver.Cleanup();
 
-            Application.Current.Shutdown();
+            Application.Current?.Shutdown();
         }
 
         private BiosACPIFunction GetFunctionByIdString(string name)
@@ -686,11 +763,12 @@ namespace ZenTimings
             );
         }
 
-        private void Restart()
+        private void Restart(bool save = true)
         {
-            settings.Save();
-            Process.Start(Application.ResourceAssembly.Location);
-            ExitApplication();
+            if (save) settings.Save();
+            var location = Application.ResourceAssembly.Location;
+            ExitApplication(save);
+            Process.Start(location);
         }
 
         private void ShowWindow()
@@ -724,7 +802,7 @@ namespace ZenTimings
             {
                 Title = $"{AssemblyTitle} {AssemblyVersion.Substring(0, AssemblyVersion.LastIndexOf('.'))}";
 #if DEBUG && !BETA
-                Title += $@"{AssemblyVersion.Substring(AssemblyVersion.LastIndexOf('.'))} - debug";
+                Title += $@"{AssemblyVersion.Substring(AssemblyVersion.LastIndexOf('.'))} - pawnio debug";
 #endif
 
 #if BETA
@@ -892,7 +970,7 @@ namespace ZenTimings
             HwndSource source = HwndSource.FromHwnd(handle);
 
             source?.AddHook(WndProc);
-#if !DEBUG
+//#if !DEBUG
             if (!settings.NotifiedChangelog.Equals(AssemblyVersion))
             {
                 Changelog changelogWindow = new Changelog()
@@ -903,7 +981,7 @@ namespace ZenTimings
                 settings.NotifiedChangelog = AssemblyVersion;
                 settings.Save();
             }
-#endif
+//#endif
             //#if BETA
             //            MessageBox.Show("This is a BETA version of the application. Some functions might be working incorrectly.\n\n" +
             //                    "Please report if something is not working as expected.", "Beta version", MessageBoxButton.OK);

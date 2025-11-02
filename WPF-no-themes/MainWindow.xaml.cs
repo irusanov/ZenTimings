@@ -205,7 +205,7 @@ namespace ZenTimings
             AsusWmi?.Dispose();
             //cpu?.io?.Close(settings.AutoUninstallDriver);
             cpu?.Dispose();
-            settings.Save();
+            settings?.Save();
 
             //Driver.Cleanup();
 

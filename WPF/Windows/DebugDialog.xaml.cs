@@ -193,6 +193,8 @@ namespace ZenTimings.Windows
                 Environment.NewLine +
                 $"{"Core Version: "}{cpu.Version}" +
                 Environment.NewLine +
+                $"{"PawnIO Version: "}{DriverHelper.Version}" +
+                Environment.NewLine +
                 Environment.NewLine;
 
             var type = cpu.systemInfo.GetType();
@@ -215,7 +217,8 @@ namespace ZenTimings.Windows
                         AddLine($"{property.Name + ":",-19}{property.GetValue(cpu.systemInfo, null)}");
 
                 }
-                AddLine($"{"DRAM Base Address:",-19}{((long)cpu.powerTable.DramBaseAddressHi << 32 | cpu.powerTable.DramBaseAddressLo):X16}");
+                AddLine($"{"DRAM Base Address:",-19}{(long)cpu.powerTable.DramBaseAddress:X16}");
+                //AddLine($"{"DRAM Base Address:",-19}{((long)cpu.powerTable.DramBaseAddressHi << 32) | cpu.powerTable.DramBaseAddress:X16}");
             }
             catch
             {
