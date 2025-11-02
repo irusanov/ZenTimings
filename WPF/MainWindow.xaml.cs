@@ -1,4 +1,4 @@
-//#define BETA
+#define BETA
 
 using AdonisUI.Controls;
 using System;
@@ -919,7 +919,7 @@ namespace ZenTimings
             HwndSource source = HwndSource.FromHwnd(handle);
 
             source?.AddHook(WndProc);
-#if !DEBUG
+//#if !DEBUG
             if (!settings.NotifiedChangelog.Equals(AssemblyVersion))
             {
                 Changelog changelogWindow = new Changelog()
@@ -930,7 +930,7 @@ namespace ZenTimings
                 settings.NotifiedChangelog = AssemblyVersion;
                 settings.Save();
             }
-#endif
+//#endif
             //#if BETA
             //            MessageBox.Show("This is a BETA version of the application. Some functions might be working incorrectly.\n\n" +
             //                    "Please report if something is not working as expected.", "Beta version", MessageBoxButton.OK);
