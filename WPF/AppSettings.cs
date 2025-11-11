@@ -107,6 +107,9 @@ namespace ZenTimings
         {
             try
             {
+                if (!DriverHelper.IsPawnIoInstalled)
+                    return;
+
                 Version = new Version(VersionMajor, VersionMinor).ToString();
 
                 if (CpuSingleton.Instance?.systemInfo != null)
