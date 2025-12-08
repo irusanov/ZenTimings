@@ -174,8 +174,6 @@ namespace ZenTimings
         public double SysInfoWindowWidth { get; set; }
         public double SysInfoWindowHeight { get; set; }
         public string NotifiedChangelog { get; set; } = "";
-        //public string NotifiedRembrandt { get; set; } = "";
-        public bool NotifiedWinRing0 { get; set; }
         public string MbName { get; set; } = "";
         public string BiosVersion { get; set; } = "";
         public string SmuVersion { get; set; } = "";

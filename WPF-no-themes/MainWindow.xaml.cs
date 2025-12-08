@@ -493,7 +493,7 @@ namespace ZenTimings
         {
             uint config = cpu.ReadDword(offset | 0x50100);
 
-            MEMCFG.Type = (MemoryConfig.MemType)(MemType)Utils.GetBits(config, 0, 2);
+            MEMCFG.Type = (MemType)Utils.GetBits(config, 0, 2);
 
             uint powerDown = cpu.ReadDword(offset | 0x5012C);
             uint umcBase = cpu.ReadDword(offset | 0x50200);
