@@ -580,9 +580,13 @@ namespace ZenTimings
         private void ReadTimings(uint offset = 0)
         {
             cpu.memoryConfig.ReadTimings(offset);
-            var index = cpu.GetMemoryConfig().Timings.FindIndex(m => m.Key.Equals(offset));
+            var timings = cpu.memoryConfig.Timings;
 
-            Timings = cpu.GetMemoryConfig().Timings[index].Value;
+            if (timings.Count == 0)
+                return;
+
+            var index = timings.FindIndex(m => m.Key.Equals(offset));
+            Timings = timings[index < 0 ? 0 : index].Value;
 
             float configured = _memoryFrequency;
             float ratio = Timings.Ratio;
@@ -729,7 +733,7 @@ namespace ZenTimings
                         ReadTimings(module?.DctOffset ?? 0);
                         //ReadDDR4MemoryConfig();
                         cpu.RefreshPowerTable();
-                        ReadSVI();
+                        //ReadSVI();
                         SetFrequencyString();
                         // RefreshSensors();
                     }));
