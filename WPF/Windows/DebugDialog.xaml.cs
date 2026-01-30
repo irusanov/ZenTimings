@@ -143,7 +143,8 @@ namespace ZenTimings.Windows
                 throw new Exception("Timeout waiting for PCI bus mutex");
             }
 
-            try {
+            try
+            {
                 uint channelsPerDimm = 1; // memoryConfig.Type >= ZenStates.Core.DRAM.MemoryConfig.MemType.DDR5 ? 2u : 1u;
                 AddHeading("Memory Channels Info");
 
@@ -260,11 +261,11 @@ namespace ZenTimings.Windows
 
             // Memory timings info
             AddHeading("Memory Config");
-            type = memoryConfig.Timings[0].Value.GetType();
-            properties = type.GetProperties();
-
             try
             {
+                type = memoryConfig.Timings[0].Value.GetType();
+                properties = type.GetProperties();
+
                 foreach (var property in properties)
                     AddLine($"{property.Name + ":",-18}{memoryConfig.Timings[0].Value[property.Name]}");
             }
@@ -276,11 +277,12 @@ namespace ZenTimings.Windows
             AddLine();
 
             // AOD Table
-            AddHeading("ACPI: AOD Table");
-            var aodAcpiTableHeader = cpu.info.aod.Table.AcpiTable.GetValueOrDefault().Header;
-            type = aodAcpiTableHeader.GetType();
+            AddHeading("ACPI: AOD Table Header");
             try
             {
+                var aodAcpiTableHeader = cpu.info.aod.Table.AcpiTable.GetValueOrDefault().Header;
+                type = aodAcpiTableHeader.GetType();
+
                 foreach (FieldInfo field in type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public))
                 {
                     AddLine($"{field.Name + ":",-19}{field.GetValue(aodAcpiTableHeader)}");
@@ -291,9 +293,12 @@ namespace ZenTimings.Windows
                 AddLine("<FAILED>");
             }
 
-            properties = cpu.info.aod.Table.Data.GetType().GetProperties();
+            AddLine();
+            AddHeading("ACPI: AOD Table Data");
             try
             {
+                properties = cpu.info.aod.Table.Data.GetType().GetProperties();
+
                 foreach (PropertyInfo property in properties)
                 {
                     object value = property.GetValue(cpu.info.aod.Table.Data);
