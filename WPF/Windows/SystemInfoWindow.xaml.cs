@@ -109,7 +109,7 @@ namespace ZenTimings.Windows
                 // ignored
             }
 
-            if (mcConfig != null && mc.Type == MemoryConfig.MemType.DDR4)
+            if (mcConfig != null && mc.Type == MemType.DDR4 || mc.Type == MemType.LPDDR4)
             {
                 try
                 {

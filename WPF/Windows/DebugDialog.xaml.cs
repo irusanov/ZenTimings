@@ -138,50 +138,61 @@ namespace ZenTimings.Windows
 
         private void PrintChannels()
         {
-            uint channelsPerDimm = 1; // memoryConfig.Type >= ZenStates.Core.DRAM.MemoryConfig.MemType.DDR5 ? 2u : 1u;
-            AddHeading("Memory Channels Info");
-
-            AddLine("-- UMC Configuration");
-
-            for (var i = 0u; i < 0xC; i += 1)
+            if (!Mutexes.WaitPciBus(5000))
             {
-                var offset = i << 20;
-                var reg = offset | 0x50100;
-                AddLine($"0x{reg:X8}: 0x{cpu.ReadDword(reg):X8}");
+                throw new Exception("Timeout waiting for PCI bus mutex");
             }
 
-            AddLine();
+            try {
+                uint channelsPerDimm = 1; // memoryConfig.Type >= ZenStates.Core.DRAM.MemoryConfig.MemType.DDR5 ? 2u : 1u;
+                AddHeading("Memory Channels Info");
 
-            for (var i = 0u; i < 0xC * channelsPerDimm; i += channelsPerDimm)
-            {
-                try
+                AddLine("-- UMC Configuration");
+
+                for (var i = 0u; i < 0xC; i += 1)
                 {
                     var offset = i << 20;
-                    var channel = Utils.GetBits(cpu.ReadDword(offset | 0x50DF0), 19, 1) == 0;
-                    var dimm1 = Utils.GetBits(cpu.ReadDword(offset | 0x50000), 0, 1) == 1;
-                    var dimm2 = Utils.GetBits(cpu.ReadDword(offset | 0x50008), 0, 1) == 1;
-                    var enabled = channel && (dimm1 || dimm2);
+                    var reg = offset | 0x50100;
+                    AddLine($"0x{reg:X8}: 0x{cpu.ReadDword(reg):X8}");
+                }
 
-                    AddLine($"Channel{i / channelsPerDimm}: {enabled}");
-                    if (enabled)
+                AddLine();
+
+                for (var i = 0u; i < 0xC * channelsPerDimm; i += channelsPerDimm)
+                {
+                    try
                     {
-                        AddLine("-- UMC Registers");
-                        var startReg = offset | 0x50000;
-                        var endReg = offset | 0x50300;
-                        while (startReg <= endReg)
+                        var offset = i << 20;
+                        var channel = Utils.GetBits(cpu.ReadDword(offset | 0x50DF0), 19, 1) == 0;
+                        var dimm1 = Utils.GetBits(cpu.ReadDword(offset | 0x50000), 0, 1) == 1;
+                        var dimm2 = Utils.GetBits(cpu.ReadDword(offset | 0x50008), 0, 1) == 1;
+                        var enabled = channel && (dimm1 || dimm2);
+
+                        AddLine($"Channel{i / channelsPerDimm}: {enabled}");
+                        if (enabled)
                         {
-                            var data = cpu.ReadDword(startReg);
-                            AddLine($"   0x{startReg:X8}: 0x{data:X8}");
-                            startReg += 4;
+                            AddLine("-- UMC Registers");
+                            var startReg = offset | 0x50000;
+                            var endReg = offset | 0x50300;
+                            while (startReg <= endReg)
+                            {
+                                var data = cpu.ReadDword(startReg);
+                                AddLine($"   0x{startReg:X8}: 0x{data:X8}");
+                                startReg += 4;
+                            }
                         }
                     }
+                    catch
+                    {
+                        AddLine($"Channel{i / channelsPerDimm}: <FAILED>");
+                    }
                 }
-                catch
-                {
-                    AddLine($"Channel{i / channelsPerDimm}: <FAILED>");
-                }
+                AddLine();
             }
-            AddLine();
+            finally
+            {
+                Mutexes.ReleasePciBus();
+            }
         }
 
         private void Debug()

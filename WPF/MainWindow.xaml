@@ -55,7 +55,7 @@
                             <MenuItem
                                 Header="System _Info"
                                 Click="SystemInfoToolstripMenuItem_Click"
-                                Visibility="{Binding settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
+                                Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
                             <MenuItem Header="_Options" Click="OptionsToolStripMenuItem_Click" />
                             <MenuItem Header="_Debug" Click="DebugToolstripItem_Click" />
                         </MenuItem>
@@ -90,7 +90,7 @@
 
             <!-- System Info Panel -->
             <Border Style="{DynamicResource PanelStyles}"
-                    Visibility="{Binding settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                    Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -99,7 +99,12 @@
                     <StackPanel Orientation="Vertical">
                         <TextBlock x:Name="labelCPU" Text="N/A" Padding="12 5 5 0" />
                         <TextBlock x:Name="labelMB" Text="N/A" Padding="12 0 5 5" />
-                        <TextBlock x:Name="labelAgesaVersion" Text="N/A" Padding="12 0 5 5" Margin="0 -5 0 0" />
+                        <TextBlock
+                            x:Name="labelAgesaVersion"
+                            Text="{Binding AgesaVersion, Mode=Default, FallbackValue='N/A'}"
+                            Padding="12 0 5 5"
+                            Margin="0 -5 0 0"
+                        />
                     </StackPanel>
                     <Border Padding="0 0 5 0" Grid.Column="2"
                             Visibility="{Binding IsMotherboardLogoVisible, Mode=OneTime, Converter={StaticResource BoolToVis}}">
@@ -123,7 +128,7 @@
             </Border>
 
             <Border Style="{DynamicResource Separator}"
-                    Visibility="{Binding settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
+                    Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
 
             <StackPanel x:Name="timingsPanelSlot" Margin="0" Orientation="Vertical" />
 
@@ -140,9 +145,9 @@
 
                     <ComboBox x:Name="comboBoxPartNumber" IsReadOnly="True" Grid.Column="0" />
                     <TextBlock
-                        Text="{Binding memoryType, FallbackValue=''}"
+                        Text="{Binding MemoryType, FallbackValue=''}"
                         Style="{DynamicResource ValueStyles}"
-                        Visibility="{Binding settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}"
+                        Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}"
                         Grid.Column="3"
                         TextAlignment="Right"
                         Margin="0,0,5,0"

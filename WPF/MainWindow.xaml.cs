@@ -1,4 +1,4 @@
-#define BETA
+﻿#define BETA
 
 using AdonisUI.Controls;
 using System;
@@ -19,8 +19,8 @@ using ZenStates.Core;
 using ZenStates.Core.DRAM;
 using ZenTimings.Controls;
 using ZenTimings.Plugin;
+using ZenTimings.ViewModels;
 using ZenTimings.Windows;
-using static ZenStates.Core.DRAM.MemoryConfig;
 using Forms = System.Windows.Forms;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
@@ -46,8 +46,7 @@ namespace ZenTimings
         internal readonly Forms.NotifyIcon _notifyIcon;
         private bool compatMode;
         private Control timingsPanel;
-        private float _memoryFrequency = 0;
-        private BaseDramTimings Timings = null;
+        private readonly MainViewModel viewModel;
         //private Computer computer;
 
         private readonly string AssemblyProduct = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(
@@ -135,45 +134,6 @@ namespace ZenTimings
                     ExitApplication();
                 }
 
-                /* else if (cpu.info.codeName.Equals(Cpu.CodeName.Rembrandt) && !settings.NotifiedRembrandt.Equals(AssemblyVersion))
-                 {
-                     MessageBox.Show(
-                         "DDR5 support is experimental and Advanced mode is not supported yet."
-                             + Environment.NewLine
-                             + Environment.NewLine
-                             + "You can still enable it in Tools -> Options, but it will most probably fail."
-                             + Environment.NewLine
-                             + Environment.NewLine
-                             + "If you're not able to turn off the Advanced mode from the UI, edit settings.xml manually and set AdvancedMode to 'false'. "
-                             + "You can also delete settings.xml file and it will be regenerated on next application launch.",
-                         "Limited Support",
-                         MessageBoxButton.OK,
-                         MessageBoxImage.Information);
-                     settings.AdvancedMode = false;
-                     settings.NotifiedRembrandt = AssemblyVersion;
-                     settings.Save();
-                 }*/
-
-                //var report = "";
-                //try
-                //{
-                //    report = cpu.RyzenSmu.GetReport();
-                //}
-                //catch (Exception ex)
-                //{
-                //    report += ex.Message;
-                //}
-
-                //try
-                //{
-                //    string filePath = System.IO.Path.Combine(
-                //        AppDomain.CurrentDomain.BaseDirectory,
-                //        "PawnIO.txt"
-                //    );
-                //    System.IO.File.WriteAllText(filePath, report);
-                //}
-                //catch { }
-
                 IconSource = GetIcon("pack://application:,,,/ZenTimings;component/Resources/ZenTimings2022.ico", 16);
                 _notifyIcon = GetTrayIcon();
 
@@ -185,7 +145,24 @@ namespace ZenTimings
 
                 var memoryType = cpu.GetMemoryConfig().Type;
 
-                ReadTimings();
+                // Motherboard logo
+                var motherboardLogoName = VendorUtils.GetMotherboardLogo(cpu.systemInfo);
+                if (motherboardLogoName != null)
+                {
+                    motherboardLogoImage.SetResourceReference(Image.SourceProperty, motherboardLogoName);
+                }
+
+                viewModel = new MainViewModel(
+                    ReadTimings(),
+                    CpuSingleton.Instance,
+                    memoryType,
+                    compatMode,
+                    settings,
+                    plugins,
+                    motherboardLogoName
+                );
+
+                DataContext = viewModel;
 
                 if (cpu != null && settings.AdvancedMode)
                 {
@@ -193,26 +170,21 @@ namespace ZenTimings
                     PowerCfgTimer.Interval = TimeSpan.FromMilliseconds(2000);
                     PowerCfgTimer.Tick += PowerCfgTimer_Tick;
 
-                    SplashWindow.Loading("Waiting for power table");
-                    if (WaitForPowerTable())
-                    {
-                        SplashWindow.Loading("Reading power table");
-                        // refresh the table again, to avoid displaying initial fclk, mclk and uclk values,
-                        // which seem to be a little off when transferring the table for the "first" time,
-                        // after an idle period
-                        cpu.RefreshPowerTable();
-                    }
-                    else
+                    SplashWindow.Loading("Reading power table");
+                    if (!WaitForPowerTable())
                     {
                         SplashWindow.Loading("Power table error!");
                     }
 
                     SplashWindow.Loading("Plugins");
-                    if (memoryType == MemType.DDR4)
+                    if (memoryType == MemType.DDR4 || memoryType == MemType.LPDDR4)
                     {
                         SplashWindow.Loading("SVI2 Plugin");
                         plugins.Add(new SVI2Plugin(cpu));
                         //ReadSVI();
+
+                        SplashWindow.Loading("Memory controller");
+                        BMC = new BiosMemController();
                     }
                     //plugins.Add(new OHWMPlugin());
                     //plugins[1].Open();
@@ -222,55 +194,27 @@ namespace ZenTimings
                         AsusWmi.Dispose();
                         AsusWmi = null;
                     }
-
-                    if (memoryType == MemType.DDR4)
-                    {
-                        SplashWindow.Loading("Memory controller");
-                        BMC = new BiosMemController();
-                    }
-
-                    if (settings.AgesaSearchOnStart)
-                    {
-                        SplashWindow.Loading("Searching for AGESA version, hold tight...");
-                    }
-                    GetAgesaVersion();
                 }
 
                 SplashWindow.Loading("Done");
-
-                // Motherboard logo
-                var motherboardLogoName = VendorUtils.GetMotherboardLogo(cpu.systemInfo);
-                if (motherboardLogoName != null)
-                {
-                    motherboardLogoImage.SetResourceReference(Image.SourceProperty, motherboardLogoName);
-                }
-
-                DataContext = new
-                {
-                    timings = Timings,
-                    totalCapacity = cpu.memoryConfig.TotalCapacity,
-                    memoryFrequency = $"{Math.Floor(_memoryFrequency)} MT/s",
-                    memoryType,
-                    cpu.powerTable,
-                    cpu.info.codeName,
-                    WMIPresent = !compatMode && cpu.GetMemoryConfig().Type == MemType.DDR4,
-                    settings,
-                    plugins,
-                    IsMotherboardLogoVisible = motherboardLogoName != null,
-                    MotherboardLogoTooltip = $"Click to visit {cpu.systemInfo.MbName} page",
-                };
 
                 AddTimingsPanel(memoryType);
 
                 if (settings.AdvancedMode)
                 {
-                    if (memoryType == MemType.DDR4)
+                    if (memoryType == MemType.DDR4 || memoryType == MemType.LPDDR4)
                     {
                         ReadSVI();
                         ReadDDR4MemoryConfig();
                     }
                     StartAutoRefresh();
                 }
+
+                //if (settings.AgesaSearchOnStart)
+                //{
+                //    SplashWindow.Loading("Searching for AGESA version, hold tight...");
+                //}
+                //agesaVersion = GetAgesaVersion();
             }
             catch (Exception ex)
             {
@@ -282,7 +226,7 @@ namespace ZenTimings
         private void AddTimingsPanel(MemType memoryType)
         {
             // Add timings panel
-            if (memoryType == MemType.DDR4)
+            if (memoryType == MemType.DDR4 || memoryType == MemType.LPDDR4)
             {
                 timingsPanel = new DDR4TimingsPanel();
             }
@@ -290,14 +234,13 @@ namespace ZenTimings
             {
                 timingsPanel = new DDR5APUTimingsPanel();
             }
-            else if (memoryType >= MemType.DDR5)
+            else if (memoryType == MemType.DDR5)
             {
                 timingsPanel = new DDR5TimingsPanel();
             }
 
             if (timingsPanel != null)
             {
-                timingsPanel.DataContext = this.DataContext;
                 timingsPanelSlot.Children.Add(timingsPanel);
             }
         }
@@ -428,7 +371,7 @@ namespace ZenTimings
 
         private void ReadSVI()
         {
-            if (cpu.memoryConfig.Type == MemType.DDR4 && plugins.Count > 0 && plugins[0].Update())
+            if ((cpu.memoryConfig.Type == MemType.DDR4 || cpu.memoryConfig.Type == MemType.LPDDR4) && plugins.Count > 0 && plugins[0].Update())
             {
                 (timingsPanel as DDR4TimingsPanel).textBoxVSOC_SVI2.Text = $"{plugins[0].Sensors[0].Value:F4}V";
             }
@@ -577,40 +520,28 @@ namespace ZenTimings
         }
 
         //TODO: Replace with a call to DLL
-        private void ReadTimings(uint offset = 0)
+        private BaseDramTimings ReadTimings(uint offset = 0)
         {
             cpu.memoryConfig.ReadTimings(offset);
             var timings = cpu.memoryConfig.Timings;
+            BaseDramTimings result = null;
 
             if (timings.Count == 0)
-                return;
+                return result;
 
             var index = timings.FindIndex(m => m.Key.Equals(offset));
-            Timings = timings[index < 0 ? 0 : index].Value;
+            result = timings[index < 0 ? 0 : index].Value;
 
-            float configured = _memoryFrequency;
-            float ratio = Timings.Ratio;
+            float configured = viewModel?.MemoryFrequency ?? 0;
+            float ratio = result.Ratio;
             float freqFromRatio = ratio * 200;
 
             // Fallback to ratio when ConfiguredClockSpeed fails
-            if (configured == 0.0f || freqFromRatio > configured)
+            if ((configured == 0.0f || freqFromRatio > configured) && viewModel != null)
             {
-                _memoryFrequency = freqFromRatio;
+                viewModel.MemoryFrequency = freqFromRatio;
             }
-
-            // TODO: Implement property notifications
-            if (timingsPanel != null)
-            {
-                timingsPanel.DataContext = new
-                {
-                    timings = Timings,
-                    totalCapacity = cpu.memoryConfig.TotalCapacity,
-                    memoryFrequency = $"{Math.Floor(_memoryFrequency)} MT/s",
-                    memoryType = cpu.memoryConfig.Type,
-                    cpu.powerTable,
-                    settings,
-                };
-            }
+            return result;
         }
 
         private bool WaitForDriverLoad()
@@ -634,7 +565,7 @@ namespace ZenTimings
         {
             if (cpu.powerTable != null && cpu.powerTable.MCLK > 0)
             {
-                _memoryFrequency = cpu.powerTable.MCLK * 2;
+                viewModel.MemoryFrequency = cpu.powerTable.MCLK * 2;
             }
         }
 
@@ -648,33 +579,11 @@ namespace ZenTimings
 
             if (WaitForDriverLoad())
             {
-                Stopwatch timer = new Stopwatch();
-                int timeout = 10000;
-
                 var memoryConfig = cpu.memoryConfig.Timings.FirstOrDefault().Value;
                 if (memoryConfig != null)
                 {
                     cpu.powerTable.ConfiguredClockSpeed = memoryConfig.Frequency;
                     cpu.powerTable.MemRatio = memoryConfig.Ratio;
-                }
-
-                timer.Start();
-
-                SMU.Status status;
-                // Refresh each 2 seconds until table is transferred to DRAM or timeout
-                do
-                {
-                    status = cpu.RefreshPowerTable();
-                    if (status != SMU.Status.OK)
-                        Thread.Sleep(2000);  // It's ok to block the current thread
-                } while (status != SMU.Status.OK && timer.Elapsed.TotalMilliseconds < timeout);
-
-                timer.Stop();
-
-                if (status != SMU.Status.OK)
-                {
-                    HandleError("Could not get power table.\nSkipping.");
-                    return false;
                 }
 
                 SetFrequencyString();
@@ -730,7 +639,7 @@ namespace ZenTimings
                         var modules = cpu.memoryConfig.Modules;
                         int selectedIndex = comboBoxPartNumber?.SelectedIndex ?? 0;
                         MemoryModule module = modules?.Count > 0 ? modules[selectedIndex] : null;
-                        ReadTimings(module?.DctOffset ?? 0);
+                        //ReadTimings(module?.DctOffset ?? 0);
                         //ReadDDR4MemoryConfig();
                         cpu.RefreshPowerTable();
                         //ReadSVI();
@@ -859,7 +768,7 @@ namespace ZenTimings
             //        Left = settings.WindowLeft;
             //        Top = settings.WindowTop;
             //    }
-            //}
+            //}            
         }
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
@@ -950,12 +859,12 @@ namespace ZenTimings
                     if (String.IsNullOrEmpty(cpu.systemInfo.AgesaVersion) || cpu.systemInfo.AgesaVersion.Equals(AppSettings.AGESA_UNKNOWN))
                     {
                         labelMB.Text = $@"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} ({cpu.systemInfo.GetSmuVersionString()})";
-                        labelAgesaVersion.Visibility = Visibility.Collapsed;
+                        //labelAgesaVersion.Visibility = Visibility.Collapsed;
                     }
                     else
                     {
                         labelMB.Text = $@"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion}";
-                        labelAgesaVersion.Text = $"AGESA {cpu.systemInfo.AgesaVersion} (SMU {cpu.systemInfo.GetSmuVersionString()})";
+                        //labelAgesaVersion.Text = $"AGESA {cpu.systemInfo.AgesaVersion} (SMU {cpu.systemInfo.GetSmuVersionString()})";
                     }
                 });
             }
@@ -974,7 +883,7 @@ namespace ZenTimings
             HwndSource source = HwndSource.FromHwnd(handle);
 
             source?.AddHook(WndProc);
-//#if !DEBUG
+            //#if !DEBUG
             if (!settings.NotifiedChangelog.Equals(AssemblyVersion))
             {
                 Changelog changelogWindow = new Changelog()
@@ -985,12 +894,17 @@ namespace ZenTimings
                 settings.NotifiedChangelog = AssemblyVersion;
                 settings.Save();
             }
-//#endif
+            //#endif
             //#if BETA
             //            MessageBox.Show("This is a BETA version of the application. Some functions might be working incorrectly.\n\n" +
             //                    "Please report if something is not working as expected.", "Beta version", MessageBoxButton.OK);
             //#endif
             MinimizeFootprint();
+
+            new Thread(() =>
+            {
+                viewModel.AgesaVersion = GetAgesaVersion();
+            }).Start();
         }
 
         private void OptionsToolStripMenuItem_Click(object sender, RoutedEventArgs e)
@@ -1029,7 +943,9 @@ namespace ZenTimings
         private void ComboBoxPartNumber_SelectionChanged(object sender, RoutedEventArgs e)
         {
             if (sender is ComboBox combo && combo.Items.Count > 0)
-                ReadTimings(cpu.memoryConfig.Modules[combo.SelectedIndex].DctOffset);
+            {
+                viewModel.Timings = ReadTimings(cpu.memoryConfig.Modules[combo.SelectedIndex].DctOffset);
+            }
         }
 
         private void SystemInfoToolstripMenuItem_Click(object sender, RoutedEventArgs e)
@@ -1136,23 +1052,23 @@ namespace ZenTimings
                 return cpu.systemInfo.AgesaVersion;
             }
 
-            string agesaVersion;
+            string version;
             if (IsAgesaVersionUpdateNeeded() && settings.AgesaSearchOnStart)
             {
                 byte[] image = AgesaHelper.DumpImage();
-                agesaVersion = AgesaHelper.FindAgesaVersion(image);
+                version = AgesaHelper.FindAgesaVersion(image);
             }
             else
             {
-                agesaVersion = settings?.AgesaVersion ?? AppSettings.AGESA_UNKNOWN;
+                version = settings?.AgesaVersion ?? AppSettings.AGESA_UNKNOWN;
             }
 
-            if (!string.IsNullOrEmpty(agesaVersion))
+            if (!string.IsNullOrEmpty(version))
             {
-                cpu.systemInfo.AgesaVersion = agesaVersion;
+                cpu.systemInfo.AgesaVersion = version;
             }
 
-            return agesaVersion;
+            return version;
         }
 
         private void RestoreWindowPosition()

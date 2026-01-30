@@ -1,6 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
-using static ZenStates.Core.DRAM.MemoryConfig;
+using ZenStates.Core.DRAM;
 
 namespace ZenTimings
 {
