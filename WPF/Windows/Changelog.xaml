@@ -27,8 +27,23 @@
         </Grid.RowDefinitions>
         <StackPanel Orientation="Vertical" Margin="15" Grid.ColumnSpan="2" Grid.Row="0" Width="424">
             <!-- TextBlock Text="Changelog" FontSize="14" FontWeight="Bold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" /-->
-            <TextBlock Text="v1.36 Nov 2 2025" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" />
+            <TextBlock Text="v1.36.1983-beta Feb 5 2026" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" />
+            <TextBlock Text="  - Fix regression in DR memory detection" TextWrapping="WrapWithOverflow" />
+            <TextBlock Text="  - Improve power table refresh performance" TextWrapping="WrapWithOverflow" />
+            <TextBlock Text="  - Searching for AGESA version no longer blocks the main window" TextWrapping="WrapWithOverflow" />
+            <TextBlock Text="  - Improve AGESA version parsing" TextWrapping="WrapWithOverflow" />
+            <TextBlock Text="  - Enable export as HTML (preliminary version)" TextWrapping="WrapWithOverflow" />
+            <TextBlock Text="  - Drop WMI method to get system info in favor of SMBios (faster)" TextWrapping="WrapWithOverflow" />
+            <TextBlock Text="  - Add Colorful iGame memory detection" TextWrapping="WrapWithOverflow" />
+            <TextBlock Text="  - Fix crash on certain systems when trying to generate a debug report" TextWrapping="WrapWithOverflow" />
+            
             <TextBlock Text="" />
+            <TextBlock Text="v1.36.1946-beta Dec 30 2025" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" />
+
+            <TextBlock Text="  - Fixed an error when only one DIMM present in the secondary channel" TextWrapping="WrapWithOverflow" />
+            <TextBlock Text="" />
+            <TextBlock Text="v1.36.1889-beta Nov 2 2025" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" />
+
             <TextBlock Text="  - Replace WinRing0 kernel driver with PawnIO" TextWrapping="WrapWithOverflow" />
             <TextBlock Text="  - Support new CPUs" TextWrapping="WrapWithOverflow" />
             <TextBlock Text="  - Update AOD tables" TextWrapping="WrapWithOverflow" />
