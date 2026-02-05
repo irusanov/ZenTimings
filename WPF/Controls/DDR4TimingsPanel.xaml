@@ -143,7 +143,7 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="1">
-                    <TextBlock Text="{Binding ТotalCapacity, FallbackValue='N/A'}"
+                    <TextBlock Text="{Binding TotalCapacity, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding Timings.BGSAlt, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
