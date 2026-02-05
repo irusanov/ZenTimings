@@ -253,18 +253,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Page Include="Resources\vendor\biwin\biwin-logo-alt.xaml">
+    <Resource Include="Resources\vendor\biwin\biwin-logo-alt.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Resources\vendor\gskill\gskill-logo-alt.xaml">
+    </Resource>
+    <Resource Include="Resources\vendor\gskill\gskill-logo-alt.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Resources\vendor\gskill\gskill-logo.xaml">
+    </Resource>
+    <Resource Include="Resources\vendor\gskill\gskill-logo.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
+    </Resource>
     <Resource Include="Themes\BurntOrange.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -282,6 +282,18 @@
       <SubType>Designer</SubType>
     </Resource>
     <Resource Include="Themes\Dracula.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Resources\vendor\msi\meg.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Resources\vendor\colorful\igame-logo-alt.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Resources\vendor\colorful\igame-logo.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>

@@ -12,6 +12,8 @@
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/gskill/gskill-logo-alt.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/biwin/biwin-logo.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/biwin/origincode-logo.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/msi/meg.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/colorful/igame-logo.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <!-- Text color -->
@@ -21,7 +23,7 @@
     <!-- Window background -->
     <Color x:Key="{x:Static adonisUi:Colors.Layer0BackgroundColor}">#0B1215</Color>
 
-    <Color x:Key="{x:Static adonisUi:Colors.Layer3BorderColor}">#420704</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer3BorderColor}">#0B0000</Color>
 
     <Color x:Key="{x:Static adonisUi:Colors.Layer3BackgroundColor}">#0B1215</Color>
 

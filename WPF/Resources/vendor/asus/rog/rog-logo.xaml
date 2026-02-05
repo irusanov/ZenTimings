@@ -30,5 +30,5 @@
             </DrawingGroup>
         </DrawingGroup>
     </DrawingGroup>
-    <DrawingImage Drawing="{StaticResource ROG_logo_white_40_xaml}" x:Key="ROGLogo"/>
+    <DrawingImage Drawing="{StaticResource ROG_logo_white_40_xaml}" x:Key="rogLogo"/>
 </ResourceDictionary>

@@ -12,6 +12,8 @@
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/gskill/gskill-logo.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/biwin/biwin-logo.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/biwin/origincode-logo.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/msi/meg.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/colorful/igame-logo.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <Color x:Key="{x:Static adonisUi:Colors.ForegroundColor}">#d5d5d5</Color>
