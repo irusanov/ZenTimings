@@ -1,8 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.Management;
 using System.Windows.Controls;
-using ZenStates.Core;
 
 namespace ZenTimings.Controls
 {

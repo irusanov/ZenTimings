@@ -14,7 +14,6 @@ using ZenStates.Core;
 using ZenStates.Core.DRAM;
 using ZenTimings.Plugin;
 using ZenTimings.Windows;
-using static ZenStates.Core.DRAM.MemoryConfig;
 using Forms = System.Windows.Forms;
 //using OpenHardwareMonitor.Hardware;
 

@@ -198,15 +198,6 @@
                         Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
                         Content="Single instance" />
 
-            <ToggleButton
-                x:Name="checkBoxAgesaSearch"
-                Grid.Column="0"
-                Grid.Row="8"
-                Grid.ColumnSpan="3"
-                Margin="0 5 5 5"
-                Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
-                Content="Search for AGESA version on start (experimental)" />
-
             <!--ToggleButton
                         x:Name="checkBoxAutoUninstallDriver"
                         Grid.Column="0"

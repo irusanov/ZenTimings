@@ -1,4 +1,3 @@
-using AdonisUI.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,7 +40,7 @@ namespace ZenTimings.Windows
                         items.Add(new GridItem() { Name = property.Name, Value = $"{property.GetValue(si, null):X8}" });
                     else if (property.Name == "SmuVersion")
                         items.Add(new GridItem() { Name = property.Name, Value = si.GetSmuVersionString() });
-                    else
+                    else if (property.Name != "SMBios")
                         items.Add(new GridItem()
                         { Name = property.Name, Value = property.GetValue(si, null).ToString() });
 

@@ -1,5 +1,4 @@
-﻿using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using ZenStates.Core;
 
 namespace ZenTimings.Controls
@@ -17,7 +16,7 @@ namespace ZenTimings.Controls
             AOD aod = cpu.info.aod;
 
             if (aod == null || Utils.AllZero(aod.Table.RawAodTable))
-                    return;
+                return;
 
             AodData Data = aod.Table.Data;
             if (Data != null)
