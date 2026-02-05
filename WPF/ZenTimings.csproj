@@ -61,7 +61,6 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
@@ -77,6 +76,7 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="ZenStates-Core, Version=1.80.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Common\ZenStates-Core.dll</HintPath>
@@ -169,7 +169,6 @@
     <Compile Include="Windows\Changelog.xaml.cs">
       <DependentUpon>Changelog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Config.cs" />
     <Compile Include="Windows\DebugDialog.xaml.cs">
       <DependentUpon>DebugDialog.xaml</DependentUpon>
     </Compile>

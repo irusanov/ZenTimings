@@ -11,7 +11,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ZenTimings")]
 [assembly: AssemblyProduct("ZenTimings")]
-[assembly: AssemblyCopyright("Copyright © 2019-2025")]
+[assembly: AssemblyCopyright("Copyright © 2019-2026")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
