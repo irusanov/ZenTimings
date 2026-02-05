@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using ZenStates.Core;
@@ -10,12 +9,12 @@ namespace ZenTimings
     internal static class AgesaHelper
     {
         private const int HeaderSize = 0x18;
-        private const uint StartAddress = 0x45000000;
+        private const uint StartAddress = 0x44000000;
         private const uint EndAddress = 0x45BB0000;
         private static readonly bool[] Allowed = BuildAllowedTable();
 
         /// <summary>
-        /// Dumps the BIOS image from memory.
+        /// Dumps the BIOS image from flash memory.
         /// </summary>
         public static byte[] DumpImage()
         {
@@ -25,11 +24,23 @@ namespace ZenTimings
             {
                 Thread thread = new Thread(() =>
                 {
-                    for (uint i = 0; i < image.Length; i += 4)
+                    for (uint i = 0; i < image.Length - 4; i += 4)
                     {
-                        uint dataChunk = 0;
-                        CpuSingleton.Instance.ReadDwordEx(StartAddress + i, ref dataChunk);
-                        BitConverter.GetBytes(dataChunk).CopyTo(image, i);
+                        uint dataChunk = 0xFFFFFFFF;
+                        if (Mutexes.WaitPciBus(10))
+                        {
+                            try
+                            {
+                                bool ok = CpuSingleton.Instance.ReadDwordEx(StartAddress + i, ref dataChunk);
+                                if (!ok)
+                                    dataChunk = 0xFFFFFFFF;
+                                Buffer.BlockCopy(BitConverter.GetBytes(dataChunk), 0, image, (int)i, 4);
+                            }
+                            finally
+                            {
+                                Mutexes.ReleasePciBus();
+                            }
+                        }
                     }
                 })
                 {
@@ -52,6 +63,10 @@ namespace ZenTimings
         public static string FindAgesaVersion(byte[] image)
         {
             const string AGESA_UNKNOWN = AppSettings.AGESA_UNKNOWN;
+
+            if (image == null || image.Length == 0)
+                return AGESA_UNKNOWN;
+
             try
             {
                 // Find the GUID in the BIOS data

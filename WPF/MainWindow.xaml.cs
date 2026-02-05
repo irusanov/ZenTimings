@@ -46,7 +46,7 @@ namespace ZenTimings
         internal readonly Forms.NotifyIcon _notifyIcon;
         private bool compatMode;
         private Control timingsPanel;
-        private readonly MainViewModel viewModel;
+        private readonly MainViewModel mainViewModel;
         //private Computer computer;
 
         private readonly string AssemblyProduct = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(
@@ -152,9 +152,8 @@ namespace ZenTimings
                     motherboardLogoImage.SetResourceReference(Image.SourceProperty, motherboardLogoName);
                 }
 
-                viewModel = new MainViewModel(
+                mainViewModel = new MainViewModel(
                     ReadTimings(),
-                    CpuSingleton.Instance,
                     memoryType,
                     compatMode,
                     settings,
@@ -162,7 +161,7 @@ namespace ZenTimings
                     motherboardLogoName
                 );
 
-                DataContext = viewModel;
+                DataContext = mainViewModel;
 
                 if (cpu != null && settings.AdvancedMode)
                 {
@@ -209,12 +208,6 @@ namespace ZenTimings
                     }
                     StartAutoRefresh();
                 }
-
-                //if (settings.AgesaSearchOnStart)
-                //{
-                //    SplashWindow.Loading("Searching for AGESA version, hold tight...");
-                //}
-                //agesaVersion = GetAgesaVersion();
             }
             catch (Exception ex)
             {
@@ -532,14 +525,14 @@ namespace ZenTimings
             var index = timings.FindIndex(m => m.Key.Equals(offset));
             result = timings[index < 0 ? 0 : index].Value;
 
-            float configured = viewModel?.MemoryFrequency ?? 0;
+            float configured = mainViewModel?.MemoryFrequency ?? 0;
             float ratio = result.Ratio;
             float freqFromRatio = ratio * 200;
 
             // Fallback to ratio when ConfiguredClockSpeed fails
-            if ((configured == 0.0f || freqFromRatio > configured) && viewModel != null)
+            if ((configured == 0.0f || freqFromRatio > configured) && mainViewModel != null)
             {
-                viewModel.MemoryFrequency = freqFromRatio;
+                mainViewModel.MemoryFrequency = freqFromRatio;
             }
             return result;
         }
@@ -565,7 +558,7 @@ namespace ZenTimings
         {
             if (cpu.powerTable != null && cpu.powerTable.MCLK > 0)
             {
-                viewModel.MemoryFrequency = cpu.powerTable.MCLK * 2;
+                mainViewModel.MemoryFrequency = cpu.powerTable.MCLK * 2;
             }
         }
 
@@ -639,7 +632,7 @@ namespace ZenTimings
                         var modules = cpu.memoryConfig.Modules;
                         int selectedIndex = comboBoxPartNumber?.SelectedIndex ?? 0;
                         MemoryModule module = modules?.Count > 0 ? modules[selectedIndex] : null;
-                        //ReadTimings(module?.DctOffset ?? 0);
+                        // ReadTimings(module?.DctOffset ?? 0);
                         //ReadDDR4MemoryConfig();
                         cpu.RefreshPowerTable();
                         //ReadSVI();
@@ -725,23 +718,6 @@ namespace ZenTimings
                 if (compatMode && settings.AdvancedMode)
                     Title += @" (compatibility)";
             });
-        }
-
-        private static string GetCpuNameString(SystemInfo info)
-        {
-            try
-            {
-                var name = info.CpuName;
-                if (name.Contains("Eng Sample"))
-                {
-                    return $"{name} | {info.CodeName} | 0x{info.CpuId:X6}";
-                }
-                return name;
-            }
-            catch
-            {
-                return "Error getting CPU name";
-            }
         }
 
         private void Window_Initialized(object sender, EventArgs e)
@@ -850,24 +826,24 @@ namespace ZenTimings
         {
             this.Topmost = true;
 
-            if (settings.AdvancedMode && cpu?.systemInfo != null)
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    //labelCPU.Text = "AMD Eng sample: 100-000000719-52_Y | GraniteRidge | 0xB40F40";
-                    labelCPU.Text = GetCpuNameString(cpu.systemInfo);
-                    if (String.IsNullOrEmpty(cpu.systemInfo.AgesaVersion) || cpu.systemInfo.AgesaVersion.Equals(AppSettings.AGESA_UNKNOWN))
-                    {
-                        labelMB.Text = $@"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} ({cpu.systemInfo.GetSmuVersionString()})";
-                        //labelAgesaVersion.Visibility = Visibility.Collapsed;
-                    }
-                    else
-                    {
-                        labelMB.Text = $@"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion}";
-                        //labelAgesaVersion.Text = $"AGESA {cpu.systemInfo.AgesaVersion} (SMU {cpu.systemInfo.GetSmuVersionString()})";
-                    }
-                });
-            }
+            //if (settings.AdvancedMode && cpu?.systemInfo != null)
+            //{
+            //    Dispatcher.Invoke(() =>
+            //    {
+            //        //labelCPU.Text = "AMD Eng sample: 100-000000719-52_Y | GraniteRidge | 0xB40F40";
+            //        //labelCPU.Text = GetCpuNameString(cpu.systemInfo);
+            //        if (String.IsNullOrEmpty(cpu.systemInfo.AgesaVersion) || cpu.systemInfo.AgesaVersion.Equals(AppSettings.AGESA_UNKNOWN))
+            //        {
+            //            labelMB.Text = $@"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} ({cpu.systemInfo.GetSmuVersionString()})";
+            //            //labelAgesaVersion.Visibility = Visibility.Collapsed;
+            //        }
+            //        else
+            //        {
+            //            labelMB.Text = $@"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion}";
+            //            //labelAgesaVersion.Text = $"AGESA {cpu.systemInfo.AgesaVersion} (SMU {cpu.systemInfo.GetSmuVersionString()})";
+            //        }
+            //    });
+            //}
 
             RestoreWindowPosition();
             SetWindowTitle();
@@ -903,7 +879,7 @@ namespace ZenTimings
 
             new Thread(() =>
             {
-                viewModel.AgesaVersion = GetAgesaVersion();
+                mainViewModel.AgesaVersion = GetAgesaVersion();
             }).Start();
         }
 
@@ -944,7 +920,7 @@ namespace ZenTimings
         {
             if (sender is ComboBox combo && combo.Items.Count > 0)
             {
-                viewModel.Timings = ReadTimings(cpu.memoryConfig.Modules[combo.SelectedIndex].DctOffset);
+                mainViewModel.Timings = ReadTimings(cpu.memoryConfig.Modules[combo.SelectedIndex].DctOffset);
             }
         }
 
@@ -956,7 +932,7 @@ namespace ZenTimings
             double sysInfoWindowLeft = 0;
             WindowStartupLocation location = WindowStartupLocation.CenterScreen;
 
-            if (settings.SaveWindowPosition 
+            if (settings.SaveWindowPosition
                 && settings?.SysInfoWindowHeight != 0
                 && settings?.SysInfoWindowWidth != 0
                 && settings?.SysInfoWindowLeft != -1
@@ -983,6 +959,21 @@ namespace ZenTimings
 
         private void AdonisWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            if (settings.AdvancedMode && mainViewModel.IsSearchingForAgesaVersion)
+            {
+                MessageBoxResult result = MessageBox.Show(
+                    "The application is currently searching for AGESA version. If closed, the process will start again on the next launch. Do you still want to exit?",
+                    "ZenTimings",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Information);
+
+                if (result == MessageBoxResult.No)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }
+
             siWnd?.Close();
 
             if (settings.SaveWindowPosition)
@@ -1021,8 +1012,8 @@ namespace ZenTimings
 
         private void ExportToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            Config Config = new Config(cpu.memoryConfig, BMC.Config/*, cpu.powerTable*/);
-            Console.WriteLine(Config.GetXML());
+            //Config Config = new Config(cpu.memoryConfig, BMC.Config/*, cpu.powerTable*/);
+            //Console.WriteLine(Config.GetXML());
         }
 
         private void MotherboardLinkButton_Click(object sender, RoutedEventArgs e)
@@ -1034,12 +1025,15 @@ namespace ZenTimings
 
         private bool IsAgesaVersionUpdateNeeded()
         {
+            if (!settings.AdvancedMode)
+                return false;
+
             string smuVersion = cpu.systemInfo.GetSmuVersionString();
-            bool biosVersionMatches = !string.IsNullOrEmpty(cpu.systemInfo.BiosVersion) 
+            bool biosVersionMatches = !string.IsNullOrEmpty(cpu.systemInfo.BiosVersion)
                 && string.Equals(cpu.systemInfo.BiosVersion, settings.BiosVersion, StringComparison.Ordinal);
-            bool mbNameMatches = !string.IsNullOrEmpty(cpu.systemInfo.MbName) 
+            bool mbNameMatches = !string.IsNullOrEmpty(cpu.systemInfo.MbName)
                 && string.Equals(cpu.systemInfo.MbName, settings.MbName, StringComparison.Ordinal);
-            bool smuVersionMatches = !string.IsNullOrEmpty(smuVersion) 
+            bool smuVersionMatches = !string.IsNullOrEmpty(smuVersion)
                 && string.Equals(smuVersion, settings.SmuVersion, StringComparison.Ordinal);
 
             return string.IsNullOrEmpty(settings.AgesaVersion) || !biosVersionMatches || !mbNameMatches || !smuVersionMatches;
@@ -1053,7 +1047,7 @@ namespace ZenTimings
             }
 
             string version;
-            if (IsAgesaVersionUpdateNeeded() && settings.AgesaSearchOnStart)
+            if (IsAgesaVersionUpdateNeeded())
             {
                 byte[] image = AgesaHelper.DumpImage();
                 version = AgesaHelper.FindAgesaVersion(image);
@@ -1107,9 +1101,8 @@ namespace ZenTimings
         {
             try
             {
-                Config Config = new Config(cpu.memoryConfig, BMC.Config/*, cpu.powerTable*/);
                 // Generate HTML content
-                string htmlContent = Config.GetHTML();
+                string htmlContent = mainViewModel.GetHTML();
 
                 // Open SaveFileDialog to save the HTML file
                 Forms.SaveFileDialog saveFileDialog = new Forms.SaveFileDialog
