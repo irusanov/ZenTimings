@@ -53,10 +53,10 @@ namespace ZenTimings.ViewModels
             get => _agesaVersion;
             set
             {
-                if (string.IsNullOrEmpty(value) || value == AppSettings.AGESA_UNKNOWN)
+                if (string.IsNullOrEmpty(value) || value == AppSettings.AGESA_UNKNOWN || value == AGESA_SEARCHING)
                 {
                     MotherboardInfo = $@"{CpuSingleton.Instance.systemInfo.MbName} | BIOS {CpuSingleton.Instance.systemInfo.BiosVersion} ({SmuVersion})";
-                    _agesaVersion = null;
+                    _agesaVersion = value == AGESA_SEARCHING ? AGESA_SEARCHING : null;
                 }
                 else
                 {
@@ -120,11 +120,12 @@ namespace ZenTimings.ViewModels
             CpuName = VendorUtils.GetCpuNameString(CpuSingleton.Instance.systemInfo);
             SmuVersion = CpuSingleton.Instance.systemInfo.GetSmuVersionString();
 
-            TotalCapacity = CpuSingleton.Instance.memoryConfig.TotalCapacity;
+            TotalCapacity = CpuSingleton.Instance.GetMemoryConfig().TotalCapacity;
             MemoryType = memoryType;
 
             PowerTable = CpuSingleton.Instance.powerTable;
             CodeName = CpuSingleton.Instance.info.codeName;
+            AgesaVersion = AGESA_SEARCHING;
 
             WMIPresent = (!compatMode && memoryType == MemType.DDR4)
                          || memoryType == MemType.LPDDR4;

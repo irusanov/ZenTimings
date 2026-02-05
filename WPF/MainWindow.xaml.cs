@@ -1,4 +1,4 @@
-﻿#define BETA
+#define BETA
 
 using AdonisUI.Controls;
 using System;
@@ -1049,8 +1049,9 @@ namespace ZenTimings
             string version;
             if (IsAgesaVersionUpdateNeeded())
             {
-                byte[] image = AgesaHelper.DumpImage();
-                version = AgesaHelper.FindAgesaVersion(image);
+                //byte[] image = AgesaHelper.DumpImage();
+                //version = AgesaHelper.FindAgesaVersion(image);
+                version = AgesaHelper.FindAgesaVersionInMemory();
             }
             else
             {

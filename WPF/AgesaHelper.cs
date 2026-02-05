@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using ZenStates.Core;
@@ -110,6 +111,41 @@ namespace ZenTimings
             }
 
             return AGESA_UNKNOWN;
+        }
+
+        public static string FindAgesaVersionInMemory()
+        {
+            string agesaVersion = "";
+            try
+            {
+                var CHUNK_SIZE = 4096;
+
+                for (var i = 0x900000; i < 0x9FFFFFF; i += CHUNK_SIZE)
+                {
+                    var chunkData = CpuSingleton.Instance.io.ReadMemory(new IntPtr(i), CHUNK_SIZE);
+
+                    byte[] testSequence = System.Text.Encoding.ASCII.GetBytes("AGESA!V9");
+                    int targetOffset = Utils.FindSequence(chunkData, 0, testSequence);
+                    if (targetOffset != -1)
+                    {
+                        targetOffset += testSequence.Length;
+                        Debug.WriteLine($"Found target sequence at offset 0x{targetOffset:X} in chunk starting at 0x{i:X}");
+                        // Find the end of the string (null-terminated sequence)
+                        int endPos = Utils.FindSequence(chunkData, targetOffset, new byte[] { 0x00, 0x00 });
+                        if (endPos > targetOffset)
+                        {
+                            agesaVersion = Encoding.ASCII.GetString(chunkData, targetOffset, endPos - targetOffset).Trim('\0').Trim();
+                            break;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Could not find AGESA version: {ex.Message}");
+            }
+
+            return agesaVersion;
         }
 
         private static int FindFirstInvalid(byte[] data, int startIndex = 0)
