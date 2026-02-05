@@ -19,6 +19,13 @@ namespace ZenTimings.Windows
             InitializeComponent();
         }
 
+        private string GetFilenameWithTimestamp()
+        {
+            string unixTimestamp = Convert.ToString(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMinutes,
+                CultureInfo.InvariantCulture);
+            return $"{string.Join("_", this.Title.Split())}_{unixTimestamp}.png";
+        }
+
         private void SaveToFile(string filename = "ZenTimingsScreenshot.png")
         {
             screenshot.Save(filename);
@@ -28,10 +35,7 @@ namespace ZenTimings.Windows
 
         private void ButtonSave_Click(object sender, RoutedEventArgs e)
         {
-            string unixTimestamp = Convert.ToString(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMinutes,
-                CultureInfo.InvariantCulture);
-            string filename = $@"{string.Join("_", this.Title.Split())}_{unixTimestamp}.png";
-            SaveToFile(filename);
+            SaveToFile(GetFilenameWithTimestamp());
         }
 
         private void ButtonSaveAs_Click(object sender, RoutedEventArgs e)
@@ -41,7 +45,7 @@ namespace ZenTimings.Windows
                 Filter = "png files (*.png)|*.png|All files (*.*)|*.*",
                 FilterIndex = 1,
                 DefaultExt = "png",
-                FileName = "ZenTimings_Screenshot.png",
+                FileName = GetFilenameWithTimestamp(),
                 RestoreDirectory = true
             };
 

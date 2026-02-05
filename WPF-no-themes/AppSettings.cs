@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 namespace ZenTimings
 {
     [Serializable]
-    public sealed class AppSettings
+    internal sealed class AppSettings
     {
         public const int VersionMajor = 1;
         public const int VersionMinor = 4;

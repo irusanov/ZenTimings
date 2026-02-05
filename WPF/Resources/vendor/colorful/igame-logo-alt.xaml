@@ -1,0 +1,116 @@
+<?xml version="1.0" ?>
+<ResourceDictionary xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+    <DrawingGroup x:Key="igame_logo_alt_xaml">
+        <DrawingGroup.ClipGeometry>
+            <RectangleGeometry Rect="0.0,0.0,107.9464,79.237252"/>
+        </DrawingGroup.ClipGeometry>
+        <DrawingGroup Transform="1.5598867,0.0,0.0,1.5893996,-48.846386,-37.821398">
+            <DrawingGroup Opacity="0.0">
+                <GeometryDrawing Brush="#fdffffff">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="31.31406,23.796028,69.201439,49.853573"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingGroup>
+            <DrawingGroup Transform="2.0118356,0.0,0.0,2.0118356,-336.22927,53.505418">
+                <GeometryDrawing Brush="#ff9b9fa2">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="m 206.959 -12.7278 q -1.76232 0.542684 -3.46867 0.848985 c -1.79624 0.322946 -2.94794 0.56266 -4.59153 0.880612 q -1.69956 0.327941 -4.72892 1.1686 q -0.38164 -0.066587 -1.04654 -0.372887 c -0.35789 -0.166468 -0.54277 -0.524373 -0.27138 -0.837331 c 0.23746 -0.274672 1.47566 -0.349582 1.89971 -0.477762 c 0.53429 -0.161474 1.0601 -0.209749 1.58931 -0.371223 c 0.68695 -0.208084 1.26364 -0.113197 1.91667 -0.564324 q 3.27022 -0.43781 6.53195 -0.853978 c 0.80399 -0.10321 1.44853 0.22806 2.1694 0.579306 z" FillRule="Nonzero"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#ffc9ced2">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="m 206.959 -12.7278 l 3.42118 1.28014 a 0.0352946 0.0336001 38.8669 0 1 -0.005 0.06492 l -13.6813 2.50367 a 0.243583 0.250383 28.6748 0 0 -0.12891 0.069916 l -0.95155 0.988817 q -0.11195 -0.016647 -0.23238 0.026635 l -2.29152 0.319618 l -0.47832 0.076575 l 0.19336 -2.48536 q 0.11195 -0.332934 0.45288 -0.189772 q 1.33319 0.557665 3.05819 1.09868 a 0.0186579 0.0183114 0 0 0 0.0119 -0.033293 l -2.15753 -0.822349 q 3.02936 -0.840661 4.72892 -1.1686 c 1.64359 -0.317952 2.79529 -0.557666 4.59153 -0.880612 q 1.70635 -0.306301 3.46867 -0.848985 z" FillRule="Nonzero"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#ff77787a">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="m 198.258 -12.4531 c -0.65303 0.451127 -1.22972 0.35624 -1.91667 0.564324 c -0.52921 0.161474 -1.05502 0.209749 -1.58931 0.371223 c -0.42405 0.12818 -1.66225 0.20309 -1.89971 0.477762 c -0.27139 0.312958 -0.0865 0.670863 0.27138 0.837331 q 0.6649 0.3063 1.04654 0.372887 l 2.15753 0.822349 a 0.0186579 0.0183114 0 0 1 -0.0119 0.033293 q -1.725 -0.541019 -3.05819 -1.09869 q -0.34093 -0.143162 -0.45288 0.189773 l -1.3739 2.507 a 0.0915932 0.0898924 0 0 0 0.0933 0.131509 l 1.08725 -0.15315 l 0.47832 -0.076575 l 0.0102 0.069916 l -2.00657 0.271342 c -0.0288 0.158144 -0.0831 1.76123 -0.17132 1.77621 q -0.0644 0.011653 -0.0661 -0.051605 l -0.0424 -1.36337 a 0.225591 0.221402 0 0 0 -0.25103 -0.213078 q -0.52243 0.059928 -1.0228 0.452792 q -0.11533 0.089892 -0.29683 -0.109869 l 2.87671 -4.87417 a 0.295088 0.288033 2.49238 0 1 0.21372 -0.141498 z" FillRule="Nonzero"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#ffe10213">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="m 207.185 -7.14944 q -0.51394 -0.341258 -1.42478 -0.196432 c -1.8166 0.291318 -3.51446 0.679187 -5.36159 0.304636 q -0.73275 -0.149821 -0.79042 -0.168132 q -0.4427 -0.141497 -0.66151 -0.507726 l 11.5136 -2.38714 a 0.0746315 0.0732457 0 0 1 0.078 0.111533 c -0.38842 0.604277 -0.89218 1.56479 -1.54521 1.91937 q -0.94646 0.514385 -1.80812 0.923894 z" FillRule="Nonzero"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#ff9b9fa2">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="m 192.805 -9.88283 l -0.19336 2.48536 l -1.08725 0.15315 a 0.0915932 0.0898924 0 0 1 -0.0933 -0.131509 z m 2.80886 2.06253 l -1.73179 6.7386 a 0.199808 0.211971 84.6483 0 1 -0.10516 0.129845 l -1.77589 0.907248 q -0.31719 -1.93768 -0.72087 -3.79213 q -0.21203 -0.978829 -0.18658 -3.29606 l 2.00657 -0.271342 c 0.2646 -0.034958 2.24233 -0.251366 2.28134 -0.389534 q 0.12043 -0.043281 0.23238 -0.026635 z" FillRule="Nonzero"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#ff5b5b5b">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="m 195.381 -7.79367 c -0.039 0.138168 -2.01674 0.354576 -2.28134 0.389534 l -0.0102 -0.069916 z" FillRule="Nonzero"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#ffc1010a">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="m 198.946 -7.71709 q 0.21881 0.366228 0.66151 0.507726 q 0.0577 0.018311 0.79042 0.168132 c 1.84713 0.374552 3.54499 -0.013317 5.36159 -0.304636 q 0.91084 -0.144827 1.42478 0.196432 l -1.90988 0.942206 q -0.0746 0.036623 -0.095 0.116527 l -0.81247 3.21282 q -0.0661 -0.011653 -0.0797 0.021641 a 0.057604 0.0583302 22.5099 0 1 -0.0526 0.038288 c -1.58252 0.121521 -2.96829 0.116527 -4.37781 -0.682517 q -0.0712 -0.039952 -0.15435 -0.039952 l -0.65642 -0.00666 l 0.80907 -3.28107 q 0.0204 -0.083234 -0.0628 -0.109869 c -0.29004 -0.096551 -0.52242 -0.171461 -0.75988 -0.392863 q -0.134 -0.123186 -0.30362 -0.193102 q -0.0797 -0.031629 -0.0254 -0.094886 q 0.10347 -0.121521 0.24255 -0.098216 z" FillRule="Nonzero"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#ff5b5b5b">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="m 191.093 -7.13279 q -0.0255 2.31723 0.18658 3.29606 q 0.40368 1.85445 0.72087 3.79213 l -0.92442 0.436145 q -0.0899 0.0416169 -0.11364 -0.0532696 q -0.82094 -3.35432 -1.7267 -6.67202 q -0.0203 -0.073246 0.007 -0.307965 q 0.1815 0.199761 0.29683 0.109869 q 0.50037 -0.392863 1.0228 -0.452792 a 0.225591 0.221402 0 0 1 0.25103 0.213078 l 0.0424 1.36337 q 0.002 0.063258 0.0661 0.051605 c 0.0882 -0.014982 0.14248 -1.61806 0.17132 -1.77621 z" FillRule="Nonzero"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#ff870000">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="m 199.047 -3.54708 l 0.65642 0.00666 q 0.0831 0 0.15435 0.039952 c 1.40952 0.799044 2.79529 0.804038 4.37781 0.682517 a 0.057604 0.0583302 22.5099 0 0 0.0526 -0.038288 q 0.0136 -0.033294 0.0797 -0.021641 l 0.12043 0.136503 l -5.91115 2.58025 a 0.140782 0.138168 0 0 0 -0.0712 0.183114 q 0.0254 0.0565989 0.18997 0.0732457 q -2.38821 0.817355 -4.80016 1.55647 c -0.58857 0.179785 -1.89632 -0.379546 -2.51712 -0.560995 a 0.0576698 0.0565989 0 0 1 -0.0119 -0.104874 L 198.814 -2.88287 q 0.0882 -0.046611 0.11025 -0.141497 z" FillRule="Nonzero"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#ffe10213">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="m 204.488 -2.74138 l 0.85318 0.449462 q 0.27308 0.144827 -0.0221 0.239713 l -6.62355 2.14743 Q 198.531 0.0785809 198.505 0.021982 a 0.140782 0.138168 0 0 1 0.0712 -0.183114 z" FillRule="Nonzero"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <DrawingGroup Transform="0.9999629999999999,-0.00856448,0.008891629999999998,0.99996,0.0,0.0">
+                    <GeometryDrawing Brush="#ff000000">
+                        <GeometryDrawing.Geometry>
+                            <RectangleGeometry Rect="184.43547,5.5321536,1.5638667,1.211885" RadiusX="0.059365872" RadiusY="0.059365872"/>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                </DrawingGroup>
+                <GeometryDrawing Brush="#ff000000">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="m 191.65 6.8588 h -2.21859 a 0.07972 0.0782397 0 0 1 -0.0797 -0.079904 l 0.0136 -1.04209 a 0.07972 0.0782397 0 0 1 0.0797 -0.07824 l 3.77737 -0.056599 a 0.07972 0.0782397 0 0 1 0.0814 0.07824 V 8.46022 a 0.07972 0.0782397 0 0 1 -0.0797 0.07824 l -6.32841 0.033293 a 0.07972 0.0782397 0 0 1 -0.0797 -0.07824 V 4.02386 a 0.07972 0.0782397 0 0 1 0.0797 -0.07824 h 6.32841 a 0.07972 0.0782397 0 0 1 0.0797 0.07824 v 1.05041 a 0.07972 0.0782397 0 0 1 -0.0797 0.07824 h -4.75946 a 0.07972 0.0782397 0 0 0 -0.0797 0.07824 v 2.0076 a 0.07972 0.0782397 0 0 0 0.0797 0.07824 h 3.1922 a 0.07972 0.0782397 0 0 0 0.0797 -0.079904 l -0.007 -0.301306 a 0.07972 0.0782397 0 0 0 -0.0797 -0.076575 z" FillRule="Nonzero"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#ff000000">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="194.06662,3.9456203,6.4895468,1.2085539" RadiusX="0.044100422" RadiusY="0.044100422"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#ff000000">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="m 201.426 3.94562 h 6.42848 a 0.0780238 0.076575 0 0 1 0.078 0.076575 v 4.46632 a 0.0780238 0.076575 0 0 1 -0.078 0.076575 h -1.41291 a 0.0780238 0.076575 0 0 1 -0.078 -0.076575 v -3.25943 a 0.0780238 0.076575 0 0 0 -0.078 -0.076575 h -3.3211 a 0.0780238 0.076575 0 0 0 -0.078 0.076575 v 3.25943 a 0.0780238 0.076575 0 0 1 -0.078 0.076575 h -1.41291 a 0.0780238 0.076575 0 0 1 -0.078 -0.076575 l 0.0305 -4.46632 a 0.0780238 0.076575 0 0 1 0.078 -0.076575 z m 13.1436 1.20689 h -5.77037 a 0.0610621 0.0599283 0 0 1 -0.0611 -0.059928 V 4.00555 a 0.0610621 0.0599283 0 0 1 0.0611 -0.059928 h 6.43866 a 0.0610621 0.0599283 0 0 1 0.0526 0.091557 l -0.66829 1.08703 a 0.0610621 0.0599283 0 0 1 -0.0526 0.028299 z" FillRule="Nonzero"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <DrawingGroup Transform="0.999994,0.00342584,-0.00355669,0.999994,0.0,0.0">
+                    <GeometryDrawing Brush="#ff000000">
+                        <GeometryDrawing.Geometry>
+                            <RectangleGeometry Rect="184.50735,5.012217,1.5469068,2.9165108" RadiusX="0.045796588" RadiusY="0.045796588"/>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                </DrawingGroup>
+                <GeometryDrawing Brush="#ff000000">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="m 195.636 6.92705 v 1.56979 a 0.069543 0.0682517 0 0 1 -0.0695 0.068252 h -1.42987 a 0.069543 0.0682517 0 0 1 -0.0695 -0.068252 V 5.72016 a 0.069543 0.0682517 0 0 1 0.0695 -0.068252 h 6.34876 a 0.069543 0.0682517 0 0 1 0.0695 0.068252 v 2.77834 a 0.069543 0.0682517 0 0 1 -0.0695 0.068252 l -1.44344 -0.00666 a 0.069543 0.0682517 0 0 1 -0.0695 -0.069916 l 0.0458 -1.56146 a 0.069543 0.0682517 0 0 0 -0.0695 -0.069916 h -3.24308 a 0.069543 0.0682517 0 0 0 -0.0695 0.068252 z" FillRule="Nonzero"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <DrawingGroup Transform="0.999999,-0.00171292,0.00177835,0.999998,0.0,0.0">
+                    <GeometryDrawing Brush="#ff000000">
+                        <GeometryDrawing.Geometry>
+                            <RectangleGeometry Rect="203.84735,5.9941182,1.5706536,2.9198399" RadiusX="0.044100422" RadiusY="0.044100422"/>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                </DrawingGroup>
+                <GeometryDrawing Brush="#ff000000">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="m 212.278 6.8588 h -3.48732 a 0.0525813 0.0516049 0 0 1 -0.0526 -0.051605 V 5.71184 a 0.0525813 0.0516049 0 0 1 0.0526 -0.051605 l 4.17258 -0.063258 a 0.0525813 0.0516049 0 0 1 0.0458 0.076575 l -0.68525 1.16028 a 0.0525813 0.0516049 0 0 1 -0.0458 0.02497 z m 0.26291 1.7013 l -3.75023 -0.044946 a 0.0525813 0.0516049 0 0 1 -0.0526 -0.051605 v -1.09536 a 0.0525813 0.0516049 0 0 1 0.0526 -0.051605 h 4.38969 a 0.0525813 0.0516049 0 0 1 0.0458 0.076575 l -0.63776 1.1403 a 0.0525813 0.0516049 0 0 1 -0.0475 0.026635 z" FillRule="Nonzero"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingGroup>
+    </DrawingGroup>
+    <DrawingImage Drawing="{StaticResource igame_logo_alt_xaml}" x:Key="igameLogo"/>
+</ResourceDictionary>

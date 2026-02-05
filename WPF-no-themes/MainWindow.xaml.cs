@@ -14,7 +14,6 @@ using ZenStates.Core;
 using ZenStates.Core.DRAM;
 using ZenTimings.Plugin;
 using ZenTimings.Windows;
-using static ZenStates.Core.DRAM.MemoryConfig;
 using Forms = System.Windows.Forms;
 //using OpenHardwareMonitor.Hardware;
 
@@ -205,7 +204,7 @@ namespace ZenTimings
             AsusWmi?.Dispose();
             //cpu?.io?.Close(settings.AutoUninstallDriver);
             cpu?.Dispose();
-            settings.Save();
+            settings?.Save();
 
             //Driver.Cleanup();
 
@@ -493,7 +492,7 @@ namespace ZenTimings
         {
             uint config = cpu.ReadDword(offset | 0x50100);
 
-            MEMCFG.Type = (MemoryConfig.MemType)(MemType)Utils.GetBits(config, 0, 2);
+            MEMCFG.Type = (MemType)Utils.GetBits(config, 0, 2);
 
             uint powerDown = cpu.ReadDword(offset | 0x5012C);
             uint umcBase = cpu.ReadDword(offset | 0x50200);
@@ -1034,7 +1033,7 @@ namespace ZenTimings
                 settings.Save();
             }
 
-			ExitApplication();
+            ExitApplication();
             Dispose();
         }
 

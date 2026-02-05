@@ -4,8 +4,6 @@
                     xmlns:Extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
                     xmlns:AdonisUI="clr-namespace:AdonisUI;assembly=AdonisUI">
 
-    <BitmapImage x:Key="WarningImage" UriSource="../Resources/warning-icon.png" />
-
     <Style x:Key="MainContainerStyles" TargetType="{x:Type Border}">
         <Setter Property="BorderBrush" Value="{DynamicResource SeparatorColor}" />
         <Setter Property="Padding" Value="5" />
@@ -105,7 +103,7 @@
             </Setter.Value>
         </Setter>
     </Style>
- 
+
     <ControlTemplate x:Key="TabControlControlTemplate" TargetType="{x:Type TabControl}">
         <Grid KeyboardNavigation.TabNavigation="Local">
             <Grid.RowDefinitions>

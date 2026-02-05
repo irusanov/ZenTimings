@@ -1,6 +1,5 @@
 using Microsoft.VisualBasic.Devices;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Management;
@@ -8,7 +7,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using ZenStates.Core;
-using ZenStates.Core.DRAM;
 using Application = System.Windows.Application;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
@@ -140,50 +138,62 @@ namespace ZenTimings.Windows
 
         private void PrintChannels()
         {
-            uint channelsPerDimm = 1; // memoryConfig.Type >= ZenStates.Core.DRAM.MemoryConfig.MemType.DDR5 ? 2u : 1u;
-            AddHeading("Memory Channels Info");
-
-            AddLine("-- UMC Configuration");
-
-            for (var i = 0u; i < 0xC; i += 1)
+            if (!Mutexes.WaitPciBus(5000))
             {
-                var offset = i << 20;
-                var reg = offset | 0x50100;
-                AddLine($"0x{reg:X8}: 0x{cpu.ReadDword(reg):X8}");
+                throw new Exception("Timeout waiting for PCI bus mutex");
             }
 
-            AddLine();
-
-            for (var i = 0u; i < 0xC * channelsPerDimm; i += channelsPerDimm)
+            try
             {
-                try
+                uint channelsPerDimm = 1; // memoryConfig.Type >= ZenStates.Core.DRAM.MemoryConfig.MemType.DDR5 ? 2u : 1u;
+                AddHeading("Memory Channels Info");
+
+                AddLine("-- UMC Configuration");
+
+                for (var i = 0u; i < 0xC; i += 1)
                 {
                     var offset = i << 20;
-                    var channel = Utils.GetBits(cpu.ReadDword(offset | 0x50DF0), 19, 1) == 0;
-                    var dimm1 = Utils.GetBits(cpu.ReadDword(offset | 0x50000), 0, 1) == 1;
-                    var dimm2 = Utils.GetBits(cpu.ReadDword(offset | 0x50008), 0, 1) == 1;
-                    var enabled = channel && (dimm1 || dimm2);
+                    var reg = offset | 0x50100;
+                    AddLine($"0x{reg:X8}: 0x{cpu.ReadDword(reg):X8}");
+                }
 
-                    AddLine($"Channel{i / channelsPerDimm}: {enabled}");
-                    if (enabled)
+                AddLine();
+
+                for (var i = 0u; i < 0xC * channelsPerDimm; i += channelsPerDimm)
+                {
+                    try
                     {
-                        AddLine("-- UMC Registers");
-                        var startReg = offset | 0x50000;
-                        var endReg = offset | 0x50300;
-                        while (startReg <= endReg)
+                        var offset = i << 20;
+                        var channel = Utils.GetBits(cpu.ReadDword(offset | 0x50DF0), 19, 1) == 0;
+                        var dimm1 = Utils.GetBits(cpu.ReadDword(offset | 0x50000), 0, 1) == 1;
+                        var dimm2 = Utils.GetBits(cpu.ReadDword(offset | 0x50008), 0, 1) == 1;
+                        var enabled = channel && (dimm1 || dimm2);
+
+                        AddLine($"Channel{i / channelsPerDimm}: {enabled}");
+                        if (enabled)
                         {
-                            var data = cpu.ReadDword(startReg);
-                            AddLine($"   0x{startReg:X8}: 0x{data:X8}");
-                            startReg += 4;
+                            AddLine("-- UMC Registers");
+                            var startReg = offset | 0x50000;
+                            var endReg = offset | 0x50300;
+                            while (startReg <= endReg)
+                            {
+                                var data = cpu.ReadDword(startReg);
+                                AddLine($"   0x{startReg:X8}: 0x{data:X8}");
+                                startReg += 4;
+                            }
                         }
                     }
+                    catch
+                    {
+                        AddLine($"Channel{i / channelsPerDimm}: <FAILED>");
+                    }
                 }
-                catch
-                {
-                    AddLine($"Channel{i / channelsPerDimm}: <FAILED>");
-                }
+                AddLine();
             }
-            AddLine();
+            finally
+            {
+                Mutexes.ReleasePciBus();
+            }
         }
 
         private void Debug()
@@ -194,6 +204,8 @@ namespace ZenTimings.Windows
                 $"{System.Windows.Forms.Application.ProductName} {System.Windows.Forms.Application.ProductVersion} Debug Report" +
                 Environment.NewLine +
                 $"{"Core Version: "}{cpu.Version}" +
+                Environment.NewLine +
+                $"{"PawnIO Version: "}{DriverHelper.Version}" +
                 Environment.NewLine +
                 Environment.NewLine;
 
@@ -211,11 +223,14 @@ namespace ZenTimings.Windows
                         AddLine($"{property.Name + ":",-19}{property.GetValue(cpu.systemInfo, null):X8}");
                     else if (property.Name == "SmuVersion")
                         AddLine($"{property.Name + ":",-19}{cpu.systemInfo.GetSmuVersionString()}");
-                    else
+                    else if (property.Name == "Model" || property.Name == "ExtendedModel" || property.Name == "BaseModel")
+                        AddLine($"{property.Name + ":",-19}{property.GetValue(cpu.systemInfo, null)} (0x{property.GetValue(cpu.systemInfo, null):X})");
+                    else if (property.Name != "SMBios")
                         AddLine($"{property.Name + ":",-19}{property.GetValue(cpu.systemInfo, null)}");
 
                 }
-                AddLine($"{"DRAM Base Address:",-19}{((long)cpu.powerTable.DramBaseAddressHi << 32) | cpu.powerTable.DramBaseAddress:X16}");
+                AddLine($"{"DRAM Base Address:",-19}{(long)cpu.powerTable.DramBaseAddress:X16}");
+                //AddLine($"{"DRAM Base Address:",-19}{((long)cpu.powerTable.DramBaseAddressHi << 32) | cpu.powerTable.DramBaseAddress:X16}");
             }
             catch
             {
@@ -246,11 +261,11 @@ namespace ZenTimings.Windows
 
             // Memory timings info
             AddHeading("Memory Config");
-            type = memoryConfig.Timings[0].Value.GetType();
-            properties = type.GetProperties();
-
             try
             {
+                type = memoryConfig.Timings[0].Value.GetType();
+                properties = type.GetProperties();
+
                 foreach (var property in properties)
                     AddLine($"{property.Name + ":",-18}{memoryConfig.Timings[0].Value[property.Name]}");
             }
@@ -262,11 +277,12 @@ namespace ZenTimings.Windows
             AddLine();
 
             // AOD Table
-            AddHeading("ACPI: AOD Table");
-            var aodAcpiTableHeader = cpu.info.aod.Table.AcpiTable.GetValueOrDefault().Header;
-            type = aodAcpiTableHeader.GetType();
+            AddHeading("ACPI: AOD Table Header");
             try
             {
+                var aodAcpiTableHeader = cpu.info.aod.Table.AcpiTable.GetValueOrDefault().Header;
+                type = aodAcpiTableHeader.GetType();
+
                 foreach (FieldInfo field in type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public))
                 {
                     AddLine($"{field.Name + ":",-19}{field.GetValue(aodAcpiTableHeader)}");
@@ -277,13 +293,16 @@ namespace ZenTimings.Windows
                 AddLine("<FAILED>");
             }
 
-            type = cpu.info.aod.Table.GetType();
-            properties = type.GetProperties();
+            AddLine();
+            AddHeading("ACPI: AOD Table Data");
             try
             {
-                foreach (var property in properties)
+                properties = cpu.info.aod.Table.Data.GetType().GetProperties();
+
+                foreach (PropertyInfo property in properties)
                 {
-                    AddLine($"{property.Name + ":",-19}{property.GetValue(cpu.info.aod.Table, null)}");
+                    object value = property.GetValue(cpu.info.aod.Table.Data);
+                    AddLine($"{property.Name + ":",-19}{value}");
                 }
             }
             catch
@@ -302,7 +321,7 @@ namespace ZenTimings.Windows
             catch
             {
                 AddLine("<FAILED>");
-            }   
+            }
 
             AddLine();
 

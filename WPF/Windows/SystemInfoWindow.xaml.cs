@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
-using System.Windows;
 using ZenStates.Core;
 using ZenStates.Core.DRAM;
 using static ZenTimings.BiosMemController;
@@ -19,7 +19,7 @@ namespace ZenTimings.Windows
             public string Value { get; set; }
         }
 
-        public SystemInfoWindow(MemoryConfig mc, Resistances mcConfig, List<AsusSensorInfo> asusSensors)
+        public SystemInfoWindow(MemoryConfig mc, Resistances? mcConfig, List<AsusSensorInfo> asusSensors)
         {
             InitializeComponent();
             SystemInfo si = CpuSingleton.Instance.systemInfo;
@@ -40,7 +40,7 @@ namespace ZenTimings.Windows
                         items.Add(new GridItem() { Name = property.Name, Value = $"{property.GetValue(si, null):X8}" });
                     else if (property.Name == "SmuVersion")
                         items.Add(new GridItem() { Name = property.Name, Value = si.GetSmuVersionString() });
-                    else
+                    else if (property.Name != "SMBios")
                         items.Add(new GridItem()
                         { Name = property.Name, Value = property.GetValue(si, null).ToString() });
 
@@ -53,29 +53,62 @@ namespace ZenTimings.Windows
 
             try
             {
-                type = mc.GetType();
+                var memConfigs = CpuSingleton.Instance.GetMemoryConfig();
+                var allTimings = memConfigs.Timings;
+                var props = allTimings[0].Value.GetType().GetProperties();
 
-                properties = type.GetProperties();
-                items = new List<GridItem>();
-                foreach (PropertyInfo property in properties)
-                    items.Add(new GridItem() { Name = property.Name, Value = property.GetValue(mc, null).ToString() });
+                // Filter timings to only include unique DctOffset values
+                var uniqueTimings = allTimings
+                    .GroupBy(t => t.Key)
+                    .Select(g => g.First())
+                    .ToList();
 
-                if (mc.Type == MemoryConfig.MemType.DDR5)
+                // Create dynamic object with properties for each timing column
+                var rows = props
+                    .Where(p => p.Name != "Item")
+                    .Select(property => new
+                    {
+                        PropertyName = property.Name,
+                        Values = uniqueTimings.Select(t => t.Value[property.Name].ToString()).ToArray()
+                    })
+                    .ToList();
+
+                MemCfgGrid.ItemsSource = rows;
+
+                // Ensure columns exist for each unique timing
+                if (MemCfgGrid.Columns.Count < uniqueTimings.Count + 1)
                 {
-                    List<KeyValuePair<uint, BaseDramTimings>> timingsConfig = CpuSingleton.Instance.GetMemoryConfig().Timings;
-                    Ddr5Timings timings = timingsConfig[0].Value as Ddr5Timings;
+                    MemCfgGrid.Columns.Clear();
 
-                    items.Add(new GridItem() { Name = "Nitro Settings", Value = timings.Nitro.ToString() });
+                    // Add property name column with default text color
+                    var nameColumn = new System.Windows.Controls.DataGridTextColumn
+                    {
+                        Header = "Name",
+                        Binding = new System.Windows.Data.Binding("PropertyName"),
+                        Foreground = (System.Windows.Media.Brush)this.FindResource("TextColor"),
+                        Width = 150
+                    };
+                    MemCfgGrid.Columns.Add(nameColumn);
+
+                    // Add column for each unique timing with accent text color
+                    for (int i = 0; i < uniqueTimings.Count; i++)
+                    {
+                        var valueColumn = new System.Windows.Controls.DataGridTextColumn
+                        {
+                            Header = $"DCT {uniqueTimings[i].Key >> 20}",
+                            Binding = new System.Windows.Data.Binding($"Values[{i}]"),
+                            Foreground = (System.Windows.Media.Brush)this.FindResource("AccentTextColor")
+                        };
+                        MemCfgGrid.Columns.Add(valueColumn);
+                    }
                 }
-
-                MemCfgGrid.ItemsSource = items;
             }
             catch
             {
                 // ignored
             }
 
-            if (mc.Type == MemoryConfig.MemType.DDR4)
+            if (mcConfig != null && mc.Type == MemType.DDR4 || mc.Type == MemType.LPDDR4)
             {
                 try
                 {
@@ -96,11 +129,13 @@ namespace ZenTimings.Windows
             {
                 try
                 {
-                    type = aodData.GetType();
-                    PropertyInfo[] fields = type.GetProperties();
+                    properties = aodData.GetType().GetProperties();
                     items = new List<GridItem>();
-                    foreach (PropertyInfo property in fields)
-                        items.Add(new GridItem() { Name = property.Name, Value = property.GetValue(aodData).ToString() });
+                    foreach (PropertyInfo property in properties)
+                    {
+                        object value = property.GetValue(aodData);
+                        items.Add(new GridItem() { Name = property.Name, Value = $"{value}" });
+                    }
 
                     MemControllerGrid.ItemsSource = items;
                 }

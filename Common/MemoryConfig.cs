@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using ZenStates.Core.DRAM;
 
 namespace ZenTimings
 {
@@ -14,13 +15,6 @@ namespace ZenTimings
             storage = value;
             OnPropertyChanged(args);
             return true;
-        }
-
-        public enum MemType
-        {
-            DDR4 = 0,
-            DDR5 = 1,
-            LPDDR5 = 2,
         }
 
         public MemType Type { get; set; }

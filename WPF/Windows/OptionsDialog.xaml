@@ -11,8 +11,8 @@
     mc:Ignorable="d"
     x:Name="OptionsWindow"
     Title="Options"
-    Height="284.667"
-    Width="310"
+    Height="315"
+    Width="320"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterOwner"
     Icon="/ZenTimings;component/Resources/new-icon/16.png"
@@ -74,6 +74,7 @@
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
@@ -187,6 +188,15 @@
                         Margin="0 5 5 5"
                         Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
                         Content="Check for updates on startup" />
+
+            <ToggleButton
+                        x:Name="checkBoxSingleInstance"
+                        Grid.Column="0"
+                        Grid.Row="7"
+                        Grid.ColumnSpan="3"
+                        Margin="0 5 5 5"
+                        Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
+                        Content="Single instance" />
 
             <!--ToggleButton
                         x:Name="checkBoxAutoUninstallDriver"

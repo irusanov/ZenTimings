@@ -61,9 +61,12 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -71,10 +74,10 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="ZenStates-Core, Version=1.71.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ZenStates-Core, Version=1.80.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Common\ZenStates-Core.dll</HintPath>
     </Reference>
@@ -99,9 +102,6 @@
     <Compile Include="..\Common\CpuSingleton.cs">
       <Link>Common\CpuSingleton.cs</Link>
     </Compile>
-    <Compile Include="..\Common\MemoryConfig.cs">
-      <Link>Common\MemoryConfig.cs</Link>
-    </Compile>
     <Compile Include="..\Common\Screenshot.cs">
       <Link>Common\Screenshot.cs</Link>
     </Compile>
@@ -111,15 +111,47 @@
     <Compile Include="..\Common\UpdaterPersistenceProvider.cs">
       <Link>Common\UpdaterPersistenceProvider.cs</Link>
     </Compile>
+    <Compile Include="AgesaHelper.cs" />
+    <Compile Include="DriverHelper.cs" />
+    <Compile Include="ObservableObject.cs" />
+    <Compile Include="VendorUtils.cs" />
     <Compile Include="AppSettings.cs" />
     <Compile Include="Common\ISensor.cs" />
     <Compile Include="Common\Sensor.cs" />
+    <Compile Include="Controls\DDR4TimingsPanel.xaml.cs">
+      <DependentUpon>DDR4TimingsPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\DDR5APUTimingsPanel.xaml.cs">
+      <DependentUpon>DDR5APUTimingsPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\DDR5TimingsPanel.xaml.cs">
+      <DependentUpon>DDR5TimingsPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\DDR4ToVisConverter.cs" />
     <Compile Include="Converters\FloatToBoolConverter.cs" />
     <Compile Include="Converters\FloatToNAConverter.cs" />
     <Compile Include="Converters\FloatToVoltageConverter.cs" />
     <Compile Include="Converters\DDR5ToVisConverter.cs" />
     <Compile Include="Converters\PhoenixToVisConverter.cs" />
+    <Compile Include="Decompressor\7zip\Common\CommandLineParser.cs" />
+    <Compile Include="Decompressor\7zip\Common\CRC.cs" />
+    <Compile Include="Decompressor\7zip\Common\InBuffer.cs" />
+    <Compile Include="Decompressor\7zip\Common\OutBuffer.cs" />
+    <Compile Include="Decompressor\7zip\Compress\LZMA\LzmaBase.cs" />
+    <Compile Include="Decompressor\7zip\Compress\LZMA\LzmaDecoder.cs" />
+    <Compile Include="Decompressor\7zip\Compress\LZMA\LzmaEncoder.cs" />
+    <Compile Include="Decompressor\7zip\Compress\LZ\IMatchFinder.cs" />
+    <Compile Include="Decompressor\7zip\Compress\LZ\LzBinTree.cs" />
+    <Compile Include="Decompressor\7zip\Compress\LZ\LzInWindow.cs" />
+    <Compile Include="Decompressor\7zip\Compress\LZ\LzOutWindow.cs" />
+    <Compile Include="Decompressor\7zip\Compress\RangeCoder\RangeCoder.cs" />
+    <Compile Include="Decompressor\7zip\Compress\RangeCoder\RangeCoderBit.cs" />
+    <Compile Include="Decompressor\7zip\Compress\RangeCoder\RangeCoderBitTree.cs" />
+    <Compile Include="Decompressor\7zip\Engine.cs" />
+    <Compile Include="Decompressor\7zip\ICoder.cs" />
+    <Compile Include="Decompressor\LZMACompressor.cs" />
+    <Compile Include="Encryption\AesEncryption.cs" />
+    <Compile Include="Encryption\EncryptionKeys.cs" />
     <Compile Include="Plugin\IPlugin.cs" />
     <Compile Include="Plugin\OHWMPlugin.cs" />
     <Compile Include="Plugin\SVI2Plugin.cs" />
@@ -129,6 +161,8 @@
       <DependentUpon>BuildNumberTemplate.tt</DependentUpon>
     </Compile>
     <Compile Include="Updater.cs" />
+    <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="XmlUtils.cs" />
     <Compile Include="Windows\AboutDialog.xaml.cs">
       <DependentUpon>AboutDialog.xaml</DependentUpon>
     </Compile>
@@ -151,6 +185,18 @@
     <Compile Include="Windows\SystemInfoWindow.xaml.cs">
       <DependentUpon>SystemInfoWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="Controls\DDR4TimingsPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\DDR5APUTimingsPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\DDR5TimingsPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -175,58 +221,82 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Resource Include="Resources\camera-dark.xaml">
+    <Resource Include="Resources\camera.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Resource Include="Resources\camera-light.xaml">
+    <Resource Include="Resources\vendor\asus\ayw\ayw-logo.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Resource Include="Resources\ROG\ROG-logo-burnt-40.xaml">
+    <Resource Include="Resources\vendor\asus\rog\rog-logo-alt.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Resource Include="Resources\ROG\ROG-logo-dracula-40.xaml">
+    <Resource Include="Resources\vendor\asus\rog\rog-logo.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Resource Include="Resources\ROG\ROG-logo-mint-40.xaml">
+    <Resource Include="Resources\vendor\biwin\biwin-logo.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Resource Include="Resources\ROG\ROG-logo-red-40.xaml">
+    <Resource Include="Resources\vendor\biwin\origincode-logo.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Resource Include="Resources\ROG\ROG-logo-retro-40.xaml">
+    <Resource Include="Resources\vendor\asus\proart\proart-logo.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Resource Include="Resources\ROG\ROG-logo-white-40.xaml">
+    <Resource Include="Resources\vendor\asus\proart\proart-logo-alt.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Page Include="Themes\BurntOrange.xaml">
+    <Resource Include="Resources\vendor\biwin\biwin-logo-alt.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Themes\DarkMintGradient.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Themes\DarkRed.xaml">
+    </Resource>
+    <Resource Include="Resources\vendor\gskill\gskill-logo-alt.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Themes\RetroWave.xaml">
+    </Resource>
+    <Resource Include="Resources\vendor\gskill\gskill-logo.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Themes\Dracula.xaml">
+    </Resource>
+    <Resource Include="Themes\BurntOrange.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
+    </Resource>
+    <Resource Include="Themes\DarkMintGradient.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
+    <Resource Include="Themes\DarkRed.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Themes\RetroWave.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Themes\Dracula.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Resources\vendor\msi\meg.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Resources\vendor\colorful\igame-logo-alt.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Resources\vendor\colorful\igame-logo.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
     <Page Include="Windows\AboutDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -281,6 +351,13 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\PawnIO\PawnIO_setup.exe" />
+    <Content Include="Resources\vendor\asus\ayw\ayw-logo.svg" />
+    <Content Include="Resources\vendor\asus\rog\rog-logo.svg" />
+    <Content Include="Resources\vendor\biwin\biwin-logo.svg" />
+    <Content Include="Resources\vendor\biwin\origincode-logo.svg" />
+    <Content Include="Resources\vendor\gskill\gskill-logo.svg" />
+    <Content Include="Resources\vendor\gskill\gskill.svg" />
     <Resource Include="Resources\new-icon\64.png" />
     <Resource Include="Resources\new-icon\16.png" />
     <Resource Include="Resources\ZenTimings2022.ico" />
@@ -291,6 +368,7 @@
     <Resource Include="Resources\warning-icon.png" />
     <Resource Include="Resources\splash.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TextTemplating\Microsoft.TextTemplating.targets" />
 </Project>

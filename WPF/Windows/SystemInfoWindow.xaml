@@ -65,7 +65,7 @@
                     Name="MemCfgGrid"
                     adonisExtensions:LayerExtension.Layer="3"
                     AutoGenerateColumns="False"
-                    HeadersVisibility="None"
+                    HeadersVisibility="Column"
                     GridLinesVisibility="None"
                     HorizontalScrollBarVisibility="Disabled"
                     VerticalScrollBarVisibility="Disabled"
@@ -73,7 +73,7 @@
                     IsReadOnly="True"
                     ScrollViewer.CanContentScroll="False"
                     IsEnabled="False" FontSize="11">
-                    <DataGrid.Columns>
+                    <!--DataGrid.Columns>
                         <DataGridTextColumn Width="150" Binding="{Binding Name}">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="{x:Type TextBlock}">
@@ -88,7 +88,7 @@
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
-                    </DataGrid.Columns>
+                    </DataGrid.Columns-->
                 </DataGrid>
             </GroupBox>
 

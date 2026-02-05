@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Data;
+using ZenStates.Core.DRAM;
 
 namespace ZenTimings.Converters
 {
@@ -8,7 +9,7 @@ namespace ZenTimings.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if ((MemoryConfig.MemType)value == MemoryConfig.MemType.DDR4)
+            if ((MemType)value == MemType.DDR4 || (MemType)value == MemType.LPDDR4)
             {
                 return System.Windows.Visibility.Visible;
             }

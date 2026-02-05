@@ -65,8 +65,16 @@ namespace ZenTimings.Plugin
 
         private void ReadSensorValues(out uint socPlaneValue, out uint vcorePlaneValue)
         {
-            socPlaneValue = cpuInstance.ReadDword(cpuInstance.info.svi2.socAddress);
-            vcorePlaneValue = cpuInstance.ReadDword(cpuInstance.info.svi2.coreAddress);
+            socPlaneValue = 0;
+            vcorePlaneValue = 0;
+
+            if (Mutexes.WaitPciBus(10))
+            {
+                socPlaneValue = cpuInstance.ReadDword(cpuInstance.info.svi2.socAddress);
+                vcorePlaneValue = cpuInstance.ReadDword(cpuInstance.info.svi2.coreAddress);
+
+                Mutexes.ReleasePciBus();
+            }
         }
 
         private void UpdateSensorValue(uint planeValue, Sensor sensor)

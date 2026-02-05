@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using ZenStates.Core;
 using static ZenTimings.AppSettings;
 
 namespace ZenTimings.Windows
@@ -15,6 +16,7 @@ namespace ZenTimings.Windows
     {
         //private const string Caption = "Disabling auto-refresh might lead to inaccurate voltages and frequencies on first launch";
         internal readonly AppSettings appSettings = AppSettings.Instance;
+        internal readonly SystemInfo _systemInfo = CpuSingleton.Instance.systemInfo;
         private readonly DispatcherTimer timerInstance;
         private DispatcherTimer notificationTimer;
         private Theme _Theme;
@@ -34,6 +36,7 @@ namespace ZenTimings.Windows
             checkBoxCheckUpdate.IsChecked = appSettings.CheckForUpdates;
             checkBoxSavePosition.IsChecked = appSettings.SaveWindowPosition;
             checkBoxMinimizeToTray.IsChecked = appSettings.MinimizeToTray;
+            checkBoxSingleInstance.IsChecked = appSettings.SingleInstance;
             //checkBoxAutoUninstallDriver.IsChecked = appSettings.AutoUninstallDriver;
             numericUpDownRefreshInterval.IsEnabled = appSettings.AutoRefresh && appSettings.AdvancedMode;
             numericUpDownRefreshInterval.Text = appSettings.AutoRefreshInterval.ToString();
@@ -64,6 +67,7 @@ namespace ZenTimings.Windows
             appSettings.CheckForUpdates = (bool)checkBoxCheckUpdate.IsChecked;
             appSettings.SaveWindowPosition = (bool)checkBoxSavePosition.IsChecked;
             appSettings.MinimizeToTray = (bool)checkBoxMinimizeToTray.IsChecked;
+            appSettings.SingleInstance = (bool)checkBoxSingleInstance.IsChecked;
             //appSettings.AutoUninstallDriver = (bool)checkBoxAutoUninstallDriver.IsChecked;
             appSettings.ScreenshotMode = (ScreenshotType)comboBoxScreenshot.SelectedIndex;
 
