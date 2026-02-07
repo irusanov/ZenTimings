@@ -86,24 +86,7 @@ namespace ZenTimings
 
                 byte[] decompressedData = LZMACompressor.Decompress(compressedData);
 
-                // Search for AGESA marker
-                byte[] marker = Encoding.ASCII.GetBytes("AGESA!V9");
-                int markerOffset = Utils.FindSequence(decompressedData, 0, marker);
-                if (markerOffset == -1)
-                {
-                    Console.WriteLine("AGESA marker not found.");
-                    return AGESA_UNKNOWN;
-                }
-
-                int versionStart = markerOffset + marker.Length;
-                versionStart = FindFirstAllowed(decompressedData, versionStart);
-                int versionEnd = FindFirstInvalid(decompressedData, versionStart);
-
-                if (versionEnd > versionStart)
-                {
-                    return Encoding.ASCII.GetString(decompressedData, versionStart, versionEnd - versionStart)
-                        .Trim('\0', ' ');
-                }
+                return ParseAgesaVersion(decompressedData);
             }
             catch (Exception ex)
             {
@@ -113,30 +96,45 @@ namespace ZenTimings
             return AGESA_UNKNOWN;
         }
 
+        public static string ParseAgesaVersion(byte[] source)
+        {
+            // Search for AGESA marker
+            byte[] marker = Encoding.ASCII.GetBytes("AGESA!V9");
+            int markerOffset = Utils.FindSequence(source, 0, marker);
+            if (markerOffset == -1)
+            {
+                Debug.WriteLine("AGESA marker not found.");
+                return AppSettings.AGESA_UNKNOWN;
+            }
+
+            int versionStart = markerOffset + marker.Length;
+            versionStart = FindFirstAllowed(source, versionStart);
+            int versionEnd = FindFirstInvalid(source, versionStart);
+
+            if (versionEnd > versionStart)
+            {
+                return Encoding.ASCII.GetString(source, versionStart, versionEnd - versionStart)
+                    .Trim('\0', ' ');
+            }
+
+            return AppSettings.AGESA_UNKNOWN;
+        }
+
         public static string FindAgesaVersionInMemory()
         {
             string agesaVersion = "";
             try
             {
-                var CHUNK_SIZE = 4096;
+                var CHUNK_SIZE = 1024 * 256;
 
-                for (var i = 0x900000; i < 0x9FFFFFF; i += CHUNK_SIZE)
+                for (var i = 0x9000000; i < 0x9FFFFFF; i += CHUNK_SIZE)
                 {
                     var chunkData = CpuSingleton.Instance.io.ReadMemory(new IntPtr(i), CHUNK_SIZE);
-
-                    byte[] testSequence = System.Text.Encoding.ASCII.GetBytes("AGESA!V9");
-                    int targetOffset = Utils.FindSequence(chunkData, 0, testSequence);
-                    if (targetOffset != -1)
+                    var version = ParseAgesaVersion(chunkData);
+                    if (!String.IsNullOrEmpty(version) && version != AppSettings.AGESA_UNKNOWN)
                     {
-                        targetOffset += testSequence.Length;
-                        Debug.WriteLine($"Found target sequence at offset 0x{targetOffset:X} in chunk starting at 0x{i:X}");
-                        // Find the end of the string (null-terminated sequence)
-                        int endPos = Utils.FindSequence(chunkData, targetOffset, new byte[] { 0x00, 0x00 });
-                        if (endPos > targetOffset)
-                        {
-                            agesaVersion = Encoding.ASCII.GetString(chunkData, targetOffset, endPos - targetOffset).Trim('\0').Trim();
-                            break;
-                        }
+                        agesaVersion = version;
+                        break;
                     }
                 }
             }

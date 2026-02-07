@@ -27,7 +27,11 @@
         </Grid.RowDefinitions>
         <StackPanel Orientation="Vertical" Margin="15" Grid.ColumnSpan="2" Grid.Row="0" Width="424">
             <!-- TextBlock Text="Changelog" FontSize="14" FontWeight="Bold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" /-->
-            <TextBlock Text="v1.36.1983-beta Feb 5 2026" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" />
+            <TextBlock Text="v1.36.1984-beta Feb 6 2026" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" />
+            <TextBlock Text="  - Fix DDR4 total capacity binding" TextWrapping="WrapWithOverflow" />
+            <TextBlock Text="  - Improve AGESA version detection" TextWrapping="WrapWithOverflow" />
+            
+            <TextBlock Text="" />
             <TextBlock Text="  - Fix regression in DR memory detection" TextWrapping="WrapWithOverflow" />
             <TextBlock Text="  - Improve power table refresh performance" TextWrapping="WrapWithOverflow" />
             <TextBlock Text="  - Searching for AGESA version no longer blocks the main window" TextWrapping="WrapWithOverflow" />
