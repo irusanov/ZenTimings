@@ -1,108 +1,117 @@
 <?xml version="1.0" ?>
 <ResourceDictionary xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-    <DrawingGroup x:Key="igame_logo_horizontal_2_xaml">
+    <DrawingGroup x:Key="igame_logo_xaml">
         <DrawingGroup.ClipGeometry>
-            <RectangleGeometry Rect="0.0,0.0,241.46396,71.000001"/>
+            <RectangleGeometry Rect="0.0,0.0,244.98476,79.237252"/>
         </DrawingGroup.ClipGeometry>
-        <DrawingGroup Transform="1.141062,0.0,0.0,1.141062,-41.519422,-209.35004">
-            <GeometryDrawing Brush="{DynamicResource LogoColor}">
-                <GeometryDrawing.Geometry>
-                    <RectangleGeometry Rect="137.60001,208.60001,5.5999999,4.5"/>
-                </GeometryDrawing.Geometry>
-            </GeometryDrawing>
-            <GeometryDrawing Brush="{DynamicResource LogoColor}">
-                <GeometryDrawing.Geometry>
-                    <RectangleGeometry Rect="137.60001,214.8,5.5999999,10.6"/>
-                </GeometryDrawing.Geometry>
-            </GeometryDrawing>
-            <GeometryDrawing Brush="{DynamicResource LogoColor}">
-                <GeometryDrawing.Geometry>
-                    <PathGeometry Figures="M 224.3 208.6 L 224.3 213.1 L 245.4 213.1 L 248 208.6 Z"/>
-                </GeometryDrawing.Geometry>
-            </GeometryDrawing>
-            <GeometryDrawing Brush="{DynamicResource LogoColor}">
-                <GeometryDrawing.Geometry>
-                    <PathGeometry Figures="M 224.3 225.5 L 238 225.5 L 240.7 221 L 224.3 221 Z"/>
-                </GeometryDrawing.Geometry>
-            </GeometryDrawing>
-            <GeometryDrawing Brush="{DynamicResource LogoColor}">
-                <GeometryDrawing.Geometry>
-                    <PathGeometry Figures="M 239.8 214.8 L 224.3 214.8 L 224.3 219.3 L 237.2 219.3 Z"/>
-                </GeometryDrawing.Geometry>
-            </GeometryDrawing>
-            <GeometryDrawing Brush="{DynamicResource LogoColor}">
-                <GeometryDrawing.Geometry>
-                    <RectangleGeometry Rect="207.0,214.8,5.5999999,10.6"/>
-                </GeometryDrawing.Geometry>
-            </GeometryDrawing>
-            <GeometryDrawing Brush="{DynamicResource LogoColor}">
-                <GeometryDrawing.Geometry>
-                    <PathGeometry Figures="M 197.9 208.6 L 197.9 225.5 L 203.5 225.5 L 203.5 213.1 L 216 213.1 L 216 225.5 L 221.6 225.5 L 221.6 208.6 Z"/>
-                </GeometryDrawing.Geometry>
-            </GeometryDrawing>
-            <GeometryDrawing Brush="{DynamicResource LogoColor}">
-                <GeometryDrawing.Geometry>
-                    <PathGeometry Figures="M 171.9 225.5 L 177.5 225.5 L 177.5 219.3 L 189.6 219.3 L 189.6 225.5 L 195.2 225.5 L 195.2 214.8 L 190.4 214.8 L 189.6 214.8 L 177.5 214.8 L 176.7 214.8 L 171.9 214.8 Z"/>
-                </GeometryDrawing.Geometry>
-            </GeometryDrawing>
-            <GeometryDrawing Brush="{DynamicResource LogoColor}">
-                <GeometryDrawing.Geometry>
-                    <PathGeometry Figures="M 146 213.8 L 146 217.1 L 146 225.5 L 169.2 225.5 L 169.2 214.8 L 155 214.8 L 155 219.3 L 163.6 219.3 L 163.6 221 L 151.6 221 L 151.6 213.1 L 169.2 213.1 L 169.2 208.6 L 150.8 208.6 L 146 208.6 Z"/>
-                </GeometryDrawing.Geometry>
-            </GeometryDrawing>
-            <GeometryDrawing Brush="{DynamicResource LogoColor}">
-                <GeometryDrawing.Geometry>
-                    <RectangleGeometry Rect="171.89999,208.60001,23.200001,4.5"/>
-                </GeometryDrawing.Geometry>
-            </GeometryDrawing>
-        </DrawingGroup>
-        <DrawingGroup Transform="1.0,0.0,0.0,1.0,-147.7,-94.5">
-            <GeometryDrawing Brush="{DynamicResource LogoColor}">
-                <GeometryDrawing.Geometry>
-                    <PathGeometry Figures="M 217.9 144.4 L 172.3 164.2 L 222.9 147.4 Z"/>
-                </GeometryDrawing.Geometry>
-            </GeometryDrawing>
-            <GeometryDrawing Brush="{DynamicResource LogoColor}">
-                <GeometryDrawing.Geometry>
-                    <PathGeometry Figures="M 161.8 102.7 L 164.8 109 L 182.5 115.6 L 245.7 103.8 L 221.9 94.5 Z"/>
-                </GeometryDrawing.Geometry>
-            </GeometryDrawing>
-            <GeometryDrawing Brush="{DynamicResource LogoColor}">
-                <GeometryDrawing.Geometry>
-                    <PathGeometry Figures="M 161 103.2 L 147.8 126.1 L 155.6 123.5 L 164 109.3 Z"/>
-                </GeometryDrawing.Geometry>
-            </GeometryDrawing>
-            <GeometryDrawing Brush="{DynamicResource LogoColor}">
-                <GeometryDrawing.Geometry>
-                    <PathGeometry Figures="M 156.7 123.4 L 177.4 120.3 L 181.4 116.1 L 164.7 109.9 Z"/>
-                </GeometryDrawing.Geometry>
-            </GeometryDrawing>
-            <GeometryDrawing Brush="{DynamicResource LogoColor}">
-                <GeometryDrawing.Geometry>
-                    <PathGeometry Figures="M 176.8 121.2 L 156.3 124.3 L 156.2 159.2 L 168.9 152.5 Z"/>
-                </GeometryDrawing.Geometry>
-            </GeometryDrawing>
-            <GeometryDrawing Brush="{DynamicResource LogoColor}">
-                <GeometryDrawing.Geometry>
-                    <PathGeometry Figures="m 155.4 157.8 l 0.1 -33.3 l -7.8 2.6 c 2.5 10.2 5.1 20.4 7.7 30.7 z" FillRule="Nonzero"/>
-                </GeometryDrawing.Geometry>
-            </GeometryDrawing>
-            <GeometryDrawing Brush="{DynamicResource LogoColor}">
-                <GeometryDrawing.Geometry>
-                    <PathGeometry Figures="m 191.1 121.5 l 5.2 3.1 l 25 3.7 c 6.6 -3.5 13.2 -6.9 19.8 -10.4 c 1.8 -2.7 3.5 -5.4 5.3 -8.1 c -18.5 3.9 -36.9 7.8 -55.3 11.7 z" FillRule="Nonzero"/>
-                </GeometryDrawing.Geometry>
-            </GeometryDrawing>
-            <GeometryDrawing Brush="{DynamicResource LogoColor}">
-                <GeometryDrawing.Geometry>
-                    <PathGeometry Figures="M 197.1 125.5 L 192.6 143.3 L 220 128.9 Z"/>
-                </GeometryDrawing.Geometry>
-            </GeometryDrawing>
-            <GeometryDrawing Brush="{DynamicResource LogoColor}">
-                <GeometryDrawing.Geometry>
-                    <PathGeometry Figures="M 221.2 129.3 L 157.8 162.6 L 167.2 165.5 L 217.5 143.6 Z"/>
-                </GeometryDrawing.Geometry>
-            </GeometryDrawing>
+        <DrawingGroup Transform="1.5598867,0.0,0.0,1.5893996,-48.846386,-37.821398">
+            <DrawingGroup Opacity="0.0">
+                <GeometryDrawing Brush="#fdffffff">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="31.31406,23.796028,157.05292,49.853573"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingGroup>
+            <DrawingGroup Transform="0.79403414,0.0,0.0,0.77929003,-10.111366,-119.29681">
+                <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="137.60001,208.60001,5.5999999,4.5"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="137.60001,214.8,5.5999999,10.6"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="M 224.3 208.6 L 224.3 213.1 L 245.4 213.1 L 248 208.6 Z"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="M 224.3 225.5 L 238 225.5 L 240.7 221 L 224.3 221 Z"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="M 239.8 214.8 L 224.3 214.8 L 224.3 219.3 L 237.2 219.3 Z"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="207.0,214.8,5.5999999,10.6"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="M 197.9 208.6 L 197.9 225.5 L 203.5 225.5 L 203.5 213.1 L 216 213.1 L 216 225.5 L 221.6 225.5 L 221.6 208.6 Z"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="M 189.6 225.5 L 195.2 225.5 L 195.2 214.8 L 190.4 214.8 L 189.6 214.8 L 177.5 214.8 L 176.7 214.8 L 171.9 214.8 L 171.9 225.5 L 177.5 225.5 L 177.5 219.3 L 189.6 219.3 Z"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="M 151.6 213.1 L 169.2 213.1 L 169.2 208.6 L 150.8 208.6 L 146 208.6 L 146 213.8 L 146 217.1 L 146 225.5 L 169.2 225.5 L 169.2 214.8 L 155 214.8 L 155 219.3 L 163.6 219.3 L 163.6 221 L 151.6 221 Z"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="171.89999,208.60001,23.200001,4.5"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingGroup>
+            <DrawingGroup Transform="0.5828698,0.0,0.0,0.57204672,-54.02433,-25.643258">
+                <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="M 222.9 147.4 L 217.9 144.4 L 172.3 164.2 Z"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="M 221.9 94.5 L 161.8 102.7 L 164.8 109 L 182.5 115.6 L 245.7 103.8 Z"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="M 155.6 123.5 L 164 109.3 L 161 103.2 L 147.8 126.1 Z"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="M 181.4 116.1 L 164.7 109.9 L 156.7 123.4 L 177.4 120.3 Z"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="M 156.2 159.2 L 168.9 152.5 L 176.8 121.2 L 156.3 124.3 Z"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="m 155.4 157.8 l 0.1 -33.3 l -7.8 2.6 c 2.5 10.2 5.1 20.4 7.7 30.7 z" FillRule="Nonzero"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="m 191.1 121.5 l 5.2 3.1 l 25 3.7 c 6.6 -3.5 13.2 -6.9 19.8 -10.4 c 1.8 -2.7 3.5 -5.4 5.3 -8.1 c -18.5 3.9 -36.9 7.8 -55.3 11.7 z" FillRule="Nonzero"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="M 220 128.9 L 197.1 125.5 L 192.6 143.3 Z"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="M 167.2 165.5 L 217.5 143.6 L 221.2 129.3 L 157.8 162.6 Z"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingGroup>
         </DrawingGroup>
     </DrawingGroup>
-    <DrawingImage Drawing="{StaticResource igame_logo_horizontal_2_xaml}" x:Key="igameLogo"/>
+    <DrawingImage Drawing="{StaticResource igame_logo_xaml}" x:Key="igameLogo"/>
 </ResourceDictionary>
