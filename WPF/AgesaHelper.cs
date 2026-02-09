@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Text;
 using System.Threading;
 using ZenStates.Core;
 using ZenTimings.Decompressor;
@@ -12,7 +11,6 @@ namespace ZenTimings
         private const int HeaderSize = 0x18;
         private const uint StartAddress = 0x44000000;
         private const uint EndAddress = 0x45BB0000;
-        private static readonly bool[] Allowed = BuildAllowedTable();
 
         /// <summary>
         /// Dumps the BIOS image from flash memory.
@@ -86,7 +84,7 @@ namespace ZenTimings
 
                 byte[] decompressedData = LZMACompressor.Decompress(compressedData);
 
-                return ParseAgesaVersion(decompressedData);
+                return AgesaUtils.ParseVersion(decompressedData);
             }
             catch (Exception ex)
             {
@@ -94,30 +92,6 @@ namespace ZenTimings
             }
 
             return AGESA_UNKNOWN;
-        }
-
-        public static string ParseAgesaVersion(byte[] source)
-        {
-            // Search for AGESA marker
-            byte[] marker = Encoding.ASCII.GetBytes("AGESA!V9");
-            int markerOffset = Utils.FindSequence(source, 0, marker);
-            if (markerOffset == -1)
-            {
-                Debug.WriteLine("AGESA marker not found.");
-                return AppSettings.AGESA_UNKNOWN;
-            }
-
-            int versionStart = markerOffset + marker.Length;
-            versionStart = FindFirstAllowed(source, versionStart);
-            int versionEnd = FindFirstInvalid(source, versionStart);
-
-            if (versionEnd > versionStart)
-            {
-                return Encoding.ASCII.GetString(source, versionStart, versionEnd - versionStart)
-                    .Trim('\0', ' ');
-            }
-
-            return AppSettings.AGESA_UNKNOWN;
         }
 
         public static string FindAgesaVersionInMemory()
@@ -130,7 +104,7 @@ namespace ZenTimings
                 for (var i = 0x9000000; i < 0x9FFFFFF; i += CHUNK_SIZE)
                 {
                     var chunkData = CpuSingleton.Instance.io.ReadMemory(new IntPtr(i), CHUNK_SIZE);
-                    var version = ParseAgesaVersion(chunkData);
+                    var version = AgesaUtils.ParseVersion(chunkData);
                     if (!String.IsNullOrEmpty(version) && version != AppSettings.AGESA_UNKNOWN)
                     {
                         agesaVersion = version;
@@ -144,41 +118,6 @@ namespace ZenTimings
             }
 
             return agesaVersion;
-        }
-
-        private static int FindFirstInvalid(byte[] data, int startIndex = 0)
-        {
-            for (int i = startIndex; i < data.Length; i++)
-            {
-                if (!Allowed[data[i]])
-                    return i;
-            }
-            return data.Length;
-        }
-
-        private static int FindFirstAllowed(byte[] data, int startIndex = 0)
-        {
-            for (int i = startIndex; i < data.Length; i++)
-            {
-                if (Allowed[data[i]])
-                    return i;
-            }
-            return -1;
-        }
-
-        private static bool[] BuildAllowedTable()
-        {
-            var table = new bool[256];
-
-            for (int c = '0'; c <= '9'; c++) table[c] = true;
-            for (int c = 'A'; c <= 'Z'; c++) table[c] = true;
-            for (int c = 'a'; c <= 'z'; c++) table[c] = true;
-
-            table[' '] = true;
-            table['.'] = true;
-            table['-'] = true;
-
-            return table;
         }
     }
 }
