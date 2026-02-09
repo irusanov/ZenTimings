@@ -826,25 +826,6 @@ namespace ZenTimings
         {
             this.Topmost = true;
 
-            //if (settings.AdvancedMode && cpu?.systemInfo != null)
-            //{
-            //    Dispatcher.Invoke(() =>
-            //    {
-            //        //labelCPU.Text = "AMD Eng sample: 100-000000719-52_Y | GraniteRidge | 0xB40F40";
-            //        //labelCPU.Text = GetCpuNameString(cpu.systemInfo);
-            //        if (String.IsNullOrEmpty(cpu.systemInfo.AgesaVersion) || cpu.systemInfo.AgesaVersion.Equals(AppSettings.AGESA_UNKNOWN))
-            //        {
-            //            labelMB.Text = $@"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion} ({cpu.systemInfo.GetSmuVersionString()})";
-            //            //labelAgesaVersion.Visibility = Visibility.Collapsed;
-            //        }
-            //        else
-            //        {
-            //            labelMB.Text = $@"{cpu.systemInfo.MbName} | BIOS {cpu.systemInfo.BiosVersion}";
-            //            //labelAgesaVersion.Text = $"AGESA {cpu.systemInfo.AgesaVersion} (SMU {cpu.systemInfo.GetSmuVersionString()})";
-            //        }
-            //    });
-            //}
-
             RestoreWindowPosition();
             SetWindowTitle();
             //ShowWindow();
@@ -1124,6 +1105,28 @@ namespace ZenTimings
             catch (Exception ex)
             {
                 MessageBox.Show($"An error occurred while exporting: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void MenuItem_Click_5(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var exeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;
+                var changelogPath = Path.Combine(exeDir, "Changelog.txt");
+
+                if (File.Exists(changelogPath))
+                {
+                    Process.Start(changelogPath);
+                }
+                else
+                {
+                    MessageBox.Show($"Changelog file not found: {changelogPath}", "File not found", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to open changelog: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
