@@ -126,7 +126,7 @@
                 VerticalAlignment="Top"
                 Width="151"
              >
-                <ComboBoxItem Content="Window" />
+                <ComboBoxItem Content="App Window" />
                 <ComboBoxItem Content="Desktop" />
             </ComboBox>
 
