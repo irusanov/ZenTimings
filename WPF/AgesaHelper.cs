@@ -96,7 +96,6 @@ namespace ZenTimings
 
         public static string FindAgesaVersionInMemory()
         {
-            string agesaVersion = "";
             try
             {
                 var CHUNK_SIZE = 1024 * 256;
@@ -107,8 +106,7 @@ namespace ZenTimings
                     var version = AgesaUtils.ParseVersion(chunkData);
                     if (!String.IsNullOrEmpty(version) && version != AppSettings.AGESA_UNKNOWN)
                     {
-                        agesaVersion = version;
-                        break;
+                        return version;
                     }
                 }
             }
@@ -117,7 +115,7 @@ namespace ZenTimings
                 Debug.WriteLine($"Could not find AGESA version: {ex.Message}");
             }
 
-            return agesaVersion;
+            return AppSettings.AGESA_UNKNOWN;
         }
     }
 }
