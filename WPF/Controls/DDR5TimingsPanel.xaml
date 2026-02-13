@@ -44,9 +44,9 @@
                     <TextBlock Text="tWTRL" TextAlignment="Right" />
                     <TextBlock Text="tWR" TextAlignment="Right" />
                     <TextBlock Text="tRFC (ns)" TextAlignment="Right" />
-                    <TextBlock Text="tRFC" TextAlignment="Right" />
-                    <TextBlock Text="tRFC2" TextAlignment="Right" />
-                    <TextBlock Text="tRFCsb" TextAlignment="Right" />
+                    <TextBlock Text="tRFC" TextAlignment="Right" IsEnabled="{Binding IsRfcEnabled}"/>
+                    <TextBlock Text="tRFC2" TextAlignment="Right" IsEnabled="{Binding IsRfcsbEnabled}" />
+                    <TextBlock Text="tRFCsb" TextAlignment="Right" IsEnabled="{Binding IsRfcsbEnabled}" />
                     <TextBlock Text="tMOD" TextAlignment="Right" />
                     <TextBlock Text="tMODPDA" TextAlignment="Right" />
                     <TextBlock Text="tPHYWRD" TextAlignment="Right" />
@@ -94,10 +94,13 @@
                     <TextBlock Text="{Binding Timings.RFCns, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding Timings.RFC, FallbackValue='N/A'}"
+                               IsEnabled="{Binding IsRfcEnabled}"
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding Timings.RFC2, FallbackValue='N/A'}"
+                               IsEnabled="{Binding IsRfcsbEnabled}"
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding Timings.RFCsb, FallbackValue='N/A'}"
+                               IsEnabled="{Binding IsRfcsbEnabled}"
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding Timings.MOD, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
@@ -144,7 +147,7 @@
                     <TextBlock Text="tWRWRDD" TextAlignment="Right" />
                     <TextBlock Text="tCKE" TextAlignment="Right" />
                     <TextBlock Text="tREFI" TextAlignment="Right" />
-                    <TextBlock Text="tREFI (ns)" TextAlignment="Right" />
+                    <TextBlock Text="Refresh Mode" TextAlignment="Right" />
                     <TextBlock Text="tSTAG" TextAlignment="Right" />
                     <TextBlock Text="tMRD" TextAlignment="Right" />
                     <TextBlock Text="tMRDPDA" TextAlignment="Right" />
@@ -191,8 +194,15 @@
                     <TextBlock Text="{Binding Timings.CKE, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding Timings.REFI, FallbackValue='N/A'}"
-                           Style="{DynamicResource ValueStyles}" />
-                    <TextBlock Text="{Binding Timings.REFIns, FallbackValue='N/A'}"
+                           Style="{DynamicResource ValueStyles}">
+                        <TextBlock.ToolTip>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Timings.REFIns, FallbackValue='N/A'}" Padding="0" />
+                                <TextBlock Text="ns" Padding="0" TextAlignment="Left" />
+                            </StackPanel>
+                        </TextBlock.ToolTip>
+                    </TextBlock>
+                    <TextBlock Text="{Binding Timings.RefreshMode, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding Timings.STAG, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
