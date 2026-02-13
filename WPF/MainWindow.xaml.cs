@@ -1091,7 +1091,7 @@ namespace ZenTimings
                 {
                     Filter = "HTML files (*.html)|*.html|All files (*.*)|*.*",
                     DefaultExt = "html",
-                    FileName = "SystemInfo.html",
+                    FileName = "ZenTimings-report.html",
                     RestoreDirectory = true
                 };
 
