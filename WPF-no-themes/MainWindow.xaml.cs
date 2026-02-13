@@ -112,16 +112,8 @@ namespace ZenTimings
                     PowerCfgTimer.Interval = TimeSpan.FromMilliseconds(2000);
                     PowerCfgTimer.Tick += PowerCfgTimer_Tick;
 
-                    SplashWindow.Loading("Waiting for power table");
-                    if (WaitForPowerTable())
-                    {
-                        SplashWindow.Loading("Reading power table");
-                        // refresh the table again, to avoid displaying initial fclk, mclk and uclk values,
-                        // which seem to be a little off when transferring the table for the "first" time,
-                        // after an idle period
-                        cpu.RefreshPowerTable();
-                    }
-                    else
+                    SplashWindow.Loading("Reading power table");
+                    if (!WaitForPowerTable())
                     {
                         SplashWindow.Loading("Power table error!");
                     }
