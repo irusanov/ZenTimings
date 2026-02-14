@@ -53,10 +53,10 @@ namespace ZenTimings.ViewModels
             get => _agesaVersion;
             set
             {
-                if (string.IsNullOrEmpty(value) || value == AppSettings.AGESA_UNKNOWN)
+                if (string.IsNullOrEmpty(value) || value == AppSettings.AGESA_UNKNOWN || value == AGESA_SEARCHING)
                 {
                     MotherboardInfo = $@"{CpuSingleton.Instance.systemInfo.MbName} | BIOS {CpuSingleton.Instance.systemInfo.BiosVersion} ({SmuVersion})";
-                    _agesaVersion = null;
+                    _agesaVersion = value == AGESA_SEARCHING ? AGESA_SEARCHING : null;
                 }
                 else
                 {
@@ -105,6 +105,9 @@ namespace ZenTimings.ViewModels
         public bool IsMotherboardLogoVisible { get; }
         public string MotherboardLogoTooltip { get; }
 
+        public bool IsRfcsbEnabled => (Timings as Ddr5Timings)?.RefreshMode != Ddr5Timings.BankRefreshMode.NORMAL;
+        public bool IsRfcEnabled => (Timings as Ddr5Timings)?.RefreshMode == Ddr5Timings.BankRefreshMode.NORMAL;
+
         public MainViewModel(
             BaseDramTimings timings,
             MemType memoryType,
@@ -120,11 +123,12 @@ namespace ZenTimings.ViewModels
             CpuName = VendorUtils.GetCpuNameString(CpuSingleton.Instance.systemInfo);
             SmuVersion = CpuSingleton.Instance.systemInfo.GetSmuVersionString();
 
-            TotalCapacity = CpuSingleton.Instance.memoryConfig.TotalCapacity;
+            TotalCapacity = CpuSingleton.Instance.GetMemoryConfig().TotalCapacity;
             MemoryType = memoryType;
 
             PowerTable = CpuSingleton.Instance.powerTable;
             CodeName = CpuSingleton.Instance.info.codeName;
+            AgesaVersion = AGESA_SEARCHING;
 
             WMIPresent = (!compatMode && memoryType == MemType.DDR4)
                          || memoryType == MemType.LPDDR4;
@@ -243,8 +247,9 @@ namespace ZenTimings.ViewModels
             </head>
             <body>";
             html += $@"<h1>{appVersion}</h1>";
-            html += $@"<p>Core Version: {cpu.Version}</p>";
-            html += $@"<p>PawnIO Version: {DriverHelper.Version}</p>";
+            html += $@"<div>Core Version: {cpu.Version}</div>";
+            html += $@"<div>PawnIO Version: {DriverHelper.Version}</div>";
+            html += $@"<div>Date: {DateTime.Now:dd MMMM yyyy HH:mm:ss}</div>";
 
             html += "<h2>System Info</h2>";
             html += "<table border=\"1\" cellspacing=\"0\" cellpadding=\"4\">";
@@ -287,7 +292,7 @@ namespace ZenTimings.ViewModels
                 "tCWL", "tWR"
             };
 
-
+            // Timings
             html += "<h2>Memory Timings</h2>";
             html += "<table id='timingsTable' data-sort-col='' data-sort-dir=''>";
             html += "<tr><th onclick='sortTable(0)'>Timing</th>";
@@ -301,11 +306,8 @@ namespace ZenTimings.ViewModels
 
             foreach (var prop in timingProperties)
             {
-                bool isPrimary = primaryTimings.Contains(prop.Name);
                 bool mismatch = IsMismatch(prop, uniqueTimings);
-
-                string rowClass = (isPrimary ? "primary" : "secondary") +
-                                  (mismatch ? " mismatch" : "");
+                string rowClass = mismatch ? " mismatch" : "";
 
                 html += $"<tr class='{rowClass}'>";
                 html += $"<td>{prop.Name}</td>";
@@ -317,7 +319,39 @@ namespace ZenTimings.ViewModels
 
                 html += "</tr>";
             }
+            html += "</table>";
 
+            // PMT
+            html += "<h2>PMT</h2>";
+            html += "<table id='pmtTable' data-sort-col='' data-sort-dir=''>";
+
+            type = cpu.powerTable.GetType();
+            properties = type.GetProperties();
+
+            foreach (var property in properties)
+            {
+
+                if (property.Name == "TableVersion")
+                    html += $"<tr><td>{property.Name}</td><td>{property.GetValue(cpu.powerTable, null):X8}</td></tr>";
+                else if (property.Name != "Table")
+                    html += $"<tr><td>{property.Name}</td><td>{property.GetValue(cpu.powerTable, null)}</td></tr>";
+            }
+            html += "</table>";
+
+
+            // AOD
+            html += "<h2>AOD</h2>";
+            html += "<table id='pmtTable' data-sort-col='' data-sort-dir=''>";
+
+            type = cpu.info.aod.Table.Data.GetType();
+            properties = type.GetProperties();
+
+            foreach (var property in properties)
+            {
+
+                if (!property.Name.ToLowerInvariant().StartsWith("t"))
+                    html += $"<tr><td>{property.Name}</td><td>{property.GetValue(cpu.info.aod.Table.Data, null)}</td></tr>";
+            }
             html += "</table>";
 
             html += "</body></html>";

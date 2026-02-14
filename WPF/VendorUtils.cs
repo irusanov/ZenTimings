@@ -71,7 +71,7 @@ namespace ZenTimings
             {
                 return "biwinLogo";
             }
-            else if (IColorfulModule(module))
+            else if (IsColorfulModule(module))
             {
                 return "igameLogo";
             }
@@ -102,7 +102,7 @@ namespace ZenTimings
                 || module.PartNumber.ToLowerInvariant().Trim().StartsWith("ocb");
         }
 
-        internal static bool IColorfulModule(MemoryModule module)
+        internal static bool IsColorfulModule(MemoryModule module)
         {
             //return module.Manufacturer.ToLowerInvariant().Contains("colorful")
             //    && module.PartNumber.ToLowerInvariant().Trim().StartsWith("ig");

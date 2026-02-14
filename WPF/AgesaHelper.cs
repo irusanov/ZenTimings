@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Text;
+using System.Diagnostics;
 using System.Threading;
 using ZenStates.Core;
 using ZenTimings.Decompressor;
@@ -11,7 +11,6 @@ namespace ZenTimings
         private const int HeaderSize = 0x18;
         private const uint StartAddress = 0x44000000;
         private const uint EndAddress = 0x45BB0000;
-        private static readonly bool[] Allowed = BuildAllowedTable();
 
         /// <summary>
         /// Dumps the BIOS image from flash memory.
@@ -85,24 +84,7 @@ namespace ZenTimings
 
                 byte[] decompressedData = LZMACompressor.Decompress(compressedData);
 
-                // Search for AGESA marker
-                byte[] marker = Encoding.ASCII.GetBytes("AGESA!V9");
-                int markerOffset = Utils.FindSequence(decompressedData, 0, marker);
-                if (markerOffset == -1)
-                {
-                    Console.WriteLine("AGESA marker not found.");
-                    return AGESA_UNKNOWN;
-                }
-
-                int versionStart = markerOffset + marker.Length;
-                versionStart = FindFirstAllowed(decompressedData, versionStart);
-                int versionEnd = FindFirstInvalid(decompressedData, versionStart);
-
-                if (versionEnd > versionStart)
-                {
-                    return Encoding.ASCII.GetString(decompressedData, versionStart, versionEnd - versionStart)
-                        .Trim('\0', ' ');
-                }
+                return AgesaUtils.ParseVersion(decompressedData);
             }
             catch (Exception ex)
             {
@@ -112,39 +94,28 @@ namespace ZenTimings
             return AGESA_UNKNOWN;
         }
 
-        private static int FindFirstInvalid(byte[] data, int startIndex = 0)
+        public static string FindAgesaVersionInMemory()
         {
-            for (int i = startIndex; i < data.Length; i++)
+            try
             {
-                if (!Allowed[data[i]])
-                    return i;
-            }
-            return data.Length;
-        }
+                var CHUNK_SIZE = 1024 * 256;
 
-        private static int FindFirstAllowed(byte[] data, int startIndex = 0)
-        {
-            for (int i = startIndex; i < data.Length; i++)
+                for (var i = 0x9000000; i < 0x9FFFFFF; i += CHUNK_SIZE)
+                {
+                    var chunkData = CpuSingleton.Instance.io.ReadMemory(new IntPtr(i), CHUNK_SIZE);
+                    var version = AgesaUtils.ParseVersion(chunkData);
+                    if (!String.IsNullOrEmpty(version) && version != AppSettings.AGESA_UNKNOWN)
+                    {
+                        return version;
+                    }
+                }
+            }
+            catch (Exception ex)
             {
-                if (Allowed[data[i]])
-                    return i;
+                Debug.WriteLine($"Could not find AGESA version: {ex.Message}");
             }
-            return -1;
-        }
 
-        private static bool[] BuildAllowedTable()
-        {
-            var table = new bool[256];
-
-            for (int c = '0'; c <= '9'; c++) table[c] = true;
-            for (int c = 'A'; c <= 'Z'; c++) table[c] = true;
-            for (int c = 'a'; c <= 'z'; c++) table[c] = true;
-
-            table[' '] = true;
-            table['.'] = true;
-            table['-'] = true;
-
-            return table;
+            return AppSettings.AGESA_UNKNOWN;
         }
     }
 }

@@ -6,7 +6,7 @@
              xmlns:converters="clr-namespace:ZenTimings.Converters"
              xmlns:local="clr-namespace:ZenTimings.Controls"
              mc:Ignorable="d"
-             d:DesignHeight="800" d:DesignWidth="450">
+             d:DesignHeight="480" d:DesignWidth="450">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
@@ -44,9 +44,9 @@
                     <TextBlock Text="tWTRL" TextAlignment="Right" />
                     <TextBlock Text="tWR" TextAlignment="Right" />
                     <TextBlock Text="tRFC (ns)" TextAlignment="Right" />
-                    <TextBlock Text="tRFC" TextAlignment="Right" />
-                    <TextBlock Text="tRFC2" TextAlignment="Right" />
-                    <TextBlock Text="tRFCsb" TextAlignment="Right" />
+                    <TextBlock Text="tRFC" TextAlignment="Right" IsEnabled="{Binding IsRfcEnabled}"/>
+                    <TextBlock Text="tRFC2" TextAlignment="Right" IsEnabled="{Binding IsRfcsbEnabled}" />
+                    <TextBlock Text="tRFCsb" TextAlignment="Right" IsEnabled="{Binding IsRfcsbEnabled}" />
                     <TextBlock Text="tMOD" TextAlignment="Right" />
                     <TextBlock Text="tMODPDA" TextAlignment="Right" />
                     <TextBlock Text="tPHYWRD" TextAlignment="Right" />
@@ -57,7 +57,7 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" MinWidth="60">
-                    <TextBlock Text="{Binding MemoryFrequency, FallbackValue='N/A', StringFormat={}{0:F0}}"
+                    <TextBlock Text="{Binding MemoryFrequencyString, FallbackValue='N/A', StringFormat={}{0:F0}}"
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding Timings.BGS, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
@@ -93,10 +93,13 @@
                     <TextBlock Text="{Binding Timings.RFCns, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding Timings.RFC, FallbackValue='N/A'}"
+                               IsEnabled="{Binding IsRfcEnabled}"
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding Timings.RFC2, FallbackValue='N/A'}"
+                               IsEnabled="{Binding IsRfcsbEnabled}"
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding Timings.RFCsb, FallbackValue='N/A'}"
+                               IsEnabled="{Binding IsRfcsbEnabled}"
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding Timings.MOD, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
@@ -123,7 +126,7 @@
                     <TextBlock Text="Capacity" TextAlignment="Right" />
                     <TextBlock Text="BGS Alt" TextAlignment="Right" />
                     <TextBlock Text="Cmd2T" TextAlignment="Right" />
-
+                    
                     <TextBlock Text="" Style="{DynamicResource DividerTextBlock}" />
 
                     <TextBlock Text="tRDRDSCL" TextAlignment="Right" />
@@ -140,7 +143,7 @@
                     <TextBlock Text="tWRWRDD" TextAlignment="Right" />
                     <TextBlock Text="tCKE" TextAlignment="Right" />
                     <TextBlock Text="tREFI" TextAlignment="Right" />
-                    <TextBlock Text="tREFI (ns)" TextAlignment="Right" />
+                    <TextBlock Text="Refresh Mode" TextAlignment="Right" />
                     <TextBlock Text="tSTAG" TextAlignment="Right" />
                     <TextBlock Text="tMRD" TextAlignment="Right" />
                     <TextBlock Text="tMRDPDA" TextAlignment="Right" />
@@ -149,7 +152,7 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="1">
-                    <TextBlock Text="{Binding totalCapacity, FallbackValue='N/A'}"
+                    <TextBlock Text="{Binding TotalCapacity, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding Timings.BGSAlt, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
@@ -185,8 +188,15 @@
                     <TextBlock Text="{Binding Timings.CKE, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding Timings.REFI, FallbackValue='N/A'}"
-                           Style="{DynamicResource ValueStyles}" />
-                    <TextBlock Text="{Binding Timings.REFIns, FallbackValue='N/A'}"
+                           Style="{DynamicResource ValueStyles}">
+                        <TextBlock.ToolTip>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Timings.REFIns, FallbackValue='N/A'}" Padding="0" />
+                                <TextBlock Text="ns" Padding="0" TextAlignment="Left" />
+                            </StackPanel>
+                        </TextBlock.ToolTip>
+                    </TextBlock>
+                    <TextBlock Text="{Binding Timings.RefreshMode, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding Timings.STAG, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
