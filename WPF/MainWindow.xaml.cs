@@ -62,7 +62,7 @@ namespace ZenTimings
         {
             if (DriverHelper.IsPawnIoInstalled)
             {
-                if (DriverHelper.Version < new Version(2, 0, 1, 0))
+                if (DriverHelper.Version < new Version(2, 1, 0, 0))
                 {
                     AdonisUI.Controls.MessageBoxResult result = AdonisUI.Controls.MessageBox.Show(
                         "PawnIO is outdated, do you want to update it?",
