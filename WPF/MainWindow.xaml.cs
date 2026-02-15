@@ -64,9 +64,9 @@ namespace ZenTimings
             {
                 var currentVersion = DriverHelper.Version;
                 var newVersion = new Version(2, 1, 0, 0);
-                var skippedVersion = !string.IsNullOrEmpty(AppSettings.Instance.DriverUpdateLastSkippedVersion) 
+                var skippedVersion = !string.IsNullOrEmpty(AppSettings.Instance.DriverUpdateLastSkippedVersion)
                     ? new Version(AppSettings.Instance.DriverUpdateLastSkippedVersion)
-                    : new Version(0,0,0,0);
+                    : new Version(0, 0, 0, 0);
 
                 if (skippedVersion < newVersion && currentVersion < newVersion)
                 {
@@ -1030,22 +1030,6 @@ namespace ZenTimings
                 Process.Start(link);
         }
 
-        //private bool IsAgesaVersionUpdateNeeded()
-        //{
-        //    if (!settings.AdvancedMode)
-        //        return false;
-
-        //    string smuVersion = cpu.systemInfo.GetSmuVersionString();
-        //    bool biosVersionMatches = !string.IsNullOrEmpty(cpu.systemInfo.BiosVersion)
-        //        && string.Equals(cpu.systemInfo.BiosVersion, settings.BiosVersion, StringComparison.Ordinal);
-        //    bool mbNameMatches = !string.IsNullOrEmpty(cpu.systemInfo.MbName)
-        //        && string.Equals(cpu.systemInfo.MbName, settings.MbName, StringComparison.Ordinal);
-        //    bool smuVersionMatches = !string.IsNullOrEmpty(smuVersion)
-        //        && string.Equals(smuVersion, settings.SmuVersion, StringComparison.Ordinal);
-
-        //    return string.IsNullOrEmpty(settings.AgesaVersion) || !biosVersionMatches || !mbNameMatches || !smuVersionMatches;
-        //}
-
         private string GetAgesaVersion()
         {
             if (!string.IsNullOrEmpty(cpu.systemInfo.AgesaVersion))
@@ -1055,18 +1039,6 @@ namespace ZenTimings
 
             // TODO: Move to core DLL
             string version = AgesaHelper.FindAgesaVersionInMemory();
-
-            //string version;
-            //if (IsAgesaVersionUpdateNeeded())
-            //{
-            //    //byte[] image = AgesaHelper.DumpImage();
-            //    //version = AgesaHelper.FindAgesaVersion(image);
-            //    version = AgesaHelper.FindAgesaVersionInMemory();
-            //}
-            //else
-            //{
-            //    version = settings?.AgesaVersion ?? AppSettings.AGESA_UNKNOWN;
-            //}
 
             if (!string.IsNullOrEmpty(version))
             {

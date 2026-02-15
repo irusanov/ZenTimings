@@ -12,11 +12,9 @@ namespace ZenTimings
         public const int VersionMinor = 9;
 
         private static readonly string Filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.xml");
-        //private static readonly string EncryptedFilename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.enc");
         public const string AGESA_UNKNOWN = "Unknown";
 
         private static AppSettings _instance = null;
-        //private readonly AesEncryption aesEncryption = new AesEncryption();
 
         private AppSettings() { }
 
@@ -53,11 +51,6 @@ namespace ZenTimings
 
         public AppSettings Create(bool save = true)
         {
-            //if (File.Exists(EncryptedFilename))
-            //{
-            //    AgesaVersion = aesEncryption.DecryptStringInMemory(EncryptedFilename);
-            //}
-
             if (save) Save();
 
             return this;
@@ -69,24 +62,8 @@ namespace ZenTimings
         {
             try
             {
-                //var decryptedAgesa = String.Empty;
-                //if (File.Exists(EncryptedFilename))
-                //{
-                //    try
-                //    {
-                //        decryptedAgesa = aesEncryption.DecryptStringInMemory(EncryptedFilename);
-                //    }
-                //    catch (Exception ex)
-                //    {
-                //        Console.WriteLine(ex.Message);
-                //    }
-                //}
-
                 if (File.Exists(Filename))
                 {
-                    //var deserializedSettings = XmlUtils.DeserializeFromXml<AppSettings>(Filename);
-                    //deserializedSettings.AgesaVersion = decryptedAgesa;
-                    //return deserializedSettings;
                     return XmlUtils.DeserializeFromXml<AppSettings>(Filename);
                 }
             }
@@ -112,18 +89,6 @@ namespace ZenTimings
 
                 Version = new Version(VersionMajor, VersionMinor).ToString();
 
-                //if (CpuSingleton.Instance?.systemInfo != null)
-                //{
-                //    MbName = CpuSingleton.Instance.systemInfo.MbName;
-                //    BiosVersion = CpuSingleton.Instance.systemInfo.BiosVersion;
-                //    SmuVersion = CpuSingleton.Instance.systemInfo.GetSmuVersionString();
-                //    if (!string.IsNullOrEmpty(CpuSingleton.Instance.systemInfo.AgesaVersion))
-                //    {
-                //        AgesaVersion = CpuSingleton.Instance.systemInfo.AgesaVersion;
-                //    }
-                //}
-
-                //File.WriteAllBytes(EncryptedFilename, aesEncryption.EncryptString(this.AgesaVersion));
                 string xmlContent = XmlUtils.SerializeToXml<AppSettings>(this);
                 File.WriteAllText(Filename, xmlContent);
             }
@@ -175,10 +140,6 @@ namespace ZenTimings
         public double SysInfoWindowWidth { get; set; }
         public double SysInfoWindowHeight { get; set; }
         public string NotifiedChangelog { get; set; } = "";
-        //public string MbName { get; set; } = "";
-        //public string BiosVersion { get; set; } = "";
-        //public string SmuVersion { get; set; } = "";
-        //public string AgesaVersion { get; set; } = "";
         public bool SingleInstance { get; set; } = true;
     }
 }
