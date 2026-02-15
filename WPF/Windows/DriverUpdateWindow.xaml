@@ -1,0 +1,91 @@
+﻿<adonisControls:AdonisWindow x:Class="ZenTimings.Windows.DriverUpdateWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+        xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"                   
+        adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
+        mc:Ignorable="d"
+        Title="PawnIO Driver Update Available"
+        Width="400"
+        SizeToContent="Height"                     
+        WindowStartupLocation="CenterOwner"
+        BorderThickness="1"
+        UseLayoutRounding="True"
+        BorderBrush="{DynamicResource WindowBorderColor}"
+        Style="{DynamicResource WindowStyles}">
+    <StackPanel Margin="20">
+
+        <!-- Message -->
+        <TextBlock Text="A new PawnIO driver version is available. Updating ensures the best performance, stability, and compatibility."
+               TextWrapping="Wrap"
+               Margin="0 0 0 15"/>
+
+        <TextBlock Text="The update might require a system restart, but you can skip it by choosing 'Restart Later' and do it later. The application will first uninstall the previous driver before installing the new version."
+           TextWrapping="Wrap"
+           Margin="0 0 0 15"/>
+
+        <!-- Versions Grid -->
+        <Grid Margin="0 0 0 15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="15"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="2"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Current -->
+            <TextBlock Text="Current version:"
+                   Grid.Row="0"
+                   Grid.Column="0"
+                   VerticalAlignment="Center"
+                   FontWeight="SemiBold"/>
+
+            <TextBlock Text="{Binding currentVersion, Mode=OneTime}"
+                   Grid.Row="0"
+                   Grid.Column="2"
+                   VerticalAlignment="Center"/>
+
+            <!-- New -->
+            <TextBlock Text="Available version:"
+                   Grid.Row="2"
+                   Grid.Column="0"
+                   VerticalAlignment="Center"
+                   FontWeight="SemiBold"/>
+
+            <TextBlock Text="{Binding newVersion, Mode=OneTime}"
+                   Grid.Row="2"
+                   Grid.Column="2"
+                   VerticalAlignment="Center"/>
+        </Grid>
+
+        <!-- Skip checkbox -->
+        <CheckBox x:Name="SkipDriverUpdateCheckBox"
+              Content="Don't remind me about this version again"
+              Margin="0 20 0 20"/>
+
+        <!-- Buttons -->
+        <StackPanel Orientation="Horizontal"
+                HorizontalAlignment="Right">
+
+            <Button x:Name="DriverUpdate_Close"
+                Content="Later"
+                IsCancel="True"
+                Width="80"
+                Margin="0 0 10 0"/>
+
+            <Button x:Name="DriverUpdate_Install"
+                Content="Update Now"
+                Width="100"
+                Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" Click="DriverUpdate_Install_Click" />
+        </StackPanel>
+
+    </StackPanel>
+</adonisControls:AdonisWindow>

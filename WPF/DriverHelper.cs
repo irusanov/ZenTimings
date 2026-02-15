@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 using ZenStates.Core;
 
 namespace ZenTimings
@@ -21,11 +22,39 @@ namespace ZenTimings
             string path = ExtractPawnIO();
             if (!string.IsNullOrEmpty(path))
             {
-                var process = Process.Start(new ProcessStartInfo(path, "-install"));
+                var process = Process.Start(new ProcessStartInfo(path, "-uninstall -silent"));
+                process?.WaitForExit();
+
+                process = Process.Start(new ProcessStartInfo(path, "-install"));
                 process?.WaitForExit();
 
                 File.Delete(path);
             }
+        }
+
+        public static async Task InstallPawnIOAsync()
+        {
+            string path = ExtractPawnIO();
+            if (string.IsNullOrEmpty(path))
+                return;
+
+            await RunProcessAsync(path, "-uninstall -silent");
+            await RunProcessAsync(path, "-install");
+
+            File.Delete(path);
+        }
+
+        private static Task RunProcessAsync(string file, string args)
+        {
+            return Task.Run(() =>
+            {
+                var process = Process.Start(new ProcessStartInfo(file, args)
+                {
+                    UseShellExecute = true
+                });
+
+                process?.WaitForExit();
+            });
         }
 
         static string ExtractPawnIO()

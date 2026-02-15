@@ -9,7 +9,7 @@
         xmlns:converters="clr-namespace:ZenTimings.Converters"
         mc:Ignorable="d"
         Style="{DynamicResource WindowStyles}"
-        Title="What's New" Height="329" Width="454" UseLayoutRounding="True" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Topmost="True" Icon="/ZenTimings;component/Resources/new-icon/16.png" SizeToContent="WidthAndHeight">
+        Title="What's New" Height="580" Width="454" UseLayoutRounding="True" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Topmost="True" Icon="/ZenTimings;component/Resources/new-icon/16.png" SizeToContent="WidthAndHeight">
     
     <Window.Resources>
         <converters:DDR5ToVisConverter x:Key="DDR5ToBool" />
@@ -28,8 +28,9 @@
             </Grid.RowDefinitions>
             <StackPanel Orientation="Vertical" Margin="15" Grid.ColumnSpan="2" Grid.Row="0" Width="424">
                 <!-- TextBlock Text="Changelog" FontSize="14" FontWeight="Bold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" /-->
-                <TextBlock Text="v1.36.1991-beta Feb 2026" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" />
+                <TextBlock Text="v1.36 Feb 16 2026" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" />
                 <TextBlock Text="  - Display Bank Refresh Mode" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text="  - Fix wrong TRFC4 (DDR4) reading" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text="  - Improve AGESA version detection parsing" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text="  - Improve power table refresh performance" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text="  - Enable export as HTML (preliminary version)" TextWrapping="WrapWithOverflow" />

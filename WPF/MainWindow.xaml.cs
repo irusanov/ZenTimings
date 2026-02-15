@@ -1,4 +1,4 @@
-#define BETA
+//#define BETA
 
 using AdonisUI.Controls;
 using System;
@@ -62,16 +62,28 @@ namespace ZenTimings
         {
             if (DriverHelper.IsPawnIoInstalled)
             {
-                if (DriverHelper.Version < new Version(2, 1, 0, 0))
-                {
-                    AdonisUI.Controls.MessageBoxResult result = AdonisUI.Controls.MessageBox.Show(
-                        "PawnIO is outdated, do you want to update it?",
-                        nameof(ZenTimings),
-                        AdonisUI.Controls.MessageBoxButton.OKCancel,
-                        AdonisUI.Controls.MessageBoxImage.Warning
-                    );
+                var currentVersion = DriverHelper.Version;
+                var newVersion = new Version(2, 1, 0, 0);
+                var skippedVersion = !string.IsNullOrEmpty(AppSettings.Instance.DriverUpdateLastSkippedVersion)
+                    ? new Version(AppSettings.Instance.DriverUpdateLastSkippedVersion)
+                    : new Version(0, 0, 0, 0);
 
-                    if (result == AdonisUI.Controls.MessageBoxResult.OK)
+                if (skippedVersion < newVersion && currentVersion < newVersion)
+                {
+                    DriverUpdateWindow driverUpdateWindow = new DriverUpdateWindow(currentVersion, newVersion)
+                    {
+                        Owner = Application.Current.MainWindow
+                    };
+
+                    bool? result = driverUpdateWindow.ShowDialog();
+
+                    if (driverUpdateWindow.IsSkipChecked)
+                    {
+                        AppSettings.Instance.DriverUpdateLastSkippedVersion = newVersion.ToString();
+                        AppSettings.Instance.Save();
+                    }
+
+                    if (result == true)
                     {
                         SplashWindow.Stop();
                         DriverHelper.InstallPawnIO();
@@ -158,7 +170,8 @@ namespace ZenTimings
                     compatMode,
                     settings,
                     plugins,
-                    motherboardLogoName
+                    motherboardLogoName,
+                    GetAgesaVersion()
                 );
 
                 DataContext = mainViewModel;
@@ -270,7 +283,7 @@ namespace ZenTimings
             // else, default = show context menu
         }
 
-        private void ExitApplication(bool save = true)
+        private void Cleanup()
         {
             foreach (IPlugin plugin in plugins)
                 plugin?.Close();
@@ -279,10 +292,14 @@ namespace ZenTimings
             AsusWmi?.Dispose();
             //cpu?.io?.Close(settings.AutoUninstallDriver);
             cpu?.Dispose();
-            if (save) settings.Save();
 
             //Driver.Cleanup();
+        }
 
+        private void ExitApplication(bool save = true)
+        {
+            if (save) settings.Save();
+            Cleanup();
             Application.Current?.Shutdown();
         }
 
@@ -671,10 +688,19 @@ namespace ZenTimings
 
         private void Restart(bool save = true)
         {
-            if (save) settings.Save();
+            if (save)
+                settings.Save();
+
             var location = Application.ResourceAssembly.Location;
-            ExitApplication(save);
-            Process.Start(location);
+            var startInfo = new ProcessStartInfo(location)
+            {
+                UseShellExecute = true,
+                Verb = "runas"
+            };
+
+            Cleanup();
+            Process.Start(startInfo);
+            Application.Current.Shutdown();
         }
 
         private void ShowWindow()
@@ -708,7 +734,7 @@ namespace ZenTimings
             {
                 Title = $"{AssemblyTitle} {AssemblyVersion.Substring(0, AssemblyVersion.LastIndexOf('.'))}";
 #if DEBUG && !BETA
-                Title += $@"{AssemblyVersion.Substring(AssemblyVersion.LastIndexOf('.'))} - pawnio debug";
+                Title += $@"{AssemblyVersion.Substring(AssemblyVersion.LastIndexOf('.'))} (debug)";
 #endif
 
 #if BETA
@@ -858,10 +884,10 @@ namespace ZenTimings
             //#endif
             MinimizeFootprint();
 
-            new Thread(() =>
-            {
-                mainViewModel.AgesaVersion = GetAgesaVersion();
-            }).Start();
+            //new Thread(() =>
+            //{
+            //    mainViewModel.AgesaVersion = GetAgesaVersion();
+            //}).Start();
         }
 
         private void OptionsToolStripMenuItem_Click(object sender, RoutedEventArgs e)
@@ -1004,22 +1030,6 @@ namespace ZenTimings
                 Process.Start(link);
         }
 
-        private bool IsAgesaVersionUpdateNeeded()
-        {
-            if (!settings.AdvancedMode)
-                return false;
-
-            string smuVersion = cpu.systemInfo.GetSmuVersionString();
-            bool biosVersionMatches = !string.IsNullOrEmpty(cpu.systemInfo.BiosVersion)
-                && string.Equals(cpu.systemInfo.BiosVersion, settings.BiosVersion, StringComparison.Ordinal);
-            bool mbNameMatches = !string.IsNullOrEmpty(cpu.systemInfo.MbName)
-                && string.Equals(cpu.systemInfo.MbName, settings.MbName, StringComparison.Ordinal);
-            bool smuVersionMatches = !string.IsNullOrEmpty(smuVersion)
-                && string.Equals(smuVersion, settings.SmuVersion, StringComparison.Ordinal);
-
-            return string.IsNullOrEmpty(settings.AgesaVersion) || !biosVersionMatches || !mbNameMatches || !smuVersionMatches;
-        }
-
         private string GetAgesaVersion()
         {
             if (!string.IsNullOrEmpty(cpu.systemInfo.AgesaVersion))
@@ -1027,17 +1037,8 @@ namespace ZenTimings
                 return cpu.systemInfo.AgesaVersion;
             }
 
-            string version;
-            if (IsAgesaVersionUpdateNeeded())
-            {
-                //byte[] image = AgesaHelper.DumpImage();
-                //version = AgesaHelper.FindAgesaVersion(image);
-                version = AgesaHelper.FindAgesaVersionInMemory();
-            }
-            else
-            {
-                version = settings?.AgesaVersion ?? AppSettings.AGESA_UNKNOWN;
-            }
+            // TODO: Move to core DLL
+            string version = AgesaHelper.FindAgesaVersionInMemory();
 
             if (!string.IsNullOrEmpty(version))
             {
