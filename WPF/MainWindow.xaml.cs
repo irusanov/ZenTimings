@@ -170,7 +170,8 @@ namespace ZenTimings
                     compatMode,
                     settings,
                     plugins,
-                    motherboardLogoName
+                    motherboardLogoName,
+                    GetAgesaVersion()
                 );
 
                 DataContext = mainViewModel;
@@ -883,10 +884,10 @@ namespace ZenTimings
             //#endif
             MinimizeFootprint();
 
-            new Thread(() =>
-            {
-                mainViewModel.AgesaVersion = GetAgesaVersion();
-            }).Start();
+            //new Thread(() =>
+            //{
+            //    mainViewModel.AgesaVersion = GetAgesaVersion();
+            //}).Start();
         }
 
         private void OptionsToolStripMenuItem_Click(object sender, RoutedEventArgs e)
@@ -1029,21 +1030,21 @@ namespace ZenTimings
                 Process.Start(link);
         }
 
-        private bool IsAgesaVersionUpdateNeeded()
-        {
-            if (!settings.AdvancedMode)
-                return false;
+        //private bool IsAgesaVersionUpdateNeeded()
+        //{
+        //    if (!settings.AdvancedMode)
+        //        return false;
 
-            string smuVersion = cpu.systemInfo.GetSmuVersionString();
-            bool biosVersionMatches = !string.IsNullOrEmpty(cpu.systemInfo.BiosVersion)
-                && string.Equals(cpu.systemInfo.BiosVersion, settings.BiosVersion, StringComparison.Ordinal);
-            bool mbNameMatches = !string.IsNullOrEmpty(cpu.systemInfo.MbName)
-                && string.Equals(cpu.systemInfo.MbName, settings.MbName, StringComparison.Ordinal);
-            bool smuVersionMatches = !string.IsNullOrEmpty(smuVersion)
-                && string.Equals(smuVersion, settings.SmuVersion, StringComparison.Ordinal);
+        //    string smuVersion = cpu.systemInfo.GetSmuVersionString();
+        //    bool biosVersionMatches = !string.IsNullOrEmpty(cpu.systemInfo.BiosVersion)
+        //        && string.Equals(cpu.systemInfo.BiosVersion, settings.BiosVersion, StringComparison.Ordinal);
+        //    bool mbNameMatches = !string.IsNullOrEmpty(cpu.systemInfo.MbName)
+        //        && string.Equals(cpu.systemInfo.MbName, settings.MbName, StringComparison.Ordinal);
+        //    bool smuVersionMatches = !string.IsNullOrEmpty(smuVersion)
+        //        && string.Equals(smuVersion, settings.SmuVersion, StringComparison.Ordinal);
 
-            return string.IsNullOrEmpty(settings.AgesaVersion) || !biosVersionMatches || !mbNameMatches || !smuVersionMatches;
-        }
+        //    return string.IsNullOrEmpty(settings.AgesaVersion) || !biosVersionMatches || !mbNameMatches || !smuVersionMatches;
+        //}
 
         private string GetAgesaVersion()
         {
@@ -1052,17 +1053,20 @@ namespace ZenTimings
                 return cpu.systemInfo.AgesaVersion;
             }
 
-            string version;
-            if (IsAgesaVersionUpdateNeeded())
-            {
-                //byte[] image = AgesaHelper.DumpImage();
-                //version = AgesaHelper.FindAgesaVersion(image);
-                version = AgesaHelper.FindAgesaVersionInMemory();
-            }
-            else
-            {
-                version = settings?.AgesaVersion ?? AppSettings.AGESA_UNKNOWN;
-            }
+            // TODO: Move to core DLL
+            string version = AgesaHelper.FindAgesaVersionInMemory();
+
+            //string version;
+            //if (IsAgesaVersionUpdateNeeded())
+            //{
+            //    //byte[] image = AgesaHelper.DumpImage();
+            //    //version = AgesaHelper.FindAgesaVersion(image);
+            //    version = AgesaHelper.FindAgesaVersionInMemory();
+            //}
+            //else
+            //{
+            //    version = settings?.AgesaVersion ?? AppSettings.AGESA_UNKNOWN;
+            //}
 
             if (!string.IsNullOrEmpty(version))
             {

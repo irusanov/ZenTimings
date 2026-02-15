@@ -119,7 +119,8 @@ namespace ZenTimings.ViewModels
             bool compatMode,
             AppSettings settings,
             List<IPlugin> plugins,
-            string motherboardLogoName)
+            string motherboardLogoName,
+            string agesaVersion)
         {
             Timings = timings;
             Settings = settings;
@@ -133,7 +134,8 @@ namespace ZenTimings.ViewModels
 
             PowerTable = CpuSingleton.Instance.powerTable;
             CodeName = CpuSingleton.Instance.info.codeName;
-            AgesaVersion = AGESA_SEARCHING;
+            //AgesaVersion = AGESA_SEARCHING;
+            AgesaVersion = agesaVersion;
 
             WMIPresent = (!compatMode && memoryType == MemType.DDR4)
                          || memoryType == MemType.LPDDR4;
