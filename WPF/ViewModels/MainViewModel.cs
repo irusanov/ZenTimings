@@ -105,8 +105,13 @@ namespace ZenTimings.ViewModels
         public bool IsMotherboardLogoVisible { get; }
         public string MotherboardLogoTooltip { get; }
 
-        public bool IsRfcsbEnabled => (Timings as Ddr5Timings)?.RefreshMode != Ddr5Timings.BankRefreshMode.NORMAL;
-        public bool IsRfcEnabled => (Timings as Ddr5Timings)?.RefreshMode == Ddr5Timings.BankRefreshMode.NORMAL;
+        public bool IsRfcsbEnabled => (Timings as Ddr5Timings)?.RefreshMode != BankRefreshMode.NORMAL;
+        public bool IsRfcEnabled => (Timings as Ddr5Timings)?.RefreshMode == BankRefreshMode.NORMAL;
+
+        // DDR4 doesn't have separate RFCsb, but we can still indicate if it's using normal refresh or FGR
+        public bool IsDdr4RfcEnabled => (Timings as Ddr4Timings)?.RefreshMode == BankRefreshMode.NORMAL;
+        public bool IsDdr4Rfc2Enabled => (Timings as Ddr4Timings)?.RefreshMode == BankRefreshMode.FGR && Timings.FGR == 2;
+        public bool IsDdr4Rfc4Enabled => (Timings as Ddr4Timings)?.RefreshMode == BankRefreshMode.FGR && Timings.FGR == 4;
 
         public MainViewModel(
             BaseDramTimings timings,
