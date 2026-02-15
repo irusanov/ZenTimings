@@ -163,6 +163,7 @@ namespace ZenTimings
         public ScreenshotType ScreenshotMode { get; set; } = ScreenshotType.Window;
         public bool CheckForUpdates { get; set; } = true;
         public string UpdaterSkippedVersion { get; set; } = "";
+        public string DriverUpdateLastSkippedVersion { get; set; } = "";
         public string UpdaterRemindLaterAt { get; set; } = "";
         public bool MinimizeToTray { get; set; }
         public bool SaveWindowPosition { get; set; } = true;

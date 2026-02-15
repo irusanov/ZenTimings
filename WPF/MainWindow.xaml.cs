@@ -62,16 +62,28 @@ namespace ZenTimings
         {
             if (DriverHelper.IsPawnIoInstalled)
             {
-                if (DriverHelper.Version < new Version(2, 1, 0, 0))
-                {
-                    AdonisUI.Controls.MessageBoxResult result = AdonisUI.Controls.MessageBox.Show(
-                        "PawnIO is outdated, do you want to update it?",
-                        nameof(ZenTimings),
-                        AdonisUI.Controls.MessageBoxButton.OKCancel,
-                        AdonisUI.Controls.MessageBoxImage.Warning
-                    );
+                var currentVersion = DriverHelper.Version;
+                var newVersion = new Version(2, 1, 0, 0);
+                var skippedVersion = !string.IsNullOrEmpty(AppSettings.Instance.DriverUpdateLastSkippedVersion) 
+                    ? new Version(AppSettings.Instance.DriverUpdateLastSkippedVersion)
+                    : new Version(0,0,0,0);
 
-                    if (result == AdonisUI.Controls.MessageBoxResult.OK)
+                if (skippedVersion < newVersion && currentVersion < newVersion)
+                {
+                    DriverUpdateWindow driverUpdateWindow = new DriverUpdateWindow(currentVersion, newVersion)
+                    {
+                        Owner = Application.Current.MainWindow
+                    };
+
+                    bool? result = driverUpdateWindow.ShowDialog();
+
+                    if (driverUpdateWindow.IsSkipChecked)
+                    {
+                        AppSettings.Instance.DriverUpdateLastSkippedVersion = newVersion.ToString();
+                        AppSettings.Instance.Save();
+                    }
+
+                    if (result == true)
                     {
                         SplashWindow.Stop();
                         DriverHelper.InstallPawnIO();
@@ -270,7 +282,7 @@ namespace ZenTimings
             // else, default = show context menu
         }
 
-        private void ExitApplication(bool save = true)
+        private void Cleanup()
         {
             foreach (IPlugin plugin in plugins)
                 plugin?.Close();
@@ -279,10 +291,14 @@ namespace ZenTimings
             AsusWmi?.Dispose();
             //cpu?.io?.Close(settings.AutoUninstallDriver);
             cpu?.Dispose();
-            if (save) settings.Save();
 
             //Driver.Cleanup();
+        }
 
+        private void ExitApplication(bool save = true)
+        {
+            if (save) settings.Save();
+            Cleanup();
             Application.Current?.Shutdown();
         }
 
@@ -671,10 +687,19 @@ namespace ZenTimings
 
         private void Restart(bool save = true)
         {
-            if (save) settings.Save();
+            if (save)
+                settings.Save();
+
             var location = Application.ResourceAssembly.Location;
-            ExitApplication(save);
-            Process.Start(location);
+            var startInfo = new ProcessStartInfo(location)
+            {
+                UseShellExecute = true,
+                Verb = "runas"
+            };
+
+            Cleanup();
+            Process.Start(startInfo);
+            Application.Current.Shutdown();
         }
 
         private void ShowWindow()

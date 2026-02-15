@@ -162,6 +162,9 @@
     </Compile>
     <Compile Include="Updater.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="Windows\DriverUpdateWindow.xaml.cs">
+      <DependentUpon>DriverUpdateWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="XmlUtils.cs" />
     <Compile Include="Windows\AboutDialog.xaml.cs">
       <DependentUpon>AboutDialog.xaml</DependentUpon>
@@ -305,6 +308,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\DebugDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\DriverUpdateWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
