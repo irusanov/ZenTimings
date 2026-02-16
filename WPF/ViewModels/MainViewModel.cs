@@ -33,7 +33,11 @@ namespace ZenTimings.ViewModels
         public BaseDramTimings Timings
         {
             get => _timings;
-            set { _timings = value; OnPropertyChanged(); }
+            set {
+                _timings = value;
+                MemoryFrequency = value.Frequency;
+                OnPropertyChanged();
+            }
         }
         public AppSettings Settings { get; }
         public List<IPlugin> Plugins { get; }

@@ -540,18 +540,21 @@ namespace ZenTimings
                 return result;
 
             var index = timings.FindIndex(m => m.Key.Equals(offset));
-            result = timings[index < 0 ? 0 : index].Value;
+            return timings[index < 0 ? 0 : index].Value;
 
-            float configured = mainViewModel?.MemoryFrequency ?? 0;
-            float ratio = result.Ratio;
-            float freqFromRatio = ratio * 200;
+            //float configured = mainViewModel?.MemoryFrequency ?? 0;
+            //float ratio = result.Ratio;
+            //float freqFromRatio = ratio * 200;
 
-            // Fallback to ratio when ConfiguredClockSpeed fails
-            if ((configured == 0.0f || freqFromRatio > configured) && mainViewModel != null)
-            {
-                mainViewModel.MemoryFrequency = freqFromRatio;
-            }
-            return result;
+            //// Fallback to ratio when ConfiguredClockSpeed fails
+            //if ((configured == 0.0f || freqFromRatio > configured) && mainViewModel != null)
+            //{
+            //    mainViewModel.MemoryFrequency = freqFromRatio;
+            //}
+
+            //mainViewModel.MemoryFrequency = result.Frequency;
+
+            //return result;
         }
 
         private bool WaitForDriverLoad()
@@ -589,6 +592,7 @@ namespace ZenTimings
 
             if (WaitForDriverLoad())
             {
+                // TODO: Move to Core DLL
                 var memoryConfig = cpu.memoryConfig.Timings.FirstOrDefault().Value;
                 if (memoryConfig != null)
                 {
@@ -596,7 +600,7 @@ namespace ZenTimings
                     cpu.powerTable.MemRatio = memoryConfig.Ratio;
                 }
 
-                SetFrequencyString();
+                //SetFrequencyString();
 
                 return true;
             }
@@ -649,11 +653,11 @@ namespace ZenTimings
                         var modules = cpu.memoryConfig.Modules;
                         int selectedIndex = comboBoxPartNumber?.SelectedIndex ?? 0;
                         MemoryModule module = modules?.Count > 0 ? modules[selectedIndex] : null;
-                        // ReadTimings(module?.DctOffset ?? 0);
+                        mainViewModel.Timings = ReadTimings(module?.DctOffset ?? 0);
                         //ReadDDR4MemoryConfig();
                         cpu.RefreshPowerTable();
                         //ReadSVI();
-                        SetFrequencyString();
+                        // SetFrequencyString();
                         // RefreshSensors();
                     }));
                 }).Start();
