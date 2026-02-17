@@ -12,7 +12,7 @@
     x:Name="OptionsWindow"
     Title="Options"
     Height="315"
-    Width="320"
+    Width="370"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterOwner"
     Icon="/ZenTimings;component/Resources/new-icon/16.png"
@@ -71,6 +71,7 @@
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="78" />
                 <ColumnDefinition Width="78" />
+                <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
@@ -83,18 +84,87 @@
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
+
+            <ToggleButton
+                        x:Name="checkBoxAdvancedMode"
+                        Grid.Column="0"
+                        Grid.Row="0"
+                        Margin="0 5 5 5"
+                        Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
+                        Content="Advanced mode"
+                        Click="CheckBoxAdvancedMode_Click" />
+
+            <ToggleButton
+                        x:Name="checkBoxAutoRefresh"
+                        Grid.Column="0"
+                        Grid.Row="1"
+                        Content="Auto refresh"
+                        Margin="0 5 5 5"
+                        Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
+                        Click="CheckBoxAutoRefresh_Click" />
+
+            <TextBox
+                        x:Name="numericUpDownRefreshInterval"
+                        Grid.Column="1"
+                        Grid.Row="1"
+                        Margin="5 0 5 0" />
+
+            <Label
+                        x:Name="msText"
+                        Grid.Column="2"
+                        Grid.Row="1"
+                        Content="ms"
+                        VerticalAlignment="Center"
+                        Padding="5 0" FontWeight="Normal" />
+
+            <ToggleButton
+                        x:Name="checkBoxMinimizeToTray"
+                        Content="Minimize to tray"
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="3"
+                        Margin="0 5 5 5"
+                        Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
+
+            <ToggleButton
+                        x:Name="checkBoxSavePosition"
+                        Grid.Column="0"
+                        Grid.Row="3"
+                        Grid.ColumnSpan="3"
+                        Margin="0 5 5 5"
+                        Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
+                        Content="Save window position on close" />
+
+            <ToggleButton
+                        x:Name="checkBoxCheckUpdate"
+                        Grid.Column="0"
+                        Grid.Row="4"
+                        Grid.ColumnSpan="3"
+                        Margin="0 5 5 5"
+                        Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
+                        Content="Check for updates on startup" />
+
+            <ToggleButton
+                        x:Name="checkBoxSingleInstance"
+                        Grid.Column="0"
+                        Grid.Row="5"
+                        Grid.ColumnSpan="3"
+                        Margin="0 5 5 5"
+                        Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
+                        Content="Single instance" />
 
             <TextBlock
                         Grid.Column="0"
-                        Grid.Row="0"
+                        Grid.Row="6"
                         Margin="0 5 5 5"
                         Text="Theme" VerticalAlignment="Center" />
             <ComboBox
                 x:Name="comboBoxTheme"
                 Grid.ColumnSpan="2"
                 Grid.Column="1"
-                Grid.Row="0"
+                Grid.Row="6"
                 HorizontalAlignment="Left"
                 Margin="5,0,0,0"
                 VerticalAlignment="Top"
@@ -113,14 +183,14 @@
 
             <TextBlock
                 Grid.Column="0"
-                Grid.Row="1"
+                Grid.Row="7"
                 Margin="0 5 5 5"
                 Text="Screenshot" VerticalAlignment="Center" />
             <ComboBox
                 x:Name="comboBoxScreenshot"
                 Grid.ColumnSpan="2"
                 Grid.Column="1"
-                Grid.Row="1"
+                Grid.Row="7"
                 HorizontalAlignment="Left"
                 Margin="5,0,0,0"
                 VerticalAlignment="Top"
@@ -130,74 +200,30 @@
                 <ComboBoxItem Content="Desktop" />
             </ComboBox>
 
-            <ToggleButton
-                        x:Name="checkBoxAdvancedMode"
-                        Grid.Column="0"
-                        Grid.Row="2"
-                        Margin="0 5 5 5"
-                        Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
-                        Content="Advanced mode"
-                        Click="CheckBoxAdvancedMode_Click" />
-
-            <ToggleButton
-                        x:Name="checkBoxAutoRefresh"
-                        Grid.Column="0"
-                        Grid.Row="3"
-                        Content="Auto refresh"
-                        Margin="0 5 5 5"
-                        Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
-                        Click="CheckBoxAutoRefresh_Click" />
-
+            <TextBlock
+                x:Name="screenshotPath"
+                Grid.Column="0"
+                Grid.Row="8"
+                Margin="0 5 5 5"
+                Text="Screenshot path" VerticalAlignment="Center" />
+            
             <TextBox
-                        x:Name="numericUpDownRefreshInterval"
-                        Grid.Column="1"
-                        Grid.Row="3"
-                        Margin="5 0 5 0" />
+                x:Name="textBoxScreenshotPath"
+                Grid.Column="1"
+                Grid.Row="8"
+                Grid.ColumnSpan="2"
+                Margin="5,0,0,0"
+                IsReadOnly="True"
+                VerticalAlignment="Top" />
 
-            <Label
-                        x:Name="msText"
-                        Grid.Column="2"
-                        Grid.Row="3"
-                        Content="ms"
-                        VerticalAlignment="Center"
-                        Padding="5 0" FontWeight="Normal" />
-
-            <ToggleButton
-                        x:Name="checkBoxMinimizeToTray"
-                        Content="Minimize to tray"
-                        Grid.Row="4"
-                        Grid.Column="0"
-                        Grid.ColumnSpan="3"
-                        Margin="0 5 5 5"
-                        Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-
-            <ToggleButton
-                        x:Name="checkBoxSavePosition"
-                        Grid.Column="0"
-                        Grid.Row="5"
-                        Grid.ColumnSpan="3"
-                        Margin="0 5 5 5"
-                        Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
-                        Content="Save window position on close" />
-
-            <ToggleButton
-                        x:Name="checkBoxCheckUpdate"
-                        Grid.Column="0"
-                        Grid.Row="6"
-                        Grid.ColumnSpan="3"
-                        Margin="0 5 5 5"
-                        Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
-                        Content="Check for updates on startup" />
-
-            <ToggleButton
-                        x:Name="checkBoxSingleInstance"
-                        Grid.Column="0"
-                        Grid.Row="7"
-                        Grid.ColumnSpan="3"
-                        Margin="0 5 5 5"
-                        Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
-                        Content="Single instance" />
-
+            <Button
+                x:Name="buttonBrowseScreenshotPath"
+                Grid.Column="3"
+                Grid.Row="8"
+                Content="Browse..."
+                Margin="5,0,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top" Click="ButtonBrowseScreenshotPath_Click"/>
             <!--ToggleButton
                         x:Name="checkBoxAutoUninstallDriver"
                         Grid.Column="0"

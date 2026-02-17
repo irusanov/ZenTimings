@@ -9,7 +9,7 @@ namespace ZenTimings
     public sealed class AppSettings
     {
         public const int VersionMajor = 1;
-        public const int VersionMinor = 9;
+        public const int VersionMinor = 10;
 
         private static readonly string Filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.xml");
         public const string AGESA_UNKNOWN = "Unknown";
@@ -126,6 +126,7 @@ namespace ZenTimings
         public bool AdvancedMode { get; set; } = true;
         public Theme AppTheme { get; set; } = Theme.DarkMintGradient;
         public ScreenshotType ScreenshotMode { get; set; } = ScreenshotType.Window;
+        public string ScreenshotSaveLocation { get; set; } = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Screenshots");
         public bool CheckForUpdates { get; set; } = true;
         public string UpdaterSkippedVersion { get; set; } = "";
         public string DriverUpdateLastSkippedVersion { get; set; } = "";

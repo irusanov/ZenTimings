@@ -43,6 +43,7 @@ namespace ZenTimings.Windows
             msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
             comboBoxTheme.SelectedIndex = (int)_Theme;
             comboBoxScreenshot.SelectedIndex = (int)appSettings.ScreenshotMode;
+            textBoxScreenshotPath.Text = appSettings.ScreenshotSaveLocation;
         }
 
         private void CheckBoxAutoRefresh_Click(object sender, RoutedEventArgs e)
@@ -70,6 +71,7 @@ namespace ZenTimings.Windows
             appSettings.SingleInstance = (bool)checkBoxSingleInstance.IsChecked;
             //appSettings.AutoUninstallDriver = (bool)checkBoxAutoUninstallDriver.IsChecked;
             appSettings.ScreenshotMode = (ScreenshotType)comboBoxScreenshot.SelectedIndex;
+            appSettings.ScreenshotSaveLocation = textBoxScreenshotPath.Text.Trim();
 
             appSettings.Save();
 
@@ -155,6 +157,26 @@ namespace ZenTimings.Windows
         {
             appSettings.AppTheme = (Theme)comboBoxTheme.SelectedIndex;
             appSettings.ChangeTheme();
+        }
+
+        private void ButtonBrowseScreenshotPath_Click(object sender, RoutedEventArgs e)
+        {
+            var folderDialog = new System.Windows.Forms.FolderBrowserDialog
+            {
+                Description = "Select folder to save screenshots"
+            };
+
+            // Set initial path to current screenshot path if valid
+            string currentPath = textBoxScreenshotPath.Text.Trim();
+            if (!string.IsNullOrEmpty(currentPath) && System.IO.Directory.Exists(currentPath))
+            {
+                folderDialog.SelectedPath = currentPath;
+            }
+
+            if (folderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                textBoxScreenshotPath.Text = folderDialog.SelectedPath;
+            }
         }
     }
 }
