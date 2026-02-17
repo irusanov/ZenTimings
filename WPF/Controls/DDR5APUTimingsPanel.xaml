@@ -45,7 +45,7 @@
                     <TextBlock Text="tWR" TextAlignment="Right" />
                     <TextBlock Text="tRFC (ns)" TextAlignment="Right" />
                     <TextBlock Text="tRFC" TextAlignment="Right" IsEnabled="{Binding IsRfcEnabled}"/>
-                    <TextBlock Text="tRFC2" TextAlignment="Right" IsEnabled="{Binding IsRfcsbEnabled}" />
+                    <TextBlock Text="tRFC2" TextAlignment="Right" IsEnabled="{Binding IsRfc2Enabled}" />
                     <TextBlock Text="tRFCsb" TextAlignment="Right" IsEnabled="{Binding IsRfcsbEnabled}" />
                     <TextBlock Text="tMOD" TextAlignment="Right" />
                     <TextBlock Text="tMODPDA" TextAlignment="Right" />
@@ -96,7 +96,7 @@
                                IsEnabled="{Binding IsRfcEnabled}"
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding Timings.RFC2, FallbackValue='N/A'}"
-                               IsEnabled="{Binding IsRfcsbEnabled}"
+                               IsEnabled="{Binding IsRfc2Enabled}"
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding Timings.RFCsb, FallbackValue='N/A'}"
                                IsEnabled="{Binding IsRfcsbEnabled}"
