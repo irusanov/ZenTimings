@@ -47,6 +47,7 @@ namespace ZenTimings
         private bool compatMode;
         private Control timingsPanel;
         private readonly MainViewModel mainViewModel;
+        private float lastMclk = 0;
         //private Computer computer;
 
         private readonly string AssemblyProduct = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(
@@ -650,13 +651,22 @@ namespace ZenTimings
 
                     Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() =>
                     {
-                        var modules = cpu.memoryConfig.Modules;
-                        int selectedIndex = comboBoxPartNumber?.SelectedIndex ?? 0;
-                        MemoryModule module = modules?.Count > 0 ? modules[selectedIndex] : null;
-                        mainViewModel.Timings = ReadTimings(module?.DctOffset ?? 0);
                         //ReadDDR4MemoryConfig();
                         cpu.RefreshPowerTable();
-                        //ReadSVI();
+                        var newMclk = cpu.powerTable.MCLK;
+
+                        if (newMclk != lastMclk)
+                        {
+                            Console.WriteLine("Reading timings");
+                            var modules = cpu.memoryConfig.Modules;
+                            int selectedIndex = comboBoxPartNumber?.SelectedIndex ?? 0;
+                            MemoryModule module = modules?.Count > 0 ? modules[selectedIndex] : null;
+                            mainViewModel.Timings = ReadTimings(module?.DctOffset ?? 0);
+                        }
+
+                        lastMclk = newMclk;
+
+                        ReadSVI();
                         // SetFrequencyString();
                         // RefreshSensors();
                     }));
