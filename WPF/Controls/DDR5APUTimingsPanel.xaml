@@ -51,6 +51,7 @@
                     <TextBlock Text="tMODPDA" TextAlignment="Right" />
                     <TextBlock Text="tPHYWRD" TextAlignment="Right" />
                     <TextBlock Text="tPHYWRL" TextAlignment="Right" />
+                    <TextBlock Text="tRDPRE" TextAlignment="Right" />
                     <!--TextBlock Text="tXP"
                            TextAlignment="Right"
                           /-->
@@ -109,6 +110,9 @@
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding Timings.PHYWRL, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
+                    <TextBlock Text="{Binding Timings.RDPRE, FallbackValue='N/A'}"
+                           Style="{DynamicResource ValueStyles}" />
+
                     <!--TextBlock Text="{Binding Timings.XP, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}"
                           /-->
@@ -149,6 +153,8 @@
                     <TextBlock Text="tMRDPDA" TextAlignment="Right" />
                     <TextBlock Text="tPHYRDL" TextAlignment="Right" />
                     <TextBlock Text="PowerDown" TextAlignment="Right" />
+                    <TextBlock Text="tWRPRE" TextAlignment="Right" />
+
                 </StackPanel>
 
                 <StackPanel Grid.Column="1">
@@ -207,6 +213,8 @@
                     <TextBlock Text="{Binding Timings.PHYRDL, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding Timings.PowerDown, FallbackValue='N/A'}"
+                           Style="{DynamicResource ValueStyles}" />
+                    <TextBlock Text="{Binding Timings.WRPRE, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
                 </StackPanel>
             </Grid>
@@ -270,6 +278,11 @@
                     <TextBlock x:Name="labelProcCaDs" Text="ProcCaDs" IsEnabled="False" TextAlignment="Right" />
                     <TextBlock x:Name="labelProcDqDs" Text="ProcDqDs" IsEnabled="False" TextAlignment="Right" />
                     <TextBlock x:Name="labelDramDqDs" Text="DramDqDs" IsEnabled="False" TextAlignment="Right" />
+
+                    <TextBlock
+                        x:Name="procOdtDivider1"
+                        Text=""
+                        TextAlignment="Right" />
 
                     <TextBlock x:Name="labelRttNomWr" Text="RttNomWr" TextAlignment="Right" IsEnabled="False" />
                     <TextBlock x:Name="labelRttNomRd" Text="RttNomRd" TextAlignment="Right" IsEnabled="False" />
@@ -338,6 +351,10 @@
                     <TextBlock x:Name="textBoxCadBusDrvStren" Text="N/A" Style="{DynamicResource ValueStyles}" />
                     <TextBlock x:Name="textBoxProcDataDrvStren" Text="N/A" Style="{DynamicResource ValueStyles}" />
                     <TextBlock x:Name="textBoxDramDataDrvStren" Text="N/A" Style="{DynamicResource ValueStyles}" />
+
+                    <TextBlock
+                        x:Name="procOdtDivider2"
+                        Text="" />
 
                     <TextBlock x:Name="textBoxRttNomWr" Text="N/A" Style="{DynamicResource ValueStyles}" />
                     <TextBlock x:Name="textBoxRttNomRd" Text="N/A" Style="{DynamicResource ValueStyles}" />
