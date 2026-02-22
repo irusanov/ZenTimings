@@ -62,10 +62,14 @@
                         <MenuItem Header="_Help">
                             <MenuItem Header="_About" Click="AboutToolStripMenuItem_Click" />
                             <MenuItem Header="Changelog" Click="MenuItem_Click_5" />
+                            <Separator Foreground="{DynamicResource PanelBackground}" />
                             <MenuItem Header="Discord" Click="MenuItem_Click_2" />
                             <MenuItem Header="GitHub" Click="MenuItem_Click_3" />
+                            <MenuItem Header="Google Drive" Click="MenuItem_Click_6" />
+                            <Separator Foreground="{DynamicResource PanelBackground}" />
                             <MenuItem Header="Donate with _PayPal" Click="MenuItem_Click" />
                             <MenuItem Header="Donate with _Revolut" Click="MenuItem_Click_1" />
+                            <Separator Foreground="{DynamicResource PanelBackground}" />
                             <MenuItem Header="AM5 AGESA/UEFI/BIOS List by Reous" Click="MenuItem_Click_4" />
                         </MenuItem>
                     </Menu>

@@ -1031,6 +1031,11 @@ namespace ZenTimings
             Process.Start("https://docs.google.com/spreadsheets/d/12zg6yT_H7H-W1voyw1ZoIrj0GSE7WI4Ug-uLlv-Asa8/edit?gid=937453961#gid=937453961");
         }
 
+        private void MenuItem_Click_6(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://drive.google.com/drive/folders/1HAJO9_jxvQrIkLb4Ws9ZfKHcHFQ_yOqp?usp=sharing");
+        }
+
         private void ExportToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
             //Config Config = new Config(cpu.memoryConfig, BMC.Config/*, cpu.powerTable*/);
