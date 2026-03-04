@@ -151,22 +151,39 @@
             <Border Style="{DynamicResource BottomPanelStyles}">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="280" />
+                        <ColumnDefinition Width="270" />
                         <ColumnDefinition Width="5" />
-                        <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
                     <ComboBox x:Name="comboBoxPartNumber" IsReadOnly="True" Grid.Column="0" />
-                    <TextBlock
-                        Text="{Binding MemoryType, FallbackValue=''}"
-                        Style="{DynamicResource ValueStyles}"
-                        Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}"
-                        Grid.Column="3"
-                        TextAlignment="Right"
-                        Margin="0,0,5,0"
-                        IsEnabled="False"
-                    />
+                    <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Right" Margin="0,0,0,0">
+                        <TextBlock
+                            Text="{Binding Cores, FallbackValue=''}"
+                            Style="{DynamicResource ValueStyles}"
+                            Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}"
+                            TextAlignment="Right"
+                            HorizontalAlignment="Right"
+                            MinWidth="0"
+                            Margin="0"
+                            IsEnabled="False"
+                        />
+                        <Border Width="1"
+                                Background="{DynamicResource SeparatorColor}"
+                                Margin="0,2,0,2"
+                                Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
+ 
+                        <TextBlock
+                            Text="{Binding MemoryType, FallbackValue=''}"
+                            Style="{DynamicResource ValueStyles}"
+                            Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}"
+                            TextAlignment="Right"
+                            HorizontalAlignment="Right"
+                            MinWidth="0"
+                            Margin="0"
+                            IsEnabled="False"
+                        />
+                    </StackPanel>
 
                     <!-- Button Grid.Column="1"
                             Width="20"

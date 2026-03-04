@@ -137,7 +137,7 @@
                     <TextBlock Text="tWRWRDD" TextAlignment="Right" />
                     <TextBlock Text="tCKE" TextAlignment="Right" />
                     <TextBlock Text="tREFI" TextAlignment="Right" />
-                    <TextBlock Text="Refresh Mode" TextAlignment="Right" />
+                    <TextBlock Text="Refresh" TextAlignment="Right" />
                     <TextBlock Text="tSTAG" TextAlignment="Right" />
                     <TextBlock Text="tMRD" TextAlignment="Right" />
                     <TextBlock Text="tMRDPDA" TextAlignment="Right" />

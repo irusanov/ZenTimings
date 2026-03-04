@@ -12,7 +12,7 @@
     x:Name="OptionsWindow"
     Title="Options"
     Height="315"
-    Width="370"
+    Width="373"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterOwner"
     Icon="/ZenTimings;component/Resources/new-icon/16.png"
@@ -185,7 +185,7 @@
                 Grid.Column="0"
                 Grid.Row="7"
                 Margin="0 5 5 5"
-                Text="Screenshot" VerticalAlignment="Center" />
+                Text="Screenshot mode" VerticalAlignment="Center" />
             <ComboBox
                 x:Name="comboBoxScreenshot"
                 Grid.ColumnSpan="2"
@@ -205,14 +205,15 @@
                 Grid.Column="0"
                 Grid.Row="8"
                 Margin="0 5 5 5"
-                Text="Screenshot path" VerticalAlignment="Center" />
+                Text="Screenshot location" VerticalAlignment="Center" />
             
             <TextBox
                 x:Name="textBoxScreenshotPath"
                 Grid.Column="1"
                 Grid.Row="8"
                 Grid.ColumnSpan="2"
-                Margin="5,0,0,0"
+                Margin="3,0,0,0"
+                Width="151"
                 IsReadOnly="True"
                 VerticalAlignment="Top" />
 

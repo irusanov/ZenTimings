@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -43,6 +43,8 @@ namespace ZenTimings.ViewModels
         public List<IPlugin> Plugins { get; }
 
         public string CpuName { get; } = string.Empty;
+
+        public string CpuNameWithThreadCount => $"{CpuName} ({Cores})";
 
         private string _motherboardInfo = string.Empty;
         public string MotherboardInfo
@@ -116,6 +118,8 @@ namespace ZenTimings.ViewModels
         public bool IsDdr4RfcEnabled => (Timings as Ddr4Timings)?.RefreshMode == BankRefreshMode.NORMAL;
         public bool IsDdr4Rfc2Enabled => (Timings as Ddr4Timings)?.RefreshMode == BankRefreshMode.FGR && Timings.FGR == 2;
         public bool IsDdr4Rfc4Enabled => (Timings as Ddr4Timings)?.RefreshMode == BankRefreshMode.FGR && Timings.FGR == 4;
+
+        public string Cores => $"{CpuSingleton.Instance.info.topology.cores}C/{CpuSingleton.Instance.info.topology.logicalCores}T";
 
         public MainViewModel(
             BaseDramTimings timings,

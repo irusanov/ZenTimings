@@ -33,6 +33,8 @@
                 <TextBlock Text=" - Automatically gray out tRFCsb when FGR (Strict) mode is enabled" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Skip timing refresh if MCLK has not changed" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Add configurable screenshots save location" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Display tRDPRE and tWRPRE for 8000-series APUs" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Update Phoenix tables to fix wrong voltages display on 8700G" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Remove encrypted settings previously used for AGESA version storage" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text="" />
             </StackPanel>

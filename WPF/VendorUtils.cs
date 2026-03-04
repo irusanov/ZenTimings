@@ -88,12 +88,12 @@ namespace ZenTimings
 
         internal static bool IsBiwinModule(MemoryModule module)
         {
-            return module.Manufacturer.ToLowerInvariant().Contains("biwin")
-                || module.PartNumber.ToLowerInvariant().Trim().StartsWith("bm")
+            return module.Manufacturer.ToLowerInvariant().Contains("biwin") && 
+                ( module.PartNumber.ToLowerInvariant().Trim().StartsWith("bm")
                 || module.PartNumber.ToLowerInvariant().Trim().StartsWith("bx")
                 || module.PartNumber.ToLowerInvariant().Trim().StartsWith("ba")
                 || module.PartNumber.ToLowerInvariant().Trim().StartsWith("ocl")
-                || module.PartNumber.ToLowerInvariant().Trim().StartsWith("ocb");
+                || module.PartNumber.ToLowerInvariant().Trim().StartsWith("ocb"));
         }
 
         internal static bool IsOriginCodeModule(MemoryModule module)
