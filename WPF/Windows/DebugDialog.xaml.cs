@@ -1,5 +1,6 @@
 using Microsoft.VisualBasic.Devices;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Management;
@@ -256,6 +257,20 @@ namespace ZenTimings.Windows
                 AddLine($"-- {module.AddressConfig}");
                 AddLine();
             }
+
+            AddHeading("SMBUS Memory Modules");
+            AddLine();
+
+            var smbus = CpuSingleton.Instance.SmbusPiix4;
+
+            Dictionary<byte, Ddr5SpdInfo> results = Ddr5SpdDecoder.ReadAndDecodeAll(smbus);
+
+            foreach (KeyValuePair<byte, Ddr5SpdInfo> kvp in results)
+            {
+                AddLine(string.Format("DIMM at I2C address 0x{0:X2}", kvp.Key));
+                AddLine(kvp.Value.ToString());
+            }
+            AddLine();
 
             PrintChannels();
 
