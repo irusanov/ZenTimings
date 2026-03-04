@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Xml.Serialization;
 using ZenStates.Core;
@@ -43,8 +44,6 @@ namespace ZenTimings.ViewModels
         public List<IPlugin> Plugins { get; }
 
         public string CpuName { get; } = string.Empty;
-
-        public string CpuNameWithThreadCount => $"{CpuName} ({Cores})";
 
         private string _motherboardInfo = string.Empty;
         public string MotherboardInfo
@@ -119,7 +118,19 @@ namespace ZenTimings.ViewModels
         public bool IsDdr4Rfc2Enabled => (Timings as Ddr4Timings)?.RefreshMode == BankRefreshMode.FGR && Timings.FGR == 2;
         public bool IsDdr4Rfc4Enabled => (Timings as Ddr4Timings)?.RefreshMode == BankRefreshMode.FGR && Timings.FGR == 4;
 
-        public string Cores => $"{CpuSingleton.Instance.info.topology.cores}C/{CpuSingleton.Instance.info.topology.logicalCores}T";
+        public string CpuNameShortWithCores {
+            get {
+                string name = CpuName;
+                name = Regex.Replace(
+                    name,
+                    @"\s+(?:\d+\s*-\s*Core\s+Processor|(?:with|w/)\s+Radeon(?:\s+Vega)?\s+Graphics)",
+                    "",
+                    RegexOptions.IgnoreCase | RegexOptions.Compiled
+                );
+                string cores = $"({CpuSingleton.Instance.info.topology.cores}C/{CpuSingleton.Instance.info.topology.logicalCores}T)";
+                return $"{name.Trim()} {cores}";
+            }
+        }
 
         public MainViewModel(
             BaseDramTimings timings,
