@@ -4,15 +4,15 @@
         <DrawingGroup.ClipGeometry>
             <RectangleGeometry Rect="0.0,0.0,138.0,94.0"/>
         </DrawingGroup.ClipGeometry>
-        <DrawingGroup Opacity="0.0">
-            <GeometryDrawing Brush="#fdbc93fa">
-                <GeometryDrawing.Geometry>
-                    <RectangleGeometry Rect="0.0,0.0,138.0,94.0"/>
-                </GeometryDrawing.Geometry>
-            </GeometryDrawing>
-        </DrawingGroup>
-        <DrawingGroup Transform="1.0,0.0,0.0,1.0,-57.144303,-31.551369">
-            <DrawingGroup Transform="0.02262551,0.0,0.0,-0.02262551,31.747093,111.48219">
+        <DrawingGroup Transform="1.0,0.0,0.0,1.0,-18.591249,-31.551369">
+            <DrawingGroup Opacity="0.0">
+                <GeometryDrawing Brush="#ffffffff">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="18.591249,31.551369,138.0,94.0"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingGroup>
+            <DrawingGroup Transform="0.02016613,0.0,0.0,-0.02016613,3.4549618,107.69143">
                 <GeometryDrawing Brush="{DynamicResource LogoColor}">
                     <GeometryDrawing.Geometry>
                         <PathGeometry Figures="m 1450 2054 c 39 -10 1073 -194 1090 -194 c 11 0 20 -4 20 -10 c 0 -5 -22 -47 -49 -92 c -107 -183 -531 -920 -531 -924 c 0 -3 66 -3 147 -2 l 147 3 l 122 210 c 66 116 189 329 273 475 c 84 146 157 269 162 274 c 8 9 234 -26 246 -37 c 3 -3 -356 -634 -524 -919 c -2 -5 63 -8 144 -8 h 148 l 180 312 c 98 172 257 448 352 612 c 95 165 173 301 173 303 c 0 2 -476 2 -1057 2 c -582 -1 -1051 -3 -1043 -5 z" FillRule="Nonzero"/>

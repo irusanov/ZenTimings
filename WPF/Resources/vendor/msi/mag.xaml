@@ -1,18 +1,18 @@
 <?xml version="1.0" ?>
 <ResourceDictionary xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-    <DrawingGroup x:Key="m_g_xaml">
+    <DrawingGroup x:Key="mag_xaml">
         <DrawingGroup.ClipGeometry>
             <RectangleGeometry Rect="0.0,0.0,138.0,94.0"/>
         </DrawingGroup.ClipGeometry>
-        <DrawingGroup Opacity="0.0">
-            <GeometryDrawing Brush="#fdbc93fa">
-                <GeometryDrawing.Geometry>
-                    <RectangleGeometry Rect="0.0,0.0,138.0,94.0"/>
-                </GeometryDrawing.Geometry>
-            </GeometryDrawing>
-        </DrawingGroup>
-        <DrawingGroup Transform="1.0,0.0,0.0,1.0,-57.144303,-31.551369">
-            <DrawingGroup Transform="0.12161212,0.0,0.0,0.12161212,93.339448,84.714501">
+        <DrawingGroup Transform="1.0,0.0,0.0,1.0,-18.591249,-31.551369">
+            <DrawingGroup Opacity="0.0">
+                <GeometryDrawing Brush="#ffffffff">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="18.591249,31.551369,138.0,94.0"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingGroup>
+            <DrawingGroup Transform="0.10817222,0.0,0.0,0.10817222,58.361379,86.431321">
                 <DrawingGroup Transform="5.57906,0.0,0.0,5.57906,-302.49,-329.323">
                     <GeometryDrawing Brush="{DynamicResource LogoColor}">
                         <GeometryDrawing.Geometry>
@@ -44,5 +44,5 @@
             </DrawingGroup>
         </DrawingGroup>
     </DrawingGroup>
-    <DrawingImage Drawing="{StaticResource m_g_xaml}" x:Key="magLogo"/>
+    <DrawingImage Drawing="{StaticResource mag_xaml}" x:Key="magLogo"/>
 </ResourceDictionary>

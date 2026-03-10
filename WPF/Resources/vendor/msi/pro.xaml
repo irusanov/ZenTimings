@@ -5,54 +5,32 @@
             <RectangleGeometry Rect="0.0,0.0,93.235443,93.235443"/>
         </DrawingGroup.ClipGeometry>
         <DrawingGroup Transform="1.0,0.0,0.0,1.0,-22.382278,-0.38227844">
-            <DrawingGroup Transform="0.26458333,0.0,0.0,0.26458333,-71.172917,-119.0625">
-                <GeometryDrawing>
-                    <GeometryDrawing.Geometry>
-                        <PathGeometry Figures="M 0 519.17 L 217.95 650.12 L 217.95 490.18 L 0 359.22 Z"/>
-                    </GeometryDrawing.Geometry>
-                </GeometryDrawing>
-                <GeometryDrawing>
-                    <GeometryDrawing.Geometry>
-                        <PathGeometry Figures="M 663.6 519.17 L 881.55 650.12 L 881.55 490.18 L 663.6 359.22 Z"/>
-                    </GeometryDrawing.Geometry>
-                </GeometryDrawing>
-                <GeometryDrawing>
-                    <GeometryDrawing.Geometry>
-                        <PathGeometry Figures="M 426.28 0 L 295.33 217.95 L 455.27 217.95 L 586.22 0 Z"/>
-                    </GeometryDrawing.Geometry>
-                </GeometryDrawing>
-                <GeometryDrawing>
-                    <GeometryDrawing.Geometry>
-                        <PathGeometry Figures="M 426.28 791.4 L 295.33 1009.35 L 455.27 1009.35 L 586.22 791.4 Z"/>
-                    </GeometryDrawing.Geometry>
-                </GeometryDrawing>
-            </DrawingGroup>
-            <DrawingGroup Transform="0.13282945,0.0,0.0,0.13282945,10.452099,-20.035703">
-                <GeometryDrawing Brush="{DynamicResource LogoColor}">
-                    <GeometryDrawing.Geometry>
-                        <PathGeometry Figures="M 445.66 482.95 L 663.6 351.99 L 663.6 511.94 L 445.66 642.89 Z"/>
-                    </GeometryDrawing.Geometry>
-                </GeometryDrawing>
-                <GeometryDrawing Brush="{DynamicResource LogoColor}">
-                    <GeometryDrawing.Geometry>
-                        <PathGeometry Figures="M 435.89 482.95 L 217.95 351.99 L 217.95 511.94 L 435.89 642.89 Z"/>
-                    </GeometryDrawing.Geometry>
-                </GeometryDrawing>
-                <GeometryDrawing Brush="{DynamicResource LogoColor}">
-                    <GeometryDrawing.Geometry>
-                        <PathGeometry Figures="M 360.57 426.1 L 440.77 377.91 L 520.98 426.1 L 654.09 346.12 L 440.77 217.95 L 227.46 346.12 Z"/>
-                    </GeometryDrawing.Geometry>
-                </GeometryDrawing>
-                <GeometryDrawing Brush="{DynamicResource LogoColor}">
-                    <GeometryDrawing.Geometry>
-                        <PathGeometry Figures="M 217.95 791.4 L 359.99 706.05 L 359.99 609 L 217.95 523.65 Z"/>
-                    </GeometryDrawing.Geometry>
-                </GeometryDrawing>
-            </DrawingGroup>
             <DrawingGroup Opacity="0.0">
                 <GeometryDrawing Brush="#fdbc93fa">
                     <GeometryDrawing.Geometry>
                         <RectangleGeometry Rect="22.382278,0.38227844,93.235443,93.235443"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingGroup>
+            <DrawingGroup Transform="0.10611552,0.0,0.0,0.10611552,22.226931,-6.5538501">
+                <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="M 445.66 642.89 L 445.66 482.95 L 663.6 351.99 L 663.6 511.94 Z"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="M 435.89 642.89 L 435.89 482.95 L 217.95 351.99 L 217.95 511.94 Z"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="M 440.77 377.91 L 520.98 426.1 L 654.09 346.12 L 440.77 217.95 L 227.46 346.12 L 360.57 426.1 Z"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="M 217.95 523.65 L 217.95 791.4 L 359.99 706.05 L 359.99 609 Z"/>
                     </GeometryDrawing.Geometry>
                 </GeometryDrawing>
             </DrawingGroup>
