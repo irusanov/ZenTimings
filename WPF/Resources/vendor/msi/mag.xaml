@@ -1,0 +1,48 @@
+<?xml version="1.0" ?>
+<ResourceDictionary xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+    <DrawingGroup x:Key="m_g_xaml">
+        <DrawingGroup.ClipGeometry>
+            <RectangleGeometry Rect="0.0,0.0,138.0,94.0"/>
+        </DrawingGroup.ClipGeometry>
+        <DrawingGroup Opacity="0.0">
+            <GeometryDrawing Brush="#fdbc93fa">
+                <GeometryDrawing.Geometry>
+                    <RectangleGeometry Rect="0.0,0.0,138.0,94.0"/>
+                </GeometryDrawing.Geometry>
+            </GeometryDrawing>
+        </DrawingGroup>
+        <DrawingGroup Transform="1.0,0.0,0.0,1.0,-57.144303,-31.551369">
+            <DrawingGroup Transform="0.12161212,0.0,0.0,0.12161212,93.339448,84.714501">
+                <DrawingGroup Transform="5.57906,0.0,0.0,5.57906,-302.49,-329.323">
+                    <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                        <GeometryDrawing.Geometry>
+                            <PathGeometry Figures="m 144.283 61.9089 c -2.78772 -4.83671 -7.27831 -12.6217 -9.97908 -17.3 c -2.70078 -4.6783 -4.94429 -8.62086 -4.98558 -8.76124 c -0.0413 -0.140379 1.02126 -2.14674 2.36124 -4.45858 l 2.43631 -4.20334 l 20.248 0.132292 l 20.248 0.132292 l 2.25267 3.90833 c 1.23897 2.14958 2.25267 4.02331 2.25267 4.16384 V 35.778 l -19.5792 -0.0628 l -19.5792 -0.06279 v 0.234386 c 0 0.128913 3.42305 6.16976 7.60678 13.4241 l 7.60677 13.1897 l 14.3536 0.0035 l 14.3537 0.0035 v -0.236456 c 0 -0.13005 -1.14245 -2.21222 -2.53879 -4.62705 l -2.53878 -4.3906 l -9.9511 -0.0693 l -9.95109 -0.0693 l -2.32679 -4.06255 c -1.27973 -2.2344 -2.32679 -4.10963 -2.32679 -4.16719 c 0 -0.05755 6.83585 -0.104638 15.1908 -0.104638 h 15.1908 l 0.99646 1.78594 c 0.54804 0.982266 2.88001 5.03951 5.18214 9.01609 c 2.30213 3.97659 4.1857 7.30852 4.1857 7.4043 c 0 0.09578 -0.97673 1.87261 -2.17051 3.94849 l -2.1705 3.77435 l -20.6498 -0.0034 l -20.6498 -0.0034 z" FillRule="Nonzero"/>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                </DrawingGroup>
+                <DrawingGroup Transform="5.57906,0.0,0.0,5.57906,-302.49,-329.323">
+                    <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                        <GeometryDrawing.Geometry>
+                            <PathGeometry Figures="m 128.377 68.5269 c -0.70619 -1.20055 -2.28837 -3.936 -3.51597 -6.07877 l -2.23198 -3.89596 l -13.1472 -0.07279 l -13.1472 -0.07279 l 2.40319 -4.16719 l 2.40319 -4.16719 h 8.16432 h 8.16432 v -0.213566 c 0 -0.183002 -14.4225 -25.3418 -15.9172 -27.7661 l -0.53015 -0.859896 l 5.37939 0.01025 l 5.37939 0.01025 l 5.95313 10.3634 c 8.39205 14.6092 20.6885 35.9556 22.4049 38.8948 l 0.11589 0.198437 h -5.29705 h -5.29704 z" FillRule="Nonzero"/>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                </DrawingGroup>
+                <DrawingGroup Transform="5.57906,0.0,0.0,5.57906,-302.49,-329.323">
+                    <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                        <GeometryDrawing.Geometry>
+                            <PathGeometry Figures="m 69.5797 70.5776 c 0 -0.07866 0.278847 -0.587145 0.619662 -1.12996 c 0.340813 -0.542811 4.28988 -7.35677 8.7757 -15.1421 c 4.48582 -7.78536 9.45948 -16.4174 11.0526 -19.1823 c 1.5931 -2.7649 3.36931 -5.83935 3.94713 -6.83212 l 1.05058 -1.80504 l 2.62301 4.54941 c 1.44265 2.50218 2.62301 4.6016 2.62301 4.66538 c 0 0.06378 -3.17656 5.61538 -7.05902 12.3369 c -3.88246 6.7215 -8.39155 14.5426 -10.0202 17.3803 l -2.96118 5.15937 l -5.32563 0.07163 c -2.9291 0.03939 -5.32563 0.0073 -5.32563 -0.07141 z" FillRule="Nonzero"/>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                </DrawingGroup>
+                <DrawingGroup Transform="5.57906,0.0,0.0,5.57906,-302.49,-329.323">
+                    <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                        <GeometryDrawing.Geometry>
+                            <PathGeometry Figures="m 10.3131 70.6242 c 0 -0.04704 5.63114 -9.83993 12.5136 -21.762 L 35.3403 27.1857 h 20.1823 h 20.1823 l 2.46257 4.2628 l 2.46256 4.2628 l -10.0892 17.4966 l -10.0892 17.4966 l -5.22552 0.0026 l -5.22552 0.0026 l 0.0019 -0.198438 c 0.0021 -0.225467 -0.564039 0.767469 10.9334 -19.1713 c 4.75856 -8.25223 8.72237 -15.1876 8.80846 -15.412 l 0.156649 -0.408112 h -4.35292 h -4.35292 l -0.397801 0.463021 c -0.316762 0.368698 -6.19612 10.45 -9.41252 16.1396 L 50.7491 53.2471 h -5.26905 h -5.26905 v -0.205711 c 0 -0.113143 0.164082 -0.440565 0.364623 -0.727604 c 0.706035 -1.01056 9.42496 -16.3308 9.42496 -16.5608 v -0.232957 h -4.33323 h -4.33323 l -0.265272 0.330729 c -0.145899 0.181901 -4.10576 6.99823 -8.79969 15.1474 c -4.69393 8.14917 -9.17694 15.918 -9.96224 17.2641 l -1.42782 2.4474 h -5.28301 c -2.90566 0 -5.28301 -0.03849 -5.28301 -0.08552 z" FillRule="Nonzero"/>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </DrawingGroup>
+        </DrawingGroup>
+    </DrawingGroup>
+    <DrawingImage Drawing="{StaticResource m_g_xaml}" x:Key="magLogo"/>
+</ResourceDictionary>

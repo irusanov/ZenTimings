@@ -13,6 +13,10 @@
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/biwin/biwin-logo.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/biwin/origincode-logo.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/msi/meg.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/msi/mpg.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/msi/mag.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/msi/msi.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/msi/pro.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/colorful/igame-logo.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
