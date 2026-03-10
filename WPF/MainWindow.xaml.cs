@@ -172,7 +172,8 @@ namespace ZenTimings
                     settings,
                     plugins,
                     motherboardLogoName,
-                    GetAgesaVersion()
+                    GetAgesaVersion(),
+                    cpu.GetMemoryConfig().SpdInfo.Values.FirstOrDefault(d => d.IsValid).PmicData
                 );
 
                 DataContext = mainViewModel;
@@ -662,7 +663,11 @@ namespace ZenTimings
                             int selectedIndex = comboBoxPartNumber?.SelectedIndex ?? 0;
                             MemoryModule module = modules?.Count > 0 ? modules[selectedIndex] : null;
                             mainViewModel.Timings = ReadTimings(module?.DctOffset ?? 0);
+                            //Dictionary<byte, Ddr5SpdInfo> results = Ddr5SpdDecoder.ReadAndDecodeAll(CpuSingleton.Instance.SmbusPiix4);
                         }
+
+                        mainViewModel.PmicData = cpu.GetMemoryConfig().SpdInfo.Values.ElementAtOrDefault(comboBoxPartNumber?.SelectedIndex ?? 0)?.PmicData;
+                        //mainViewModel.PmicData = Ddr5PmicReader.ReadAllDimms(CpuSingleton.Instance.SmbusPiix4).Values.ElementAtOrDefault(comboBoxPartNumber?.SelectedIndex ?? 0);
 
                         lastMclk = newMclk;
 

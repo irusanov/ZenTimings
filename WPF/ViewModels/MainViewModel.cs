@@ -132,6 +132,51 @@ namespace ZenTimings.ViewModels
             }
         }
 
+        private float _swaAdcV;
+        public float SwaAdcV {
+            get => _swaAdcV;
+            set {
+                _swaAdcV = value;
+                OnPropertyChanged("SwaAdcV");
+            }
+        }
+
+        private float _swbAdcV;
+        public float SwbAdcV
+        {
+            get => _swbAdcV;
+            set
+            {
+                _swbAdcV = value;
+                OnPropertyChanged("SwbAdcV");
+            }
+        }
+
+        private float _vppAdcV;
+        public float VppAdcV
+        {
+            get => _vppAdcV;
+            set
+            {
+                _vppAdcV = value;
+                OnPropertyChanged("VppAdcV");
+            }
+        }
+
+        private Ddr5PmicData _ddr5PmicData;
+        public Ddr5PmicData PmicData
+        {
+            get => _ddr5PmicData;
+            set { 
+                _ddr5PmicData = value;
+                
+                SwaAdcV = PmicData.SwaAdcMv / 1000.000f;
+                SwbAdcV = PmicData.SwbAdcMv / 1000.000f;
+                VppAdcV = PmicData.SwcAdcMv / 1000.000f;
+                OnPropertyChanged("PmicData");
+            }
+        }
+
         public MainViewModel(
             BaseDramTimings timings,
             MemType memoryType,
@@ -139,7 +184,8 @@ namespace ZenTimings.ViewModels
             AppSettings settings,
             List<IPlugin> plugins,
             string motherboardLogoName,
-            string agesaVersion)
+            string agesaVersion,
+            Ddr5PmicData pmicData)
         {
             Timings = timings;
             Settings = settings;
@@ -163,6 +209,9 @@ namespace ZenTimings.ViewModels
             MotherboardLogoTooltip = motherboardLogoName != null
                 ? $"Click to visit {CpuSingleton.Instance.systemInfo.MbName} page"
                 : string.Empty;
+
+            PmicData = pmicData;
+            //pmicData.
         }
 
         bool IsMismatch(
@@ -383,6 +432,104 @@ namespace ZenTimings.ViewModels
             html += "</body></html>";
 
             return html;
+        }
+
+        public string GetJSON()
+        {
+            var cpu = CpuSingleton.Instance;
+            var systemInfo = cpu.systemInfo;
+            string appVersion = $"{System.Windows.Forms.Application.ProductName} {System.Windows.Forms.Application.ProductVersion}";
+
+            var memConfigs = cpu.GetMemoryConfig();
+            var allTimings = memConfigs.Timings;
+            var uniqueTimings = allTimings
+                .GroupBy(t => t.Key)
+                .Select(g => g.First())
+                .ToList();
+
+            var jsonData = new
+            {
+                Application = new
+                {
+                    Version = appVersion,
+                    CoreVersion = cpu.Version,
+                    PawnIOVersion = DriverHelper.Version,
+                    ExportDate = DateTime.Now.ToString("dd MMMM yyyy HH:mm:ss")
+                },
+                SystemInfo = new
+                {
+                    CpuName,
+                    MotherboardName = systemInfo.MbName,
+                    systemInfo.BiosVersion,
+                    SmuVersion,
+                    CpuId = $"{systemInfo.CpuId:X8}",
+                    PatchLevel = $"{systemInfo.PatchLevel:X8}"
+                },
+                MemoryConfiguration = new
+                {
+                    Type = MemoryType.ToString(),
+                    Frequency = MemoryFrequency,
+                    TotalCapacity = TotalCapacity?.ToString() ?? "Unknown"
+                },
+                MemoryTimings = uniqueTimings.Select(timing => new
+                {
+                    DCT = timing.Key >> 20,
+                    Timings = GetTimingDictionary(timing.Value)
+                }).ToList(),
+                PowerTable = GetPowerTableDictionary(cpu.powerTable),
+                AOD = GetAODDictionary(cpu.info.aod.Table.Data)
+            };
+
+            return null;
+            //return System.Text.Json.JsonSerializer.Serialize(jsonData, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        }
+
+        private Dictionary<string, object> GetTimingDictionary(BaseDramTimings timings)
+        {
+            var dict = new Dictionary<string, object>();
+            var props = timings.GetType().GetProperties();
+
+            foreach (var prop in props)
+            {
+                if (prop.GetIndexParameters().Length == 0)
+                {
+                    dict[prop.Name] = prop.GetValue(timings) ?? "N/A";
+                }
+            }
+
+            return dict;
+        }
+
+        private Dictionary<string, object> GetPowerTableDictionary(PowerTable powerTable)
+        {
+            var dict = new Dictionary<string, object>();
+            var props = powerTable.GetType().GetProperties();
+
+            foreach (var prop in props)
+            {
+                if (prop.Name != "Table")
+                {
+                    dict[prop.Name] = prop.GetValue(powerTable) ?? "N/A";
+                }
+            }
+
+            return dict;
+        }
+
+        private Dictionary<string, object> GetAODDictionary(object aodData)
+        {
+            var dict = new Dictionary<string, object>();
+            var props = aodData.GetType().GetProperties();
+
+            foreach (var prop in props)
+            {
+                if (!prop.Name.ToLowerInvariant().StartsWith("t"))
+                {
+                    dict[prop.Name] = prop.GetValue(aodData) ?? "N/A";
+                }
+            }
+
+            return dict;
         }
     }
 }

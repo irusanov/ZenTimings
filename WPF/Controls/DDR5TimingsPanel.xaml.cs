@@ -22,9 +22,9 @@ namespace ZenTimings.Controls
             AodData Data = aod.Table.Data;
             if (Data != null)
             {
-                labelMemVdd.IsEnabled = true;
-                labelMemVddq.IsEnabled = true;
-                labelMemVpp.IsEnabled = true;
+                //labelMemVdd.IsEnabled = true;
+                //labelMemVddq.IsEnabled = true;
+                //labelMemVpp.IsEnabled = true;
                 labelApuVddio.IsEnabled = true;
 
                 labelProcCaDs.IsEnabled = true;
@@ -36,9 +36,9 @@ namespace ZenTimings.Controls
                 labelRttParkD5.IsEnabled = true;
                 labelRttParkDqs.IsEnabled = true;
 
-                textBoxMemVddio.Text = Data.MemVddio.ToString();
-                textBoxMemVddq.Text = Data.MemVddq.ToString();
-                textBoxMemVpp.Text = Data.MemVpp.ToString();
+                //textBoxMemVddio.Text = Data.MemVddio.ToString();
+                //textBoxMemVddq.Text = Data.MemVddq.ToString();
+                //textBoxMemVpp.Text = Data.MemVpp.ToString();
                 textBoxApuVddio.Text = Data.ApuVddio.ToString();
 
                 try

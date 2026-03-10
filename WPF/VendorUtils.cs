@@ -88,25 +88,24 @@ namespace ZenTimings
 
         internal static bool IsBiwinModule(MemoryModule module)
         {
-            return module.Manufacturer.ToLowerInvariant().Contains("biwin") && 
-                ( module.PartNumber.ToLowerInvariant().Trim().StartsWith("bm")
-                || module.PartNumber.ToLowerInvariant().Trim().StartsWith("bx")
-                || module.PartNumber.ToLowerInvariant().Trim().StartsWith("ba")
-                || module.PartNumber.ToLowerInvariant().Trim().StartsWith("ocl")
-                || module.PartNumber.ToLowerInvariant().Trim().StartsWith("ocb"));
+            return module.Manufacturer.ToLowerInvariant().Contains("biwin");
+                //&& ( module.PartNumber.ToLowerInvariant().Trim().StartsWith("bm")
+                //|| module.PartNumber.ToLowerInvariant().Trim().StartsWith("bx")
+                //|| module.PartNumber.ToLowerInvariant().Trim().StartsWith("ba")
+                //|| module.PartNumber.ToLowerInvariant().Trim().StartsWith("ocl")
+                //|| module.PartNumber.ToLowerInvariant().Trim().StartsWith("ocb"));
         }
 
         internal static bool IsOriginCodeModule(MemoryModule module)
         {
-            return module.PartNumber.ToLowerInvariant().Trim().StartsWith("ocl")
-                || module.PartNumber.ToLowerInvariant().Trim().StartsWith("ocb");
+            return module.PartNumber.ToLowerInvariant().Trim().StartsWith("ocb");
         }
 
         internal static bool IsColorfulModule(MemoryModule module)
         {
-            //return module.Manufacturer.ToLowerInvariant().Contains("colorful")
+            return module.Manufacturer.ToLowerInvariant().Contains("colorful");
             //    && module.PartNumber.ToLowerInvariant().Trim().StartsWith("ig");
-            return module.PartNumber.ToLowerInvariant().Trim().StartsWith("ig");
+            //return module.PartNumber.ToLowerInvariant().Trim().StartsWith("ig");
         }
 
         internal static string GetCpuNameString(SystemInfo info)
