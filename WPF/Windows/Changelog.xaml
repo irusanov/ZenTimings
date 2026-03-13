@@ -38,6 +38,7 @@
                 <TextBlock Text=" - Display tRDPRE and tWRPRE for 8000-series APUs" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Update Phoenix tables to fix wrong voltages display on 8700G" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Remove encrypted settings previously used for AGESA version storage" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Update vendor logos" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text="" />
             </StackPanel>
             <Border Grid.Row="1" Grid.ColumnSpan="2" Margin="15">

@@ -113,9 +113,9 @@ namespace ZenTimings
                 return null;
 
             if (IsGSkillModule(module)) return "gskillLogo";
-            if (IsBiwinModule(module) && IsOriginCodeModule(module)) return "originCodeLogo";
+            if (IsOriginCodeModule(module)) return "originCodeLogo";
             if (IsBiwinModule(module)) return "biwinLogo";
-            if (IsColorfulModule(module)) return "igameLogo";
+            if (IsColorfulModule(module) && IsIgameModule(module)) return "igameLogo";
 
             return null;
         }
@@ -146,7 +146,7 @@ namespace ZenTimings
             if (module == null)
                 return false;
 
-            return StartsWith(module.PartNumber?.Trim(), "ocb");
+            return Contains(module.Manufacturer, "origin");
         }
 
         internal static bool IsColorfulModule(MemoryModule module)
@@ -155,6 +155,14 @@ namespace ZenTimings
                 return false;
 
             return Contains(module.Manufacturer, "colorful");
+        }
+
+        internal static bool IsIgameModule(MemoryModule module)
+        {
+            if (module == null)
+                return false;
+
+            return StartsWith(module.PartNumber, "ig");
         }
 
         internal static string GetCpuNameString(SystemInfo info)
@@ -184,7 +192,9 @@ namespace ZenTimings
 
         private static bool IsMsiMotherboard(SystemInfo info) =>
             StartsWith(info?.MbVendor, "msi") ||
-            StartsWith(info?.MbVendor, "Microstar International");
+            StartsWith(info?.MbVendor, "Micro Star") ||
+            StartsWith(info?.MbVendor, "Microstar") ||
+            StartsWith(info?.MbVendor, "Micro-Star");
 
         private static bool IsMegMotherboard(SystemInfo info) =>
             IsMsiMotherboard(info) &&
