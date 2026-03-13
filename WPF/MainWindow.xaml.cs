@@ -124,7 +124,7 @@ namespace ZenTimings
                 SplashWindow.Loading("PawnIO");
                 CheckForDriver();
 
-                SplashWindow.Loading("CPU");
+                SplashWindow.Loading("Core");
                 cpu = CpuSingleton.Instance;
 
                 if (cpu.info.family.Equals(Cpu.Family.UNSUPPORTED))
@@ -666,6 +666,7 @@ namespace ZenTimings
                             //Dictionary<byte, Ddr5SpdInfo> results = Ddr5SpdDecoder.ReadAndDecodeAll(CpuSingleton.Instance.SmbusPiix4);
                         }
 
+                        cpu.memoryConfig.RefreshTelemetry();
                         mainViewModel.PmicData = cpu.GetMemoryConfig().SpdInfo.Values.ElementAtOrDefault(comboBoxPartNumber?.SelectedIndex ?? 0)?.PmicData;
                         //mainViewModel.PmicData = Ddr5PmicReader.ReadAllDimms(CpuSingleton.Instance.SmbusPiix4).Values.ElementAtOrDefault(comboBoxPartNumber?.SelectedIndex ?? 0);
 
@@ -985,21 +986,6 @@ namespace ZenTimings
 
         private void AdonisWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (settings.AdvancedMode && mainViewModel.IsSearchingForAgesaVersion)
-            {
-                MessageBoxResult result = MessageBox.Show(
-                    "The application is currently searching for AGESA version. If closed, the process will start again on the next launch. Do you still want to exit?",
-                    "ZenTimings",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Information);
-
-                if (result == MessageBoxResult.No)
-                {
-                    e.Cancel = true;
-                    return;
-                }
-            }
-
             siWnd?.Close();
 
             if (settings.SaveWindowPosition)
