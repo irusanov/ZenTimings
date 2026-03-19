@@ -181,7 +181,7 @@ namespace ZenTimings
                 if (cpu != null && settings.AdvancedMode)
                 {
 
-                    PowerCfgTimer.Interval = TimeSpan.FromMilliseconds(2000);
+                    PowerCfgTimer.Interval = TimeSpan.FromMilliseconds(settings.AutoRefreshInterval);
                     PowerCfgTimer.Tick += PowerCfgTimer_Tick;
 
                     SplashWindow.Loading("Reading power table");
@@ -650,15 +650,16 @@ namespace ZenTimings
                                 }));
                     }
 
+                    //ReadDDR4MemoryConfig();
+                    cpu.RefreshPowerTable();
+                    var voltagesUpdated = cpu.memoryConfig.RefreshTelemetry(settings.AutoRefreshInterval);
+
                     Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() =>
                     {
-                        //ReadDDR4MemoryConfig();
-                        cpu.RefreshPowerTable();
                         var newMclk = cpu.powerTable.MCLK;
 
                         if (newMclk != lastMclk)
                         {
-                            Console.WriteLine("Reading timings");
                             var modules = cpu.memoryConfig.Modules;
                             int selectedIndex = comboBoxPartNumber?.SelectedIndex ?? 0;
                             MemoryModule module = modules?.Count > 0 ? modules[selectedIndex] : null;
@@ -666,9 +667,8 @@ namespace ZenTimings
                             //Dictionary<byte, Ddr5SpdInfo> results = Ddr5SpdDecoder.ReadAndDecodeAll(CpuSingleton.Instance.SmbusPiix4);
                         }
 
-                        cpu.memoryConfig.RefreshTelemetry();
-                        mainViewModel.PmicData = cpu.GetMemoryConfig().SpdInfo.Values.ElementAtOrDefault(comboBoxPartNumber?.SelectedIndex ?? 0)?.PmicData;
-                        //mainViewModel.PmicData = Ddr5PmicReader.ReadAllDimms(CpuSingleton.Instance.SmbusPiix4).Values.ElementAtOrDefault(comboBoxPartNumber?.SelectedIndex ?? 0);
+                        if (voltagesUpdated)
+                            mainViewModel.PmicData = cpu.memoryConfig.SpdInfo.Values.ElementAtOrDefault(comboBoxPartNumber?.SelectedIndex ?? 0)?.PmicData ?? null;
 
                         lastMclk = newMclk;
 
