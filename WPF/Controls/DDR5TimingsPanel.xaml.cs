@@ -27,14 +27,14 @@ namespace ZenTimings.Controls
                 //labelMemVpp.IsEnabled = true;
                 labelApuVddio.IsEnabled = true;
 
-                labelProcCaDs.IsEnabled = true;
-                labelProcDqDs.IsEnabled = true;
-                labelDramDqDs.IsEnabled = true;
-                labelRttWrD5.IsEnabled = true;
-                labelRttNomWr.IsEnabled = true;
-                labelRttNomRd.IsEnabled = true;
-                labelRttParkD5.IsEnabled = true;
-                labelRttParkDqs.IsEnabled = true;
+                //labelProcCaDs.IsEnabled = true;
+                //labelProcDqDs.IsEnabled = true;
+                //labelDramDqDs.IsEnabled = true;
+                //labelRttWrD5.IsEnabled = true;
+                //labelRttNomWr.IsEnabled = true;
+                //labelRttNomRd.IsEnabled = true;
+                //labelRttParkD5.IsEnabled = true;
+                //labelRttParkDqs.IsEnabled = true;
 
                 //textBoxMemVddio.Text = Data.MemVddio.ToString();
                 //textBoxMemVddq.Text = Data.MemVddq.ToString();
@@ -68,15 +68,15 @@ namespace ZenTimings.Controls
                 }
                 catch { }
 
-                textBoxCadBusDrvStren.Text = Data.CadBusDrvStren.ToString();
-                textBoxDramDataDrvStren.Text = Data.DramDataDrvStren.ToString();
-                textBoxProcDataDrvStren.Text = Data.ProcDataDrvStren.ToString();
+                //textBoxCadBusDrvStren.Text = Data.CadBusDrvStren.ToString();
+                //textBoxDramDataDrvStren.Text = Data.DramDataDrvStren.ToString();
+                //textBoxProcDataDrvStren.Text = Data.ProcDataDrvStren.ToString();
 
-                textBoxRttWrD5.Text = Data.RttWr.ToString();
-                textBoxRttNomWr.Text = Data.RttNomWr.ToString();
-                textBoxRttNomRd.Text = Data.RttNomRd.ToString();
-                textBoxRttParkD5.Text = Data.RttPark.ToString();
-                textBoxRttParkDqs.Text = Data.RttParkDqs.ToString();
+                //textBoxRttWrD5.Text = Data.RttWr.ToString();
+                //textBoxRttNomWr.Text = Data.RttNomWr.ToString();
+                //textBoxRttNomRd.Text = Data.RttNomRd.ToString();
+                //textBoxRttParkD5.Text = Data.RttPark.ToString();
+                //textBoxRttParkDqs.Text = Data.RttParkDqs.ToString();
             }
         }
     }

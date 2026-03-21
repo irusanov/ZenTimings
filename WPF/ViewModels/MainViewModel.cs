@@ -121,16 +121,23 @@ namespace ZenTimings.ViewModels
         public string CpuNameShortWithCores {
             get {
                 string name = CpuName;
-                name = Regex.Replace(
+                var match = Regex.Match(
                     name,
-                    @"\s+(?:\d+\s*-\s*Core\s+Processor|(?:with|w/)\s+Radeon(?:\s+Vega)?\s+Graphics)",
-                    "",
+                    @"\s+(?:\d+\s*-\s*Core\s+Processor|(?:with|w/)\s+Radeon)",
                     RegexOptions.IgnoreCase | RegexOptions.Compiled
                 );
+
+                if (match.Success)
+                {
+                    name = name.Substring(0, match.Index).Trim();
+                }
+
                 string cores = $"({CpuSingleton.Instance.info.topology.cores}C/{CpuSingleton.Instance.info.topology.logicalCores}T)";
-                return $"{name.Trim()} {cores}";
+                return $"{name} {cores}";
             }
         }
+
+        public ApobData ApobData { get; }
 
         private float _swaAdcV;
         public float SwaAdcV {
@@ -199,6 +206,7 @@ namespace ZenTimings.ViewModels
 
             PowerTable = CpuSingleton.Instance.powerTable;
             CodeName = CpuSingleton.Instance.info.codeName;
+            ApobData = CpuSingleton.Instance.info.apob?.Data ?? new ApobData();
             //AgesaVersion = AGESA_SEARCHING;
             AgesaVersion = agesaVersion;
 

@@ -31,6 +31,7 @@
                 <TextBlock Text="v1.37" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" />
                 <TextBlock Text=" - Read memory voltages from PMIC" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Read memory sticks SPD" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Add more impedances" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Dynamically calculate tRFC (ns) based on detected BCLK and current memory frequency" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Automatically gray out tRFCsb when FGR (Strict) mode is enabled" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Skip timing refresh if MCLK has not changed" TextWrapping="WrapWithOverflow" />

@@ -291,6 +291,18 @@ namespace ZenTimings.Windows
 
             AddLine();
 
+            AddHeading("APOB Data");
+            AddLine();
+
+            properties = cpu.info.apob.Data.GetType().GetProperties();
+
+            foreach (PropertyInfo property in properties)
+            {
+                object value = property.GetValue(cpu.info.apob.Data);
+                AddLine($"{property.Name + ":",-19}{value}");
+            }
+            AddLine();
+
             // AOD Table
             AddHeading("ACPI: AOD Table Header");
             try
