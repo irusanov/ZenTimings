@@ -9,6 +9,7 @@
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/rog/rog-logo.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/ayw/ayw-logo.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/proart/proart-logo.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/tuf/tuf-logo.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/gskill/gskill-logo.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/biwin/biwin-logo.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/biwin/origincode-logo.xaml" />
@@ -17,6 +18,7 @@
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/msi/mag.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/msi/msi.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/msi/pro.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/msi/msi-dragon.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/colorful/igame-logo.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
@@ -65,6 +67,7 @@
 
     <!-- logo -->
     <SolidColorBrush x:Key="LogoColor" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
+    <SolidColorBrush x:Key="LogoColorAlt" Color="#D1D4C9" />
 </ResourceDictionary>
 
 <!--

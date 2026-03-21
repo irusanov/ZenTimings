@@ -315,6 +315,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
+    <Resource Include="Resources\vendor\msi\msi-dragon.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Resources\vendor\asus\tuf\tuf-logo.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
     <Page Include="Windows\AboutDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -374,12 +382,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\PawnIO\PawnIO_setup.exe" />
-    <Content Include="Resources\vendor\asus\ayw\ayw-logo.svg" />
-    <Content Include="Resources\vendor\asus\rog\rog-logo.svg" />
-    <Content Include="Resources\vendor\biwin\biwin-logo.svg" />
-    <Content Include="Resources\vendor\biwin\origincode-logo.svg" />
-    <Content Include="Resources\vendor\gskill\gskill-logo.svg" />
-    <Content Include="Resources\vendor\gskill\gskill.svg" />
     <Resource Include="Resources\new-icon\64.png" />
     <Resource Include="Resources\new-icon\16.png" />
     <Resource Include="Resources\ZenTimings2022.ico" />

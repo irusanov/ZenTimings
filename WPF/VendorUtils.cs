@@ -18,6 +18,10 @@ namespace ZenTimings
             IsAsusMotherboard(info) &&
             Contains(info?.MbName, "proart");
 
+        internal static bool IsTufMotherboard(SystemInfo info) =>
+            IsAsusMotherboard(info) &&
+            StartsWith(info?.MbVendor, "tuf");
+
         internal static string GetMotherboardLink(SystemInfo info)
         {
             if (info == null || string.IsNullOrWhiteSpace(info.MbName))
@@ -72,6 +76,11 @@ namespace ZenTimings
                 return $"https://asus.com/motherboards-components/motherboards/proart/{name}";
             }
 
+            if (IsTufMotherboard(info))
+            {
+                return $"https://asus.com/motherboards-components/motherboards/tuf-gaming/{name}";
+            }
+
             if (!ContainsAny(info.MbName, "X870", "B850", "B840"))
             {
                 name = $"{name}-model";
@@ -92,17 +101,28 @@ namespace ZenTimings
 
         internal static string GetMotherboardLogo(SystemInfo info)
         {
-            if (info == null)
+            if (info == null || string.IsNullOrWhiteSpace(info.MbName))
                 return null;
 
-            if (IsRogMotherboard(info)) return "rogLogo";
-            if (IsAYWMotherboard(info)) return "aywLogo";
-            if (IsProArtMotherboard(info)) return "proartLogo";
-            if (IsMegMotherboard(info)) return "megLogo";
-            if (IsMagMotherboard(info)) return "magLogo";
-            if (IsMpgMotherboard(info)) return "mpgLogo";
-            if (IsMsiMotherboard(info)) return "msiLogo";
-            if (IsMsiProMotherboard(info)) return "msiProLogo";
+            var mbName = info.MbName.Trim().ToLowerInvariant();
+
+            if (IsAsusMotherboard(info))
+            {
+                if (IsRogMotherboard(info)) return "rogLogo";
+                if (IsAYWMotherboard(info)) return "aywLogo";
+                if (IsProArtMotherboard(info)) return "proartLogo";
+                if (IsTufMotherboard(info)) return "tufLogo";
+                return "asusLogo";
+            }
+            else if (IsMsiMotherboard(info))
+            {
+                if (StartsWith(mbName, "meg")) return "megLogo";
+                if (StartsWith(mbName, "mag")) return "magLogo";
+                if (StartsWith(mbName, "mpg")) return "mpgLogo";
+                if (StartsWith(mbName, "pro")) return "msiProLogo";
+                if (Contains(mbName, "mpower") || Contains(mbName, "unify")) return "msiDragonLogo";
+                return "msiLogo";
+            }
 
             return null;
         }
@@ -190,28 +210,7 @@ namespace ZenTimings
         private static bool IsAsusMotherboard(SystemInfo info) =>
             Contains(info?.MbVendor, "asus");
 
-        private static bool IsMsiMotherboard(SystemInfo info) =>
-            StartsWith(info?.MbVendor, "msi") ||
-            StartsWith(info?.MbVendor, "Micro Star") ||
-            StartsWith(info?.MbVendor, "Microstar") ||
-            StartsWith(info?.MbVendor, "Micro-Star");
-
-        private static bool IsMegMotherboard(SystemInfo info) =>
-            IsMsiMotherboard(info) &&
-            StartsWith(info?.MbName, "meg");
-
-        private static bool IsMagMotherboard(SystemInfo info) =>
-            IsMsiMotherboard(info) &&
-            StartsWith(info?.MbName, "mag");
-
-        private static bool IsMpgMotherboard(SystemInfo info) =>
-            IsMsiMotherboard(info) &&
-            StartsWith(info?.MbName, "mpg");
-
-        private static bool IsMsiProMotherboard(SystemInfo info) =>
-            IsMsiMotherboard(info) &&
-            StartsWith(info?.MbName, "pro");
-
+        private static bool IsMsiMotherboard(SystemInfo info) => ContainsAny(info?.MbVendor, "msi", "Micro Star", "Microstar", "Micro-Star");
         private static bool Contains(string source, string value) =>
             !string.IsNullOrEmpty(source) &&
             source.IndexOf(value, StringComparison.OrdinalIgnoreCase) >= 0;
