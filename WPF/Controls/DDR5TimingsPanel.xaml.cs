@@ -47,23 +47,23 @@ namespace ZenTimings.Controls
 
                     if (cpu.info.family == Cpu.Family.FAMILY_1AH && Data?.ProcOdtPullUp != null)
                     {
-                        labelProcODT.Visibility = Visibility.Collapsed;
-                        textBoxProcODT.Visibility = Visibility.Collapsed;
-                        procOdtDivider1.Visibility = Visibility.Collapsed;
-                        procOdtDivider2.Visibility = Visibility.Collapsed;
-                        labelProcOdtPullUp.Visibility = Visibility.Visible;
-                        labelProcOdtPullUp.IsEnabled = true;
-                        labelProcOdtPullDown.Visibility = Visibility.Visible;
-                        labelProcOdtPullDown.IsEnabled = true;
-                        textBoxProcOdtPullUp.Visibility = Visibility.Visible;
-                        textBoxProcOdtPullDown.Visibility = Visibility.Visible;
-                        textBoxProcOdtPullUp.Text = Data.ProcOdtPullUp.ToString();
-                        textBoxProcOdtPullDown.Text = Data.ProcOdtPullDown.ToString();
+                        //labelProcODT.Visibility = Visibility.Collapsed;
+                        //textBoxProcODT.Visibility = Visibility.Collapsed;
+                        //procOdtDivider1.Visibility = Visibility.Collapsed;
+                        ////procOdtDivider2.Visibility = Visibility.Collapsed;
+                        //labelProcOdtPullUp.Visibility = Visibility.Visible;
+                        //labelProcOdtPullUp.IsEnabled = true;
+                        //labelProcOdtPullDown.Visibility = Visibility.Visible;
+                        //labelProcOdtPullDown.IsEnabled = true;
+                        //textBoxProcOdtPullUp.Visibility = Visibility.Visible;
+                        //textBoxProcOdtPullDown.Visibility = Visibility.Visible;
+                        //textBoxProcOdtPullUp.Text = Data.ProcOdtPullUp.ToString();
+                        //textBoxProcOdtPullDown.Text = Data.ProcOdtPullDown.ToString();
                     }
                     else
                     {
-                        labelProcODT.IsEnabled = true;
-                        textBoxProcODT.Text = Data.ProcOdt.ToString();
+                        //labelProcODT.IsEnabled = true;
+                        //textBoxProcODT.Text = Data.ProcOdt.ToString();
                     }
                 }
                 catch { }
