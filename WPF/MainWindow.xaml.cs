@@ -947,7 +947,9 @@ namespace ZenTimings
         {
             if (sender is ComboBox combo && combo.Items.Count > 0)
             {
-                mainViewModel.Timings = ReadTimings(cpu.memoryConfig.Modules[combo.SelectedIndex].DctOffset);
+                var dctOffset = cpu.memoryConfig.Modules[combo.SelectedIndex].DctOffset;
+                mainViewModel.Timings = ReadTimings(dctOffset);
+                mainViewModel.SelectedDctOffset = dctOffset;
             }
         }
 
