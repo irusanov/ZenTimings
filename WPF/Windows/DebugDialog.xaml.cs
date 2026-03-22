@@ -291,16 +291,39 @@ namespace ZenTimings.Windows
 
             AddLine();
 
-            AddHeading("APOB Data");
+            AddHeading("APOB");
             AddLine();
+            AddLine("-- Header ---------------------------------");
 
-            properties = cpu.info.apob.Data.GetType().GetProperties();
+            properties = cpu.info.apob.Header.GetType().GetProperties();
 
             foreach (PropertyInfo property in properties)
             {
-                object value = property.GetValue(cpu.info.apob.Data);
+                object value = property.GetValue(cpu.info.apob.Header);
                 AddLine($"{property.Name + ":",-19}{value}");
             }
+
+            AddLine();
+
+            AddLine("-- Data ---------------------------------");
+
+            var dataArray = cpu.info.apob.Data;
+
+            for (int i = 0; i < Math.Min(2, dataArray.Length); i++)
+            {
+                AddLine($"-- Data[{i}]");
+
+                properties = dataArray[i].GetType().GetProperties();
+
+                foreach (PropertyInfo property in properties)
+                {
+                    object value = property.GetValue(dataArray[i]);
+                    AddLine($"{property.Name + ":",-19}{value}");
+                }
+
+                AddLine();
+            }
+
             AddLine();
 
             // AOD Table
