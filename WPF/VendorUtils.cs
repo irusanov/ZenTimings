@@ -112,15 +112,15 @@ namespace ZenTimings
                 if (IsAYWMotherboard(info)) return "aywLogo";
                 if (IsProArtMotherboard(info)) return "proartLogo";
                 if (IsTufMotherboard(info)) return "tufLogo";
-                return "asusLogo";
+                return null;
             }
             else if (IsMsiMotherboard(info))
             {
+                if (Contains(mbName, "mpower") || Contains(mbName, "gaming")) return "msiDragonLogo";
                 if (StartsWith(mbName, "meg")) return "megLogo";
                 if (StartsWith(mbName, "mag")) return "magLogo";
                 if (StartsWith(mbName, "mpg")) return "mpgLogo";
                 if (StartsWith(mbName, "pro")) return "msiProLogo";
-                if (Contains(mbName, "mpower") || Contains(mbName, "unify")) return "msiDragonLogo";
                 return "msiLogo";
             }
 

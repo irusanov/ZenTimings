@@ -179,6 +179,7 @@
                 <ComboBoxItem Content="Dracula" />
                 <ComboBoxItem Content="Retro Wave" />
                 <ComboBoxItem Content="Burnt Orange" />
+                <ComboBoxItem Content="Charcoal" />
             </ComboBox>
 
             <TextBlock
