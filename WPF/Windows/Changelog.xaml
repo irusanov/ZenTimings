@@ -29,6 +29,9 @@
             <StackPanel Orientation="Vertical" Margin="15" Grid.ColumnSpan="2" Grid.Row="0" Width="424">
                 <!-- TextBlock Text="Changelog" FontSize="14" FontWeight="Bold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" /-->
                 <TextBlock Text="v1.37" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" />
+                <TextBlock Text=" - Add black theme" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Add Asus TUF logo" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Display more controller settings for 7000 and 9000 desktop series" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Read memory voltages from PMIC" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Read memory sticks SPD" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Add more impedances" TextWrapping="WrapWithOverflow" />
