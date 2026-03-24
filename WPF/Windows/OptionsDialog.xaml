@@ -180,6 +180,7 @@
                 <ComboBoxItem Content="Retro Wave" />
                 <ComboBoxItem Content="Burnt Orange" />
                 <ComboBoxItem Content="Charcoal" />
+                <ComboBoxItem Content="Black" />
             </ComboBox>
 
             <TextBlock

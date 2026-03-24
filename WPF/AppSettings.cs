@@ -42,6 +42,7 @@ namespace ZenTimings
             RetroWave,
             BurntOrange,
             Charcoal,
+            Black,
         }
 
         public enum ScreenshotType : int
@@ -117,6 +118,7 @@ namespace ZenTimings
                 new Uri("pack://application:,,,/ZenTimings;component/Themes/RetroWave.xaml", UriKind.Absolute),
                 new Uri("pack://application:,,,/ZenTimings;component/Themes/BurntOrange.xaml", UriKind.Absolute),
                 new Uri("pack://application:,,,/ZenTimings;component/Themes/Charcoal.xaml", UriKind.Absolute),
+                new Uri("pack://application:,,,/ZenTimings;component/Themes/Black.xaml", UriKind.Absolute),
             };
 
             ResourceLocator.SetColorScheme(Application.Current.Resources, themeUri[(int)AppTheme]);
