@@ -205,9 +205,9 @@ namespace ZenTimings.ViewModels
 
                 _ddr5PmicData = value;
 
-                SwaAdcV = PmicData.SwaAdcMv / 1000.000f;
-                SwbAdcV = PmicData.SwbAdcMv / 1000.000f;
-                VppAdcV = PmicData.SwcAdcMv / 1000.000f;
+                SwaAdcV = PmicData.SwaAdcMv / 1000.0f;
+                SwbAdcV = PmicData.SwbAdcMv / 1000.0f;
+                VppAdcV = PmicData.SwcAdcMv / 1000.0f;
                 OnPropertyChanged("PmicData");
             }
         }
@@ -232,7 +232,7 @@ namespace ZenTimings.ViewModels
             TotalCapacity = CpuSingleton.Instance.GetMemoryConfig().TotalCapacity;
             MemoryType = memoryType;
 
-            PowerTable = CpuSingleton.Instance.powerTable;
+            PowerTable = CpuSingleton.Instance?.powerTable;
             CodeName = CpuSingleton.Instance.info.codeName;
 
             //_channelsApobData = CpuSingleton.Instance.info.apob.Data;
@@ -250,8 +250,21 @@ namespace ZenTimings.ViewModels
                 ? $"Click to visit {CpuSingleton.Instance.systemInfo.MbName} page"
                 : string.Empty;
 
-            PmicData = pmicData;
-            //pmicData.
+            if (pmicData != null && pmicData.IsValid)
+            {
+                PmicData = pmicData;
+            }
+            else
+            {
+                // fallback to AOD table
+                var aodData = CpuSingleton.Instance.info.aod?.Table?.Data;
+                if (aodData != null)
+                {
+                    SwaAdcV = aodData.MemVddio.RawValue / 1000.0f;
+                    SwbAdcV = aodData.MemVddq.RawValue / 1000.0f;
+                    VppAdcV = aodData.MemVpp.RawValue / 1000.0f;
+                }
+            }
         }
 
         bool IsMismatch(

@@ -234,20 +234,46 @@ namespace ZenTimings
         private void AddTimingsPanel(MemType memoryType)
         {
             // Add timings panel
-            if (memoryType == MemType.DDR4 || memoryType == MemType.LPDDR4)
+            switch (memoryType)
             {
-                timingsPanel = new DDR4TimingsPanel();
-            }
-            else if (cpu.smu.SMU_TYPE == SMU.SmuType.TYPE_APU2 || memoryType == MemType.LPDDR5)
-            {
-                timingsPanel = new DDR5APUTimingsPanel();
-            }
-            else if (memoryType == MemType.DDR5)
-            {
-                if (cpu.info.family == Cpu.Family.FAMILY_1AH)
-                    timingsPanel = new DDR5TimingsPanel1Ah();
-                else
-                    timingsPanel = new DDR5TimingsPanel();
+                case MemType.DDR4:
+                case MemType.LPDDR4:
+                    timingsPanel = new DDR4TimingsPanel();
+                    break;
+
+                case MemType.LPDDR5:
+                    timingsPanel = new LegacyDDR5APUTimingsPanel();
+                    break;
+
+                case MemType.DDR5:
+                    {
+                        if (!cpu.info.apob.IsAvailable || settings.ImpedanceTableSrc == AppSettings.ImpedanceTableSource.AOD)
+                        {
+                            if (cpu.smu.SMU_TYPE == SMU.SmuType.TYPE_APU2)
+                                timingsPanel = new LegacyDDR5APUTimingsPanel();
+                            else
+                                timingsPanel = new LegacyDDR5TimingsPanel();
+                            break;
+                        }
+
+                        if (cpu.smu.SMU_TYPE == SMU.SmuType.TYPE_APU2)
+                        {
+                            timingsPanel = new DDR5APUTimingsPanel();
+                        }
+                        else if (cpu.info.family == Cpu.Family.FAMILY_1AH)
+                        {
+                            timingsPanel = new DDR5TimingsPanel1Ah();
+                        }
+                        else
+                        {
+                            timingsPanel = new LegacyDDR5TimingsPanel();
+                        }
+                        break;
+                    }
+
+                default:
+                    timingsPanel = null;
+                    break;
             }
 
             if (timingsPanel != null)
@@ -656,7 +682,7 @@ namespace ZenTimings
                     //ReadDDR4MemoryConfig();
                     cpu.RefreshPowerTable();
                     var voltagesUpdated = false;
-                    if (cpu.memoryConfig.Type == MemType.DDR5)
+                    if (cpu.memoryConfig?.SpdInfo?.Values != null)
                     {
                         voltagesUpdated = cpu.memoryConfig.RefreshTelemetry(settings.AutoRefreshInterval);
                     }
@@ -761,7 +787,8 @@ namespace ZenTimings
             {
                 Title = $"{AssemblyTitle} {AssemblyVersion.Substring(0, AssemblyVersion.LastIndexOf('.'))}";
 #if DEBUG && !BETA
-                Title += $@"{AssemblyVersion.Substring(AssemblyVersion.LastIndexOf('.'))} (debug)";
+                if (settings.AdvancedMode)
+                    Title += $@"{AssemblyVersion.Substring(AssemblyVersion.LastIndexOf('.'))} (debug)";
 #endif
 
 #if BETA
@@ -1051,7 +1078,10 @@ namespace ZenTimings
 
         private string GetAgesaVersion()
         {
-            if (!string.IsNullOrEmpty(cpu.systemInfo.AgesaVersion))
+            if (cpu?.systemInfo == null)
+                return "";
+
+            if (!string.IsNullOrEmpty(cpu?.systemInfo.AgesaVersion))
             {
                 return cpu.systemInfo.AgesaVersion;
             }

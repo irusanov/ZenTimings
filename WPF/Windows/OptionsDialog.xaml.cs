@@ -21,12 +21,14 @@ namespace ZenTimings.Windows
         private DispatcherTimer notificationTimer;
         private Theme _Theme;
         private readonly bool _AdvancedMode;
+        private readonly ImpedanceTableSource _ImpedanceTableSource;
 
         public OptionsDialog(DispatcherTimer timer)
         {
             timerInstance = timer;
             _Theme = appSettings.AppTheme;
             _AdvancedMode = appSettings.AdvancedMode;
+            _ImpedanceTableSource = appSettings.ImpedanceTableSrc;
 
             InitializeComponent();
 
@@ -43,6 +45,7 @@ namespace ZenTimings.Windows
             msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
             comboBoxTheme.SelectedIndex = (int)_Theme;
             comboBoxScreenshot.SelectedIndex = (int)appSettings.ScreenshotMode;
+            comboBoxImpedanceSource.SelectedIndex = (int)appSettings.ImpedanceTableSrc;
             textBoxScreenshotPath.Text = appSettings.ScreenshotSaveLocation;
         }
 
@@ -72,6 +75,7 @@ namespace ZenTimings.Windows
             //appSettings.AutoUninstallDriver = (bool)checkBoxAutoUninstallDriver.IsChecked;
             appSettings.ScreenshotMode = (ScreenshotType)comboBoxScreenshot.SelectedIndex;
             appSettings.ScreenshotSaveLocation = textBoxScreenshotPath.Text.Trim();
+            appSettings.ImpedanceTableSrc = (ImpedanceTableSource)comboBoxImpedanceSource.SelectedIndex;
 
             appSettings.Save();
 
@@ -103,11 +107,11 @@ namespace ZenTimings.Windows
                     timerInstance.Stop();
             }
 
-            if (_AdvancedMode != appSettings.AdvancedMode)
+            if (_AdvancedMode != appSettings.AdvancedMode || _ImpedanceTableSource != appSettings.ImpedanceTableSrc)
             {
                 buttonSettingsRestart.Visibility = Visibility.Visible;
                 appSettings.Save();
-                OptionsPopupText.Text = "Advanced Mode will be applied on next launch.";
+                OptionsPopupText.Text = "Some settings will be applied on next launch.";
             }
 
             OptionsPopup.Width = OptionWindowContent.ActualWidth;

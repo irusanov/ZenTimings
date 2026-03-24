@@ -11,7 +11,7 @@
 
     <Style x:Key="DefaultTextBlockStyles" TargetType="{x:Type TextBlock}">
         <Setter Property="Padding" Value="4 2" />
-        <Setter Property="Height" Value="18" />
+        <Setter Property="Height" Value="17" />
         <Setter Property="LineHeight" Value="16" />
         <Setter Property="MinWidth" Value="50" />
     </Style>

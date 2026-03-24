@@ -52,9 +52,11 @@
                     <TextBlock Text="tPHYWRL" TextAlignment="Right" />
                     <TextBlock Text="tRDPRE" TextAlignment="Right" />
 
-                    <TextBlock Text="CA ODT A" TextAlignment="Right" />
-                    <TextBlock Text="CK ODT A" TextAlignment="Right" />
-                    <TextBlock Text="CS ODT A" TextAlignment="Right" />
+                    <StackPanel Orientation="Vertical" Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text="CA ODT A" TextAlignment="Right" />
+                        <TextBlock Text="CK ODT A" TextAlignment="Right" />
+                        <TextBlock Text="CS ODT A" TextAlignment="Right" />
+                    </StackPanel>
 
                     <!--TextBlock Text="tXP"
                            TextAlignment="Right"
@@ -117,10 +119,12 @@
                     <TextBlock Text="{Binding Timings.RDPRE, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
 
-                    <TextBlock Text="{Binding ApobData.CaOdtA, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
-                    <TextBlock Text="{Binding ApobData.CkOdtA, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
-                    <TextBlock Text="{Binding ApobData.CsOdtA, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
- 
+                    <StackPanel Orientation="Vertical" Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text="{Binding ApobData.CaOdtA, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                        <TextBlock Text="{Binding ApobData.CkOdtA, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                        <TextBlock Text="{Binding ApobData.CsOdtA, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                    </StackPanel>
+
                     <!--TextBlock Text="{Binding Timings.XP, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}"
                           /-->
@@ -163,9 +167,11 @@
                     <TextBlock Text="PowerDown" TextAlignment="Right" />
                     <TextBlock Text="tWRPRE" TextAlignment="Right" />
 
-                    <TextBlock Text="CA ODT B" TextAlignment="Right" />
-                    <TextBlock Text="CK ODT B" TextAlignment="Right" />
-                    <TextBlock Text="CS ODT B" TextAlignment="Right" />
+                    <StackPanel Orientation="Vertical" Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text="CA ODT B" TextAlignment="Right" />
+                        <TextBlock Text="CK ODT B" TextAlignment="Right" />
+                        <TextBlock Text="CS ODT B" TextAlignment="Right" />
+                    </StackPanel>
                 </StackPanel>
 
                 <StackPanel Grid.Column="1">
@@ -228,9 +234,11 @@
                     <TextBlock Text="{Binding Timings.WRPRE, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
 
-                    <TextBlock Text="{Binding ApobData.CaOdtB, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
-                    <TextBlock Text="{Binding ApobData.CkOdtB, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
-                    <TextBlock Text="{Binding ApobData.CsOdtB, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                    <StackPanel Orientation="Vertical" Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text="{Binding ApobData.CaOdtB, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                        <TextBlock Text="{Binding ApobData.CkOdtB, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                        <TextBlock Text="{Binding ApobData.CsOdtB, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                    </StackPanel>
                 </StackPanel>
             </Grid>
 

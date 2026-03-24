@@ -6,9 +6,9 @@ namespace ZenTimings.Controls
     /// <summary>
     /// Interaction logic for DDR5xaml
     /// </summary>
-    public partial class DDR5TimingsPanel : UserControl
+    public partial class DDR5TimingsPanel19h : UserControl
     {
-        public DDR5TimingsPanel()
+        public DDR5TimingsPanel19h()
         {
             InitializeComponent();
 

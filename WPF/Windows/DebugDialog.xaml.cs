@@ -258,19 +258,23 @@ namespace ZenTimings.Windows
                 AddLine();
             }
 
-            AddHeading("SMBUS Memory Modules");
-            AddLine();
-
-            var smbus = CpuSingleton.Instance.SmbusPiix4;
-
-            Dictionary<byte, Ddr5SpdInfo> results = Ddr5SpdDecoder.ReadAndDecodeAll(smbus);
-
-            foreach (KeyValuePair<byte, Ddr5SpdInfo> kvp in results)
+            if (cpu.memoryConfig.Type == ZenStates.Core.DRAM.MemType.DDR5)
             {
-                AddLine(string.Format("DIMM at I2C address 0x{0:X2}", kvp.Key));
-                AddLine(kvp.Value.ToString());
+                AddHeading("SMBUS Memory Modules");
+                AddLine();
+
+                var smbus = CpuSingleton.Instance.SmbusPiix4;
+
+
+                Dictionary<byte, Ddr5SpdInfo> results = Ddr5SpdDecoder.ReadAndDecodeAll(smbus);
+
+                foreach (KeyValuePair<byte, Ddr5SpdInfo> kvp in results)
+                {
+                    AddLine(string.Format("DIMM at I2C address 0x{0:X2}", kvp.Key));
+                    AddLine(kvp.Value.ToString());
+                }
+                AddLine();
             }
-            AddLine();
 
             PrintChannels();
 
@@ -293,44 +297,51 @@ namespace ZenTimings.Windows
 
             AddHeading("APOB");
             AddLine();
-            AddLine("-- Header ---------------------------------");
-
-            properties = cpu.info.apob.Header.GetType().GetProperties();
-
-            foreach (PropertyInfo property in properties)
+            try
             {
-                object value = property.GetValue(cpu.info.apob.Header);
-                AddLine($"{property.Name + ":",-20}{value}");
+                if (cpu.info.apob.IsAvailable)
+                {
+                    AddLine($"-- Address: 0x{cpu.info.apob.Address:X8}");
+                    AddLine($"-- Sequence Offset: 0x{cpu.info.apob.Offset:X8}");
+                    AddLine($"-- Data Offset: 0x{cpu.info.apob.DataBlockOffset:X8}");
+                    AddLine($"-- Layout: 0x{cpu.info.apob.LayoutVersion:X2}");
+                    AddLine();
+                    AddLine("-- Header ---------------------------------");
+
+                    properties = cpu.info.apob?.Header.GetType().GetProperties();
+
+                    foreach (PropertyInfo property in properties)
+                    {
+                        object value = property.GetValue(cpu.info.apob.Header);
+                        AddLine($"{property.Name + ":",-20}{value}");
+                    }
+
+                    AddLine();
+                    AddLine("-- Data ---------------------------------");
+                    if (cpu.info.apob?.Data != null)
+                    {
+                        properties = cpu.info.apob.Data.GetType().GetProperties();
+
+                        foreach (PropertyInfo property in properties)
+                        {
+                            object value = property.GetValue(cpu.info.apob.Data);
+                            AddLine($"{property.Name + ":",-20}{value ?? "N/A"}");
+                        }
+                    }
+                    else
+                    {
+                        AddLine("<APOB table data not available>");
+                    }
+                }
+                else
+                {
+                    AddLine("<APOB table not available>");
+                }
             }
-
-            AddLine();
-
-            AddLine("-- Data ---------------------------------");
-
-            //var dataArray = cpu.info.apob.Data;
-
-            //for (int i = 0; i < Math.Min(2, dataArray.Length); i++)
-            //{
-            //    AddLine($"-- Data[{i}]");
-
-            //    properties = dataArray[i].GetType().GetProperties();
-
-            //    foreach (PropertyInfo property in properties)
-            //    {
-            //        object value = property.GetValue(dataArray[i]);
-            //        AddLine($"{property.Name + ":",-120}{value}");
-            //    }
-
-            //    AddLine();
-            //}
-
-
-            properties = cpu.info.apob.Data.GetType().GetProperties();
-
-            foreach (PropertyInfo property in properties)
+            catch (Exception ex)
             {
-                object value = property.GetValue(cpu.info.apob.Data);
-                AddLine($"{property.Name + ":",-20}{value ?? "N/A"}");
+                AddLine("<FAILED>");
+                AddLine(ex.Message);
             }
 
             AddLine();
@@ -364,9 +375,10 @@ namespace ZenTimings.Windows
                     AddLine($"{property.Name + ":",-19}{value}");
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 AddLine("<FAILED>");
+                AddLine(ex.Message);
             }
 
             AddLine();
@@ -391,9 +403,10 @@ namespace ZenTimings.Windows
                 for (var i = 0; i < BMC.Table.Length; i++)
                     AddLine($"Index {i:D3}: {BMC.Table[i]:X2} ({BMC.Table[i]})");
             }
-            catch
+            catch (Exception ex)
             {
                 AddLine("<FAILED>");
+                AddLine(ex.Message);
             }
 
             AddLine();
@@ -408,9 +421,10 @@ namespace ZenTimings.Windows
                     AddLine($"Offset {i * 0x4:X3}: {BitConverter.ToSingle(temp, 0):F8}");
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 AddLine("<FAILED>");
+                AddLine(ex.Message);
             }
 
             AddLine();
@@ -438,9 +452,10 @@ namespace ZenTimings.Windows
                 AddLine($"CLDO_VDDG: {PT.CLDO_VDDG_IOD}");
                 AddLine($"CLDO_VDDG: {PT.CLDO_VDDG_CCD}");*/
             }
-            catch
+            catch (Exception ex)
             {
                 AddLine("<FAILED>");
+                AddLine(ex.Message);
             }
 
             AddLine();

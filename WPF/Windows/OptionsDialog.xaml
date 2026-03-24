@@ -187,12 +187,31 @@
                 Grid.Column="0"
                 Grid.Row="7"
                 Margin="0 5 5 5"
+                Text="Impedance Table Source" VerticalAlignment="Center" />
+            <ComboBox
+                x:Name="comboBoxImpedanceSource"
+                Grid.ColumnSpan="2"
+                Grid.Column="1"
+                Grid.Row="7"
+                HorizontalAlignment="Left"
+                Margin="5,0,0,0"
+                VerticalAlignment="Top"
+                Width="151"
+ >
+                <ComboBoxItem Content="Legacy" />
+                <ComboBoxItem Content="Extended (experimental)" />
+            </ComboBox>
+
+            <TextBlock
+                Grid.Column="0"
+                Grid.Row="8"
+                Margin="0 5 5 5"
                 Text="Screenshot mode" VerticalAlignment="Center" />
             <ComboBox
                 x:Name="comboBoxScreenshot"
                 Grid.ColumnSpan="2"
                 Grid.Column="1"
-                Grid.Row="7"
+                Grid.Row="8"
                 HorizontalAlignment="Left"
                 Margin="5,0,0,0"
                 VerticalAlignment="Top"
@@ -205,14 +224,14 @@
             <TextBlock
                 x:Name="screenshotPath"
                 Grid.Column="0"
-                Grid.Row="8"
+                Grid.Row="9"
                 Margin="0 5 5 5"
                 Text="Screenshot location" VerticalAlignment="Center" />
             
             <TextBox
                 x:Name="textBoxScreenshotPath"
                 Grid.Column="1"
-                Grid.Row="8"
+                Grid.Row="9"
                 Grid.ColumnSpan="2"
                 Margin="3,0,0,0"
                 Width="151"
@@ -222,7 +241,7 @@
             <Button
                 x:Name="buttonBrowseScreenshotPath"
                 Grid.Column="3"
-                Grid.Row="8"
+                Grid.Row="9"
                 Content="Browse..."
                 Margin="5,0,0,0"
                 HorizontalAlignment="Left"

@@ -9,7 +9,7 @@ namespace ZenTimings
     public sealed class AppSettings
     {
         public const int VersionMajor = 1;
-        public const int VersionMinor = 10;
+        public const int VersionMinor = 11;
 
         private static readonly string Filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.xml");
         public const string AGESA_UNKNOWN = "Unknown";
@@ -49,6 +49,12 @@ namespace ZenTimings
         {
             Window,
             Desktop,
+        }
+
+        public enum ImpedanceTableSource: int
+        {
+            AOD,
+            APOB
         }
 
         public AppSettings Create(bool save = true)
@@ -146,5 +152,6 @@ namespace ZenTimings
         public double SysInfoWindowHeight { get; set; }
         public string NotifiedChangelog { get; set; } = "";
         public bool SingleInstance { get; set; } = true;
+        public ImpedanceTableSource ImpedanceTableSrc { get; set; } = ImpedanceTableSource.APOB;
     }
 }
