@@ -12,38 +12,38 @@
     <Color x:Key="SecondaryTextColor">#9A9FA7</Color>
 
     <!-- Window title background -->
-    <Color x:Key="{x:Static adonisUi:Colors.Layer0BorderColor}">#0B0B0C</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer0BorderColor}">#000000</Color>
     <!-- Window background -->
-    <Color x:Key="{x:Static adonisUi:Colors.Layer0BackgroundColor}">#0B0B0C</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer0BackgroundColor}">#000000</Color>
 
     <!-- Deep borders -->
-    <Color x:Key="{x:Static adonisUi:Colors.Layer3BorderColor}">#050506</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer3BorderColor}">#0A0A0A</Color>
 
     <!-- Accent (cool neutral blue-gray for contrast on black) -->
-    <Color x:Key="{x:Static adonisUi:Colors.AccentColor}">#9FB3C8</Color>
-    <Color x:Key="{x:Static adonisUi:Colors.AccentForegroundColor}">#0B0B0C</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.AccentColor}">#AFC6DD</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.AccentForegroundColor}">#000000</Color>
 
     <!-- Accent hover -->
-    <Color x:Key="{x:Static adonisUi:Colors.AccentHighlightColor}">#B3C4D6</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.AccentHighlightColor}">#C2D6EA</Color>
     <!-- Accent active -->
-    <Color x:Key="{x:Static adonisUi:Colors.AccentInteractionColor}">#C4D2E0</Color>
-    <Color x:Key="{x:Static adonisUi:Colors.AccentInteractionBorderColor}">#C4D2E0</Color>
-    <Color x:Key="{x:Static adonisUi:Colors.AccentIntenseHighlightBorderColor}">#C4D2E0</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.AccentInteractionColor}">#D3E2F0</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.AccentInteractionBorderColor}">#D3E2F0</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.AccentIntenseHighlightBorderColor}">#D3E2F0</Color>
 
     <!-- Layer 1 (menus, dropdowns) -->
-    <Color x:Key="{x:Static adonisUi:Colors.Layer1BackgroundColor}">#141416</Color>
-    <Color x:Key="{x:Static adonisUi:Colors.Layer1BorderColor}">#141416</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer1BackgroundColor}">#000000</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer1BorderColor}">#0D0D0D</Color>
 
     <!-- Hover -->
-    <Color x:Key="{x:Static adonisUi:Colors.Layer1HighlightColor}">#1C1D21</Color>
-    <Color x:Key="{x:Static adonisUi:Colors.Layer1HighlightBorderColor}">#26282E</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer1HighlightColor}">#141414</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer1HighlightBorderColor}">#1C1C1C</Color>
 
     <!-- Buttons hover -->
-    <Color x:Key="{x:Static adonisUi:Colors.WindowButtonHighlightColor}">#1C1D21</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.WindowButtonHighlightColor}">#141414</Color>
 
     <!-- Layer 2 -->
-    <Color x:Key="{x:Static adonisUi:Colors.Layer2HighlightColor}">#1C1D21</Color>
-    <Color x:Key="{x:Static adonisUi:Colors.Layer2HighlightBorderColor}">#1C1D21</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer2HighlightColor}">#141414</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer2HighlightBorderColor}">#141414</Color>
 
     <CornerRadius x:Key="{x:Static adonisUi:Dimensions.CornerRadius}">2</CornerRadius>
 
