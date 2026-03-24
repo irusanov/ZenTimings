@@ -34,7 +34,8 @@ namespace ZenTimings.ViewModels
         public BaseDramTimings Timings
         {
             get => _timings;
-            set {
+            set
+            {
                 _timings = value;
                 MemoryFrequency = value.Frequency;
                 OnPropertyChanged();
@@ -118,8 +119,10 @@ namespace ZenTimings.ViewModels
         public bool IsDdr4Rfc2Enabled => (Timings as Ddr4Timings)?.RefreshMode == BankRefreshMode.FGR && Timings.FGR == 2;
         public bool IsDdr4Rfc4Enabled => (Timings as Ddr4Timings)?.RefreshMode == BankRefreshMode.FGR && Timings.FGR == 4;
 
-        public string CpuNameShortWithCores {
-            get {
+        public string CpuNameShortWithCores
+        {
+            get
+            {
                 string name = CpuName;
                 var match = Regex.Match(
                     name,
@@ -160,9 +163,11 @@ namespace ZenTimings.ViewModels
         }
 
         private float _swaAdcV;
-        public float SwaAdcV {
+        public float SwaAdcV
+        {
             get => _swaAdcV;
-            set {
+            set
+            {
                 _swaAdcV = value;
                 OnPropertyChanged("SwaAdcV");
             }
@@ -194,9 +199,10 @@ namespace ZenTimings.ViewModels
         public Ddr5PmicData PmicData
         {
             get => _ddr5PmicData;
-            set { 
+            set
+            {
                 _ddr5PmicData = value;
-                
+
                 SwaAdcV = PmicData.SwaAdcMv / 1000.000f;
                 SwbAdcV = PmicData.SwbAdcMv / 1000.000f;
                 VppAdcV = PmicData.SwcAdcMv / 1000.000f;

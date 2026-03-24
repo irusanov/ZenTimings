@@ -15,7 +15,7 @@ namespace ZenTimings.Controls
             Cpu cpu = CpuSingleton.Instance;
             AOD aod = cpu.info.aod;
 
-            if (aod != null && !Utils.AllZero(aod.Table.RawAodTable))
+            if (aod == null || Utils.AllZero(aod.Table.RawAodTable))
                 return;
 
             AodData Data = aod.Table.Data;
