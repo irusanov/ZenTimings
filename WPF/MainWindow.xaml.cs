@@ -173,7 +173,7 @@ namespace ZenTimings
                     plugins,
                     motherboardLogoName,
                     GetAgesaVersion(),
-                    cpu.GetMemoryConfig().SpdInfo.Values.FirstOrDefault(d => d.IsValid).PmicData
+                    cpu.GetMemoryConfig()?.SpdInfo?.Values.FirstOrDefault(d => d.IsValid)?.PmicData ?? null
                 );
 
                 DataContext = mainViewModel;
@@ -655,7 +655,11 @@ namespace ZenTimings
 
                     //ReadDDR4MemoryConfig();
                     cpu.RefreshPowerTable();
-                    var voltagesUpdated = cpu.memoryConfig.RefreshTelemetry(settings.AutoRefreshInterval);
+                    var voltagesUpdated = false;
+                    if (cpu.memoryConfig.Type == MemType.DDR5)
+                    {
+                        voltagesUpdated = cpu.memoryConfig.RefreshTelemetry(settings.AutoRefreshInterval);
+                    }
 
                     Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() =>
                     {

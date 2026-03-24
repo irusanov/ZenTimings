@@ -201,6 +201,8 @@ namespace ZenTimings.ViewModels
             get => _ddr5PmicData;
             set
             {
+                if (value == null) return;
+
                 _ddr5PmicData = value;
 
                 SwaAdcV = PmicData.SwaAdcMv / 1000.000f;
