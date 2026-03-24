@@ -93,8 +93,8 @@ namespace ZenTimings.Windows
         {
             splash.Show();
 
-            if (appSettings.AppTheme != AppSettings.Theme.Light)
-                appSettings.ChangeTheme();
+            //if (appSettings.AppTheme != AppSettings.Theme.Light)
+            appSettings.ChangeTheme();
 
             if (appSettings.CheckForUpdates) updater.CheckForUpdate();
         }
