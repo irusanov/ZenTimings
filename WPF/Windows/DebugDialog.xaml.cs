@@ -300,28 +300,37 @@ namespace ZenTimings.Windows
             foreach (PropertyInfo property in properties)
             {
                 object value = property.GetValue(cpu.info.apob.Header);
-                AddLine($"{property.Name + ":",-19}{value}");
+                AddLine($"{property.Name + ":",-20}{value}");
             }
 
             AddLine();
 
             AddLine("-- Data ---------------------------------");
 
-            var dataArray = cpu.info.apob.Data;
+            //var dataArray = cpu.info.apob.Data;
 
-            for (int i = 0; i < Math.Min(2, dataArray.Length); i++)
+            //for (int i = 0; i < Math.Min(2, dataArray.Length); i++)
+            //{
+            //    AddLine($"-- Data[{i}]");
+
+            //    properties = dataArray[i].GetType().GetProperties();
+
+            //    foreach (PropertyInfo property in properties)
+            //    {
+            //        object value = property.GetValue(dataArray[i]);
+            //        AddLine($"{property.Name + ":",-120}{value}");
+            //    }
+
+            //    AddLine();
+            //}
+
+
+            properties = cpu.info.apob.Data.GetType().GetProperties();
+
+            foreach (PropertyInfo property in properties)
             {
-                AddLine($"-- Data[{i}]");
-
-                properties = dataArray[i].GetType().GetProperties();
-
-                foreach (PropertyInfo property in properties)
-                {
-                    object value = property.GetValue(dataArray[i]);
-                    AddLine($"{property.Name + ":",-19}{value}");
-                }
-
-                AddLine();
+                object value = property.GetValue(cpu.info.apob.Data);
+                AddLine($"{property.Name + ":",-20}{value ?? "N/A"}");
             }
 
             AddLine();

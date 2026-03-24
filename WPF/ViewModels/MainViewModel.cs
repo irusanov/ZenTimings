@@ -138,19 +138,19 @@ namespace ZenTimings.ViewModels
         }
 
         private uint _selectedDctOffset = 0;
-        public uint SelectedDctOffset {
-            get => _selectedDctOffset;
-            set
-            {
-                _selectedDctOffset = value;
-                if (_channelsApobData != null)
-                {
-                    ApobData = _channelsApobData[_selectedDctOffset >> 20];
-                }
-            }
-        }
+        //public uint SelectedDctOffset {
+        //    get => _selectedDctOffset;
+        //    set
+        //    {
+        //        _selectedDctOffset = value;
+        //        if (_channelsApobData != null)
+        //        {
+        //            ApobData = _channelsApobData[_selectedDctOffset >> 20];
+        //        }
+        //    }
+        //}
 
-        private readonly ApobData[] _channelsApobData;
+        //private readonly ApobData[] _channelsApobData;
 
         private ApobData _apobData;
         public ApobData ApobData
@@ -227,8 +227,9 @@ namespace ZenTimings.ViewModels
             PowerTable = CpuSingleton.Instance.powerTable;
             CodeName = CpuSingleton.Instance.info.codeName;
 
-            _channelsApobData = CpuSingleton.Instance.info.apob.Data;
-            SelectedDctOffset = CpuSingleton.Instance.memoryConfig.Modules.FirstOrDefault()?.DctOffset ?? 0;
+            //_channelsApobData = CpuSingleton.Instance.info.apob.Data;
+            //SelectedDctOffset = CpuSingleton.Instance.memoryConfig.Modules.FirstOrDefault()?.DctOffset ?? 0;
+            ApobData = CpuSingleton.Instance.info.apob.Data;
 
             //AgesaVersion = AGESA_SEARCHING;
             AgesaVersion = agesaVersion;

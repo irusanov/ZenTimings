@@ -112,6 +112,9 @@
       <Link>Common\UpdaterPersistenceProvider.cs</Link>
     </Compile>
     <Compile Include="AgesaHelper.cs" />
+    <Compile Include="Controls\DDR5TimingsPanel.xaml.cs">
+      <DependentUpon>DDR5TimingsPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DriverHelper.cs" />
     <Compile Include="ObservableObject.cs" />
     <Compile Include="VendorUtils.cs" />
@@ -124,8 +127,8 @@
     <Compile Include="Controls\DDR5APUTimingsPanel.xaml.cs">
       <DependentUpon>DDR5APUTimingsPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\DDR5TimingsPanel.xaml.cs">
-      <DependentUpon>DDR5TimingsPanel.xaml</DependentUpon>
+    <Compile Include="Controls\DDR5TimingsPanel1Ah.xaml.cs">
+      <DependentUpon>DDR5TimingsPanel1Ah.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\DDR4ToVisConverter.cs" />
     <Compile Include="Converters\FloatToBoolConverter.cs" />
@@ -196,6 +199,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\DDR5TimingsPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\DDR5TimingsPanel1Ah.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

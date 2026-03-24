@@ -244,7 +244,10 @@ namespace ZenTimings
             }
             else if (memoryType == MemType.DDR5)
             {
-                timingsPanel = new DDR5TimingsPanel();
+                if (cpu.info.family == Cpu.Family.FAMILY_1AH)
+                    timingsPanel = new DDR5TimingsPanel1Ah();
+                else
+                    timingsPanel = new DDR5TimingsPanel();
             }
 
             if (timingsPanel != null)
@@ -949,7 +952,7 @@ namespace ZenTimings
             {
                 var dctOffset = cpu.memoryConfig.Modules[combo.SelectedIndex].DctOffset;
                 mainViewModel.Timings = ReadTimings(dctOffset);
-                mainViewModel.SelectedDctOffset = dctOffset;
+                //mainViewModel.SelectedDctOffset = dctOffset;
             }
         }
 

@@ -1,12 +1,11 @@
-﻿<UserControl x:Class="ZenTimings.Controls.DDR5TimingsPanel"
+﻿<UserControl x:Class="ZenTimings.Controls.DDR5TimingsPanel1Ah"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:converters="clr-namespace:ZenTimings.Converters"
              xmlns:local="clr-namespace:ZenTimings.Controls"
-             mc:Ignorable="d"
-             d:DesignHeight="490" d:DesignWidth="450">
+             mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="543">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
@@ -52,8 +51,14 @@
                     <TextBlock Text="tPHYWRD" TextAlignment="Right" />
                     <TextBlock Text="tPHYWRL" TextAlignment="Right" />
                     <TextBlock Text="tRDPRE" TextAlignment="Right" />
+
                     <TextBlock Text="CA ODT A" TextAlignment="Right" />
-                    <TextBlock Text="CA ODT B" TextAlignment="Right" />
+                    <TextBlock Text="CK ODT A" TextAlignment="Right" />
+                    <TextBlock Text="CS ODT A" TextAlignment="Right" />
+
+                    <!--TextBlock Text="tXP"
+                           TextAlignment="Right"
+                          /-->
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" MinWidth="60">
@@ -113,7 +118,12 @@
                            Style="{DynamicResource ValueStyles}" />
 
                     <TextBlock Text="{Binding ApobData.CaOdtA, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
-                    <TextBlock Text="{Binding ApobData.CaOdtB, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                    <TextBlock Text="{Binding ApobData.CkOdtA, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                    <TextBlock Text="{Binding ApobData.CsOdtA, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+ 
+                    <!--TextBlock Text="{Binding Timings.XP, FallbackValue='N/A'}"
+                           Style="{DynamicResource ValueStyles}"
+                          /-->
                 </StackPanel>
             </Grid>
 
@@ -152,10 +162,10 @@
                     <TextBlock Text="tPHYRDL" TextAlignment="Right" />
                     <TextBlock Text="PowerDown" TextAlignment="Right" />
                     <TextBlock Text="tWRPRE" TextAlignment="Right" />
-                    
-                    <TextBlock Text="CK ODT A" TextAlignment="Right" />
-                    <TextBlock Text="CK ODT B" TextAlignment="Right" />
 
+                    <TextBlock Text="CA ODT B" TextAlignment="Right" />
+                    <TextBlock Text="CK ODT B" TextAlignment="Right" />
+                    <TextBlock Text="CS ODT B" TextAlignment="Right" />
                 </StackPanel>
 
                 <StackPanel Grid.Column="1">
@@ -218,8 +228,9 @@
                     <TextBlock Text="{Binding Timings.WRPRE, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
 
-                    <TextBlock Text="{Binding ApobData.CkOdtA, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                    <TextBlock Text="{Binding ApobData.CaOdtB, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding ApobData.CkOdtB, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                    <TextBlock Text="{Binding ApobData.CsOdtB, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
                 </StackPanel>
             </Grid>
 
@@ -242,30 +253,29 @@
                     <TextBlock Text="" Style="{DynamicResource DividerTextBlock}" />
 
                     <TextBlock Text="VSOC (SMU)" TextAlignment="Right" />
-
-                    <TextBlock Text="CLDO VDDP" TextAlignment="Right"
-                           IsEnabled="{Binding PowerTable.CLDO_VDDP, Mode=OneWay, Converter={StaticResource FloatToBool}}" />
+                    <TextBlock Text="CLDO VDDP" TextAlignment="Right" 
+                        IsEnabled="{Binding PowerTable.CLDO_VDDP, Mode=OneWay, Converter={StaticResource FloatToBool}}" />
                     <TextBlock Text="VDDG CCD" TextAlignment="Right"
-                           IsEnabled="{Binding PowerTable.CLDO_VDDG_CCD, Mode=OneWay, Converter={StaticResource FloatToBool}}" />
+                        IsEnabled="{Binding PowerTable.CLDO_VDDG_CCD, Mode=OneWay, Converter={StaticResource FloatToBool}}" />
                     <TextBlock Text="VDDG IOD" TextAlignment="Right"
-                           IsEnabled="{Binding PowerTable.CLDO_VDDG_IOD, Mode=OneWay, Converter={StaticResource FloatToBool}}" />
-
-                    <!-- MEM Voltages -->
-                    <TextBlock x:Name="labelMemVdd" Text="MEM VDD" IsEnabled="True" TextAlignment="Right" />
-                    <TextBlock x:Name="labelMemVddq" Text="MEM VDDQ" IsEnabled="True" TextAlignment="Right" />
+                        IsEnabled="{Binding PowerTable.CLDO_VDDG_IOD, Mode=OneWay, Converter={StaticResource FloatToBool}}" />
+                    <TextBlock Text="MEM VDD" IsEnabled="True" TextAlignment="Right" />
+                    <TextBlock Text="MEM VDDQ" IsEnabled="True" TextAlignment="Right" />
                     <TextBlock x:Name="labelApuVddio" Text="CPU VDDIO" IsEnabled="False" TextAlignment="Right" />
                     <TextBlock x:Name="labelMemVpp" Text="MEM VPP" IsEnabled="True" TextAlignment="Right" />
                     <TextBlock x:Name="labelVddMisc" Text="VDD MISC" IsEnabled="{Binding PowerTable.VDD_MISC}" TextAlignment="Right" />
 
-                    <TextBlock Text="" TextAlignment="Right" />
+                    <TextBlock Text="ProcOdt Pu" ToolTip="Processor Odt Impedance Pull Up" TextAlignment="Right" />
+                    <TextBlock Text="ProcOdt Pd" ToolTip="Processor Odt Impedance Pull Down" TextAlignment="Right" />
 
-                    <TextBlock Text="ProcOdt" TextAlignment="Right" />
 
+                    <TextBlock Text="ProcCsDs" TextAlignment="Right" />
+                    <TextBlock Text="ProcCkDs" TextAlignment="Right" />
                     <TextBlock Text="ProcCaDs" TextAlignment="Right" />
-                    <TextBlock Text="ProcDqDs" TextAlignment="Right" />
-                    <TextBlock Text="DramDqDs" TextAlignment="Right" />
-
-                    <TextBlock x:Name="procOdtDivider1" Text="" TextAlignment="Right" />
+                    <TextBlock Text="ProcDqDs Pu" TextAlignment="Right" />
+                    <TextBlock Text="ProcDqDs Pd" TextAlignment="Right" />
+                    <TextBlock Text="DramDqDs Pu" TextAlignment="Right" />
+                    <TextBlock Text="DramDqDs Pd" TextAlignment="Right" />
 
                     <TextBlock Text="RttNomWr" TextAlignment="Right" />
                     <TextBlock Text="RttNomRd" TextAlignment="Right" />
@@ -273,9 +283,6 @@
                     <TextBlock Text="RttPark" TextAlignment="Right" />
                     <TextBlock Text="RttParkDqs" TextAlignment="Right" />
                     <TextBlock Text="Nitro" ToolTip="RxData/TxData/ControlLine" TextAlignment="Right" />
-                    
-                    <TextBlock Text="CS ODT A" TextAlignment="Right" />
-                    <TextBlock Text="CS ODT B" TextAlignment="Right" />
                 </StackPanel>
 
                 <StackPanel Grid.Column="1">
@@ -291,43 +298,35 @@
 
                     <TextBlock Text="" Style="{DynamicResource DividerTextBlock}" />
 
-                    <TextBlock Text="{Binding PowerTable.VDDCR_SOC, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}"
-                        Style="{DynamicResource ValueStyles}" />
-
+                    <TextBlock Text="{Binding PowerTable.VDDCR_SOC, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding PowerTable.CLDO_VDDP, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" Style="{DynamicResource ValueStyles}" />
-                    <TextBlock
-                        Text="{Binding PowerTable.CLDO_VDDG_CCD, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}"
-                        Style="{DynamicResource ValueStyles}" />
-                    <TextBlock
-                        Text="{Binding PowerTable.CLDO_VDDG_IOD, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}"
-                        Style="{DynamicResource ValueStyles}" />
-
+                    <TextBlock Text="{Binding PowerTable.CLDO_VDDG_CCD, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" Style="{DynamicResource ValueStyles}" />
+                    <TextBlock Text="{Binding PowerTable.CLDO_VDDG_IOD, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding SwaAdcV, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding SwbAdcV, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" Style="{DynamicResource ValueStyles}" />
                     <TextBlock x:Name="textBoxApuVddio" Text="N/A" Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding VppAdcV, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" Style="{DynamicResource ValueStyles}" />
                     <TextBlock x:Name="textBoxVddMisc" Text="{Binding PowerTable.VDD_MISC, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" Style="{DynamicResource ValueStyles}" />
 
-                    <TextBlock Text="" />
+                    <TextBlock Text="{Binding ApobData.ProcOdtPullUpP0, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                    <TextBlock Text="{Binding ApobData.ProcOdtPullDownP0, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
 
-                    <TextBlock Text="{Binding ApobData.ProcOdt, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
-
+                    <TextBlock Text="{Binding ApobData.ProcCsDs, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                    <TextBlock Text="{Binding ApobData.ProcCkDs, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding ApobData.ProcCaDs, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
-                    <TextBlock Text="{Binding ApobData.ProcDqDs, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
-                    <TextBlock Text="{Binding ApobData.DramDataDs, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
 
-                    <TextBlock x:Name="procOdtDivider2" Text="" />
+                    <TextBlock Text="{Binding ApobData.ProcDqDsPullUpP0, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                    <TextBlock Text="{Binding ApobData.ProcDqDsPullDownP0, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                    <TextBlock Text="{Binding ApobData.DramDqDsPullUpP0, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                    <TextBlock Text="{Binding ApobData.DramDqDsPullDownP0, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
 
-                    <TextBlock Text="{Binding ApobData.RttNomWr, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
-                    <TextBlock Text="{Binding ApobData.RttNomRd, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
-                    <TextBlock Text="{Binding ApobData.RttWr, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
-                    <TextBlock Text="{Binding ApobData.RttPark, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
-                    <TextBlock Text="{Binding ApobData.RttParkDqs, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                    <TextBlock Text="{Binding ApobData.RttNomWrP0, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                    <TextBlock Text="{Binding ApobData.RttNomRdP0, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                    <TextBlock Text="{Binding ApobData.RttWrP0, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                    <TextBlock Text="{Binding ApobData.RttParkP0, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                    <TextBlock Text="{Binding ApobData.RttParkDqsP0, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
 
                     <TextBlock Text="{Binding Timings.Nitro, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}" />
-
-                    <TextBlock Text="{Binding ApobData.CsOdtA, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
-                    <TextBlock Text="{Binding ApobData.CsOdtB, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
                 </StackPanel>
             </Grid>
         </StackPanel>

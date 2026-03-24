@@ -1,5 +1,4 @@
-﻿using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using ZenStates.Core;
 
 namespace ZenTimings.Controls
@@ -7,16 +6,16 @@ namespace ZenTimings.Controls
     /// <summary>
     /// Interaction logic for DDR5xaml
     /// </summary>
-    public partial class DDR5TimingsPanel : UserControl
+    public partial class DDR5TimingsPanel1Ah : UserControl
     {
-        public DDR5TimingsPanel()
+        public DDR5TimingsPanel1Ah()
         {
             InitializeComponent();
 
             Cpu cpu = CpuSingleton.Instance;
             AOD aod = cpu.info.aod;
 
-            if (aod == null || Utils.AllZero(aod.Table.RawAodTable))
+            if (aod != null && !Utils.AllZero(aod.Table.RawAodTable))
                 return;
 
             AodData Data = aod.Table.Data;
