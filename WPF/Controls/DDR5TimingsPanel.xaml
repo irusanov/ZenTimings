@@ -257,15 +257,14 @@
                     <TextBlock x:Name="labelMemVpp" Text="MEM VPP" IsEnabled="True" TextAlignment="Right" />
                     <TextBlock x:Name="labelVddMisc" Text="VDD MISC" IsEnabled="{Binding PowerTable.VDD_MISC}" TextAlignment="Right" />
 
-                    <TextBlock Text="" TextAlignment="Right" />
-
                     <TextBlock Text="ProcOdt" TextAlignment="Right" />
 
+                    <TextBlock Text="ProcCsDs" TextAlignment="Right" />
+                    <TextBlock Text="ProcCkDs" TextAlignment="Right" />
                     <TextBlock Text="ProcCaDs" TextAlignment="Right" />
+                    
                     <TextBlock Text="ProcDqDs" TextAlignment="Right" />
                     <TextBlock Text="DramDqDs" TextAlignment="Right" />
-
-                    <TextBlock x:Name="procOdtDivider1" Text="" TextAlignment="Right" />
 
                     <TextBlock Text="RttNomWr" TextAlignment="Right" />
                     <TextBlock Text="RttNomRd" TextAlignment="Right" />
@@ -308,15 +307,14 @@
                     <TextBlock Text="{Binding VppAdcV, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" Style="{DynamicResource ValueStyles}" />
                     <TextBlock x:Name="textBoxVddMisc" Text="{Binding PowerTable.VDD_MISC, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" Style="{DynamicResource ValueStyles}" />
 
-                    <TextBlock Text="" />
-
                     <TextBlock Text="{Binding ApobData.ProcOdt, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
 
+                    <TextBlock Text="{Binding ApobData.ProcCsDs, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                    <TextBlock Text="{Binding ApobData.ProcCkDs, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding ApobData.ProcCaDs, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                    
                     <TextBlock Text="{Binding ApobData.ProcDqDs, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding ApobData.DramDataDs, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
-
-                    <TextBlock x:Name="procOdtDivider2" Text="" />
 
                     <TextBlock Text="{Binding ApobData.RttNomWr, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding ApobData.RttNomRd, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />

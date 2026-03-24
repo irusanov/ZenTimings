@@ -137,7 +137,7 @@ namespace ZenTimings.ViewModels
             }
         }
 
-        private uint _selectedDctOffset = 0;
+        //private uint _selectedDctOffset = 0;
         //public uint SelectedDctOffset {
         //    get => _selectedDctOffset;
         //    set
