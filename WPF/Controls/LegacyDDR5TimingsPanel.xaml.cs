@@ -68,9 +68,9 @@ namespace ZenTimings.Controls
                 }
                 catch { }
 
-                textBoxCadBusDrvStren.Text = Data.CadBusDrvStren.ToString();
-                textBoxDramDataDrvStren.Text = Data.DramDataDrvStren.ToString();
-                textBoxProcDataDrvStren.Text = Data.ProcDataDrvStren.ToString();
+                textBoxCadBusDrvStren.Text = Data?.CadBusDrvStren?.ToString() ?? "N/A";
+                textBoxDramDataDrvStren.Text = Data?.DramDataDrvStren?.ToString() ?? "N/A";
+                textBoxProcDataDrvStren.Text = Data?.ProcDataDrvStren?.ToString() ?? "N/A";
 
                 textBoxRttWrD5.Text = Data.RttWr.ToString();
                 textBoxRttNomWr.Text = Data.RttNomWr.ToString();
