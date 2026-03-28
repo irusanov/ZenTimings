@@ -205,10 +205,16 @@ namespace ZenTimings.ViewModels
 
                 _ddr5PmicData = value;
 
-                SwaAdcV = PmicData.SwaAdcMv / 1000.0f;
-                SwbAdcV = PmicData.SwbAdcMv / 1000.0f;
-                VppAdcV = PmicData.SwcAdcMv / 1000.0f;
-                OnPropertyChanged("PmicData");
+                if (PmicData.SwaAdcMv > 0)
+                    SwaAdcV = PmicData.SwaAdcMv / 1000.0f;
+
+                if (PmicData.SwbAdcMv > 0)
+                    SwbAdcV = PmicData.SwbAdcMv / 1000.0f;
+
+                if (PmicData.SwcAdcMv > 0)
+                    VppAdcV = PmicData.SwcAdcMv / 1000.0f;
+
+                //OnPropertyChanged("PmicData");
             }
         }
 
