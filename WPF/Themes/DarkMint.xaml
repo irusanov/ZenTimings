@@ -7,6 +7,9 @@
         <ResourceDictionary Source="pack://application:,,,/Themes/SharedAssets.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
+    <Thickness x:Key="WindowBorderThickness">1</Thickness>
+    <CornerRadius x:Key="{x:Static adonisUi:Dimensions.CornerRadius}">2</CornerRadius>
+    
     <!-- Text color -->
     <Color x:Key="{x:Static adonisUi:Colors.ForegroundColor}">#D1D4C9</Color>
     <!-- Window title background -->
@@ -36,8 +39,6 @@
 
     <Color x:Key="{x:Static adonisUi:Colors.Layer2HighlightColor}">#353746</Color>
     <Color x:Key="{x:Static adonisUi:Colors.Layer2HighlightBorderColor}">#353746</Color>
-
-    <CornerRadius x:Key="{x:Static adonisUi:Dimensions.CornerRadius}">2</CornerRadius>
 
     <SolidColorBrush x:Key="AccentTextColor" Color="{StaticResource {x:Static adonisUi:Colors.AccentColor}}" />
 

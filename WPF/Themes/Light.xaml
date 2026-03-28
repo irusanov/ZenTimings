@@ -11,6 +11,8 @@
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/biwin/biwin-logo-alt.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
+    <Thickness x:Key="WindowBorderThickness">1</Thickness>
+
     <SolidColorBrush x:Key="TextColor" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
     <SolidColorBrush x:Key="AccentTextColor" Color="#004b84" />
     <SolidColorBrush x:Key="SeparatorColor" Color="#e5e5e5" />

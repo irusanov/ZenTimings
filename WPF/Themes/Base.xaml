@@ -4,6 +4,10 @@
                     xmlns:Extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
                     xmlns:AdonisUI="clr-namespace:AdonisUI;assembly=AdonisUI">
 
+    <Style x:Key="WindowStyles" TargetType="{x:Type Window}">
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
     <Style x:Key="MainContainerStyles" TargetType="{x:Type Border}">
         <Setter Property="BorderBrush" Value="{DynamicResource SeparatorColor}" />
         <Setter Property="Padding" Value="5" />

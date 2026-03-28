@@ -7,6 +7,8 @@
         <ResourceDictionary Source="pack://application:,,,/Themes/SharedAssets.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
+    <Thickness x:Key="WindowBorderThickness">1</Thickness>
+    
     <Color x:Key="{x:Static adonisUi:Colors.ForegroundColor}">#d5d5d5</Color>
 
     <SolidColorBrush x:Key="TextColor" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
