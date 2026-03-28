@@ -17,7 +17,7 @@
     Style="{DynamicResource WindowStyles}"
     Activated="AdonisWindow_Activated"
     Icon="/ZenTimings;component/Resources/new-icon/16.png"
-    Closing="AdonisWindow_Closing">
+    Closing="AdonisWindow_Closing" Loaded="AdonisWindow_Loaded">
 
     <Window.Resources>
     </Window.Resources>

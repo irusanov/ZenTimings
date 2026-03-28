@@ -15,7 +15,7 @@
         BorderThickness="1"
         UseLayoutRounding="True"
         BorderBrush="{DynamicResource WindowBorderColor}"
-        Style="{DynamicResource WindowStyles}">
+        Style="{DynamicResource WindowStyles}" Loaded="AdonisWindow_Loaded">
     <StackPanel Margin="20">
 
         <!-- Message -->

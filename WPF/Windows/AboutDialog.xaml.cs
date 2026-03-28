@@ -120,5 +120,10 @@ namespace ZenTimings.Windows
         {
             aboutWindowPopup.IsOpen = false;
         }
+
+        private void AdonisWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            WindowUtils.RemoveSystemBorderAndRadius(this);
+        }
     }
 }

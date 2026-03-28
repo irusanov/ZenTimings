@@ -81,5 +81,10 @@ namespace ZenTimings.Windows
         {
             ((IDisposable)screenshot).Dispose();
         }
+
+        private void SaveScreenshotWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            WindowUtils.RemoveSystemBorderAndRadius(this);
+        }
     }
 }

@@ -22,7 +22,7 @@
     UseLayoutRounding="True"
     BorderBrush="{DynamicResource WindowBorderColor}"
     Style="{DynamicResource WindowStyles}"
-    Closing="OptionsWindow_Closing">
+    Closing="OptionsWindow_Closing" Loaded="OptionsWindow_Loaded">
 
     <StackPanel x:Name="OptionWindowContent">
         <Popup

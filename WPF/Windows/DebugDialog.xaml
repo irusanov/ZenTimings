@@ -17,7 +17,7 @@
     BorderThickness="1"
     UseLayoutRounding="True"
     BorderBrush="{DynamicResource WindowBorderColor}"
-    Style="{DynamicResource WindowStyles}">
+    Style="{DynamicResource WindowStyles}" Loaded="AdonisWindow_Loaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />

@@ -21,7 +21,7 @@
     UseLayoutRounding="True"
     BorderBrush="{DynamicResource WindowBorderColor}"
     Style="{DynamicResource WindowStyles}"
-    ShowInTaskbar="False">
+    ShowInTaskbar="False" Loaded="SaveScreenshotWindow_Loaded">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />

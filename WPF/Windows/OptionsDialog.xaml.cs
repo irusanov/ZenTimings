@@ -182,5 +182,10 @@ namespace ZenTimings.Windows
                 textBoxScreenshotPath.Text = folderDialog.SelectedPath;
             }
         }
+
+        private void OptionsWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            WindowUtils.RemoveSystemBorderAndRadius(this);
+        }
     }
 }

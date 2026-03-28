@@ -118,7 +118,7 @@
     <VisualBrush x:Key="WindowBackgroundBrush" Stretch="Fill">
         <VisualBrush.Visual>
             <Grid Width="1000" Height="700" Background="{StaticResource BackgroundGradientBrush}">
-                <Rectangle Fill="{StaticResource BackgroundDotPatternBrush}" Opacity="0.15" />
+                <!--Rectangle Fill="{StaticResource BackgroundDotPatternBrush}" Opacity="0.15" /-->
                 <Rectangle Fill="{StaticResource BackgroundDiagonalFadeBrush}" />
                 <Rectangle Fill="{StaticResource BackgroundVignetteBrush}" />
             </Grid>

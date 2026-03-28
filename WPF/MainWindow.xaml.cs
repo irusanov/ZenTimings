@@ -904,6 +904,8 @@ namespace ZenTimings
 
         private void AdonisWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            WindowUtils.RemoveSystemBorderAndRadius(this);
+
             this.Topmost = true;
 
             RestoreWindowPosition();

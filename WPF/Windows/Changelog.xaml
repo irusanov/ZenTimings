@@ -10,23 +10,24 @@
         mc:Ignorable="d"
         Style="{DynamicResource WindowStyles}"
         Title="What's New" Height="580" Width="454" UseLayoutRounding="True" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Topmost="True" Icon="/ZenTimings;component/Resources/new-icon/16.png" SizeToContent="WidthAndHeight">
-    
+
     <Window.Resources>
         <converters:DDR5ToVisConverter x:Key="DDR5ToBool" />
     </Window.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-        <Grid>
+        <Grid Loaded="Grid_Loaded">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="269*"/>
-                <ColumnDefinition Width="128*"/>
+                <ColumnDefinition Width="272*"/>
+                <ColumnDefinition Width="29*"/>
+                <ColumnDefinition Width="143*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
-            <StackPanel Orientation="Vertical" Margin="15" Grid.ColumnSpan="2" Grid.Row="0" Width="424">
+            <StackPanel Orientation="Vertical" Margin="15,15,5,15" Grid.ColumnSpan="3" Grid.Row="0" Width="424">
                 <!-- TextBlock Text="Changelog" FontSize="14" FontWeight="Bold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" /-->
                 <TextBlock Text="v1.37" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" />
                 <TextBlock Text=" - Add option to switch between impedance table sources" />
@@ -46,7 +47,7 @@
                 <TextBlock Text=" - Update vendor logos" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text="" />
             </StackPanel>
-            <Border Grid.Row="1" Grid.ColumnSpan="2" Margin="15">
+            <Border Grid.Row="1" Grid.ColumnSpan="3" Margin="15,15,15,15">
                 <StackPanel Orientation="Horizontal">
                     <Image Source="/Resources/warning-icon.png" Width="16" VerticalAlignment="Top" />
                     <TextBlock
@@ -57,7 +58,7 @@
                     Text="Please be aware that the current version is not capable of detecting DRAM Overvoltage mode. As a result, the readings for MEM VDD and MEM VDDQ may not be accurate." MaxWidth="400" />
                 </StackPanel>
             </Border>
-            <Border Padding="4 10" Grid.ColumnSpan="2" Grid.Row="2">
+            <Border Padding="4 10" Grid.ColumnSpan="3" Grid.Row="2">
                 <Button x:Name="Changelog_Close" Content="Close" Width="80" IsCancel="True" />
             </Border>
         </Grid>

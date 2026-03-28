@@ -24,5 +24,10 @@ namespace ZenTimings.Windows
         {
             DialogResult = true;
         }
+
+        private void AdonisWindow_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            WindowUtils.RemoveSystemBorderAndRadius(this);
+        }
     }
 }

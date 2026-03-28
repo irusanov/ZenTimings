@@ -23,5 +23,10 @@ namespace ZenTimings.Windows
             Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
             e.Handled = true;
         }
+
+        private void Grid_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            WindowUtils.RemoveSystemBorderAndRadius(this);
+        }
     }
 }

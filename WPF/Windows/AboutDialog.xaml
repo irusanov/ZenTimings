@@ -21,7 +21,7 @@
     BorderThickness="1"
     UseLayoutRounding="True"
     Style="{DynamicResource WindowStyles}"
-    BorderBrush="{DynamicResource WindowBorderColor}">
+    BorderBrush="{DynamicResource WindowBorderColor}" Loaded="AdonisWindow_Loaded">
 
     <StackPanel x:Name="AboutWindowContent">
         <Popup
