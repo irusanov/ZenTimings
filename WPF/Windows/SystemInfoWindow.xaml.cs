@@ -145,6 +145,27 @@ namespace ZenTimings.Windows
                 }
             }
 
+            if (CpuSingleton.Instance.info.apob.IsAvailable)
+            {
+                try
+                {
+                    var apobData = CpuSingleton.Instance.info.apob.Data;
+                    type = apobData.GetType();
+                    properties = type.GetProperties();
+                    items = new List<GridItem>();
+                    foreach (PropertyInfo property in properties)
+                    {
+                        object value = property.GetValue(apobData);
+                        items.Add(new GridItem() { Name = property.Name, Value = $"{value}" });
+                    }
+                    ApobTableGrid.ItemsSource = items;
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+
             //AsusWmiGrid.ItemsSource = asusSensors;
 
             DataContext = new
