@@ -263,10 +263,7 @@ namespace ZenTimings.Windows
                 AddHeading("SMBUS Memory Modules");
                 AddLine();
 
-                var smbus = CpuSingleton.Instance.SmbusPiix4;
-
-
-                Dictionary<byte, Ddr5SpdInfo> results = Ddr5SpdDecoder.ReadAndDecodeAll(smbus);
+                Dictionary<byte, Ddr5SpdInfo> results = CpuSingleton.Instance.memoryConfig.ReadAndDecodeAll();
 
                 foreach (KeyValuePair<byte, Ddr5SpdInfo> kvp in results)
                 {

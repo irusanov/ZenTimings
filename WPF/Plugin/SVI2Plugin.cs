@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ZenStates.Core;
+using ZenStates.Core.Drivers;
 using ZenTimings.Common;
 
 namespace ZenTimings.Plugin
@@ -30,7 +31,7 @@ namespace ZenTimings.Plugin
 
         private void InitializeSensors()
         {
-            if (cpuInstance != null && cpuInstance.Status == IOModule.LibStatus.OK)
+            if (cpuInstance != null && cpuInstance.Status == IODriver.LibStatus.OK)
             {
                 Sensors = new List<Sensor>
                 {
