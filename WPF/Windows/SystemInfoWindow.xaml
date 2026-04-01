@@ -1,4 +1,5 @@
-<adonisControls:AdonisWindow
+<local:ThemedAdonisWindow
+    xmlns:local="clr-namespace:ZenTimings"
     xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
     x:Class="ZenTimings.Windows.SystemInfoWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -17,7 +18,7 @@
     Style="{DynamicResource WindowStyles}"
     Activated="AdonisWindow_Activated"
     Icon="/ZenTimings;component/Resources/new-icon/16.png"
-    Closing="AdonisWindow_Closing" Loaded="AdonisWindow_Loaded">
+    Closing="AdonisWindow_Closing">
 
     <Window.Resources>
     </Window.Resources>
@@ -213,4 +214,4 @@
             </Border>
         </StackPanel>
     </ScrollViewer>
-</adonisControls:AdonisWindow>
+</local:ThemedAdonisWindow>

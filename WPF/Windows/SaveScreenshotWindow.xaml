@@ -1,4 +1,5 @@
-﻿<adonisControls:AdonisWindow
+﻿<local:ThemedAdonisWindow
+    xmlns:local="clr-namespace:ZenTimings"
     x:Class="ZenTimings.Windows.SaveWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -21,7 +22,7 @@
     UseLayoutRounding="True"
     BorderBrush="{DynamicResource WindowBorderColor}"
     Style="{DynamicResource WindowStyles}"
-    ShowInTaskbar="False" Loaded="SaveScreenshotWindow_Loaded">
+    ShowInTaskbar="False">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
@@ -46,4 +47,4 @@
             <StatusBarItem Content="Screenshot copied to clipboard." />
         </StatusBar>
     </Grid>
-</adonisControls:AdonisWindow>
+</local:ThemedAdonisWindow>

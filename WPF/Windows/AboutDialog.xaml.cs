@@ -10,7 +10,7 @@ namespace ZenTimings.Windows
     /// <summary>
     /// Interaction logic for AboutDialog.xaml
     /// </summary>
-    public partial class AboutDialog
+    public partial class AboutDialog : ThemedAdonisWindow
     {
         private static readonly Updater updater = (Application.Current as App)?.updater;
         private DispatcherTimer notificationTimer;

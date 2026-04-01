@@ -33,7 +33,7 @@ namespace ZenTimings
     /// <summary>
     ///     Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow
+    public partial class MainWindow: ThemedAdonisWindow
     {
         private readonly AsusWMI AsusWmi = new AsusWMI();
         private readonly List<BiosACPIFunction> biosFunctions = new List<BiosACPIFunction>();
@@ -151,6 +151,7 @@ namespace ZenTimings
                 _notifyIcon = GetTrayIcon();
 
                 InitializeComponent();
+                //SetResourceReference(NativeBorderBrushProperty, "WindowBorderColor");
                 SplashWindow.Loading("Memory modules");
                 ReadMemoryModulesInfo();
 
@@ -904,8 +905,6 @@ namespace ZenTimings
 
         private void AdonisWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            WindowUtils.RemoveSystemBorderAndRadius(this);
-
             this.Topmost = true;
 
             RestoreWindowPosition();
@@ -1181,5 +1180,32 @@ namespace ZenTimings
                 MessageBox.Show($"Failed to open changelog: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        //protected override void OnSourceInitialized(EventArgs e)
+        //{
+        //    base.OnSourceInitialized(e);
+        //    ApplyNativeBorderBrush(NativeBorderBrush);
+        //}
+
+        //private static void OnNativeBorderBrushChanged(
+        //    DependencyObject d,
+        //    DependencyPropertyChangedEventArgs e)
+        //{
+        //    var window = (MainWindow)d;
+        //    window.ApplyNativeBorderBrush(e.NewValue as Brush);
+        //}
+
+        //private void ApplyNativeBorderBrush(Brush brush)
+        //{
+        //    if (brush is SolidColorBrush scb)
+        //    {
+        //        uint colorRef = WindowUtils.ToColorRef(
+        //            scb.Color.R,
+        //            scb.Color.G,
+        //            scb.Color.B);
+
+        //        WindowUtils.SetBorderColor(this, colorRef);
+        //    }
+        //}
     }
 }

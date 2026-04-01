@@ -14,7 +14,7 @@ namespace ZenTimings.Windows
     /// <summary>
     /// Interaction logic for SaveWindow.xaml
     /// </summary>
-    public partial class SaveWindow : IDisposable
+    public partial class SaveWindow : ThemedAdonisWindow, IDisposable
     {
         private static Bitmap screenshot;
 
@@ -80,11 +80,6 @@ namespace ZenTimings.Windows
         public void Dispose()
         {
             ((IDisposable)screenshot).Dispose();
-        }
-
-        private void SaveScreenshotWindow_Loaded(object sender, RoutedEventArgs e)
-        {
-            WindowUtils.RemoveSystemBorderAndRadius(this);
         }
     }
 }

@@ -1,4 +1,5 @@
-<adonisControls:AdonisWindow
+<local:ThemedAdonisWindow
+    xmlns:local="clr-namespace:ZenTimings"
     x:Class="ZenTimings.Windows.OptionsDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -22,7 +23,7 @@
     UseLayoutRounding="True"
     BorderBrush="{DynamicResource WindowBorderColor}"
     Style="{DynamicResource WindowStyles}"
-    Closing="OptionsWindow_Closing" Loaded="OptionsWindow_Loaded">
+    Closing="OptionsWindow_Closing">
 
     <StackPanel x:Name="OptionWindowContent">
         <Popup
@@ -345,4 +346,4 @@
                     Click="ButtonSettingsCancel_Click" />
         </Grid>
     </StackPanel>
-</adonisControls:AdonisWindow>
+</local:ThemedAdonisWindow>

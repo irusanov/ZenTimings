@@ -12,7 +12,7 @@ namespace ZenTimings.Windows
     /// <summary>
     /// Interaction logic for OptionsDialog.xaml
     /// </summary>
-    public partial class OptionsDialog
+    public partial class OptionsDialog : ThemedAdonisWindow
     {
         //private const string Caption = "Disabling auto-refresh might lead to inaccurate voltages and frequencies on first launch";
         internal readonly AppSettings appSettings = AppSettings.Instance;
@@ -181,11 +181,6 @@ namespace ZenTimings.Windows
             {
                 textBoxScreenshotPath.Text = folderDialog.SelectedPath;
             }
-        }
-
-        private void OptionsWindow_Loaded(object sender, RoutedEventArgs e)
-        {
-            WindowUtils.RemoveSystemBorderAndRadius(this);
         }
     }
 }

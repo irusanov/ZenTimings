@@ -1,4 +1,5 @@
-<adonisControls:AdonisWindow
+<local:ThemedAdonisWindow
+    xmlns:local="clr-namespace:ZenTimings"
     x:Class="ZenTimings.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -19,7 +20,7 @@
     SizeChanged="AdonisWindow_SizeChanged"
     Activated="AdonisWindow_Activated"
     Loaded="AdonisWindow_Loaded"
-    UseLayoutRounding="False"
+    UseLayoutRounding="True"
     BorderThickness="{DynamicResource WindowBorderThickness}"
     BorderBrush="{DynamicResource WindowBorderColor}"
     Style="{DynamicResource WindowStyles}"
@@ -201,4 +202,4 @@
             </Border>
         </StackPanel>
     </Border>
-</adonisControls:AdonisWindow>
+</local:ThemedAdonisWindow>

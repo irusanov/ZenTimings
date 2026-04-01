@@ -5,7 +5,7 @@ namespace ZenTimings.Windows
     /// <summary>
     /// Interaction logic for DriverUpdateWindow.xaml
     /// </summary>
-    public partial class DriverUpdateWindow
+    public partial class DriverUpdateWindow : ThemedAdonisWindow
     {
         public bool IsSkipChecked => SkipDriverUpdateCheckBox.IsChecked == true;
 
@@ -23,11 +23,6 @@ namespace ZenTimings.Windows
         private void DriverUpdate_Install_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             DialogResult = true;
-        }
-
-        private void AdonisWindow_Loaded(object sender, System.Windows.RoutedEventArgs e)
-        {
-            WindowUtils.RemoveSystemBorderAndRadius(this);
         }
     }
 }

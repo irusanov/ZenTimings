@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
+using System.Windows;
+using System.Windows.Media;
 
 namespace ZenTimings
 {
@@ -14,7 +16,7 @@ namespace ZenTimings
             if (hwnd == IntPtr.Zero)
                 return;
 
-            int none = unchecked((int)0xFFFFFFFE); // DWMWA_COLOR_NONE
+            uint none = DWMWA_COLOR_NONE; // DWMWA_COLOR_NONE
             DwmSetWindowAttribute(hwnd, DWMWA_BORDER_COLOR, ref none, sizeof(int));
 
             var preference = DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_DONOTROUND;
@@ -25,7 +27,44 @@ namespace ZenTimings
                 Marshal.SizeOf(typeof(int)));
         }
 
+        public static void SetBorderColor(Window window, uint borderColor)
+        {
+            var hwnd = new WindowInteropHelper(window).Handle;
+            if (hwnd == IntPtr.Zero)
+                return;
+
+            DwmSetWindowAttribute(hwnd, DWMWA_BORDER_COLOR, ref borderColor, sizeof(uint));
+        }
+
+        public static bool TrySetBorderColor(Window window, SolidColorBrush brush)
+        {
+            if (window == null)
+                return false;
+
+            IntPtr hwnd = new WindowInteropHelper(window).Handle;
+            if (hwnd == IntPtr.Zero)
+                return false;
+
+            uint colorRef = WindowUtils.ToColorRef(
+                brush.Color.R,
+                brush.Color.G,
+                brush.Color.B);
+
+            int hr = DwmSetWindowAttribute(
+                hwnd,
+                DWMWA_BORDER_COLOR,
+                ref colorRef,
+                sizeof(uint));
+
+            return hr == 0;
+        }
+
+        public static uint ToColorRef(byte r, byte g, byte b) => (uint)(r | (g << 8) | (b << 16));
+
         private const int DWMWA_BORDER_COLOR = 34;
+        private const uint DWMWA_COLOR_DEFAULT = 0xFFFFFFFF;
+        private const uint DWMWA_COLOR_NONE = 0xFFFFFFFE;
+
         private enum DWMWINDOWATTRIBUTE
         {
             DWMWA_WINDOW_CORNER_PREFERENCE = 33
@@ -42,7 +81,7 @@ namespace ZenTimings
         private static extern int DwmSetWindowAttribute(
             IntPtr hwnd,
             int dwAttribute,
-            ref int pvAttribute,
+            ref uint pvAttribute,
             int cbAttribute);
 
         [DllImport("dwmapi.dll")]

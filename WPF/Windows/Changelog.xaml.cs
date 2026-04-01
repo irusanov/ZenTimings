@@ -5,7 +5,7 @@ namespace ZenTimings.Windows
     /// <summary>
     /// Interaction logic for Changelog.xaml
     /// </summary>
-    public partial class Changelog : AdonisUI.Controls.AdonisWindow
+    public partial class Changelog: ThemedAdonisWindow
     {
         public Changelog()
         {
@@ -22,11 +22,6 @@ namespace ZenTimings.Windows
         {
             Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
             e.Handled = true;
-        }
-
-        private void Grid_Loaded(object sender, System.Windows.RoutedEventArgs e)
-        {
-            WindowUtils.RemoveSystemBorderAndRadius(this);
         }
     }
 }

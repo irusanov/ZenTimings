@@ -17,7 +17,7 @@ namespace ZenTimings.Windows
     /// <summary>
     ///     Interaction logic for DebugDialog.xaml
     /// </summary>
-    public partial class DebugDialog
+    public partial class DebugDialog : ThemedAdonisWindow
     {
         private readonly AsusWMI AWMI;
         private readonly BiosMemController BMC;
@@ -610,11 +610,6 @@ namespace ZenTimings.Windows
         private void ButtonDebugSaveAs_Click(object sender, RoutedEventArgs e)
         {
             SaveToFile(true);
-        }
-
-        private void AdonisWindow_Loaded(object sender, RoutedEventArgs e)
-        {
-            WindowUtils.RemoveSystemBorderAndRadius(this);
         }
     }
 }

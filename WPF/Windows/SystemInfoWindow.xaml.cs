@@ -11,7 +11,7 @@ namespace ZenTimings.Windows
     /// <summary>
     /// Interaction logic for SystemInfoWindow.xaml
     /// </summary>
-    public partial class SystemInfoWindow
+    public partial class SystemInfoWindow : ThemedAdonisWindow
     {
         private class GridItem
         {
@@ -190,11 +190,6 @@ namespace ZenTimings.Windows
                 appSettings.SysInfoWindowWidth = Width;
                 appSettings.Save();
             }
-        }
-
-        private void AdonisWindow_Loaded(object sender, System.Windows.RoutedEventArgs e)
-        {
-            WindowUtils.RemoveSystemBorderAndRadius(this);
         }
     }
 }
