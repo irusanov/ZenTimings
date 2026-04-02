@@ -299,8 +299,8 @@ namespace ZenTimings.Windows
                 if (cpu.info.apob.IsAvailable)
                 {
                     AddLine($"-- Address: 0x{cpu.info.apob.Address:X8}");
-                    AddLine($"-- Sequence Offset: 0x{cpu.info.apob.Offset:X8}");
-                    AddLine($"-- Data Offset: 0x{cpu.info.apob.DataBlockOffset:X8}");
+                    AddLine($"-- First Offset: 0x{cpu.info.apob.Offset:X8}");
+                    AddLine($"-- Second Offset: 0x{cpu.info.apob.SecondOffset:X8}");
                     AddLine($"-- Layout: 0x{cpu.info.apob.LayoutVersion:X2}");
                     AddLine();
                     AddLine("-- Header ---------------------------------");

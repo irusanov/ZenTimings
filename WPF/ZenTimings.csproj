@@ -298,7 +298,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Resource>
-    <Resource Include="Themes\DarkRed.xaml">
+    <Resource Include="Themes\AsusRog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>

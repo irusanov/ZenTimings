@@ -15,7 +15,7 @@
     Height="250"
     Width="300"
     ResizeMode="NoResize"
-    SizeToContent="WidthAndHeight"
+    SizeToContent="Height"
     ShowInTaskbar="False"
     WindowStartupLocation="CenterOwner"
     Icon="/ZenTimings;component/Resources/new-icon/16.png"
@@ -105,6 +105,9 @@
                                                RequestNavigate="Hyperlink_RequestNavigate">
                                         <Run Text="https://zentimings.com" />
                                     </Hyperlink>
+                                </TextBlock>
+                                <TextBlock TextWrapping="Wrap" Padding="0 10 0 0" FontSize="10" Foreground="{DynamicResource DisabledColor}">
+                                    ASUS, G.Skill, MSI, Colorful, OriginCode, Biwin logos and other trademarks are the property of their respective owners.
                                 </TextBlock>
                             </StackPanel>
                         </Border>

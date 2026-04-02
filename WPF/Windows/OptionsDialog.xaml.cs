@@ -153,14 +153,14 @@ namespace ZenTimings.Windows
             if (appSettings.AppTheme != _Theme)
             {
                 appSettings.AppTheme = _Theme;
-                appSettings.ChangeTheme();
+                appSettings.ApplyTheme();
             }
         }
 
         private void ComboBoxTheme_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             appSettings.AppTheme = (Theme)comboBoxTheme.SelectedIndex;
-            appSettings.ChangeTheme();
+            appSettings.ApplyTheme();
         }
 
         private void ButtonBrowseScreenshotPath_Click(object sender, RoutedEventArgs e)
