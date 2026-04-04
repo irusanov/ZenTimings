@@ -125,5 +125,10 @@ namespace ZenTimings.Windows
         {
             WindowUtils.RemoveSystemBorderAndRadius(this);
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
     }
 }

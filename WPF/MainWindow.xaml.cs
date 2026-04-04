@@ -951,7 +951,7 @@ namespace ZenTimings
             {
                 Owner = Application.Current.MainWindow
             };
-            optionsWnd.ShowDialog();
+            optionsWnd.Show();
         }
 
         private void AboutToolStripMenuItem_Click(object sender, RoutedEventArgs e)
@@ -960,7 +960,7 @@ namespace ZenTimings
             {
                 Owner = Application.Current.MainWindow
             };
-            aboutWnd.ShowDialog();
+            aboutWnd.Show();
         }
 
         private void ButtonScreenshot_Click(object sender, RoutedEventArgs e)
