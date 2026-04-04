@@ -267,7 +267,7 @@ namespace ZenTimings
                         }
                         else
                         {
-                            timingsPanel = new LegacyDDR5TimingsPanel();
+                            timingsPanel = new DDR5TimingsPanel19h();
                         }
                         break;
                     }
