@@ -70,18 +70,23 @@
         <Setter Property="Background" Value="{x:Null}" />
         <Setter Property="Padding" Value="5 2 7 2" />
     </Style>
+    
     <Style x:Key="MenuStyles" TargetType="{x:Type Menu}">
         <Setter Property="Background" Value="{x:Null}" />
     </Style>
+    
     <Style x:Key="BottomPanelStyles" TargetType="{x:Type Border}">
         <Setter Property="Padding" Value="5" />
         <Setter Property="Background" Value="{x:Null}" />
     </Style>
+    
     <Style x:Key="PanelStyles" TargetType="{x:Type Border}">
         <Setter Property="Background" Value="{x:Null}" />
     </Style>
+
     <Style x:Key="WindowStyles" TargetType="{x:Type Window}">
-        <Setter Property="BorderBrush" Value="{DynamicResource WindowBorderColor}" />
+        <Setter Property="BorderThickness" Value="{StaticResource WindowBorderThickness}" />
+        <Setter Property="BorderBrush" Value="{StaticResource WindowBorderColor}" />
         <Setter Property="Background" Value="{StaticResource BackgroundGradientBrush}" />
     </Style>
 </ResourceDictionary>

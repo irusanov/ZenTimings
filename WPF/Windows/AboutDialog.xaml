@@ -13,7 +13,7 @@
     mc:Ignorable="d"
     Title="About"
     Height="250"
-    Width="300"
+    Width="320"
     ResizeMode="NoResize"
     SizeToContent="Height"
     ShowInTaskbar="False"
@@ -22,7 +22,7 @@
     BorderThickness="1"
     UseLayoutRounding="True"
     Style="{DynamicResource WindowStyles}"
-    BorderBrush="{DynamicResource WindowBorderColor}" Loaded="AdonisWindow_Loaded">
+    Loaded="AdonisWindow_Loaded">
 
     <StackPanel x:Name="AboutWindowContent">
         <Popup
@@ -69,7 +69,7 @@
                 BorderThickness="0,1"
                 ClipToBounds="True"
                 SnapsToDevicePixels="True"
-                MinWidth="290"
+                MinWidth="320"
                 MinHeight="160"
                 ScrollViewer.CanContentScroll="True"
                 BorderBrush="{DynamicResource SeparatorColor}"
@@ -79,7 +79,7 @@
                 	Background="{DynamicResource PanelBackground}"
                 	BorderThickness="0,1,1,1"
                     BorderBrush="{DynamicResource SeparatorColor}">
-                    <Grid Margin="0 10 0 0">
+                    <Grid Margin="6 12 12 12">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto" />
                             <ColumnDefinition />
@@ -106,7 +106,7 @@
                                         <Run Text="https://zentimings.com" />
                                     </Hyperlink>
                                 </TextBlock>
-                                <TextBlock TextWrapping="Wrap" Padding="0 10 0 0" FontSize="10" Foreground="{DynamicResource DisabledColor}">
+                                <TextBlock TextWrapping="Wrap" Padding="0 10 0 0" FontSize="11" Foreground="{DynamicResource DisabledColor}">
                                     ASUS, G.Skill, MSI, Colorful, OriginCode, Biwin logos and other trademarks are the property of their respective owners.
                                 </TextBlock>
                             </StackPanel>

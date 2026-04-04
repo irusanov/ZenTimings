@@ -17,7 +17,6 @@
     WindowStartupLocation="CenterOwner"
     BorderThickness="1"
     UseLayoutRounding="True"
-    BorderBrush="{DynamicResource WindowBorderColor}"
     Style="{DynamicResource WindowStyles}">
     <Grid>
         <Grid.ColumnDefinitions>

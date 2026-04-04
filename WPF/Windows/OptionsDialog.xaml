@@ -21,7 +21,6 @@
     ShowInTaskbar="False"
     BorderThickness="1"
     UseLayoutRounding="True"
-    BorderBrush="{DynamicResource WindowBorderColor}"
     Style="{DynamicResource WindowStyles}"
     Closing="OptionsWindow_Closing">
 
@@ -67,7 +66,7 @@
                 Background="{DynamicResource PanelBackground}"
                 BorderThickness="0,1,1,1"
                 BorderBrush="{DynamicResource SeparatorColor}"-->
-        <Grid Margin="8,12,8,8">
+        <Grid Margin="12">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="78" />

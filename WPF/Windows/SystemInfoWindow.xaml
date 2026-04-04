@@ -14,7 +14,6 @@
     WindowStartupLocation="CenterOwner"
     BorderThickness="1"
     UseLayoutRounding="True"
-    BorderBrush="{DynamicResource WindowBorderColor}"
     Style="{DynamicResource WindowStyles}"
     Activated="AdonisWindow_Activated"
     Icon="/ZenTimings;component/Resources/new-icon/16.png"

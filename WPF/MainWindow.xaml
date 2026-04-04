@@ -21,8 +21,6 @@
     Activated="AdonisWindow_Activated"
     Loaded="AdonisWindow_Loaded"
     UseLayoutRounding="True"
-    BorderThickness="{DynamicResource WindowBorderThickness}"
-    BorderBrush="{DynamicResource WindowBorderColor}"
     Style="{DynamicResource WindowStyles}"
     Closing="AdonisWindow_Closing"
     Height="538"
