@@ -233,7 +233,7 @@ namespace ZenTimings.ViewModels
             Plugins = plugins;
 
             CpuName = VendorUtils.GetCpuNameString(CpuSingleton.Instance.systemInfo);
-            SmuVersion = CpuSingleton.Instance.systemInfo.GetSmuVersionString();
+            SmuVersion = CpuSingleton.Instance?.systemInfo?.GetSmuVersionString() ?? "Unknown";
 
             TotalCapacity = CpuSingleton.Instance.GetMemoryConfig().TotalCapacity;
             MemoryType = memoryType;
@@ -256,19 +256,22 @@ namespace ZenTimings.ViewModels
                 ? $"Click to visit {CpuSingleton.Instance.systemInfo.MbName} page"
                 : string.Empty;
 
-            if (pmicData != null && pmicData.IsValid)
+            if (memoryType == MemType.DDR5 || memoryType == MemType.LPDDR5)
             {
-                PmicData = pmicData;
-            }
-            else
-            {
-                // fallback to AOD table
-                var aodData = CpuSingleton.Instance.info.aod?.Table?.Data;
-                if (aodData != null)
+                if (pmicData != null && pmicData.IsValid)
                 {
-                    SwaAdcV = aodData.MemVddio.RawValue / 1000.0f;
-                    SwbAdcV = aodData.MemVddq.RawValue / 1000.0f;
-                    VppAdcV = aodData.MemVpp.RawValue / 1000.0f;
+                    PmicData = pmicData;
+                }
+                else
+                {
+                    // fallback to AOD table
+                    var aodData = CpuSingleton.Instance.info.aod?.Table?.Data;
+                    if (aodData != null)
+                    {
+                        SwaAdcV = aodData?.MemVddio != null ? aodData.MemVddio.RawValue / 1000.0f : 0;
+                        SwbAdcV = aodData?.MemVddq != null ? aodData.MemVddq.RawValue / 1000.0f : 0;
+                        VppAdcV = aodData?.MemVpp != null ? aodData.MemVpp.RawValue / 1000.0f : 0;
+                    }
                 }
             }
         }
