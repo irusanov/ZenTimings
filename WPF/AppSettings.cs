@@ -9,7 +9,7 @@ namespace ZenTimings
     public sealed class AppSettings
     {
         public const int VersionMajor = 1;
-        public const int VersionMinor = 12;
+        public const int VersionMinor = 13;
 
         private static readonly string Filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.xml");
         public const string AGESA_UNKNOWN = "Unknown";
@@ -158,6 +158,7 @@ namespace ZenTimings
         public string NotifiedChangelog { get; set; } = "";
         public bool SingleInstance { get; set; } = true;
         public bool FirstStart { get; set; } = true;
+        public int CornerRadius { get; set; } = 0;
         public ImpedanceTableSource ImpedanceTableSrc { get; set; } = ImpedanceTableSource.APOB;
     }
 }

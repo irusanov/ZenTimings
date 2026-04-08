@@ -22,6 +22,7 @@ namespace ZenTimings.Windows
         private Theme _Theme;
         private readonly bool _AdvancedMode;
         private readonly ImpedanceTableSource _ImpedanceTableSource;
+        private readonly int _CornerRadius;
 
         public OptionsDialog(DispatcherTimer timer)
         {
@@ -29,6 +30,7 @@ namespace ZenTimings.Windows
             _Theme = appSettings.AppTheme;
             _AdvancedMode = appSettings.AdvancedMode;
             _ImpedanceTableSource = appSettings.ImpedanceTableSrc;
+            _CornerRadius = appSettings.CornerRadius;
 
             InitializeComponent();
 
@@ -39,6 +41,7 @@ namespace ZenTimings.Windows
             checkBoxSavePosition.IsChecked = appSettings.SaveWindowPosition;
             checkBoxMinimizeToTray.IsChecked = appSettings.MinimizeToTray;
             checkBoxSingleInstance.IsChecked = appSettings.SingleInstance;
+            comboBoxCornerRadius.SelectedIndex = appSettings?.CornerRadius ?? 0;
             //checkBoxAutoUninstallDriver.IsChecked = appSettings.AutoUninstallDriver;
             numericUpDownRefreshInterval.IsEnabled = appSettings.AutoRefresh && appSettings.AdvancedMode;
             numericUpDownRefreshInterval.Text = appSettings.AutoRefreshInterval.ToString();
@@ -72,6 +75,7 @@ namespace ZenTimings.Windows
             appSettings.SaveWindowPosition = (bool)checkBoxSavePosition.IsChecked;
             appSettings.MinimizeToTray = (bool)checkBoxMinimizeToTray.IsChecked;
             appSettings.SingleInstance = (bool)checkBoxSingleInstance.IsChecked;
+            appSettings.CornerRadius = comboBoxCornerRadius.SelectedIndex;
             //appSettings.AutoUninstallDriver = (bool)checkBoxAutoUninstallDriver.IsChecked;
             appSettings.ScreenshotMode = (ScreenshotType)comboBoxScreenshot.SelectedIndex;
             appSettings.ScreenshotSaveLocation = textBoxScreenshotPath.Text.Trim();
@@ -107,7 +111,9 @@ namespace ZenTimings.Windows
                     timerInstance.Stop();
             }
 
-            if (_AdvancedMode != appSettings.AdvancedMode || _ImpedanceTableSource != appSettings.ImpedanceTableSrc)
+            if (_AdvancedMode != appSettings.AdvancedMode || 
+                _ImpedanceTableSource != appSettings.ImpedanceTableSrc ||
+                _CornerRadius != appSettings.CornerRadius)
             {
                 buttonSettingsRestart.Visibility = Visibility.Visible;
                 appSettings.Save();

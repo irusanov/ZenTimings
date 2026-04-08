@@ -18,12 +18,39 @@ namespace ZenTimings
 
             uint none = DWMWA_COLOR_NONE; // DWMWA_COLOR_NONE
             DwmSetWindowAttribute(hwnd, DWMWA_BORDER_COLOR, ref none, sizeof(int));
+            RemoveBorderRadius(window);
+        }
 
+        public static void RemoveBorderRadius(System.Windows.Window window)
+        {
+            var hwnd = new WindowInteropHelper(window).Handle;
+            if (hwnd == IntPtr.Zero)
+                return;
             var preference = DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_DONOTROUND;
             DwmSetWindowAttribute(
                 hwnd,
                 DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE,
                 ref preference,
+                Marshal.SizeOf(typeof(int)));
+        }
+
+        public static void SetCornerPreference(System.Windows.Window window, int preference = 0)
+        {
+            var hwnd = new WindowInteropHelper(window).Handle;
+            if (hwnd == IntPtr.Zero)
+                return;
+
+            if (preference >= 0 && preference <= 3)
+            {
+                return;
+            }
+
+            DWM_WINDOW_CORNER_PREFERENCE cornerPreference = (DWM_WINDOW_CORNER_PREFERENCE)preference;
+
+            DwmSetWindowAttribute(
+                hwnd,
+                DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE,
+                ref cornerPreference,
                 Marshal.SizeOf(typeof(int)));
         }
 
