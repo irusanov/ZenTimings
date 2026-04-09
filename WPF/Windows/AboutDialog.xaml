@@ -21,8 +21,7 @@
     Icon="/ZenTimings;component/Resources/new-icon/16.png"
     BorderThickness="1"
     UseLayoutRounding="True"
-    Style="{DynamicResource WindowStyles}"
-    Loaded="AdonisWindow_Loaded">
+    Style="{DynamicResource WindowStyles}">
 
     <StackPanel x:Name="AboutWindowContent">
         <Popup

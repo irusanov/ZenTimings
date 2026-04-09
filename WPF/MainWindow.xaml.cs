@@ -849,7 +849,7 @@ namespace ZenTimings
                         Width = parent.Width,
                         Height = parent.Height
                     };
-                    debugWnd.ShowDialog();
+                    debugWnd.Show();
                 }
             }
             else

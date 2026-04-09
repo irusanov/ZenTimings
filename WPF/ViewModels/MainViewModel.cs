@@ -105,7 +105,13 @@ namespace ZenTimings.ViewModels
         }
         public MemType MemoryType { get; }
 
-        public PowerTable PowerTable { get; }
+        private PowerTable _powerTable;
+        public PowerTable PowerTable
+        {
+            get => _powerTable;
+            set { _powerTable = value; OnPropertyChanged(); }
+        }
+
         public Cpu.CodeName CodeName { get; }
         public bool WMIPresent { get; }
         public bool IsMotherboardLogoVisible { get; }
@@ -160,6 +166,13 @@ namespace ZenTimings.ViewModels
         {
             get => _apobData;
             set { _apobData = value; OnPropertyChanged(); }
+        }
+
+        private ApobData _apobExtendedData;
+        public ApobData ApobExtendedData
+        {
+            get => _apobExtendedData;
+            set { _apobExtendedData = value; OnPropertyChanged(); }
         }
 
         private float _swaAdcV;
@@ -241,9 +254,12 @@ namespace ZenTimings.ViewModels
             PowerTable = CpuSingleton.Instance?.powerTable;
             CodeName = CpuSingleton.Instance.info.codeName;
 
-            //_channelsApobData = CpuSingleton.Instance.info.apob.Data;
-            //SelectedDctOffset = CpuSingleton.Instance.memoryConfig.Modules.FirstOrDefault()?.DctOffset ?? 0;
+            // APOB
             ApobData = CpuSingleton.Instance.info.apob.Data;
+            if (CpuSingleton.Instance.info.apob.ExtendedData.ProcOdt != null)
+                ApobExtendedData = CpuSingleton.Instance.info.apob.ExtendedData;
+            else
+                ApobExtendedData = ApobData;
 
             //AgesaVersion = AGESA_SEARCHING;
             AgesaVersion = agesaVersion;

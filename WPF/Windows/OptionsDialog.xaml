@@ -241,7 +241,7 @@
                     Grid.Column="0"
                     Grid.Row="1"
                     Margin="0 5 5 5"
-                    Text="Corner radius (W11)" VerticalAlignment="Center" />
+                    Text="Corner radius (Win 11)" VerticalAlignment="Center" />
                 <ComboBox
                     x:Name="comboBoxCornerRadius"
                     Grid.ColumnSpan="2"
