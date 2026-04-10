@@ -36,7 +36,7 @@ namespace ZenTimings
             base.OnSourceInitialized(e);
             ApplyNativeBorderFromTheme();
 
-            if (AppSettings.Instance.CornerRadius != 0 || AppSettings.Instance.CornerRadius != 2)
+            if (AppSettings.Instance.CornerRadius != 0 && AppSettings.Instance.CornerRadius != 2)
             {
                 WindowUtils.SetCornerPreference(this, AppSettings.Instance.CornerRadius);
             }

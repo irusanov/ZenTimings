@@ -40,7 +40,7 @@ namespace ZenTimings
             if (hwnd == IntPtr.Zero)
                 return;
 
-            if (preference >= 0 && preference <= 3)
+            if (preference < 0 && preference > 3)
             {
                 return;
             }
