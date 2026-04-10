@@ -46,16 +46,19 @@ namespace ZenTimings.Windows
 
         private static void ApplySettings()
         {
-            if (appSettings.FirstStart
-                && VendorUtils.IsRogMotherboard(CpuSingleton.Instance.systemInfo)
-                && int.Parse(appSettings.Version.Replace("1.", "")) >= 12)
+            if (DriverHelper.IsPawnIoInstalled)
             {
-                appSettings.AppTheme = AppSettings.Theme.AsusRog;
+                if (appSettings.FirstStart
+                    && VendorUtils.IsRogMotherboard(CpuSingleton.Instance.systemInfo)
+                    && int.Parse(appSettings.Version.Replace("1.", "")) >= 12)
+                {
+                    appSettings.AppTheme = AppSettings.Theme.AsusRog;
+                }
+
+                if (appSettings.FirstStart) appSettings.FirstStart = false;
             }
 
             appSettings.ApplyTheme();
-
-            if (appSettings.FirstStart) appSettings.FirstStart = false;
             if (appSettings.CheckForUpdates) updater.CheckForUpdate();
         }
     }
