@@ -31,6 +31,7 @@ namespace ZenTimings.Windows
         {
             splash.Show();
             ApplySettings();
+            if (appSettings.CheckForUpdates) updater.CheckForUpdate();
         }
 
         public static void Stop() => splash.Close();
@@ -59,7 +60,6 @@ namespace ZenTimings.Windows
             }
 
             appSettings.ApplyTheme();
-            if (appSettings.CheckForUpdates) updater.CheckForUpdate();
         }
     }
 }
