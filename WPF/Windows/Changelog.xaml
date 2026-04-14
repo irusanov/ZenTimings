@@ -1,73 +1,73 @@
-﻿<adonisControls:AdonisWindow
-        xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
-        x:Class="ZenTimings.Windows.Changelog"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-        xmlns:converters="clr-namespace:ZenTimings.Converters"
-        mc:Ignorable="d"
-        Style="{DynamicResource WindowStyles}"
-        Title="What's New" Height="580" Width="454" UseLayoutRounding="True" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Topmost="True" Icon="/ZenTimings;component/Resources/new-icon/16.png" SizeToContent="WidthAndHeight">
-    
+﻿<local:ThemedAdonisWindow
+    xmlns:local="clr-namespace:ZenTimings"
+    xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+    x:Class="ZenTimings.Windows.Changelog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+    xmlns:converters="clr-namespace:ZenTimings.Converters"
+    mc:Ignorable="d"
+    Style="{DynamicResource WindowStyles}"
+    Title="What's New"
+    Height="580"
+    Width="454"
+    UseLayoutRounding="True"
+    ResizeMode="NoResize"
+    WindowStartupLocation="CenterScreen"
+    Topmost="True" Icon="/ZenTimings;component/Resources/new-icon/16.png"
+    SizeToContent="WidthAndHeight">
+
     <Window.Resources>
         <converters:DDR5ToVisConverter x:Key="DDR5ToBool" />
     </Window.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="269*"/>
-                <ColumnDefinition Width="128*"/>
-            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
-            <StackPanel Orientation="Vertical" Margin="15" Grid.ColumnSpan="2" Grid.Row="0" Width="424">
+
+            <StackPanel Orientation="Vertical" Margin="15,15,5,15" Grid.ColumnSpan="6" Grid.Row="0" Width="424">
                 <!-- TextBlock Text="Changelog" FontSize="14" FontWeight="Bold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" /-->
-                <TextBlock Text="v1.36 Feb 16 2026" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" />
-                <TextBlock Text="  - Display Bank Refresh Mode" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text="  - Fix wrong TRFC4 (DDR4) reading" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text="  - Improve AGESA version detection parsing" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text="  - Improve power table refresh performance" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text="  - Enable export as HTML (preliminary version)" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text="  - Drop WMI method to get system info in favor of SMBios (faster)" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text="  - Fix crash on certain systems when trying to generate a debug report" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text="  - Fixed an error when only one DIMM present in the secondary channel" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text="  - Replace WinRing0 kernel driver with PawnIO" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text="  - Support new CPUs" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text="  - Update AOD tables" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text="  - Update PMT tables" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text="  - Display additional channels in System Info" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text="  - Add read preamble, write preamble and STAGsb" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text="  - Improve dual rank memory detection" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text="  - Display VDDG IOD0 and VDDG CCD0 voltages for 9000 series" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text="  - Add Asus logos - ROG, AYW, ProArt" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text="  - Add G.Skill logos" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text="  - Add Biwin and OriginCode logos" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text="  - Add Colorful iGame logo" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text="  - Optimize resources" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text="  - Add link to Reous' bios spreadsheet" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text="  - Allow multiple instances (enable in Options)" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text="v1.37 (April 14 2026)" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0" />
+
+                <TextBlock Text="" />
+                <TextBlock Text=" New:" FontWeight="Bold"/>
+                <TextBlock Text=" - Added support for reading memory voltages from PMIC" />
+                <TextBlock Text=" - Added support for reading memory modules from SPD" />
+                <TextBlock Text=" - Added option to switch between impedance table sources" />
+                <TextBlock Text=" - Added new themes: ROG and Black" />
+                <TextBlock Text=" - Added configurable screenshot save location" />
+                <TextBlock Text=" - Added Asus TUF logo" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Added MSI logos" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Update PawnIO driver to 2.2.0.0 and modules to 0.2.4" TextWrapping="WrapWithOverflow" />
+
+                <TextBlock Text="" />
+                <TextBlock Text=" Improvements:" FontWeight="Bold"/>
+                <TextBlock Text=" - Extended controller settings for AM5 desktop series" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Skip timing refresh when MCLK has not changed" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Displays tRDPRE and tWRPRE for 8000-series APUs" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Updated vendor logos" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - About, Debug and Options dialogs no longer block main window" TextWrapping="WrapWithOverflow" />
+
+                <TextBlock Text="" />
+                <TextBlock Text=" Fixes:" FontWeight="Bold"/>
+                <TextBlock Text=" - Updated Phoenix tables to correct voltage display on 8700G" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Fix Proc Data Drive Strength reading on 8000 desktop series" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Fixed tRFC (ns) dynamic calculation based on detected BCLK and current memory frequency" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Automatically disable tRFCsb when FGR (Strict) mode is enabled" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Removed legacy encrypted settings previously used for AGESA version storage" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Workaround for window border not applied on Windows 11" TextWrapping="WrapWithOverflow" />
+                
                 <TextBlock Text="" />
             </StackPanel>
-            <Border Grid.Row="1" Grid.ColumnSpan="2" Margin="15">
-                <StackPanel Orientation="Horizontal">
-                    <Image Source="/Resources/warning-icon.png" Width="16" VerticalAlignment="Top" />
-                    <TextBlock
-                    VerticalAlignment="Center"
-                    Margin="5 0 0 0"
-                    Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}"
-                    TextWrapping="Wrap"
-                    Text="Please be aware that the current version is not capable of detecting DRAM Overvoltage mode. As a result, the readings for MEM VDD and MEM VDDQ may not be accurate." MaxWidth="400" />
-                </StackPanel>
-            </Border>
-            <Border Padding="4 10" Grid.ColumnSpan="2" Grid.Row="2">
-                <Button x:Name="Changelog_Close" Content="Close" Width="80" IsCancel="True" />
+            <Border Padding="4 10" Grid.ColumnSpan="6" Grid.Row="2">
+                <Button x:Name="Changelog_Close" Content="OK" Width="80" IsCancel="True" />
             </Border>
         </Grid>
     </ScrollViewer>
-</adonisControls:AdonisWindow>
+</local:ThemedAdonisWindow>

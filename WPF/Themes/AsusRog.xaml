@@ -1,0 +1,137 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+                    xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/AdonisUI;component/ColorSchemes/Dark.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Themes/SharedAssets.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/rog/rog-logo-alt.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/gskill/gskill-logo-alt.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <Thickness x:Key="WindowBorderThickness">1</Thickness>
+    <CornerRadius x:Key="{x:Static adonisUi:Dimensions.CornerRadius}">0</CornerRadius>
+
+    <!-- Text color -->
+    <Color x:Key="{x:Static adonisUi:Colors.ForegroundColor}">#C2C2C2</Color>
+
+    <!-- Window title background -->
+    <Color x:Key="{x:Static adonisUi:Colors.Layer0BorderColor}">Transparent</Color>
+
+    <!-- Window background -->
+    <Color x:Key="{x:Static adonisUi:Colors.Layer0BackgroundColor}">#0F0D0E</Color>
+
+    <Color x:Key="{x:Static adonisUi:Colors.Layer3BorderColor}">#1A0606</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer3BackgroundColor}">#120E0F</Color>
+
+    <!-- Accent button and toggles -->
+    <Color x:Key="{x:Static adonisUi:Colors.AccentColor}">#B32022</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.AccentForegroundColor}">#F3F3F3</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.AccentHighlightColor}">#C13A3C</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.AccentInteractionColor}">#9E1B1D</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.AccentInteractionBorderColor}">#9E1B1D</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.AccentIntenseHighlightBorderColor}">#8F181A</Color>
+
+    <!-- Dropdown and menu background -->
+    <Color x:Key="{x:Static adonisUi:Colors.Layer1BackgroundColor}">#110E0F</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer1BorderColor}">#8A1E1E</Color>
+
+    <!-- Dropdown and menu hover background -->
+    <Color x:Key="{x:Static adonisUi:Colors.Layer1HighlightColor}">#221314</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer1HighlightBorderColor}">#8A1E1E</Color>
+
+    <!-- Window button hover color -->
+    <Color x:Key="{x:Static adonisUi:Colors.WindowButtonHighlightColor}">#8A1E1E</Color>
+
+    <!-- Menu item hover background -->
+    <Color x:Key="{x:Static adonisUi:Colors.Layer2HighlightColor}">#3F1B1C</Color>
+    <Color x:Key="{x:Static adonisUi:Colors.Layer2HighlightBorderColor}">#5A2223</Color>
+
+    <SolidColorBrush x:Key="AccentTextColor" Color="#a2c7c6" />
+
+    <!-- Panels -->
+    <SolidColorBrush x:Key="PanelBackground" Color="{StaticResource {x:Static adonisUi:Colors.Layer0BackgroundColor}}" />
+    <SolidColorBrush x:Key="BottomPanelBackground" Color="#220807" />
+    <SolidColorBrush x:Key="MainMenuPanelBackground" Color="#4E0A08" />
+    <SolidColorBrush x:Key="MenuItemBackground" Color="#4E0A08" />
+
+    <SolidColorBrush x:Key="TextColor" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
+    <SolidColorBrush x:Key="SeparatorColor" Color="#55A12A2A" />
+    <SolidColorBrush x:Key="SuccessBackground" Color="#327b56" />
+    <SolidColorBrush x:Key="DisabledColor" Color="#847676" />
+    <SolidColorBrush x:Key="WindowBorderColor" Color="#8A1E1E" />
+
+    <!-- logo -->
+    <SolidColorBrush x:Key="LogoColor" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
+    <SolidColorBrush x:Key="LogoColorAlt" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
+
+    <!-- Base vertical background -->
+    <LinearGradientBrush x:Key="BackgroundGradientBrush" StartPoint="0.5,1" EndPoint="0.5,0">
+        <GradientStop Color="#220807" Offset="1.0" />
+        <GradientStop Color="#0F0D0E" Offset="0.0" />
+    </LinearGradientBrush>
+
+    <!-- Soft diagonal red-tinted fade -->
+    <LinearGradientBrush x:Key="BackgroundDiagonalFadeBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#20A71C1E" Offset="0.0" />
+        <GradientStop Color="#18A71C1E" Offset="0.28" />
+        <GradientStop Color="#02000000" Offset="0.55" />
+        <GradientStop Color="#00000000" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <!-- Very subtle edge vignette -->
+    <RadialGradientBrush x:Key="BackgroundVignetteBrush"
+                         Center="0.5,0.5"
+                         GradientOrigin="0.5,0.5"
+                         RadiusX="0.9"
+                         RadiusY="0.9">
+        <GradientStop Color="#00000000" Offset="0.0" />
+        <GradientStop Color="#00000000" Offset="0.72" />
+        <GradientStop Color="#44000000" Offset="1.0" />
+    </RadialGradientBrush>
+
+    <!-- Final combined background -->
+    <VisualBrush x:Key="WindowBackgroundBrush" Stretch="Fill">
+        <VisualBrush.Visual>
+            <Grid Width="1000" Height="700" Background="{StaticResource BackgroundGradientBrush}">
+                <Rectangle Fill="{StaticResource BackgroundDiagonalFadeBrush}" />
+                <Rectangle Fill="{StaticResource BackgroundVignetteBrush}" />
+            </Grid>
+        </VisualBrush.Visual>
+    </VisualBrush>
+
+    <Style x:Key="MainMenuStyles" TargetType="{x:Type Border}">
+        <Setter Property="Background" Value="{x:Null}" />
+        <Setter Property="Padding" Value="5 2 7 2" />
+    </Style>
+
+    <Style x:Key="MenuStyles" TargetType="{x:Type Menu}">
+        <Setter Property="Background" Value="{x:Null}" />
+    </Style>
+
+    <Style x:Key="BottomPanelStyles" TargetType="{x:Type Border}">
+        <Setter Property="Padding" Value="5" />
+        <Setter Property="Background" Value="{x:Null}" />
+    </Style>
+
+    <Style x:Key="PanelStyles" TargetType="{x:Type Border}">
+        <Setter Property="Background" Value="{x:Null}" />
+    </Style>
+
+    <Style x:Key="WindowStyles" TargetType="{x:Type Window}">
+        <Setter Property="BorderThickness" Value="{StaticResource WindowBorderThickness}" />
+        <Setter Property="BorderBrush" Value="{StaticResource WindowBorderColor}" />
+        <Setter Property="Background" Value="{StaticResource WindowBackgroundBrush}" />
+    </Style>
+
+    <!-- Fix MessageBox border color which otherwise comes from adonisUi:Colors.Layer0BorderColor -->
+    <Style x:Key="BaseMessageBoxWindowStyle"
+       TargetType="{x:Type adonisControls:MessageBoxWindow}"
+       BasedOn="{StaticResource {x:Type adonisControls:MessageBoxWindow}}" />
+
+    <Style TargetType="{x:Type adonisControls:MessageBoxWindow}"
+       BasedOn="{StaticResource BaseMessageBoxWindowStyle}">
+        <Setter Property="BorderBrush" Value="{StaticResource WindowBorderColor}" />
+    </Style>
+</ResourceDictionary>

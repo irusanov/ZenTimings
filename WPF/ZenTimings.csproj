@@ -112,6 +112,15 @@
       <Link>Common\UpdaterPersistenceProvider.cs</Link>
     </Compile>
     <Compile Include="AgesaHelper.cs" />
+    <Compile Include="Controls\LegacyDDR5APUTimingsPanel.xaml.cs">
+      <DependentUpon>LegacyDDR5APUTimingsPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\LegacyDDR5TimingsPanel.xaml.cs">
+      <DependentUpon>LegacyDDR5TimingsPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\DDR5TimingsPanel19h.xaml.cs">
+      <DependentUpon>DDR5TimingsPanel19h.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DriverHelper.cs" />
     <Compile Include="ObservableObject.cs" />
     <Compile Include="VendorUtils.cs" />
@@ -124,8 +133,8 @@
     <Compile Include="Controls\DDR5APUTimingsPanel.xaml.cs">
       <DependentUpon>DDR5APUTimingsPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\DDR5TimingsPanel.xaml.cs">
-      <DependentUpon>DDR5TimingsPanel.xaml</DependentUpon>
+    <Compile Include="Controls\DDR5TimingsPanel1Ah.xaml.cs">
+      <DependentUpon>DDR5TimingsPanel1Ah.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\DDR4ToVisConverter.cs" />
     <Compile Include="Converters\FloatToBoolConverter.cs" />
@@ -165,6 +174,8 @@
     <Compile Include="Windows\DriverUpdateWindow.xaml.cs">
       <DependentUpon>DriverUpdateWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\ThemedAdonisWindow.cs" />
+    <Compile Include="WindowUtils.cs" />
     <Compile Include="XmlUtils.cs" />
     <Compile Include="Windows\AboutDialog.xaml.cs">
       <DependentUpon>AboutDialog.xaml</DependentUpon>
@@ -191,11 +202,23 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Controls\LegacyDDR5APUTimingsPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\LegacyDDR5TimingsPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\DDR5APUTimingsPanel.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Controls\DDR5TimingsPanel.xaml">
+    <Page Include="Controls\DDR5TimingsPanel19h.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\DDR5TimingsPanel1Ah.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -275,7 +298,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Resource>
-    <Resource Include="Themes\DarkRed.xaml">
+    <Resource Include="Themes\AsusRog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
@@ -298,6 +321,38 @@
     <Resource Include="Resources\vendor\colorful\igame-logo.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Resources\vendor\msi\mpg.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Resources\vendor\msi\mag.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Resources\vendor\msi\msi.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Resources\vendor\msi\pro.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Resources\vendor\msi\msi-dragon.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Resources\vendor\asus\tuf\tuf-logo.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Page Include="Themes\Black.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Resource Include="Themes\SharedAssets.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Resource>
     <Page Include="Windows\AboutDialog.xaml">
       <SubType>Designer</SubType>
@@ -358,12 +413,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\PawnIO\PawnIO_setup.exe" />
-    <Content Include="Resources\vendor\asus\ayw\ayw-logo.svg" />
-    <Content Include="Resources\vendor\asus\rog\rog-logo.svg" />
-    <Content Include="Resources\vendor\biwin\biwin-logo.svg" />
-    <Content Include="Resources\vendor\biwin\origincode-logo.svg" />
-    <Content Include="Resources\vendor\gskill\gskill-logo.svg" />
-    <Content Include="Resources\vendor\gskill\gskill.svg" />
     <Resource Include="Resources\new-icon\64.png" />
     <Resource Include="Resources\new-icon\16.png" />
     <Resource Include="Resources\ZenTimings2022.ico" />

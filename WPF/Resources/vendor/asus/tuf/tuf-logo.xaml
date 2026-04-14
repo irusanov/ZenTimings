@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<ResourceDictionary xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+    <DrawingGroup x:Key="tuf_logo_xaml">
+        <DrawingGroup.ClipGeometry>
+            <RectangleGeometry Rect="0.0,0.0,93.235443,93.235443"/>
+        </DrawingGroup.ClipGeometry>
+        <DrawingGroup Transform="1.0,0.0,0.0,1.0,-57.144301,-31.551369" Opacity="0.0">
+            <GeometryDrawing Brush="#fdbc93fa">
+                <GeometryDrawing.Geometry>
+                    <RectangleGeometry Rect="57.144302,31.551369,93.235443,93.235443"/>
+                </GeometryDrawing.Geometry>
+            </GeometryDrawing>
+        </DrawingGroup>
+        <DrawingGroup Transform="1.0,0.0,0.0,1.0,-57.91919,-31.086528">
+            <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                <GeometryDrawing.Geometry>
+                    <PathGeometry Figures="m 70.6081 105.243 h -6.57968 v 2.44468 h 1.74328 v 10.5442 h 3.09289 v -10.5442 h 1.74328 z m 8.36105 0 h -3.09382 v 10.5442 H 74.5258 v -10.5442 h -3.09289 v 11.1049 l 2.06193 1.88402 h 3.46728 l 2.00572 -1.88402 z m 7.80364 0 h -5.99998 v 12.9889 h 3.09289 v -5.65207 h 2.36199 v -2.4456 h -2.36199 v -2.44654 h 2.90546 z m 13.0418 1.88402 l -2.09956 -1.88402 h -3.45032 l -2.06193 1.88402 v 9.22038 l 2.15483 1.88449 h 3.41154 l 2.04382 -1.88402 v -4.89121 h -3.86142 v 2.4456 h 0.76852 v 1.88403 h -1.42462 v -8.09861 h 1.42462 v 2.42749 h 3.0929 z m 7.37282 -1.88402 h -4.48013 l -1.89471 12.9889 h 3.01788 l 0.26244 -2.39219 h 1.79948 l 0.26361 2.39219 h 3.03553 z m -1.51846 8.15203 h -1.34961 l 0.46636 -5.39846 h 0.29984 z m 14.9026 -8.15203 h -3.63798 l -1.01215 6.28612 h -0.28125 l -1.08718 -6.28612 h -3.63589 v 12.9889 h 2.83045 v -8.2426 h 0.13122 l 1.29271 8.2426 h 1.14337 l 1.29341 -8.2426 h 0.13122 v 8.2426 h 2.83045 z m 5.24889 0 h -3.09336 v 12.9889 h 3.09289 z m 9.68069 0 h -2.90546 v 6.24989 h -0.0374 l -1.98691 -6.24989 h -2.58751 v 12.9889 h 2.90547 v -6.32235 h 0.0374 l 2.00595 6.32235 h 2.56801 z m 9.5439 1.88402 l -2.09955 -1.88402 h -3.44939 l -2.06193 1.88402 v 9.22038 l 2.15576 1.88449 h 3.41153 l 2.04382 -1.88402 v -4.89121 h -3.86211 v 2.4456 h 0.76852 v 1.88403 h -1.42463 v -8.09861 h 1.42463 v 2.42749 h 3.09289 z" FillRule="Nonzero"/>
+                </GeometryDrawing.Geometry>
+            </GeometryDrawing>
+            <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                <GeometryDrawing.Geometry>
+                    <PathGeometry Figures="m 106.226 56.2066 l 14.8641 -8.5789 V 85.2589 l -14.8641 8.5868 z M 87.6454 85.2587 V 47.6277 l 14.8641 8.57913 V 93.8457 Z M 124.806 61.7525 L 139.67 53.1734 V 65.9029 L 124.806 74.4897 Z M 69.0653 65.9029 V 37.1764 l 14.8641 8.57913 V 74.4894 Z M 124.806 45.7558 L 139.67 37.1764 v 12.7288 l -14.8641 8.58726 z" FillRule="Nonzero"/>
+                </GeometryDrawing.Geometry>
+            </GeometryDrawing>
+        </DrawingGroup>
+    </DrawingGroup>
+    <DrawingImage Drawing="{StaticResource tuf_logo_xaml}" x:Key="tufLogo"/>
+</ResourceDictionary>

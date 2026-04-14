@@ -12,7 +12,7 @@ namespace ZenTimings.Windows
     /// <summary>
     /// Interaction logic for OptionsDialog.xaml
     /// </summary>
-    public partial class OptionsDialog
+    public partial class OptionsDialog : ThemedAdonisWindow
     {
         //private const string Caption = "Disabling auto-refresh might lead to inaccurate voltages and frequencies on first launch";
         internal readonly AppSettings appSettings = AppSettings.Instance;
@@ -21,12 +21,16 @@ namespace ZenTimings.Windows
         private DispatcherTimer notificationTimer;
         private Theme _Theme;
         private readonly bool _AdvancedMode;
+        private readonly ImpedanceTableSource _ImpedanceTableSource;
+        private readonly int _CornerRadius;
 
         public OptionsDialog(DispatcherTimer timer)
         {
             timerInstance = timer;
             _Theme = appSettings.AppTheme;
             _AdvancedMode = appSettings.AdvancedMode;
+            _ImpedanceTableSource = appSettings.ImpedanceTableSrc;
+            _CornerRadius = appSettings.CornerRadius;
 
             InitializeComponent();
 
@@ -37,12 +41,15 @@ namespace ZenTimings.Windows
             checkBoxSavePosition.IsChecked = appSettings.SaveWindowPosition;
             checkBoxMinimizeToTray.IsChecked = appSettings.MinimizeToTray;
             checkBoxSingleInstance.IsChecked = appSettings.SingleInstance;
+            comboBoxCornerRadius.SelectedIndex = appSettings?.CornerRadius ?? 0;
             //checkBoxAutoUninstallDriver.IsChecked = appSettings.AutoUninstallDriver;
             numericUpDownRefreshInterval.IsEnabled = appSettings.AutoRefresh && appSettings.AdvancedMode;
             numericUpDownRefreshInterval.Text = appSettings.AutoRefreshInterval.ToString();
             msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
             comboBoxTheme.SelectedIndex = (int)_Theme;
             comboBoxScreenshot.SelectedIndex = (int)appSettings.ScreenshotMode;
+            comboBoxImpedanceSource.SelectedIndex = (int)appSettings.ImpedanceTableSrc;
+            textBoxScreenshotPath.Text = appSettings.ScreenshotSaveLocation;
         }
 
         private void CheckBoxAutoRefresh_Click(object sender, RoutedEventArgs e)
@@ -68,8 +75,11 @@ namespace ZenTimings.Windows
             appSettings.SaveWindowPosition = (bool)checkBoxSavePosition.IsChecked;
             appSettings.MinimizeToTray = (bool)checkBoxMinimizeToTray.IsChecked;
             appSettings.SingleInstance = (bool)checkBoxSingleInstance.IsChecked;
+            appSettings.CornerRadius = comboBoxCornerRadius.SelectedIndex;
             //appSettings.AutoUninstallDriver = (bool)checkBoxAutoUninstallDriver.IsChecked;
             appSettings.ScreenshotMode = (ScreenshotType)comboBoxScreenshot.SelectedIndex;
+            appSettings.ScreenshotSaveLocation = textBoxScreenshotPath.Text.Trim();
+            appSettings.ImpedanceTableSrc = (ImpedanceTableSource)comboBoxImpedanceSource.SelectedIndex;
 
             appSettings.Save();
 
@@ -101,11 +111,13 @@ namespace ZenTimings.Windows
                     timerInstance.Stop();
             }
 
-            if (_AdvancedMode != appSettings.AdvancedMode)
+            if (_AdvancedMode != appSettings.AdvancedMode || 
+                _ImpedanceTableSource != appSettings.ImpedanceTableSrc ||
+                _CornerRadius != appSettings.CornerRadius)
             {
                 buttonSettingsRestart.Visibility = Visibility.Visible;
                 appSettings.Save();
-                OptionsPopupText.Text = "Advanced Mode will be applied on next launch.";
+                OptionsPopupText.Text = "Some settings will be applied on next launch.";
             }
 
             OptionsPopup.Width = OptionWindowContent.ActualWidth;
@@ -147,14 +159,34 @@ namespace ZenTimings.Windows
             if (appSettings.AppTheme != _Theme)
             {
                 appSettings.AppTheme = _Theme;
-                appSettings.ChangeTheme();
+                appSettings.ApplyTheme();
             }
         }
 
         private void ComboBoxTheme_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             appSettings.AppTheme = (Theme)comboBoxTheme.SelectedIndex;
-            appSettings.ChangeTheme();
+            appSettings.ApplyTheme();
+        }
+
+        private void ButtonBrowseScreenshotPath_Click(object sender, RoutedEventArgs e)
+        {
+            var folderDialog = new System.Windows.Forms.FolderBrowserDialog
+            {
+                Description = "Select folder to save screenshots"
+            };
+
+            // Set initial path to current screenshot path if valid
+            string currentPath = textBoxScreenshotPath.Text.Trim();
+            if (!string.IsNullOrEmpty(currentPath) && System.IO.Directory.Exists(currentPath))
+            {
+                folderDialog.SelectedPath = currentPath;
+            }
+
+            if (folderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                textBoxScreenshotPath.Text = folderDialog.SelectedPath;
+            }
         }
     }
 }

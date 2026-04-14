@@ -7,9 +7,9 @@ namespace ZenTimings.Controls
     /// <summary>
     /// Interaction logic for DDR5xaml
     /// </summary>
-    public partial class DDR5TimingsPanel : UserControl
+    public partial class LegacyDDR5TimingsPanel : UserControl
     {
-        public DDR5TimingsPanel()
+        public LegacyDDR5TimingsPanel()
         {
             InitializeComponent();
 
@@ -22,9 +22,9 @@ namespace ZenTimings.Controls
             AodData Data = aod.Table.Data;
             if (Data != null)
             {
-                labelMemVdd.IsEnabled = true;
-                labelMemVddq.IsEnabled = true;
-                labelMemVpp.IsEnabled = true;
+                //labelMemVdd.IsEnabled = true;
+                //labelMemVddq.IsEnabled = true;
+                //labelMemVpp.IsEnabled = true;
                 labelApuVddio.IsEnabled = true;
 
                 labelProcCaDs.IsEnabled = true;
@@ -36,9 +36,9 @@ namespace ZenTimings.Controls
                 labelRttParkD5.IsEnabled = true;
                 labelRttParkDqs.IsEnabled = true;
 
-                textBoxMemVddio.Text = Data.MemVddio.ToString();
-                textBoxMemVddq.Text = Data.MemVddq.ToString();
-                textBoxMemVpp.Text = Data.MemVpp.ToString();
+                //textBoxMemVddio.Text = Data.MemVddio.ToString();
+                //textBoxMemVddq.Text = Data.MemVddq.ToString();
+                //textBoxMemVpp.Text = Data.MemVpp.ToString();
                 textBoxApuVddio.Text = Data.ApuVddio.ToString();
 
                 try
@@ -68,9 +68,9 @@ namespace ZenTimings.Controls
                 }
                 catch { }
 
-                textBoxCadBusDrvStren.Text = Data.CadBusDrvStren.ToString();
-                textBoxDramDataDrvStren.Text = Data.DramDataDrvStren.ToString();
-                textBoxProcDataDrvStren.Text = Data.ProcDataDrvStren.ToString();
+                textBoxCadBusDrvStren.Text = Data?.CadBusDrvStren?.ToString() ?? "N/A";
+                textBoxDramDataDrvStren.Text = Data?.DramDataDrvStren?.ToString() ?? "N/A";
+                textBoxProcDataDrvStren.Text = Data?.ProcDataDrvStren?.ToString() ?? "N/A";
 
                 textBoxRttWrD5.Text = Data.RttWr.ToString();
                 textBoxRttNomWr.Text = Data.RttNomWr.ToString();

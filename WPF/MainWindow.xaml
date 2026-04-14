@@ -1,4 +1,5 @@
-<adonisControls:AdonisWindow
+<local:ThemedAdonisWindow
+    xmlns:local="clr-namespace:ZenTimings"
     x:Class="ZenTimings.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -11,7 +12,7 @@
     adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
     mc:Ignorable="d"
     Title="ZenTimings"
-    Width="387"
+    Width="386"
     WindowStartupLocation="CenterScreen"
     ResizeMode="CanMinimize"
     FontSize="11"
@@ -19,9 +20,7 @@
     SizeChanged="AdonisWindow_SizeChanged"
     Activated="AdonisWindow_Activated"
     Loaded="AdonisWindow_Loaded"
-    BorderThickness="1"
     UseLayoutRounding="True"
-    BorderBrush="{DynamicResource WindowBorderColor}"
     Style="{DynamicResource WindowStyles}"
     Closing="AdonisWindow_Closing"
     Height="538"
@@ -62,10 +61,14 @@
                         <MenuItem Header="_Help">
                             <MenuItem Header="_About" Click="AboutToolStripMenuItem_Click" />
                             <MenuItem Header="Changelog" Click="MenuItem_Click_5" />
+                            <Separator Foreground="{DynamicResource PanelBackground}" />
                             <MenuItem Header="Discord" Click="MenuItem_Click_2" />
                             <MenuItem Header="GitHub" Click="MenuItem_Click_3" />
+                            <MenuItem Header="Google Drive" Click="MenuItem_Click_6" />
+                            <Separator Foreground="{DynamicResource PanelBackground}" />
                             <MenuItem Header="Donate with _PayPal" Click="MenuItem_Click" />
                             <MenuItem Header="Donate with _Revolut" Click="MenuItem_Click_1" />
+                            <Separator Foreground="{DynamicResource PanelBackground}" />
                             <MenuItem Header="AM5 AGESA/UEFI/BIOS List by Reous" Click="MenuItem_Click_4" />
                         </MenuItem>
                     </Menu>
@@ -100,7 +103,7 @@
                     <StackPanel Orientation="Vertical">
                         <TextBlock
                             x:Name="labelCPU"
-                            Text="{Binding CpuName, Mode=OneTime, FallbackValue='CPU: N/A'}"
+                            Text="{Binding CpuNameShortWithCores, Mode=OneTime, FallbackValue='CPU: N/A'}"
                             Padding="12 5 5 0"
                         />
                         <TextBlock
@@ -147,20 +150,32 @@
             <Border Style="{DynamicResource BottomPanelStyles}">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="280" />
+                        <ColumnDefinition>
+                            <ColumnDefinition.Style>
+                                <Style TargetType="ColumnDefinition">
+                                    <Setter Property="Width" Value="280" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Settings.AdvancedMode}" Value="False">
+                                            <Setter Property="Width" Value="240" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ColumnDefinition.Style>
+                        </ColumnDefinition>
                         <ColumnDefinition Width="5" />
-                        <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
                     <ComboBox x:Name="comboBoxPartNumber" IsReadOnly="True" Grid.Column="0" />
                     <TextBlock
+                        Grid.Column="2"
                         Text="{Binding MemoryType, FallbackValue=''}"
                         Style="{DynamicResource ValueStyles}"
                         Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}"
-                        Grid.Column="3"
                         TextAlignment="Right"
-                        Margin="0,0,5,0"
+                        HorizontalAlignment="Right"
+                        MinWidth="0"
+                        Margin="0"
                         IsEnabled="False"
                     />
 
@@ -185,4 +200,4 @@
             </Border>
         </StackPanel>
     </Border>
-</adonisControls:AdonisWindow>
+</local:ThemedAdonisWindow>

@@ -9,7 +9,7 @@ namespace ZenTimings
     public sealed class AppSettings
     {
         public const int VersionMajor = 1;
-        public const int VersionMinor = 9;
+        public const int VersionMinor = 13;
 
         private static readonly string Filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.xml");
         public const string AGESA_UNKNOWN = "Unknown";
@@ -37,16 +37,24 @@ namespace ZenTimings
             Dark,
             DarkMint,
             DarkMintGradient,
-            DarkRed,
+            AsusRog,
             Dracula,
             RetroWave,
             BurntOrange,
+            Charcoal,
+            Black,
         }
 
         public enum ScreenshotType : int
         {
             Window,
             Desktop,
+        }
+
+        public enum ImpedanceTableSource: int
+        {
+            AOD,
+            APOB
         }
 
         public AppSettings Create(bool save = true)
@@ -71,7 +79,7 @@ namespace ZenTimings
             {
                 Console.WriteLine(ex.Message);
                 MessageBox.Show(
-                    "Invalid or outdated settings file!\nSettings will be reset to defaults.",
+                    "Invalid or outdated settings file!\nSettings will be reset to defaults and any custom settings will be lost.",
                     "Error",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
@@ -103,7 +111,7 @@ namespace ZenTimings
             }
         }
 
-        public void ChangeTheme()
+        public void ApplyTheme()
         {
             Uri[] themeUri = new Uri[]
             {
@@ -111,13 +119,20 @@ namespace ZenTimings
                 new Uri("pack://application:,,,/ZenTimings;component/Themes/Dark.xaml", UriKind.Absolute),
                 new Uri("pack://application:,,,/ZenTimings;component/Themes/DarkMint.xaml", UriKind.Absolute),
                 new Uri("pack://application:,,,/ZenTimings;component/Themes/DarkMintGradient.xaml", UriKind.Absolute),
-                new Uri("pack://application:,,,/ZenTimings;component/Themes/DarkRed.xaml", UriKind.Absolute),
+                new Uri("pack://application:,,,/ZenTimings;component/Themes/AsusRog.xaml", UriKind.Absolute),
                 new Uri("pack://application:,,,/ZenTimings;component/Themes/Dracula.xaml", UriKind.Absolute),
                 new Uri("pack://application:,,,/ZenTimings;component/Themes/RetroWave.xaml", UriKind.Absolute),
                 new Uri("pack://application:,,,/ZenTimings;component/Themes/BurntOrange.xaml", UriKind.Absolute),
+                //new Uri("pack://application:,,,/ZenTimings;component/Themes/Charcoal.xaml", UriKind.Absolute),
+                new Uri("pack://application:,,,/ZenTimings;component/Themes/Black.xaml", UriKind.Absolute),
             };
 
             ResourceLocator.SetColorScheme(Application.Current.Resources, themeUri[(int)AppTheme]);
+            try
+            {
+                ThemedAdonisWindow.RefreshAllOpenWindows();
+            }
+            catch { }
         }
 
         public string Version { get; set; } = new Version(VersionMajor, VersionMinor).ToString();
@@ -126,6 +141,7 @@ namespace ZenTimings
         public bool AdvancedMode { get; set; } = true;
         public Theme AppTheme { get; set; } = Theme.DarkMintGradient;
         public ScreenshotType ScreenshotMode { get; set; } = ScreenshotType.Window;
+        public string ScreenshotSaveLocation { get; set; } = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Screenshots");
         public bool CheckForUpdates { get; set; } = true;
         public string UpdaterSkippedVersion { get; set; } = "";
         public string DriverUpdateLastSkippedVersion { get; set; } = "";
@@ -141,5 +157,8 @@ namespace ZenTimings
         public double SysInfoWindowHeight { get; set; }
         public string NotifiedChangelog { get; set; } = "";
         public bool SingleInstance { get; set; } = true;
+        public bool FirstStart { get; set; } = true;
+        public int CornerRadius { get; set; } = 0;
+        public ImpedanceTableSource ImpedanceTableSrc { get; set; } = ImpedanceTableSource.APOB;
     }
 }

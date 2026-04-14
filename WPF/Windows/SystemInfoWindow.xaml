@@ -1,4 +1,5 @@
-<adonisControls:AdonisWindow
+<local:ThemedAdonisWindow
+    xmlns:local="clr-namespace:ZenTimings"
     xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
     x:Class="ZenTimings.Windows.SystemInfoWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -13,7 +14,6 @@
     WindowStartupLocation="CenterOwner"
     BorderThickness="1"
     UseLayoutRounding="True"
-    BorderBrush="{DynamicResource WindowBorderColor}"
     Style="{DynamicResource WindowStyles}"
     Activated="AdonisWindow_Activated"
     Icon="/ZenTimings;component/Resources/new-icon/16.png"
@@ -126,6 +126,40 @@
                 </DataGrid>
             </GroupBox>
 
+            <GroupBox
+                Header="APOB Table"
+                adonisExtensions:LayerExtension.Layer="3">
+                <DataGrid
+                    Name="ApobTableGrid"
+                    adonisExtensions:LayerExtension.Layer="3"
+                    AutoGenerateColumns="False"
+                    HeadersVisibility="None"
+                    GridLinesVisibility="None"
+                    HorizontalScrollBarVisibility="Disabled"
+                    VerticalScrollBarVisibility="Disabled"
+                    Focusable="False"
+                    IsReadOnly="True"
+                    ScrollViewer.CanContentScroll="False"
+                    IsEnabled="False" FontSize="11">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Width="150" Binding="{Binding Name}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Foreground" Value="{DynamicResource TextColor}" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Width="auto" Binding="{Binding Value}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Foreground" Value="{DynamicResource AccentTextColor}" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </GroupBox>
+
             <Border>
                 <Border.Style>
                     <Style TargetType="Border">
@@ -179,4 +213,4 @@
             </Border>
         </StackPanel>
     </ScrollViewer>
-</adonisControls:AdonisWindow>
+</local:ThemedAdonisWindow>

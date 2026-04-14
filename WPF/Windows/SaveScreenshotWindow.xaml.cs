@@ -1,15 +1,20 @@
-﻿using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Drawing;
 using System.Globalization;
+using System.IO;
 using System.Windows;
+using Clipboard = System.Windows.Clipboard;
+using MessageBox = AdonisUI.Controls.MessageBox;
+using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
+using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
+using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace ZenTimings.Windows
 {
     /// <summary>
     /// Interaction logic for SaveWindow.xaml
     /// </summary>
-    public partial class SaveWindow : IDisposable
+    public partial class SaveWindow : ThemedAdonisWindow, IDisposable
     {
         private static Bitmap screenshot;
 
@@ -28,8 +33,22 @@ namespace ZenTimings.Windows
 
         private void SaveToFile(string filename = "ZenTimingsScreenshot.png")
         {
-            screenshot.Save(filename);
-            screenshot.Dispose();
+            try
+            {
+                var directory = AppSettings.Instance.ScreenshotSaveLocation;
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+                var path = Path.Combine(directory, filename);
+                screenshot.Save(path);
+                screenshot.Dispose();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to save screenshot: {ex.Message}", "Error", MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
             Close();
         }
 

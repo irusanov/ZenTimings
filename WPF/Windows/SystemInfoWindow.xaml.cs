@@ -11,7 +11,7 @@ namespace ZenTimings.Windows
     /// <summary>
     /// Interaction logic for SystemInfoWindow.xaml
     /// </summary>
-    public partial class SystemInfoWindow
+    public partial class SystemInfoWindow : ThemedAdonisWindow
     {
         private class GridItem
         {
@@ -138,6 +138,27 @@ namespace ZenTimings.Windows
                     }
 
                     MemControllerGrid.ItemsSource = items;
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+
+            if (CpuSingleton.Instance.info.apob.IsAvailable)
+            {
+                try
+                {
+                    var apobData = CpuSingleton.Instance.info.apob.Data;
+                    type = apobData.GetType();
+                    properties = type.GetProperties();
+                    items = new List<GridItem>();
+                    foreach (PropertyInfo property in properties)
+                    {
+                        object value = property.GetValue(apobData);
+                        items.Add(new GridItem() { Name = property.Name, Value = $"{value}" });
+                    }
+                    ApobTableGrid.ItemsSource = items;
                 }
                 catch
                 {

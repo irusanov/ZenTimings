@@ -4,18 +4,12 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/AdonisUI;component/ColorSchemes/Dark.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Themes/Base.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/camera.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/rog/rog-logo.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/ayw/ayw-logo.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/proart/proart-logo.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/gskill/gskill-logo.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/biwin/biwin-logo.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/biwin/origincode-logo.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/msi/meg.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/colorful/igame-logo.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Themes/SharedAssets.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
+    <Thickness x:Key="WindowBorderThickness">1</Thickness>
+    <CornerRadius x:Key="{x:Static adonisUi:Dimensions.CornerRadius}">2</CornerRadius>
+    
     <!-- Text color -->
     <Color x:Key="{x:Static adonisUi:Colors.ForegroundColor}">#D1D4C9</Color>
     <!-- Window title background -->
@@ -48,8 +42,6 @@
     <Color x:Key="{x:Static adonisUi:Colors.Layer2HighlightColor}">#092237</Color>
     <Color x:Key="{x:Static adonisUi:Colors.Layer2HighlightBorderColor}">#092237</Color>
 
-    <CornerRadius x:Key="{x:Static adonisUi:Dimensions.CornerRadius}">2</CornerRadius>
-
     <SolidColorBrush x:Key="AccentTextColor" Color="{StaticResource {x:Static adonisUi:Colors.AccentColor}}" />
 
     <!-- Panels -->
@@ -67,6 +59,7 @@
 
     <!-- logo -->
     <SolidColorBrush x:Key="LogoColor" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
+    <SolidColorBrush x:Key="LogoColorAlt" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
 
     <LinearGradientBrush x:Key="BackgroundGradientBrush" StartPoint="0.5,1" EndPoint="0.5,0">
         <GradientStop Color="#092237" Offset="0.0" />
@@ -77,18 +70,23 @@
         <Setter Property="Background" Value="{x:Null}" />
         <Setter Property="Padding" Value="5 2 7 2" />
     </Style>
+    
     <Style x:Key="MenuStyles" TargetType="{x:Type Menu}">
         <Setter Property="Background" Value="{x:Null}" />
     </Style>
+    
     <Style x:Key="BottomPanelStyles" TargetType="{x:Type Border}">
         <Setter Property="Padding" Value="5" />
         <Setter Property="Background" Value="{x:Null}" />
     </Style>
+    
     <Style x:Key="PanelStyles" TargetType="{x:Type Border}">
         <Setter Property="Background" Value="{x:Null}" />
     </Style>
+
     <Style x:Key="WindowStyles" TargetType="{x:Type Window}">
-        <Setter Property="BorderBrush" Value="{DynamicResource WindowBorderColor}" />
+        <Setter Property="BorderThickness" Value="{StaticResource WindowBorderThickness}" />
+        <Setter Property="BorderBrush" Value="{StaticResource WindowBorderColor}" />
         <Setter Property="Background" Value="{StaticResource BackgroundGradientBrush}" />
     </Style>
 </ResourceDictionary>

@@ -12,57 +12,57 @@
                     </GeometryDrawing.Geometry>
                 </GeometryDrawing>
             </DrawingGroup>
-        </DrawingGroup>
-        <DrawingGroup Transform="1.0051845,0.0,0.0,1.0051845,31.791914,26.275719">
-            <DrawingGroup Transform="0.35277776,0.0,0.0,-0.35277776,32.680591,40.705615">
-                <DrawingGroup.ClipGeometry>
-                    <PathGeometry Figures="M 0 364.804 H 629.36 V 0 H 0 Z" FillRule="Nonzero" Transform="1.0,0.0,0.0,1.0,-302.39,-148.932"/>
-                </DrawingGroup.ClipGeometry>
-                <GeometryDrawing Brush="#e7cfa1">
-                    <GeometryDrawing.Geometry>
-                        <PathGeometry Figures="M 0 0 H 50.69 V 13.861 H -7.667 Z" FillRule="Nonzero"/>
-                    </GeometryDrawing.Geometry>
-                </GeometryDrawing>
-            </DrawingGroup>
-            <DrawingGroup Transform="0.35277776,0.0,0.0,-0.35277776,20.945402,19.816691">
-                <DrawingGroup.ClipGeometry>
-                    <PathGeometry Figures="M 0 364.804 H 629.36 V 0 H 0 Z" FillRule="Nonzero" Transform="1.0,0.0,0.0,1.0,-269.125,-208.145"/>
-                </DrawingGroup.ClipGeometry>
-                <GeometryDrawing Brush="#e7cfa1">
-                    <GeometryDrawing.Geometry>
-                        <PathGeometry Figures="M 0 0 H 83.955 V 13.861 H -7.672 Z" FillRule="Nonzero"/>
-                    </GeometryDrawing.Geometry>
-                </GeometryDrawing>
-            </DrawingGroup>
-            <DrawingGroup Transform="0.35277776,0.0,0.0,-0.35277776,26.893658,30.565018">
-                <DrawingGroup.ClipGeometry>
-                    <PathGeometry Figures="M 0 364.804 H 629.36 V 0 H 0 Z" FillRule="Nonzero" Transform="1.0,0.0,0.0,1.0,-285.986,-177.677"/>
-                </DrawingGroup.ClipGeometry>
-                <GeometryDrawing Brush="#e7cfa1">
-                    <GeometryDrawing.Geometry>
-                        <PathGeometry Figures="M 0 0 H 67.094 V 13.866 H -7.672 Z" FillRule="Nonzero"/>
-                    </GeometryDrawing.Geometry>
-                </GeometryDrawing>
-            </DrawingGroup>
-            <DrawingGroup Transform="0.35277776,0.0,0.0,-0.35277776,83.983685,25.670439">
-                <DrawingGroup.ClipGeometry>
-                    <PathGeometry Figures="M 0 364.804 H 629.36 V 0 H 0 Z" FillRule="Nonzero" Transform="1.0,0.0,0.0,1.0,-447.816,-191.552"/>
-                </DrawingGroup.ClipGeometry>
-                <GeometryDrawing Brush="#e7cfa1">
-                    <GeometryDrawing.Geometry>
-                        <PathGeometry Figures="m 0 0 l -45.151 -0.003 l 7.775 -13.877 h 28.247 l 8.319 -14.863 l -65.062 -0.016 v 45.352 h 56.58 l -7.77 13.861 H -79.733 V -42.614 H 23.884 Z" FillRule="Nonzero"/>
-                    </GeometryDrawing.Geometry>
-                </GeometryDrawing>
-            </DrawingGroup>
-            <DrawingGroup Transform="0.35277776,0.0,0.0,-0.35277776,1.7838187,5.8984435">
-                <DrawingGroup.ClipGeometry>
-                    <PathGeometry Figures="M 0 364.804 H 629.36 V 0 H 0 Z" FillRule="Nonzero" Transform="1.0,0.0,0.0,1.0,-214.809,-247.598"/>
-                </DrawingGroup.ClipGeometry>
-                <GeometryDrawing Brush="#e7cfa1">
-                    <GeometryDrawing.Geometry>
-                        <PathGeometry Figures="M 0 0 L 20.634 -36.832 L 7.172 -60.158 L -13.557 -23.155 L -57.149 -98.666 h 17.295 l 26.448 45.812 l 20.859 -36.788 l 21.701 37.606 l 26.135 -46.63 H 72.586 L 8.783 15.22 Z" FillRule="Nonzero"/>
-                    </GeometryDrawing.Geometry>
-                </GeometryDrawing>
+            <DrawingGroup Transform="1.0,0.0,0.0,1.0,31.862999,18.180526">
+                <DrawingGroup Transform="0.35277776,0.0,0.0,-0.35277776,51.392665,80.459068">
+                    <DrawingGroup.ClipGeometry>
+                        <PathGeometry Figures="M 0 364.804 H 629.36 V 0 H 0 Z" FillRule="Nonzero" Transform="1.0,0.0,0.0,1.0,-302.39,-148.932"/>
+                    </DrawingGroup.ClipGeometry>
+                    <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                        <GeometryDrawing.Geometry>
+                            <PathGeometry Figures="M 0 0 H 50.69 V 13.861 H -7.667 Z" FillRule="Nonzero"/>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                </DrawingGroup>
+                <DrawingGroup Transform="0.35277776,0.0,0.0,-0.35277776,39.657476,59.570143">
+                    <DrawingGroup.ClipGeometry>
+                        <PathGeometry Figures="M 0 364.804 H 629.36 V 0 H 0 Z" FillRule="Nonzero" Transform="1.0,0.0,0.0,1.0,-269.125,-208.145"/>
+                    </DrawingGroup.ClipGeometry>
+                    <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                        <GeometryDrawing.Geometry>
+                            <PathGeometry Figures="M 0 0 H 83.955 V 13.861 H -7.672 Z" FillRule="Nonzero"/>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                </DrawingGroup>
+                <DrawingGroup Transform="0.35277776,0.0,0.0,-0.35277776,45.605732,70.31847">
+                    <DrawingGroup.ClipGeometry>
+                        <PathGeometry Figures="M 0 364.804 H 629.36 V 0 H 0 Z" FillRule="Nonzero" Transform="1.0,0.0,0.0,1.0,-285.986,-177.677"/>
+                    </DrawingGroup.ClipGeometry>
+                    <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                        <GeometryDrawing.Geometry>
+                            <PathGeometry Figures="M 0 0 H 67.094 V 13.866 H -7.672 Z" FillRule="Nonzero"/>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                </DrawingGroup>
+                <DrawingGroup Transform="0.35277776,0.0,0.0,-0.35277776,102.69576,65.42389">
+                    <DrawingGroup.ClipGeometry>
+                        <PathGeometry Figures="M 0 364.804 H 629.36 V 0 H 0 Z" FillRule="Nonzero" Transform="1.0,0.0,0.0,1.0,-447.816,-191.552"/>
+                    </DrawingGroup.ClipGeometry>
+                    <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                        <GeometryDrawing.Geometry>
+                            <PathGeometry Figures="m 0 0 l -45.151 -0.003 l 7.775 -13.877 h 28.247 l 8.319 -14.863 l -65.062 -0.016 v 45.352 h 56.58 l -7.77 13.861 H -79.733 V -42.614 H 23.884 Z" FillRule="Nonzero"/>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                </DrawingGroup>
+                <DrawingGroup Transform="0.35277776,0.0,0.0,-0.35277776,20.495893,45.651895">
+                    <DrawingGroup.ClipGeometry>
+                        <PathGeometry Figures="M 0 364.804 H 629.36 V 0 H 0 Z" FillRule="Nonzero" Transform="1.0,0.0,0.0,1.0,-214.809,-247.598"/>
+                    </DrawingGroup.ClipGeometry>
+                    <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                        <GeometryDrawing.Geometry>
+                            <PathGeometry Figures="M 0 0 L 20.634 -36.832 L 7.172 -60.158 L -13.557 -23.155 L -57.149 -98.666 h 17.295 l 26.448 45.812 l 20.859 -36.788 l 21.701 37.606 l 26.135 -46.63 H 72.586 L 8.783 15.22 Z" FillRule="Nonzero"/>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                </DrawingGroup>
             </DrawingGroup>
         </DrawingGroup>
     </DrawingGroup>

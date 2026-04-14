@@ -179,10 +179,10 @@ namespace SevenZip.CommandLineParser
                     NonSwitchStrings.Add(s);
                 else
                     if (s == kStopSwitchParsing)
-                    stopSwitch = true;
-                else
-                    if (!ParseString(s, switchForms))
-                    NonSwitchStrings.Add(s);
+                        stopSwitch = true;
+                    else
+                        if (!ParseString(s, switchForms))
+                            NonSwitchStrings.Add(s);
             }
         }
 
@@ -204,10 +204,10 @@ namespace SevenZip.CommandLineParser
                 }
                 else
                     if (commandString == id)
-                {
-                    postString = "";
-                    return i;
-                }
+                    {
+                        postString = "";
+                        return i;
+                    }
             }
             postString = "";
             return -1;

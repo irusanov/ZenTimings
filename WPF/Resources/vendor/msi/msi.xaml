@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<ResourceDictionary xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+    <DrawingGroup x:Key="msi_xaml">
+        <DrawingGroup.ClipGeometry>
+            <RectangleGeometry Rect="0.0,0.0,138.0,94.0"/>
+        </DrawingGroup.ClipGeometry>
+        <DrawingGroup Transform="1.0,0.0,0.0,1.0,-18.591249,-31.551369">
+            <DrawingGroup Transform="0.6835072,0.0,0.0,-0.6835072,75.551953,92.511663">
+                <DrawingGroup.ClipGeometry>
+                    <PathGeometry Figures="M 0 122.542 H 245.1 V 0 H 0 Z" FillRule="Nonzero" Transform="1.0,0.0,0.0,1.0,-104.936,-40.843"/>
+                </DrawingGroup.ClipGeometry>
+                <GeometryDrawing Brush="{DynamicResource LogoColor}">
+                    <GeometryDrawing.Geometry>
+                        <PathGeometry Figures="m 0 0 l 9.329 25.734 c 3.113 8.579 -8.306 5.443 -10.856 3.472 c -2.004 -1.547 -5.656 -5.076 -7 -8.778 L -15.934 0 h -0.001 h -16.107 l 9.328 25.734 c 3.11 8.579 -8.305 5.443 -10.856 3.472 c -2.005 -1.547 -5.659 -5.076 -7.004 -8.783 L -47.977 0 h -16.11 l 14.811 40.849 c 5.13 0 7.905 -1.181 10.237 -3.474 c 0.851 -0.839 1.382 -1.924 1.673 -3.081 c 3.022 1.828 5.693 3.197 7.491 3.898 c 3.351 1.313 7.512 2.659 12.644 2.657 c 5.127 0 7.902 -1.181 10.231 -3.474 c 0.855 -0.839 1.388 -1.924 1.679 -3.081 c 3.02 1.828 5.694 3.197 7.492 3.898 c 3.347 1.313 7.511 2.659 12.64 2.657 c 5.129 0 7.905 -1.181 10.235 -3.474 c 2.328 -2.284 2.275 -6.462 1.432 -8.778 L 16.11 0 Z M 24.283 7.32 C 29.312 6.402 34.496 5.922 39.788 5.922 h 0.002 c 5.435 0 9.378 1.211 9.805 4.903 c 0.207 1.756 -1.452 3.02 -4.494 4.696 c -3.48 1.921 -6.406 2.879 -9.428 4.902 c -3.025 2.025 -4.328 5.207 -3.308 8.579 c 1.189 3.939 3.954 6.221 8.169 8.375 c 4.943 2.522 8.855 3.472 18.387 3.472 c 6 0 11.871 -0.581 17.552 -1.679 l -2.047 -5.639 c -5.031 0.917 -10.212 1.395 -15.505 1.395 c -5.437 0 -9.382 -1.213 -9.809 -4.902 c -0.203 -1.759 1.453 -3.025 4.498 -4.7 c 3.478 -1.918 6.406 -2.876 9.428 -4.901 c 3.026 -2.023 4.328 -5.205 3.31 -8.58 C 65.156 7.911 62.388 5.625 58.174 3.47 C 53.233 0.947 49.319 0 39.79 0 h -0.002 c -6 0 -11.87 0.581 -17.549 1.68 z m 58.312 31.85 l -2.146 -5.922 c 8.411 1.678 16.719 1.678 16.719 1.678 l 2.147 5.923 c 0 0 -8.359 0 -16.72 -1.679 M 84.505 0 L 95.688 30.841 c 0 0 -8.36 0 -16.719 -1.677 L 68.396 0 Z"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingGroup>
+            <DrawingGroup Opacity="0.0">
+                <GeometryDrawing Brush="#ffffffff">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="18.591249,31.551369,138.0,94.0"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingGroup>
+    </DrawingGroup>
+    <DrawingImage Drawing="{StaticResource msi_xaml}" x:Key="msiLogo"/>
+</ResourceDictionary>

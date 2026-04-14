@@ -4,17 +4,11 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/AdonisUI;component/ColorSchemes/Dark.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Themes/Base.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/camera.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/rog/rog-logo.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/ayw/ayw-logo.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/proart/proart-logo.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/gskill/gskill-logo.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/biwin/biwin-logo.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/biwin/origincode-logo.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/msi/meg.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/colorful/igame-logo.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Themes/SharedAssets.xaml" />
     </ResourceDictionary.MergedDictionaries>
+
+    <Thickness x:Key="WindowBorderThickness">1</Thickness>
+    <CornerRadius x:Key="{x:Static adonisUi:Dimensions.CornerRadius}">2</CornerRadius>
 
     <!-- Text color -->
     <Color x:Key="{x:Static adonisUi:Colors.ForegroundColor}">#ECA089</Color>
@@ -45,8 +39,6 @@
     <Color x:Key="{x:Static adonisUi:Colors.Layer2HighlightColor}">#6a87a5</Color>
     <Color x:Key="{x:Static adonisUi:Colors.Layer2HighlightBorderColor}">#6a87a5</Color>
 
-    <CornerRadius x:Key="{x:Static adonisUi:Dimensions.CornerRadius}">2</CornerRadius>
-
     <SolidColorBrush x:Key="AccentTextColor" Color="{StaticResource {x:Static adonisUi:Colors.AccentColor}}" />
     <SolidColorBrush x:Key="PanelBackground" Color="{StaticResource {x:Static adonisUi:Colors.Layer0BackgroundColor}}" />
     <SolidColorBrush x:Key="BottomPanelBackground" Color="{StaticResource {x:Static adonisUi:Colors.Layer0BackgroundColor}}" />
@@ -61,6 +53,12 @@
 
     <!-- logo -->
     <SolidColorBrush x:Key="LogoColor" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
+    <SolidColorBrush x:Key="LogoColorAlt" Color="#D1D4C9" />
+
+    <Style x:Key="WindowStyles" TargetType="{x:Type Window}">
+        <Setter Property="BorderThickness" Value="{StaticResource WindowBorderThickness}" />
+        <Setter Property="BorderBrush" Value="{StaticResource WindowBorderColor}" />
+    </Style>
 </ResourceDictionary>
 
 <!--

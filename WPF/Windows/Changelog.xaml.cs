@@ -5,7 +5,7 @@ namespace ZenTimings.Windows
     /// <summary>
     /// Interaction logic for Changelog.xaml
     /// </summary>
-    public partial class Changelog : AdonisUI.Controls.AdonisWindow
+    public partial class Changelog: ThemedAdonisWindow
     {
         public Changelog()
         {

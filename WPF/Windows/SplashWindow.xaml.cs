@@ -25,78 +25,12 @@ namespace ZenTimings.Windows
         public SplashWindow()
         {
             InitializeComponent();
-
-            //if (!DriverHelper.IsPawnIoInstalled)
-            //{
-            //    AdonisUI.Controls.MessageBox.Show(
-            //        "This is experimental build for testing purposes only." +
-            //        Environment.NewLine +
-            //        "PawnIO driver is required to be installed in dev mode " +
-            //        "and Driver Signature Enforcement to be disabled." +
-            //        Environment.NewLine + Environment.NewLine +
-            //        "Please refer to the README_PawnIO.pdf file for instructions." +
-            //        Environment.NewLine +
-            //        "The application will now close.",
-            //        nameof(ZenTimings),
-            //        AdonisUI.Controls.MessageBoxButton.OK,
-            //        AdonisUI.Controls.MessageBoxImage.Warning
-            //    );
-            //    Application.Current.Shutdown();
-            //}
-
-            //if (DriverHelper.IsPawnIoInstalled)
-            //{
-            //    if (DriverHelper.Version < new Version(2, 0, 1, 0))
-            //    {
-            //        AdonisUI.Controls.MessageBoxResult result = AdonisUI.Controls.MessageBox.Show(
-            //            "PawnIO is outdated, do you want to update it?",
-            //            nameof(ZenTimings),
-            //            AdonisUI.Controls.MessageBoxButton.OKCancel,
-            //            AdonisUI.Controls.MessageBoxImage.Warning
-            //        );
-
-            //        if (result == AdonisUI.Controls.MessageBoxResult.OK)
-            //        {
-            //            Stop();
-            //            Application.Current.Shutdown();
-            //            DriverHelper.InstallPawnIO();
-            //            Process.Start(Application.ResourceAssembly.Location);
-            //        }
-            //    }
-            //}
-            //else
-            //{
-            //    {
-            //        AdonisUI.Controls.MessageBoxResult result = AdonisUI.Controls.MessageBox.Show(
-            //            "PawnIO is not installed, do you want to install it?",
-            //            nameof(ZenTimings),
-            //            AdonisUI.Controls.MessageBoxButton.OKCancel,
-            //            AdonisUI.Controls.MessageBoxImage.Warning
-            //        );
-
-            //        if (result == AdonisUI.Controls.MessageBoxResult.OK)
-            //        {
-            //            DriverHelper.InstallPawnIO();
-            //            Application.Current.Shutdown();
-            //            Process.Start(Application.ResourceAssembly.Location);
-            //        }
-
-            //        if (result == AdonisUI.Controls.MessageBoxResult.Cancel)
-            //        {
-            //            Application.Current.Shutdown();
-            //        }
-            //    }
-            //}
         }
 
         public static void Start()
         {
             splash.Show();
-
-            if (appSettings.AppTheme != AppSettings.Theme.Light)
-                appSettings.ChangeTheme();
-
-            if (appSettings.CheckForUpdates) updater.CheckForUpdate();
+            ApplySettings();
         }
 
         public static void Stop() => splash.Close();
@@ -108,6 +42,24 @@ namespace ZenTimings.Windows
                 splash.status.Content = status;
                 Refresh(splash.status);
             }));
+        }
+
+        private static void ApplySettings()
+        {
+            if (DriverHelper.IsPawnIoInstalled)
+            {
+                if (appSettings.FirstStart
+                    && VendorUtils.IsRogMotherboard(CpuSingleton.Instance.systemInfo)
+                    && int.Parse(appSettings.Version.Replace("1.", "")) >= 12)
+                {
+                    appSettings.AppTheme = AppSettings.Theme.AsusRog;
+                }
+
+                if (appSettings.FirstStart) appSettings.FirstStart = false;
+            }
+
+            appSettings.ApplyTheme();
+            if (appSettings.CheckForUpdates) updater.CheckForUpdate();
         }
     }
 }

@@ -1,129 +1,236 @@
+using System;
 using ZenStates.Core;
 using ZenStates.Core.DRAM;
 
 namespace ZenTimings
 {
-    internal class VendorUtils
+    internal static class VendorUtils
     {
-        internal static bool IsRogMotherboard(SystemInfo info)
-        {
-            return info.MbVendor.ToLower().Contains("asus") && info.MbName.ToLower().StartsWith("rog");
-        }
-        internal static bool IsAYWMotherboard(SystemInfo info)
-        {
-            return info.MbVendor.ToLower().Contains("asus") && info.MbName.ToLower().Contains("ayw");
-        }
+        internal static bool IsRogMotherboard(SystemInfo info) =>
+            IsAsusMotherboard(info) &&
+            StartsWith(info?.MbName, "rog");
 
-        internal static bool IsProArtMotherboard(SystemInfo info)
-        {
-            return info.MbVendor.ToLower().Contains("asus") && info.MbName.ToLower().Contains("proart");
-        }
+        internal static bool IsAYWMotherboard(SystemInfo info) =>
+            IsAsusMotherboard(info) &&
+            Contains(info?.MbName, "ayw");
+
+        internal static bool IsProArtMotherboard(SystemInfo info) =>
+            IsAsusMotherboard(info) &&
+            Contains(info?.MbName, "proart");
+
+        internal static bool IsTufMotherboard(SystemInfo info) =>
+            IsAsusMotherboard(info) &&
+            StartsWith(info?.MbVendor, "tuf");
 
         internal static string GetMotherboardLink(SystemInfo info)
         {
-            if (!IsRogMotherboard(info) && !IsAYWMotherboard(info))
+            if (info == null || string.IsNullOrWhiteSpace(info.MbName))
                 return null;
 
-            string[] mbNameParts = info.MbName.ToLower().Split(' ');
+            if (IsMsiMotherboard(info))
+            {
+                string mbName = info.MbName.Trim().ToLowerInvariant();
+
+                if (StartsWith(mbName, "meg"))
+                {
+                    return "https://msi.com/Motherboards/Products#?tag=MEG-Series";
+                }
+                else if (StartsWith(mbName, "mag"))
+                {
+                    return "https://msi.com/Motherboards/Products#?tag=MAG-Series";
+                }
+                else if (StartsWith(mbName, "mpg"))
+                {
+                    return "https://msi.com/Motherboards/Products#?tag=MPG-Series";
+                }
+                else if (StartsWith(mbName, "pro"))
+                {
+                    return "https://msi.com/Motherboards/Products#?tag=PRO-Series";
+                }
+                else
+                {
+                    return $"https://msi.com/Motherboards/";
+                }
+            }
+
+            if (!IsRogMotherboard(info) && !IsAYWMotherboard(info) && !IsProArtMotherboard(info))
+                return null;
+
+            string[] mbNameParts = info.MbName
+                .Trim()
+                .ToLowerInvariant()
+                .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (mbNameParts.Length == 0)
+                return null;
+
             string name = string.Join("-", mbNameParts);
 
             if (IsAYWMotherboard(info))
             {
-                return $"https://www.asus.com/motherboards-components/motherboards/others/{name}";
+                return $"https://asus.com/motherboards-components/motherboards/others/{name}";
             }
 
-            if (!(info.MbName.Contains("X870") || info.MbName.Contains("B850") || info.MbName.Contains("B840")))
+            if (IsProArtMotherboard(info))
+            {
+                return $"https://asus.com/motherboards-components/motherboards/proart/{name}";
+            }
+
+            if (IsTufMotherboard(info))
+            {
+                return $"https://asus.com/motherboards-components/motherboards/tuf-gaming/{name}";
+            }
+
+            if (!ContainsAny(info.MbName, "X870", "B850", "B840"))
             {
                 name = $"{name}-model";
             }
 
-            string series = $"{mbNameParts[0]}-{mbNameParts[1]}";
-
-            return $"https://rog.asus.com/motherboards/{series}/{name}";
+            if (mbNameParts.Length < 2)
+                return $"https://rog.asus.com/motherboards/{mbNameParts[0]}/{name}";
+            try
+            {
+                string series = $"{mbNameParts[0]}-{mbNameParts[1]}";
+                return $"https://rog.asus.com/motherboards/{series}/{name}";
+            }
+            catch
+            {
+                return $"https://asus.com/motherboards-components/motherboards/";
+            }
         }
 
-        internal static string GetMotherboardLogo(SystemInfo systemInfo)
+        internal static string GetMotherboardLogo(SystemInfo info)
         {
-            if (IsRogMotherboard(systemInfo)) return "rogLogo";
-            if (IsAYWMotherboard(systemInfo)) return "aywLogo";
-            if (IsProArtMotherboard(systemInfo)) return "proartLogo";
-            //if (IsMegMotherboard(systemInfo)) return "megLogo";
+            if (info == null || string.IsNullOrWhiteSpace(info.MbName))
+                return null;
+
+            var mbName = info.MbName.Trim().ToLowerInvariant();
+
+            if (IsAsusMotherboard(info))
+            {
+                if (IsRogMotherboard(info)) return "rogLogo";
+                if (IsAYWMotherboard(info)) return "aywLogo";
+                if (IsProArtMotherboard(info)) return "proartLogo";
+                if (IsTufMotherboard(info)) return "tufLogo";
+                return null;
+            }
+            else if (IsMsiMotherboard(info))
+            {
+                if (Contains(mbName, "mpower") || Contains(mbName, "gaming")) return "msiDragonLogo";
+                if (StartsWith(mbName, "meg")) return "megLogo";
+                if (StartsWith(mbName, "mag")) return "magLogo";
+                if (StartsWith(mbName, "mpg")) return "mpgLogo";
+                if (StartsWith(mbName, "pro")) return "msiProLogo";
+                return "msiLogo";
+            }
 
             return null;
         }
 
-        private static bool IsMegMotherboard(SystemInfo info)
-        {
-            return (info.MbVendor.ToLower().StartsWith("msi") || info.MbVendor.StartsWith("Microstar International")) && info.MbName.ToLower().StartsWith("meg");
-        }
-
         internal static string GetMemoryModuleLogo(MemoryModule module)
         {
-            if (IsGSkillModule(module))
-            {
-                return "gskillLogo";
-            }
-            else if (IsBiwinModule(module) && IsOriginCodeModule(module))
-            {
-                return "originCodeLogo";
-            }
-            else if (IsBiwinModule(module))
-            {
-                return "biwinLogo";
-            }
-            else if (IsColorfulModule(module))
-            {
-                return "igameLogo";
-            }
+            if (module == null)
+                return null;
+
+            if (IsGSkillModule(module)) return "gskillLogo";
+            if (IsOriginCodeModule(module)) return "originCodeLogo";
+            if (IsBiwinModule(module)) return "biwinLogo";
+            if (IsColorfulModule(module) && IsIgameModule(module)) return "igameLogo";
 
             return null;
         }
 
         internal static bool IsGSkillModule(MemoryModule module)
         {
-            return module.Manufacturer.ToLowerInvariant().Contains("skill")
-                || module.PartNumber.ToLowerInvariant().Trim().StartsWith("f5-")
-                || module.PartNumber.ToLowerInvariant().Trim().StartsWith("f4-");
+            if (module == null)
+                return false;
+
+            string manufacturer = module.Manufacturer?.Trim() ?? string.Empty;
+            string partNumber = module.PartNumber?.Trim() ?? string.Empty;
+
+            return Contains(manufacturer, "skill")
+                || StartsWith(partNumber, "f5-")
+                || StartsWith(partNumber, "f4-");
         }
 
         internal static bool IsBiwinModule(MemoryModule module)
         {
-            return module.Manufacturer.ToLowerInvariant().Contains("biwin")
-                || module.PartNumber.ToLowerInvariant().Trim().StartsWith("bm")
-                || module.PartNumber.ToLowerInvariant().Trim().StartsWith("bx")
-                || module.PartNumber.ToLowerInvariant().Trim().StartsWith("ba")
-                || module.PartNumber.ToLowerInvariant().Trim().StartsWith("ocl")
-                || module.PartNumber.ToLowerInvariant().Trim().StartsWith("ocb");
+            if (module == null)
+                return false;
+
+            return Contains(module.Manufacturer, "biwin");
         }
 
         internal static bool IsOriginCodeModule(MemoryModule module)
         {
-            return module.PartNumber.ToLowerInvariant().Trim().StartsWith("ocl")
-                || module.PartNumber.ToLowerInvariant().Trim().StartsWith("ocb");
+            if (module == null)
+                return false;
+
+            return Contains(module.Manufacturer, "origin");
         }
 
         internal static bool IsColorfulModule(MemoryModule module)
         {
-            //return module.Manufacturer.ToLowerInvariant().Contains("colorful")
-            //    && module.PartNumber.ToLowerInvariant().Trim().StartsWith("ig");
-            return module.PartNumber.ToLowerInvariant().Trim().StartsWith("ig");
+            if (module == null)
+                return false;
+
+            return Contains(module.Manufacturer, "colorful");
+        }
+
+        internal static bool IsIgameModule(MemoryModule module)
+        {
+            if (module == null)
+                return false;
+
+            return StartsWith(module.PartNumber, "ig");
         }
 
         internal static string GetCpuNameString(SystemInfo info)
         {
+            if (info == null)
+                return "Error getting CPU name";
+
             try
             {
-                var name = info.CpuName;
-                if (name.Contains("Eng Sample"))
+                var name = info.CpuName ?? string.Empty;
+
+                if (Contains(name, "Eng Sample"))
                 {
                     return $"{name} | {info.CodeName} | 0x{info.CpuId:X6}";
                 }
+
                 return name;
             }
             catch
             {
                 return "Error getting CPU name";
             }
+        }
+
+        private static bool IsAsusMotherboard(SystemInfo info) =>
+            Contains(info?.MbVendor, "asus");
+
+        private static bool IsMsiMotherboard(SystemInfo info) => ContainsAny(info?.MbVendor, "msi", "Micro Star", "Microstar", "Micro-Star");
+        private static bool Contains(string source, string value) =>
+            !string.IsNullOrEmpty(source) &&
+            source.IndexOf(value, StringComparison.OrdinalIgnoreCase) >= 0;
+
+        private static bool StartsWith(string source, string value) =>
+            !string.IsNullOrEmpty(source) &&
+            source.StartsWith(value, StringComparison.OrdinalIgnoreCase);
+
+        private static bool ContainsAny(string source, params string[] values)
+        {
+            if (string.IsNullOrEmpty(source) || values == null)
+                return false;
+
+            foreach (var value in values)
+            {
+                if (Contains(source, value))
+                    return true;
+            }
+
+            return false;
         }
     }
 }

@@ -4,17 +4,14 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/AdonisUI;component/ColorSchemes/Light.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Themes/Base.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/camera.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Themes/SharedAssets.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/rog/rog-logo-alt.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/ayw/ayw-logo.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/proart/proart-logo-alt.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/gskill/gskill-logo-alt.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/biwin/biwin-logo-alt.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/biwin/origincode-logo.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/msi/meg.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Resources/vendor/colorful/igame-logo.xaml" />
     </ResourceDictionary.MergedDictionaries>
+
+    <Thickness x:Key="WindowBorderThickness">1</Thickness>
 
     <SolidColorBrush x:Key="TextColor" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
     <SolidColorBrush x:Key="AccentTextColor" Color="#004b84" />
@@ -37,4 +34,10 @@
 
     <!-- logo -->
     <SolidColorBrush x:Key="LogoColor" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
+    <SolidColorBrush x:Key="LogoColorAlt" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
+
+    <Style x:Key="WindowStyles" TargetType="{x:Type Window}">
+        <Setter Property="BorderThickness" Value="{StaticResource WindowBorderThickness}" />
+        <Setter Property="BorderBrush" Value="{StaticResource WindowBorderColor}" />
+    </Style>
 </ResourceDictionary>

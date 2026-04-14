@@ -4,6 +4,10 @@
                     xmlns:Extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
                     xmlns:AdonisUI="clr-namespace:AdonisUI;assembly=AdonisUI">
 
+    <Style x:Key="WindowStyles" TargetType="{x:Type Window}">
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
     <Style x:Key="MainContainerStyles" TargetType="{x:Type Border}">
         <Setter Property="BorderBrush" Value="{DynamicResource SeparatorColor}" />
         <Setter Property="Padding" Value="5" />
@@ -11,13 +15,13 @@
 
     <Style x:Key="DefaultTextBlockStyles" TargetType="{x:Type TextBlock}">
         <Setter Property="Padding" Value="4 2" />
-        <Setter Property="Height" Value="18" />
+        <Setter Property="Height" Value="17" />
         <Setter Property="LineHeight" Value="16" />
         <Setter Property="MinWidth" Value="50" />
     </Style>
 
     <Style x:Key="DividerTextBlock" TargetType="{x:Type TextBlock}">
-        <Setter Property="Height" Value="10" />
+        <Setter Property="Height" Value="6" />
     </Style>
 
     <Style x:Key="SuccessBackground" TargetType="{x:Type StatusBar}">
