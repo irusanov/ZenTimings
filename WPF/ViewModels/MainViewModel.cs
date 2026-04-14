@@ -104,14 +104,7 @@ namespace ZenTimings.ViewModels
             set { _memoryFrequencyString = value; OnPropertyChanged(); }
         }
         public MemType MemoryType { get; }
-
-        private PowerTable _powerTable;
-        public PowerTable PowerTable
-        {
-            get => _powerTable;
-            set { _powerTable = value; OnPropertyChanged(); }
-        }
-
+        public PowerTable PowerTable { get; }
         public Cpu.CodeName CodeName { get; }
         public bool WMIPresent { get; }
         public bool IsMotherboardLogoVisible { get; }

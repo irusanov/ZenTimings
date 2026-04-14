@@ -58,19 +58,8 @@
                 <TextBlock Text=" - Update vendor logos" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text="" />
             </StackPanel>
-            <Border Grid.Row="1" Grid.ColumnSpan="6" Margin="15,15,15,15">
-                <StackPanel Orientation="Horizontal">
-                    <Image Source="/Resources/warning-icon.png" Width="16" VerticalAlignment="Top" />
-                    <TextBlock
-                    VerticalAlignment="Center"
-                    Margin="5 0 0 0"
-                    Visibility="{Binding timings.Type, Mode=OneWay, Converter={StaticResource DDR5ToBool}}"
-                    TextWrapping="Wrap"
-                    Text="Please be aware that the current version is not capable of detecting DRAM Overvoltage mode. As a result, the readings for MEM VDD and MEM VDDQ may not be accurate." MaxWidth="400" />
-                </StackPanel>
-            </Border>
             <Border Padding="4 10" Grid.ColumnSpan="6" Grid.Row="2">
-                <Button x:Name="Changelog_Close" Content="Close" Width="80" IsCancel="True" />
+                <Button x:Name="Changelog_Close" Content="OK" Width="80" IsCancel="True" />
             </Border>
         </Grid>
     </ScrollViewer>

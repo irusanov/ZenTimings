@@ -606,14 +606,6 @@ namespace ZenTimings
             return temp;
         }
 
-        private void SetFrequencyString()
-        {
-            if (cpu.powerTable != null && cpu.powerTable.MCLK > 0)
-            {
-                mainViewModel.MemoryFrequency = cpu.powerTable.MCLK * 2;
-            }
-        }
-
         private bool WaitForPowerTable()
         {
             if (cpu.powerTable == null || cpu.powerTable.DramBaseAddress == 0)
@@ -624,6 +616,9 @@ namespace ZenTimings
 
             if (WaitForDriverLoad())
             {
+                Stopwatch timer = new Stopwatch();
+                int timeout = 100000;
+
                 // TODO: Move to Core DLL
                 var memoryConfig = cpu.memoryConfig.Timings.FirstOrDefault().Value;
                 if (memoryConfig != null)
@@ -632,7 +627,24 @@ namespace ZenTimings
                     cpu.powerTable.MemRatio = memoryConfig.Ratio;
                 }
 
-                //SetFrequencyString();
+                timer.Start();
+
+                SMU.Status status;
+                // Refresh each 200ms seconds until table is transferred to DRAM or timeout
+                do
+                {
+                    status = cpu.RefreshPowerTable();
+                    if (status != SMU.Status.OK)
+                        Thread.Sleep(200);  // It's ok to block the current thread
+                } while (status != SMU.Status.OK && timer.Elapsed.TotalMilliseconds < timeout);
+
+                timer.Stop();
+
+                if (status != SMU.Status.OK)
+                {
+                    HandleError("Could not get power table.\nSkipping.");
+                    return false;
+                }
 
                 return true;
             }
