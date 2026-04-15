@@ -174,6 +174,9 @@
     <Compile Include="Windows\DriverUpdateWindow.xaml.cs">
       <DependentUpon>DriverUpdateWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\TelemetryWindow.xaml.cs">
+      <DependentUpon>TelemetryWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\ThemedAdonisWindow.cs" />
     <Compile Include="WindowUtils.cs" />
     <Compile Include="XmlUtils.cs" />
@@ -234,6 +237,9 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Windows\TelemetryWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Resource Include="Themes\Dark.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

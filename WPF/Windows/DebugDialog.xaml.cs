@@ -302,7 +302,7 @@ namespace ZenTimings.Windows
                     AddLine($"-- Main Data Offset: 0x{cpu.info.apob.DataOffset:X8}");
                     AddLine($"-- Ext. Data Offset: 0x{cpu.info.apob.ExtendedDataOffset:X8}");
                     AddLine();
-                    AddLine("-- Header ---------------------------------");
+                    AddLine("-- Header ---------------------------------------");
 
                     properties = cpu.info.apob?.Header.GetType().GetProperties();
 
@@ -313,7 +313,7 @@ namespace ZenTimings.Windows
                     }
 
                     AddLine();
-                    AddLine("-- Data ---------------------------------");
+                    AddLine("-- Data ---------------------------------------");
                     if (cpu.info.apob?.Data != null)
                     {
                         properties = cpu.info.apob.Data.GetType().GetProperties();
@@ -328,6 +328,67 @@ namespace ZenTimings.Windows
                     {
                         AddLine("<APOB table data not available>");
                     }
+
+                    AddLine();
+                    AddHeading("APOB: Raw");
+                    AddLine();
+                    AddLine("-- Raw Data -----------------------------------");
+                    try
+                    {
+                        if (cpu.info.apob?.RawData != null)
+                        {
+                            for (var i = 0; i < cpu.info.apob.RawData.Length; i += 16)
+                            {
+                                var hexLine = "";
+                                for (var j = 0; j < 16 && i + j < cpu.info.apob.RawData.Length; j++)
+                                {
+                                    hexLine += $"{cpu.info.apob.RawData[i + j]:X2}";
+                                    if (j < 15) hexLine += " ";
+                                }
+                                //AddLine($"0x{i:X8}: {hexLine}");
+                                AddLine($"{hexLine}");
+                            }
+                        }
+                        else
+                        {
+                            AddLine("<APOB raw data not available>");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        AddLine("<FAILED>");
+                        AddLine(ex.Message);
+                    }
+                    AddLine();
+
+                    AddLine("-- Raw Extended Data --------------------------");
+                    try
+                    {
+                        if (cpu.info.apob?.RawData != null)
+                        {
+                            for (var i = 0; i < cpu.info.apob.RawExtendedData.Length; i += 16)
+                            {
+                                var hexLine = "";
+                                for (var j = 0; j < 16 && i + j < cpu.info.apob.RawExtendedData.Length; j++)
+                                {
+                                    hexLine += $"{cpu.info.apob.RawExtendedData[i + j]:X2}";
+                                    if (j < 15) hexLine += " ";
+                                }
+                                //AddLine($"0x{i:X8}: {hexLine}");
+                                AddLine($"{hexLine}");
+                            }
+                        }
+                        else
+                        {
+                            AddLine("<APOB raw extended data not available>");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        AddLine("<FAILED>");
+                        AddLine(ex.Message);
+                    }
+                    AddLine();
                 }
                 else
                 {

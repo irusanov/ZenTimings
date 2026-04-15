@@ -1033,6 +1033,47 @@ namespace ZenTimings
             siWnd.Show();
         }
 
+        private void TelemetryMonitorToolstripMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                double telemetryWindowWidth = 650;
+                double telemetryWindowHeight = 550;
+                double telemetryWindowTop = 0;
+                double telemetryWindowLeft = 0;
+                WindowStartupLocation location = WindowStartupLocation.CenterOwner;
+
+                if (settings.SaveWindowPosition
+                    && settings?.TelemetryWindowHeight != 0
+                    && settings?.TelemetryWindowWidth != 0
+                    && settings?.TelemetryWindowLeft != -1
+                    && settings?.TelemetryWindowTop != -1)
+                {
+                    location = WindowStartupLocation.Manual;
+                    telemetryWindowLeft = settings.TelemetryWindowLeft;
+                    telemetryWindowTop = settings.TelemetryWindowTop;
+                    telemetryWindowHeight = settings.TelemetryWindowHeight;
+                    telemetryWindowWidth = settings.TelemetryWindowWidth;
+                }
+
+                var telemetryWindow = new Windows.TelemetryWindow()
+                {
+                    Owner = this,
+                    Width = telemetryWindowWidth,
+                    Height = telemetryWindowHeight,
+                    WindowStartupLocation = location,
+                    Top = telemetryWindowTop,
+                    Left = telemetryWindowLeft
+                };
+
+                telemetryWindow.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error opening Telemetry Monitor:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         private void AdonisWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             siWnd?.Close();
