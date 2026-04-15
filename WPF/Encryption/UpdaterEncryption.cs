@@ -9,7 +9,7 @@ namespace ZenTimings.Encryption
     internal static class UpdaterSignature
     {
         // RSA-2048 public key in XML format.
-        private const string PublicKeyXml = "<RSAKeyValue><Modulus>xd+oBWB2K0hnfCOb8K3jT2IMAI90APR4mM7TnXht2EqBH/3OKHDyJNO/SWVhD5IRkl888swW12/kSymnuj/+U9eolOvqVJFzAee45kFfZab/L0h71shvqDOIdncasO+pBL23GF7KKUXXN5D4eDs7V9vDOnOra6vVtkdaOSoGtMDvnDG6auadsOHn/nojXRIpjn1lEB1f74ecLqy+SRHA++Di2eut/SOETsWwsS1J/9rjEgwliIHQN7pV7kd7ktGQqfndIjJYx/8F3+HU2pB0RFfjrYQAYjIejNIncz3LJOdVNlJa2H4+TzTIiFRVTF/1pNtY/OaL1nNFUH3uzlGUrQ==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>;
+        private const string PublicKeyXml = "<RSAKeyValue><Modulus>xd+oBWB2K0hnfCOb8K3jT2IMAI90APR4mM7TnXht2EqBH/3OKHDyJNO/SWVhD5IRkl888swW12/kSymnuj/+U9eolOvqVJFzAee45kFfZab/L0h71shvqDOIdncasO+pBL23GF7KKUXXN5D4eDs7V9vDOnOra6vVtkdaOSoGtMDvnDG6auadsOHn/nojXRIpjn1lEB1f74ecLqy+SRHA++Di2eut/SOETsWwsS1J/9rjEgwliIHQN7pV7kd7ktGQqfndIjJYx/8F3+HU2pB0RFfjrYQAYjIejNIncz3LJOdVNlJa2H4+TzTIiFRVTF/1pNtY/OaL1nNFUH3uzlGUrQ==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>";
 
         /// <summary>
         /// Verifies that <paramref name="data"/> was signed with the matching private key.
