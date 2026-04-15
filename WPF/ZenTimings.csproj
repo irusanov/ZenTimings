@@ -56,9 +56,8 @@
     <Reference Include="AdonisUI.ClassicTheme, Version=1.17.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\AdonisUI.ClassicTheme.1.17.1\lib\net45\AdonisUI.ClassicTheme.dll</HintPath>
     </Reference>
-    <Reference Include="AutoUpdater.NET, Version=1.6.4.0, Culture=neutral, PublicKeyToken=501435c91b35f4bc, processorArchitecture=MSIL">
-      <HintPath>packages\Autoupdater.NET.Official.1.6.4\lib\net45\AutoUpdater.NET.dll</HintPath>
-    </Reference>
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
@@ -122,6 +121,7 @@
       <DependentUpon>DDR5TimingsPanel19h.xaml</DependentUpon>
     </Compile>
     <Compile Include="DriverHelper.cs" />
+    <Compile Include="Encryption\UpdaterEncryption.cs" />
     <Compile Include="ObservableObject.cs" />
     <Compile Include="VendorUtils.cs" />
     <Compile Include="AppSettings.cs" />
@@ -142,23 +142,6 @@
     <Compile Include="Converters\FloatToVoltageConverter.cs" />
     <Compile Include="Converters\DDR5ToVisConverter.cs" />
     <Compile Include="Converters\PhoenixToVisConverter.cs" />
-    <Compile Include="Decompressor\7zip\Common\CommandLineParser.cs" />
-    <Compile Include="Decompressor\7zip\Common\CRC.cs" />
-    <Compile Include="Decompressor\7zip\Common\InBuffer.cs" />
-    <Compile Include="Decompressor\7zip\Common\OutBuffer.cs" />
-    <Compile Include="Decompressor\7zip\Compress\LZMA\LzmaBase.cs" />
-    <Compile Include="Decompressor\7zip\Compress\LZMA\LzmaDecoder.cs" />
-    <Compile Include="Decompressor\7zip\Compress\LZMA\LzmaEncoder.cs" />
-    <Compile Include="Decompressor\7zip\Compress\LZ\IMatchFinder.cs" />
-    <Compile Include="Decompressor\7zip\Compress\LZ\LzBinTree.cs" />
-    <Compile Include="Decompressor\7zip\Compress\LZ\LzInWindow.cs" />
-    <Compile Include="Decompressor\7zip\Compress\LZ\LzOutWindow.cs" />
-    <Compile Include="Decompressor\7zip\Compress\RangeCoder\RangeCoder.cs" />
-    <Compile Include="Decompressor\7zip\Compress\RangeCoder\RangeCoderBit.cs" />
-    <Compile Include="Decompressor\7zip\Compress\RangeCoder\RangeCoderBitTree.cs" />
-    <Compile Include="Decompressor\7zip\Engine.cs" />
-    <Compile Include="Decompressor\7zip\ICoder.cs" />
-    <Compile Include="Decompressor\LZMACompressor.cs" />
     <Compile Include="Encryption\AesEncryption.cs" />
     <Compile Include="Encryption\EncryptionKeys.cs" />
     <Compile Include="Plugin\IPlugin.cs" />
@@ -197,6 +180,9 @@
     </Compile>
     <Compile Include="Windows\SplashWindow.xaml.cs">
       <DependentUpon>SplashWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\UpdateProgressWindow.xaml.cs">
+      <DependentUpon>UpdateProgressWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\SystemInfoWindow.xaml.cs">
       <DependentUpon>SystemInfoWindow.xaml</DependentUpon>
@@ -385,6 +371,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\SplashWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\UpdateProgressWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
