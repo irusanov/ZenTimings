@@ -618,7 +618,8 @@ namespace ZenTimings.Windows
         private string FormatValue(double value)
         {
             if (_isBoolean) return value >= 0.5 ? "Yes" : "No";
-            return $"{value:F3} {unit}";
+            string format = unit == "°C" ? "F2" : "F3";
+            return $"{value.ToString(format)} {unit}";
         }
 
         protected void OnPropertyChanged(string propertyName)
