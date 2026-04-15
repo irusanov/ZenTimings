@@ -185,6 +185,39 @@ namespace ZenTimings
             return StartsWith(module.PartNumber, "ig");
         }
 
+        internal static string GetDramDieName(string manufacturer, int stepping)
+        {
+            if (string.IsNullOrEmpty(manufacturer))
+                return null;
+
+            // SPD byte 0x22A: bits [7:4] = die family?, bits [3:0] = minor revision
+            int dieFamilyNibble = (stepping >> 4) & 0xF;
+
+            if (Contains(manufacturer, "hynix"))
+            {
+                int dieIndex = stepping & 0xF;
+                if (dieIndex >= 1 && dieIndex <= 26)
+                    return $"{(char)('A' + dieIndex - 1)}-Die";
+                //return $"0x{stepping:X2}";
+            }
+
+            //if (Contains(manufacturer, "samsung"))
+            //{
+            //    switch (dieFamilyNibble)
+            //    {
+            //        case 0x0: return "B-Die";
+            //        default:  return $"0x{stepping:X2}";
+            //    }
+            //}
+
+            //if (Contains(manufacturer, "micron"))
+            //{
+            //    return $"0x{stepping:X2}";
+            //}
+
+            return $"0x{stepping:X2}";
+        }
+
         internal static string GetCpuNameString(SystemInfo info)
         {
             if (info == null)

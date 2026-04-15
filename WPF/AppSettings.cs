@@ -1,13 +1,15 @@
 using AdonisUI;
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Windows;
 
 namespace ZenTimings
 {
     [Serializable]
-    public sealed class AppSettings
+    public sealed class AppSettings : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
         public const int VersionMajor = 1;
         public const int VersionMinor = 13;
 
@@ -137,7 +139,20 @@ namespace ZenTimings
 
         public string Version { get; set; } = new Version(VersionMajor, VersionMinor).ToString();
         public bool AutoRefresh { get; set; } = true;
-        public int AutoRefreshInterval { get; set; } = 2000;
+
+        private int _autoRefreshInterval = 2000;
+        public int AutoRefreshInterval
+        {
+            get => _autoRefreshInterval;
+            set
+            {
+                if (_autoRefreshInterval != value)
+                {
+                    _autoRefreshInterval = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoRefreshInterval)));
+                }
+            }
+        }
         public bool AdvancedMode { get; set; } = true;
         public Theme AppTheme { get; set; } = Theme.DarkMintGradient;
         public ScreenshotType ScreenshotMode { get; set; } = ScreenshotType.Window;
@@ -155,6 +170,11 @@ namespace ZenTimings
         public double SysInfoWindowTop { get; set; } = -1;
         public double SysInfoWindowWidth { get; set; }
         public double SysInfoWindowHeight { get; set; }
+        public double TelemetryWindowLeft { get; set; } = -1;
+        public double TelemetryWindowTop { get; set; } = -1;
+        public double TelemetryWindowWidth { get; set; }
+        public double TelemetryWindowHeight { get; set; }
+        public bool TelemetryAutoRefresh { get; set; } = true;
         public string NotifiedChangelog { get; set; } = "";
         public bool SingleInstance { get; set; } = true;
         public bool FirstStart { get; set; } = true;
