@@ -52,12 +52,12 @@
                         </MenuItem>
                         <MenuItem Header="_Tools">
                             <MenuItem
-                                Header="System _Info"
-                                Click="SystemInfoToolstripMenuItem_Click"
-                                Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
-                            <MenuItem
                                 Header="_DIMM Telemetry"
                                 Click="TelemetryMonitorToolstripMenuItem_Click"
+                                Visibility="{Binding IsDimmTelemetryVisible, Mode=OneTime, Converter={StaticResource BoolToVis}}" />
+                            <MenuItem
+                                Header="System _Info"
+                                Click="SystemInfoToolstripMenuItem_Click"
                                 Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
                             <MenuItem Header="_Options" Click="OptionsToolStripMenuItem_Click" />
                             <MenuItem Header="_Debug" Click="DebugToolstripItem_Click" />
