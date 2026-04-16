@@ -196,9 +196,8 @@ namespace ZenTimings
             if (Contains(manufacturer, "hynix"))
             {
                 int dieIndex = stepping & 0xF;
-                if (dieIndex >= 1 && dieIndex <= 26)
+                if (dieIndex >= 1 && dieIndex <= 15)
                     return $"{(char)('A' + dieIndex - 1)}-Die";
-                //return $"0x{stepping:X2}";
             }
 
             //if (Contains(manufacturer, "samsung"))
