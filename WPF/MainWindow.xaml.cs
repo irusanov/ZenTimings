@@ -64,7 +64,7 @@ namespace ZenTimings
             if (DriverHelper.IsPawnIoInstalled)
             {
                 var currentVersion = DriverHelper.Version;
-                var newVersion = new Version(2, 2, 0, 0);
+                var newVersion = DriverHelper.BundledVersion;
                 var skippedVersion = !string.IsNullOrEmpty(AppSettings.Instance.DriverUpdateLastSkippedVersion)
                     ? new Version(AppSettings.Instance.DriverUpdateLastSkippedVersion)
                     : new Version(0, 0, 0, 0);
