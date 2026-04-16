@@ -86,20 +86,31 @@
                          GradientOrigin="0.5,0.5"
                          RadiusX="0.9"
                          RadiusY="0.9">
-        <GradientStop Color="#00000000" Offset="0.0" />
         <GradientStop Color="#00000000" Offset="0.72" />
         <GradientStop Color="#44000000" Offset="1.0" />
     </RadialGradientBrush>
 
-    <!-- Final combined background -->
-    <VisualBrush x:Key="WindowBackgroundBrush" Stretch="Fill">
-        <VisualBrush.Visual>
-            <Grid Width="1000" Height="700" Background="{StaticResource BackgroundGradientBrush}">
-                <Rectangle Fill="{StaticResource BackgroundDiagonalFadeBrush}" />
-                <Rectangle Fill="{StaticResource BackgroundVignetteBrush}" />
-            </Grid>
-        </VisualBrush.Visual>
-    </VisualBrush>
+    <DrawingBrush x:Key="WindowBackgroundBrush" Stretch="Fill">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="{StaticResource BackgroundGradientBrush}">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1000,700" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{StaticResource BackgroundDiagonalFadeBrush}">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1000,700" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{StaticResource BackgroundVignetteBrush}">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1000,700" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
 
     <Style x:Key="MainMenuStyles" TargetType="{x:Type Border}">
         <Setter Property="Background" Value="{x:Null}" />
