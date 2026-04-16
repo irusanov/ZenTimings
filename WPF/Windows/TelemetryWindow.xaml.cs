@@ -105,13 +105,8 @@ namespace ZenTimings.Windows
             try
             {
                 var info = memoryConfig.SpdInfo;
-                if (info != null && info.Count > 0 && info.Values.All(s => !s.IsPartial))
+                if (info != null && info.Count > 0)
                     spdInfo = info;
-                else
-                {
-                    memoryConfig.RefreshSpdInfo();
-                    spdInfo = memoryConfig.SpdInfo;
-                }
             }
             catch (Exception ex)
             {
