@@ -859,7 +859,7 @@ namespace ZenTimings
                     {
                         Owner = parent,
                         Width = parent.Width,
-                        Height = parent.Height
+                        Height = parent.Height,
                     };
                     debugWnd.Show();
                 }
@@ -959,10 +959,7 @@ namespace ZenTimings
 
         private void OptionsToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            OptionsDialog optionsWnd = new OptionsDialog(PowerCfgTimer)
-            {
-                Owner = Application.Current.MainWindow
-            };
+            OptionsDialog optionsWnd = new OptionsDialog(PowerCfgTimer);
             optionsWnd.Show();
         }
 
@@ -970,7 +967,7 @@ namespace ZenTimings
         {
             AboutDialog aboutWnd = new AboutDialog()
             {
-                Owner = Application.Current.MainWindow
+                Owner = this
             };
             aboutWnd.Show();
         }
@@ -1058,7 +1055,6 @@ namespace ZenTimings
 
                 var telemetryWindow = new Windows.TelemetryWindow()
                 {
-                    Owner = this,
                     Width = telemetryWindowWidth,
                     Height = telemetryWindowHeight,
                     WindowStartupLocation = location,
