@@ -36,8 +36,8 @@ namespace ZenTimings.Windows
         {
             ModulesContainer.ItemsSource = moduleViewModels;
             AppSettings.Instance.PropertyChanged += AppSettings_PropertyChanged;
-            ChkAutoRefresh.IsChecked = AppSettings.Instance.TelemetryAutoRefresh;
             await LoadModulesDataAsync();
+            ChkAutoRefresh.IsChecked = AppSettings.Instance.TelemetryAutoRefresh;
         }
 
         private void UptimeTimer_Tick(object sender, EventArgs e)
@@ -105,13 +105,8 @@ namespace ZenTimings.Windows
             try
             {
                 var info = memoryConfig.SpdInfo;
-                if (info != null && info.Count > 0 && info.Values.All(s => !s.IsPartial))
+                if (info != null && info.Count > 0)
                     spdInfo = info;
-                else
-                {
-                    memoryConfig.RefreshSpdInfo();
-                    spdInfo = memoryConfig.SpdInfo;
-                }
             }
             catch (Exception ex)
             {
@@ -270,13 +265,7 @@ namespace ZenTimings.Windows
             _isRefreshing = true;
             try
             {
-                var spdInfo = await Task.Run(() =>
-                {
-                    // Pass 0 so the library's internal per-DIMM elapsed check always passes;
-                    // the timer already controls the actual refresh rate.
-                    memoryConfig.RefreshTelemetry(0);
-                    return memoryConfig.SpdInfo;
-                });
+                var spdInfo = memoryConfig.SpdInfo;
 
                 if (spdInfo != null && spdInfo.Count > 0)
                 {
@@ -295,8 +284,6 @@ namespace ZenTimings.Windows
 
                         index++;
                     }
-
-
                 }
             }
             catch (Exception ex)

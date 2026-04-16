@@ -351,3 +351,5 @@ MigrationBackup/
 
 Dotfuscated/
 *.pfx
+# Downloaded PawnIO setup binary
+WPF/Resources/PawnIO/PawnIO_setup.exe
