@@ -33,38 +33,11 @@
 
             <StackPanel Orientation="Vertical" Margin="15,15,5,15" Grid.ColumnSpan="6" Grid.Row="0" Width="424">
                 <!-- TextBlock Text="Changelog" FontSize="14" FontWeight="Bold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" /-->
-                <TextBlock Text="v1.37 (April 15 2026)" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0" />
+                <TextBlock Text="v1.38 (April 16 2026)" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0" />
 
                 <TextBlock Text="" />
-                <TextBlock Text=" New:" FontWeight="Bold"/>
-                <TextBlock Text=" - Added support for reading memory voltages from PMIC" />
-                <TextBlock Text=" - Added support for reading memory modules from SPD" />
-                <TextBlock Text=" - Added DIMM telemetry window for supported hardware" />
-                <TextBlock Text=" - Added option to switch between impedance table sources" />
-                <TextBlock Text=" - Added new themes: ROG and Black" />
-                <TextBlock Text=" - Added configurable screenshot save location" />
-                <TextBlock Text=" - Added Asus TUF logo" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Added MSI logos" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Update PawnIO driver to 2.2.0.0 and modules to 0.2.4" TextWrapping="WrapWithOverflow" />
-
-                <TextBlock Text="" />
-                <TextBlock Text=" Improvements:" FontWeight="Bold"/>
-                <TextBlock Text=" - Extended controller settings for AM5 desktop series" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Skip timing refresh when MCLK has not changed" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Displays tRDPRE and tWRPRE for 8000-series APUs" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Updated vendor logos" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - About, Debug and Options dialogs no longer block main window" TextWrapping="WrapWithOverflow" />
-
-                <TextBlock Text="" />
-                <TextBlock Text=" Fixes:" FontWeight="Bold"/>
-                <TextBlock Text=" - Updated Phoenix tables to correct voltage display on 8700G" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Fix Proc Data Drive Strength reading on 8000 desktop series" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Fixed tRFC (ns) dynamic calculation based on detected BCLK and current memory frequency" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Automatically disable tRFCsb when FGR (Strict) mode is enabled" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Removed legacy encrypted settings previously used for AGESA version storage" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Workaround for window border not applied on Windows 11" TextWrapping="WrapWithOverflow" />
-                
-                <TextBlock Text="" />
+                <TextBlock Text=" - Fixed Telemetry window update" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Update core to fix posible conflicts with other monitoring apps" TextWrapping="WrapWithOverflow" />
             </StackPanel>
             <Border Padding="4 10" Grid.ColumnSpan="6" Grid.Row="2">
                 <Button x:Name="Changelog_Close" Content="OK" Width="80" IsCancel="True" />
