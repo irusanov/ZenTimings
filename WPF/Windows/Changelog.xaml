@@ -33,11 +33,12 @@
 
             <StackPanel Orientation="Vertical" Margin="15,15,5,15" Grid.ColumnSpan="6" Grid.Row="0" Width="424">
                 <!-- TextBlock Text="Changelog" FontSize="14" FontWeight="Bold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" /-->
-                <TextBlock Text="v1.38 (April 16 2026)" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0" />
+                <TextBlock Text="v1.39" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0" />
 
                 <TextBlock Text="" />
-                <TextBlock Text=" - Fixed Telemetry window update" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Update core to fix posible conflicts with other monitoring apps" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Fixed a bug in smbus driver which was leading to conflict with hwinfo" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Detach Telemetry window from main application and update layout" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Hynix IC revision parser should not longer display incorrect 'O-die'" TextWrapping="WrapWithOverflow" />
             </StackPanel>
             <Border Padding="4 10" Grid.ColumnSpan="6" Grid.Row="2">
                 <Button x:Name="Changelog_Close" Content="OK" Width="80" IsCancel="True" />
