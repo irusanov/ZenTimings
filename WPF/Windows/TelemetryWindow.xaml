@@ -1,198 +1,219 @@
 <local:ThemedAdonisWindow
-    xmlns:local="clr-namespace:ZenTimings"
-    x:Class="ZenTimings.Windows.TelemetryWindow"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-    xmlns:windows="clr-namespace:ZenTimings.Windows"
-    mc:Ignorable="d"
-    Title="DIMM Telemetry"
-    Height="550"
-    Width="408"
-    WindowStartupLocation="CenterOwner"
-    BorderThickness="1"
-    UseLayoutRounding="True"
-    Style="{DynamicResource WindowStyles}"
-    Loaded="Window_Loaded"
-    Closing="Window_Closing">
+	xmlns:local="clr-namespace:ZenTimings"
+	x:Class="ZenTimings.Windows.TelemetryWindow"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+	xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+	xmlns:windows="clr-namespace:ZenTimings.Windows"
+	mc:Ignorable="d"
+	Title="DIMM Telemetry"
+	Height="500"
+	Width="392"
+	MinWidth="380"
+	MinHeight="280"
+	WindowStartupLocation="CenterOwner"
+	BorderThickness="1"
+	UseLayoutRounding="True"
+	Style="{DynamicResource WindowStyles}"
+	Loaded="Window_Loaded"
+	Closing="Window_Closing">
 
-    <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis" />
-        <SolidColorBrush x:Key="ThermalAlarmHighBrush"     Color="{DynamicResource {x:Static adonisUi:Colors.AlertColor}}"/>
-        <SolidColorBrush x:Key="ThermalAlarmCriticalBrush" Color="{DynamicResource {x:Static adonisUi:Colors.ErrorColor}}"/>
-        <Style x:Key="TelemetryValueCellStyle" TargetType="{x:Type TextBlock}">
-            <Setter Property="Foreground" Value="{DynamicResource AccentTextColor}"/>
-            <Setter Property="Padding" Value="3,0"/>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding AlarmLevel}" Value="{x:Static windows:ThermalAlarmLevel.High}">
-                    <Setter Property="Foreground" Value="{StaticResource ThermalAlarmHighBrush}"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding AlarmLevel}" Value="{x:Static windows:ThermalAlarmLevel.CriticalHigh}">
-                    <Setter Property="Foreground" Value="{StaticResource ThermalAlarmCriticalBrush}"/>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-    </Window.Resources>
+	<Window.Resources>
+		<BooleanToVisibilityConverter x:Key="BoolToVis" />
+		<SolidColorBrush x:Key="ThermalAlarmHighBrush"     Color="{DynamicResource {x:Static adonisUi:Colors.AlertColor}}"/>
+		<SolidColorBrush x:Key="ThermalAlarmCriticalBrush" Color="{DynamicResource {x:Static adonisUi:Colors.ErrorColor}}"/>
+		<Style x:Key="LabelStyle" TargetType="{x:Type TextBlock}">
+			<Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
+			<Setter Property="Opacity" Value="0.6"/>
+			<Setter Property="FontSize" Value="11"/>
+			<Setter Property="VerticalAlignment" Value="Center"/>
+		</Style>
+		<Style x:Key="ValueStyle" TargetType="{x:Type TextBlock}">
+			<Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
+			<Setter Property="FontSize" Value="11"/>
+			<Setter Property="VerticalAlignment" Value="Center"/>
+			<Setter Property="TextWrapping" Value="Wrap"/>
+		</Style>
+		<Style x:Key="TelemetryValueCellStyle" TargetType="{x:Type TextBlock}">
+			<Setter Property="Foreground" Value="{DynamicResource AccentTextColor}"/>
+			<Setter Property="Padding" Value="3,0"/>
+			<Style.Triggers>
+				<DataTrigger Binding="{Binding AlarmLevel}" Value="{x:Static windows:ThermalAlarmLevel.High}">
+					<Setter Property="Foreground" Value="{StaticResource ThermalAlarmHighBrush}"/>
+				</DataTrigger>
+				<DataTrigger Binding="{Binding AlarmLevel}" Value="{x:Static windows:ThermalAlarmLevel.CriticalHigh}">
+					<Setter Property="Foreground" Value="{StaticResource ThermalAlarmCriticalBrush}"/>
+				</DataTrigger>
+			</Style.Triggers>
+		</Style>
+	</Window.Resources>
 
-    <Grid MinWidth="400">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
 
-        <Border Grid.Row="0" Style="{DynamicResource PanelStyles}" Padding="6,4">
-            <DockPanel>
-                <Button x:Name="BtnResetStats" DockPanel.Dock="Right"
-                        Content="Reset Stats" Width="80" Height="24"
-                        Click="BtnResetStats_Click"/>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button x:Name="BtnRefresh" Content="Refresh" Width="70" Height="24"
-                            Click="BtnRefresh_Click" Margin="0,0,6,0"/>
-                    <ToggleButton x:Name="ChkAutoRefresh" Content="Auto-refresh"
-                                  VerticalAlignment="Center"
-                                  Checked="ChkAutoRefresh_Checked"
-                                  Unchecked="ChkAutoRefresh_Unchecked"
-                                  Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"/>
-                </StackPanel>
-            </DockPanel>
-        </Border>
+		<!-- Toolbar -->
+		<Border Grid.Row="0" Style="{DynamicResource PanelStyles}" Padding="6,3">
+			<DockPanel>
+				<Button x:Name="BtnResetStats" DockPanel.Dock="Right"
+						Content="Reset Stats" Width="80" Height="22"
+						Click="BtnResetStats_Click"/>
+				<StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+					<Button x:Name="BtnRefresh" Content="Refresh" Width="70" Height="22"
+							Click="BtnRefresh_Click" Margin="0,0,6,0"/>
+					<ToggleButton x:Name="ChkAutoRefresh" Content="Auto-refresh"
+								  VerticalAlignment="Center"
+								  Checked="ChkAutoRefresh_Checked"
+								  Unchecked="ChkAutoRefresh_Unchecked"
+								  Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"/>
+				</StackPanel>
+			</DockPanel>
+		</Border>
 
-		<Border Grid.Row="1" Style="{DynamicResource Separator}" />
+		<Border Grid.Row="1" Style="{DynamicResource Separator}"/>
 
-        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Padding="0" Margin="0">
-            <ItemsControl x:Name="ModulesContainer">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <GroupBox adonisExtensions:LayerExtension.Layer="3"
+		<!-- Module grid — all DIMMs visible simultaneously -->
+		<ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0" Margin="0">
+			<ItemsControl x:Name="ModulesContainer">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate>
+					<GroupBox adonisExtensions:LayerExtension.Layer="3"
 								  Background="{DynamicResource PanelBackground}"
-                                  Padding="8 4"
-                                  Margin="0,0,0,4">
-                            <GroupBox.Header>
-                                <TextBlock Text="{Binding Header}"  VerticalAlignment="Center" FontSize="11"/>
-                            </GroupBox.Header>
-                            <StackPanel>
-                                <!-- Module Info Section -->
-                                <Grid Margin="0,0,0,4">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                    </Grid.RowDefinitions>
+								  Padding="6,3"
+								  Margin="0">
+						<GroupBox.Header>
+							<TextBlock Text="{Binding Header}" VerticalAlignment="Center" FontSize="11"/>
+						</GroupBox.Header>
+						<StackPanel>
 
-                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="P/N:" Margin="4,1,6,1" FontSize="11"/>
-                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding PartNumber}" Margin="0,1,12,1" FontSize="11" TextWrapping="Wrap"/>
+							<!-- Module info -->
+							<Border Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
+										CornerRadius="3" Padding="6,4" Margin="0,2,0,3">
+								<Grid>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto"/>
+										<ColumnDefinition Width="*"/>
+										<ColumnDefinition Width="Auto"/>
+										<ColumnDefinition Width="Auto"/>
+									</Grid.ColumnDefinitions>
+									<Grid.RowDefinitions>
+										<RowDefinition Height="18"/>
+										<RowDefinition Height="18"/>
+										<RowDefinition Height="Auto"/>
+									</Grid.RowDefinitions>
 
-                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="Capacity:" Margin="0,1,6,1"  FontSize="11"/>
-                                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding Capacity}" Margin="0,1" FontSize="11"/>
+										<TextBlock Grid.Row="0" Grid.Column="0" Text="P/N" Style="{StaticResource LabelStyle}" Margin="0,0,8,0"/>
+										<TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding PartNumber}" Style="{StaticResource ValueStyle}"/>
+										<TextBlock Grid.Row="0" Grid.Column="2" Text="Capacity" Style="{StaticResource LabelStyle}" Margin="8,0"/>
+										<TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding Capacity}" Style="{StaticResource ValueStyle}"/>
 
-                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Mfr:" Margin="4,1,6,1"  FontSize="11"/>
-                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Manufacturer}" Margin="0,1,12,1" FontSize="11"/>
+										<TextBlock Grid.Row="1" Grid.Column="0" Text="Mfr" Style="{StaticResource LabelStyle}" Margin="0,0,8,0"/>
+										<TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Manufacturer}" Style="{StaticResource ValueStyle}"/>
+										<TextBlock Grid.Row="1" Grid.Column="2" Text="Rank" Style="{StaticResource LabelStyle}" Margin="8,0"/>
+										<TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding Rank}" Style="{StaticResource ValueStyle}"/>
 
-                                    <TextBlock Grid.Row="1" Grid.Column="2" Text="Rank:" Margin="0,1,6,1"  FontSize="11"/>
-                                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding Rank}" Margin="0,1" FontSize="11"/>
+										<TextBlock Grid.Row="2" Grid.Column="0" Text="DRAM" Style="{StaticResource LabelStyle}" Margin="0,2,8,0"/>
+										<TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding MemoryChip}"
+												   Style="{StaticResource ValueStyle}" Margin="0,2,0,0"/>
 
-                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="DRAM:" Margin="4,1,6,1"  FontSize="11"/>
-                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding MemoryChip}" Margin="0,1,12,1" FontSize="11" Grid.ColumnSpan="3" TextWrapping="Wrap"/>
+										<TextBlock Grid.Row="2" Grid.Column="2" Text="PMIC" Style="{StaticResource LabelStyle}" Margin="8,2,0,0"
+												   Visibility="{Binding HasPmic, Converter={StaticResource BoolToVis}}"/>
+										<TextBlock Grid.Row="2" Grid.Column="3" Style="{StaticResource ValueStyle}" Margin="0,2,0,0"
+												   Visibility="{Binding HasPmic, Converter={StaticResource BoolToVis}}">
+											<Run Text="{Binding PmicVendor}"/>
+											<Run Text="rev"/>
+											<Run Text="{Binding PmicRevision}"/>
+										</TextBlock>
+								</Grid>
+							</Border>
 
-                                    <TextBlock Grid.Row="2" Grid.Column="2" Text="PMIC:" Margin="0,1,6,1"  FontSize="11" Visibility="{Binding HasPmic, Converter={StaticResource BoolToVis}}"/>
-                                    <TextBlock Grid.Row="2" Grid.Column="3" Margin="0,1" FontSize="11" Grid.ColumnSpan="3" Visibility="{Binding HasPmic, Converter={StaticResource BoolToVis}}">
-                                        <Run Text="{Binding PmicVendor}"/>
-                                        <Run Text="rev"/>
-                                        <Run Text="{Binding PmicRevision}"/>
-                                    </TextBlock>
-                                </Grid>
+							<!-- Telemetry DataGrid -->
+							<DataGrid ItemsSource="{Binding TelemetryItems}"
+									  AutoGenerateColumns="False"
+									  GridLinesVisibility="None"
+									  HeadersVisibility="Column"
+									  CanUserDeleteRows="False"
+									  CanUserResizeRows="False"
+									  CanUserReorderColumns="False"
+									  CanUserResizeColumns="False"
+									  CanUserSortColumns="False"
+									  Focusable="False"
+									  IsReadOnly="True"
+									  FontSize="11"
+									  RowHeight="18"
+										  ColumnHeaderHeight="20"
+									  adonisExtensions:LayerExtension.Layer="3"
+									  Visibility="{Binding HasTelemetry, Converter={StaticResource BoolToVis}}">
+								<DataGrid.ColumnHeaderStyle>
+									<Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+										<Setter Property="Margin" Value="0,0,0,2"/>
+									</Style>
+								</DataGrid.ColumnHeaderStyle>
+								<DataGrid.RowStyle>
+									<Style TargetType="{x:Type DataGridRow}">
+										<Setter Property="Focusable" Value="False"/>
+										<Setter Property="Background" Value="Transparent"/>
+									</Style>
+								</DataGrid.RowStyle>
+								<DataGrid.Columns>
+									<DataGridTextColumn Header="Parameter" Binding="{Binding Name}" Width="*" MinWidth="100">
+										<DataGridTextColumn.ElementStyle>
+											<Style TargetType="{x:Type TextBlock}">
+												<Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
+												<Setter Property="Padding" Value="3,0"/>
+											</Style>
+										</DataGridTextColumn.ElementStyle>
+									</DataGridTextColumn>
+									<DataGridTextColumn Header="Current" Binding="{Binding Current}" Width="*" MinWidth="64">
+										<DataGridTextColumn.ElementStyle>
+											<Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TelemetryValueCellStyle}"/>
+										</DataGridTextColumn.ElementStyle>
+									</DataGridTextColumn>
+									<DataGridTextColumn Header="Min" Binding="{Binding Min}" Width="*" MinWidth="54">
+										<DataGridTextColumn.ElementStyle>
+											<Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TelemetryValueCellStyle}"/>
+										</DataGridTextColumn.ElementStyle>
+									</DataGridTextColumn>
+									<DataGridTextColumn Header="Max" Binding="{Binding Max}" Width="*" MinWidth="54">
+										<DataGridTextColumn.ElementStyle>
+											<Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TelemetryValueCellStyle}"/>
+										</DataGridTextColumn.ElementStyle>
+									</DataGridTextColumn>
+									<DataGridTextColumn Header="Average" Binding="{Binding Average}" Width="*" MinWidth="64">
+										<DataGridTextColumn.ElementStyle>
+											<Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TelemetryValueCellStyle}"/>
+										</DataGridTextColumn.ElementStyle>
+									</DataGridTextColumn>
+								</DataGrid.Columns>
+							</DataGrid>
 
-                                <!-- Telemetry Grid -->
-                                <DataGrid ItemsSource="{Binding TelemetryItems}"
-                                          AutoGenerateColumns="False"
-                                          GridLinesVisibility="None"
-                                          HeadersVisibility="Column"
-                                          CanUserDeleteRows="False"
-                                          CanUserResizeRows="False"
-                                          CanUserReorderColumns="False"
-                                          CanUserResizeColumns="False"
-                                          CanUserSortColumns="False"
-										  Focusable="False"
-										  IsReadOnly="True"
-                                          FontSize="11"
-                                          RowHeight="20"
-                                          ColumnHeaderHeight="22"
-										  Margin="0 6 0 0"
-										  adonisExtensions:LayerExtension.Layer="3"
-                                          Visibility="{Binding HasTelemetry, Converter={StaticResource BoolToVis}}">
-									<DataGrid.ColumnHeaderStyle>
-										<Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
-											<Setter Property="Margin" Value="0,0,0,4"/>
-										</Style>
-									</DataGrid.ColumnHeaderStyle>
-									<DataGrid.RowStyle>
-										<Style TargetType="{x:Type DataGridRow}">
-											<Setter Property="Focusable" Value="False"/>
-											<Setter Property="Background" Value="Transparent"/>
-										</Style>
-									</DataGrid.RowStyle>
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Parameter" Binding="{Binding Name}" Width="100">
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style TargetType="{x:Type TextBlock}">
-                                                    <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
-                                                    <Setter Property="Padding" Value="3,0"/>
-                                                </Style>
-                                            </DataGridTextColumn.ElementStyle>
-                                        </DataGridTextColumn>
-                                        <DataGridTextColumn Header="Current" Binding="{Binding Current}" Width="80">
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TelemetryValueCellStyle}"/>
-                                            </DataGridTextColumn.ElementStyle>
-                                        </DataGridTextColumn>
-                                        <DataGridTextColumn Header="Min" Binding="{Binding Min}" Width="75">
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TelemetryValueCellStyle}"/>
-                                            </DataGridTextColumn.ElementStyle>
-                                        </DataGridTextColumn>
-                                        <DataGridTextColumn Header="Max" Binding="{Binding Max}" Width="75">
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TelemetryValueCellStyle}"/>
-                                            </DataGridTextColumn.ElementStyle>
-                                        </DataGridTextColumn>
-                                        <DataGridTextColumn Header="Average" Binding="{Binding Average}" Width="*" MinWidth="75">
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TelemetryValueCellStyle}"/>
-                                            </DataGridTextColumn.ElementStyle>
-                                        </DataGridTextColumn>
-                                    </DataGrid.Columns>
-                                </DataGrid>
+							<!-- No telemetry message -->
+							<TextBlock Text="No telemetry data available for this module"
+									   Margin="2"
+									   FontStyle="Italic"
+									   FontSize="11"
+									   Foreground="{DynamicResource TextColor}"
+									   Opacity="0.6"
+									   Visibility="{Binding HasNoTelemetry, Converter={StaticResource BoolToVis}}"/>
+						</StackPanel>
+					</GroupBox>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+		</ScrollViewer>
 
-                                <!-- No telemetry message -->
-                                <TextBlock Text="No telemetry data available for this module"
-                                          Margin="2"
-                                          FontStyle="Italic"
-                                          FontSize="11"
-                                          Visibility="{Binding HasNoTelemetry, Converter={StaticResource BoolToVis}}"/>
-                            </StackPanel>
-                        </GroupBox>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+		<Border Grid.Row="3" Style="{DynamicResource Separator}"/>
 
-		<Border Grid.Row="3" Style="{DynamicResource Separator}" />
-		
-        <Border Grid.Row="4" Style="{DynamicResource BottomPanelStyles}">
-            <TextBlock x:Name="StatusText" Text="Ready" Foreground="{DynamicResource TextColor}" FontSize="11"/>
-        </Border>
-    </Grid>
+		<Border Grid.Row="4" Style="{DynamicResource BottomPanelStyles}">
+			<TextBlock x:Name="StatusText" Text="Ready" Foreground="{DynamicResource TextColor}" FontSize="11"/>
+		</Border>
+	</Grid>
 </local:ThemedAdonisWindow>
