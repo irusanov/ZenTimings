@@ -249,11 +249,14 @@ namespace ZenTimings.ViewModels
             CodeName = CpuSingleton.Instance.info.codeName;
 
             // APOB
-            ApobData = CpuSingleton.Instance.info.apob.Data;
-            if (CpuSingleton.Instance.info.apob.ExtendedData.ProcOdt != null)
-                ApobExtendedData = CpuSingleton.Instance.info.apob.ExtendedData;
-            else
-                ApobExtendedData = ApobData;
+            if (CpuSingleton.Instance.info.apob.IsAvailable)
+            {
+                ApobData = CpuSingleton.Instance.info.apob.Data;
+                if (CpuSingleton.Instance.info.apob?.ExtendedData != null && CpuSingleton.Instance.info.apob.ExtendedData.ProcOdt != null)
+                    ApobExtendedData = CpuSingleton.Instance.info.apob.ExtendedData;
+                else
+                    ApobExtendedData = ApobData;
+            }
 
             //AgesaVersion = AGESA_SEARCHING;
             AgesaVersion = agesaVersion;
