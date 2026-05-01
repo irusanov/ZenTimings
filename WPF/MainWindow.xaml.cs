@@ -1070,6 +1070,22 @@ namespace ZenTimings
             }
         }
 
+        private void SpdInfoToolstripMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var spdWindow = new SpdInfoWindow
+                {
+                    Owner = this
+                };
+                spdWindow.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error opening SPD Info:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         private void AdonisWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             siWnd?.Close();

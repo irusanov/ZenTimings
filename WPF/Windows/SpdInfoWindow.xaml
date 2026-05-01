@@ -1,0 +1,81 @@
+﻿<local:ThemedAdonisWindow
+    xmlns:local="clr-namespace:ZenTimings"
+    x:Class="ZenTimings.Windows.SpdInfoWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+    mc:Ignorable="d"
+    Title="SPD Information"
+    Height="560"
+    Width="760"
+    MinWidth="640"
+    MinHeight="420"
+    WindowStartupLocation="CenterOwner"
+    BorderThickness="1"
+    UseLayoutRounding="True"
+    Style="{DynamicResource WindowStyles}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Style="{DynamicResource PanelStyles}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="220"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Slot/DIMM" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <ComboBox x:Name="ComboSlots"
+                          Grid.Column="1"
+                          DisplayMemberPath="Display"
+                          SelectedValuePath="Index"
+                          SelectionChanged="ComboSlots_SelectionChanged"/>
+                <Button x:Name="BtnRefresh"
+                        Grid.Column="2"
+                        Margin="8,0,0,0"
+                        Width="72"
+                        Content="Refresh"
+                        Click="BtnRefresh_Click"/>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" Style="{DynamicResource Separator}"/>
+
+        <TabControl x:Name="ProfilesTabControl" Grid.Row="2" adonisExtensions:LayerExtension.Layer="3">
+            <TabItem x:Name="GeneralTab" Header="General">
+                <DataGrid x:Name="GeneralGrid"
+                          AutoGenerateColumns="False"
+                          HeadersVisibility="None"
+                          GridLinesVisibility="None"
+                          CanUserAddRows="False"
+                          CanUserDeleteRows="False"
+                          CanUserResizeRows="False"
+                          CanUserResizeColumns="False"
+                          CanUserReorderColumns="False"
+                          CanUserSortColumns="False"
+                          IsReadOnly="True"
+                          Focusable="False"
+                          FontSize="11">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Width="220" Binding="{Binding Name}"/>
+                        <DataGridTextColumn Width="*" Binding="{Binding Value}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+        </TabControl>
+
+        <Border Grid.Row="3" Style="{DynamicResource BottomPanelStyles}">
+            <TextBlock x:Name="StatusText" Text="Ready" VerticalAlignment="Center"/>
+        </Border>
+    </Grid>
+</local:ThemedAdonisWindow>
+
