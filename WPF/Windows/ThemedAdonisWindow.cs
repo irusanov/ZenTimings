@@ -1,7 +1,7 @@
-﻿using System;
+﻿using AdonisUI.Controls;
+using System;
 using System.Windows;
 using System.Windows.Media;
-using AdonisUI.Controls;
 
 namespace ZenTimings
 {

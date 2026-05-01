@@ -33,7 +33,7 @@ namespace ZenTimings
     /// <summary>
     ///     Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow: ThemedAdonisWindow
+    public partial class MainWindow : ThemedAdonisWindow
     {
         private readonly AsusWMI AsusWmi = new AsusWMI();
         private readonly List<BiosACPIFunction> biosFunctions = new List<BiosACPIFunction>();

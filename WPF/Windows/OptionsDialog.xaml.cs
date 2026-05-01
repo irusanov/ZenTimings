@@ -111,7 +111,7 @@ namespace ZenTimings.Windows
                     timerInstance.Stop();
             }
 
-            if (_AdvancedMode != appSettings.AdvancedMode || 
+            if (_AdvancedMode != appSettings.AdvancedMode ||
                 _ImpedanceTableSource != appSettings.ImpedanceTableSrc ||
                 _CornerRadius != appSettings.CornerRadius)
             {

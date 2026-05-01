@@ -36,8 +36,9 @@
                 <TextBlock Text="v1.39" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0" />
 
                 <TextBlock Text="" />
+                <TextBlock Text=" - Fixed Proc DQ Drive Stength sometimes showing as N/A on auto" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Fixed crash on DragonRange family" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Fixed a bug in smbus driver which was leading to conflict with hwinfo" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Fixed a bug in smbus driver which was leading to conflict with HWInfo" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Detach Telemetry window from main application and update layout" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Hynix IC revision parser should not longer display incorrect 'O-die'" TextWrapping="WrapWithOverflow" />
             </StackPanel>

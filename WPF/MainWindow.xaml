@@ -55,6 +55,9 @@
                                 Header="_DIMM Telemetry"
                                 Click="TelemetryMonitorToolstripMenuItem_Click"
                                 Visibility="{Binding IsDimmTelemetryVisible, Mode=OneTime, Converter={StaticResource BoolToVis}}" />
+                            <Separator
+                                Foreground="{DynamicResource PanelBackground}"
+                                Visibility="{Binding IsDimmTelemetryVisible, Mode=OneTime, Converter={StaticResource BoolToVis}}"/>
                             <MenuItem
                                 Header="System _Info"
                                 Click="SystemInfoToolstripMenuItem_Click"

@@ -53,7 +53,7 @@ namespace ZenTimings
             Desktop,
         }
 
-        public enum ImpedanceTableSource: int
+        public enum ImpedanceTableSource : int
         {
             AOD,
             APOB
@@ -138,7 +138,20 @@ namespace ZenTimings
         }
 
         public string Version { get; set; } = new Version(VersionMajor, VersionMinor).ToString();
-        public bool AutoRefresh { get; set; } = true;
+
+        private bool _autoRefresh = true;
+        public bool AutoRefresh
+        {
+            get => _autoRefresh;
+            set
+            {
+                if (_autoRefresh != value)
+                {
+                    _autoRefresh = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoRefresh)));
+                }
+            }
+        }
 
         private int _autoRefreshInterval = 2000;
         public int AutoRefreshInterval
@@ -174,7 +187,6 @@ namespace ZenTimings
         public double TelemetryWindowTop { get; set; } = -1;
         public double TelemetryWindowWidth { get; set; }
         public double TelemetryWindowHeight { get; set; }
-        public bool TelemetryAutoRefresh { get; set; } = true;
         public string NotifiedChangelog { get; set; } = "";
         public bool SingleInstance { get; set; } = true;
         public bool FirstStart { get; set; } = true;

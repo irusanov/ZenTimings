@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -37,7 +37,7 @@ namespace ZenTimings.Windows
             ModulesContainer.ItemsSource = moduleViewModels;
             AppSettings.Instance.PropertyChanged += AppSettings_PropertyChanged;
             await LoadModulesDataAsync();
-            ChkAutoRefresh.IsChecked = AppSettings.Instance.TelemetryAutoRefresh;
+            ConfigureAutoRefresh();
         }
 
         private void UptimeTimer_Tick(object sender, EventArgs e)
@@ -51,6 +51,36 @@ namespace ZenTimings.Windows
             {
                 updateTimer.Interval = TimeSpan.FromMilliseconds(AppSettings.Instance.AutoRefreshInterval);
             }
+            else if (e.PropertyName == nameof(AppSettings.AutoRefresh))
+            {
+                ConfigureAutoRefresh();
+            }
+        }
+
+        private void ConfigureAutoRefresh()
+        {
+            if (AppSettings.Instance.AutoRefresh)
+                StartAutoRefresh();
+            else
+                StopAutoRefresh();
+        }
+
+        private void StartAutoRefresh()
+        {
+            _windowOpenedAt = DateTime.Now;
+            _uptimeTimer.Start();
+            UptimeTimer_Tick(null, null);
+            int interval = AppSettings.Instance.AutoRefreshInterval;
+            updateTimer.Interval = TimeSpan.FromMilliseconds(interval);
+            updateTimer.Start();
+        }
+
+        private void StopAutoRefresh()
+        {
+            updateTimer.Stop();
+            _uptimeTimer.Stop();
+            _windowOpenedAt = DateTime.Now;
+            StatusText.Text = "Auto-refresh off";
         }
 
         private async Task LoadModulesDataAsync()
@@ -63,7 +93,6 @@ namespace ZenTimings.Windows
 
             // Block periodic refresh while the initial SMBUS load is in progress.
             _isRefreshing = true;
-            BtnRefresh.IsEnabled = false;
             StatusText.Text = "Loading...";
 
             Tuple<List<ModuleViewModel>, string> result = null;
@@ -91,7 +120,6 @@ namespace ZenTimings.Windows
                 StatusText.Text = result.Item2;
             }
 
-            BtnRefresh.IsEnabled = true;
             _isRefreshing = false;
         }
 
@@ -207,19 +235,19 @@ namespace ZenTimings.Windows
 
             // VDD (SWA)
             vm.TelemetryItems.Add(new TelemetryItemViewModel("VDD (SWA)", pmicData.SwaAdcMv / 1000.0, "V"));
-            
+
             // VDDQ (SWB)
             vm.TelemetryItems.Add(new TelemetryItemViewModel("VDDQ (SWB)", pmicData.SwbAdcMv / 1000.0, "V"));
-            
+
             // VPP (SWC)
             vm.TelemetryItems.Add(new TelemetryItemViewModel("VPP (SWC)", pmicData.SwcAdcMv / 1000.0, "V"));
-            
+
             // VIN Bulk
             vm.TelemetryItems.Add(new TelemetryItemViewModel("VIN Bulk", pmicData.VinBulkMv / 1000.0, "V"));
-            
+
             // 1.8V LDO
             vm.TelemetryItems.Add(new TelemetryItemViewModel("VOUT 1.8V", pmicData.Vout18AdcMv / 1000.0, "V"));
-            
+
             // 1.0V LDO
             vm.TelemetryItems.Add(new TelemetryItemViewModel("VOUT 1.0V", pmicData.Vout10AdcMv / 1000.0, "V"));
 
@@ -250,11 +278,6 @@ namespace ZenTimings.Windows
             var item = new TelemetryItemViewModel("SPD Hub Temp", thermalData.TemperatureC, "°C");
             item.UpdateThermalAlarm(thermalData.AlarmCritHigh, thermalData.AlarmHigh);
             vm.TelemetryItems.Add(item);
-        }
-
-        private void BtnRefresh_Click(object sender, RoutedEventArgs e)
-        {
-            RefreshTelemetry();
         }
 
         private async void RefreshTelemetry()
@@ -315,7 +338,7 @@ namespace ZenTimings.Windows
 
             //if (pmicData.TelemetryReportsTotalPower)
             {
-                UpdateTelemetryItem(vm, "Total Power", pmicData.TotalW);
+            UpdateTelemetryItem(vm, "Total Power", pmicData.TotalW);
             }
 
             UpdateTelemetryItem(vm, "PMIC High Temp", pmicData.HighTemperatureWarning);
@@ -351,24 +374,6 @@ namespace ZenTimings.Windows
             }
         }
 
-        private void ChkAutoRefresh_Checked(object sender, RoutedEventArgs e)
-        {
-            _windowOpenedAt = DateTime.Now;
-            _uptimeTimer.Start();
-            UptimeTimer_Tick(null, null);
-            int interval = AppSettings.Instance.AutoRefreshInterval;
-            updateTimer.Interval = TimeSpan.FromMilliseconds(interval);
-            updateTimer.Start();
-        }
-
-        private void ChkAutoRefresh_Unchecked(object sender, RoutedEventArgs e)
-        {
-            updateTimer.Stop();
-            _uptimeTimer.Stop();
-            _windowOpenedAt = DateTime.Now;
-            StatusText.Text = "Auto-refresh off";
-        }
-
         private void RefreshTimer_Tick(object sender, EventArgs e)
         {
             RefreshTelemetry();
@@ -395,7 +400,6 @@ namespace ZenTimings.Windows
             AppSettings.Instance.PropertyChanged -= AppSettings_PropertyChanged;
 
             AppSettings appSettings = AppSettings.Instance;
-            appSettings.TelemetryAutoRefresh = ChkAutoRefresh.IsChecked == true;
 
             // Save window position and size if enabled
             if (appSettings.SaveWindowPosition)
@@ -483,9 +487,9 @@ namespace ZenTimings.Windows
         public bool HasTelemetry
         {
             get => hasTelemetry;
-            set 
-            { 
-                hasTelemetry = value; 
+            set
+            {
+                hasTelemetry = value;
                 OnPropertyChanged(nameof(HasTelemetry));
                 OnPropertyChanged(nameof(HasNoTelemetry));
             }
@@ -564,13 +568,13 @@ namespace ZenTimings.Windows
         public void UpdateValue(double value)
         {
             currentValue = value;
-            
+
             if (value < minValue)
                 minValue = value;
-            
+
             if (value > maxValue)
                 maxValue = value;
-            
+
             sum += value;
             count++;
 

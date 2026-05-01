@@ -321,7 +321,8 @@ namespace ZenTimings.Windows
                         foreach (PropertyInfo property in properties)
                         {
                             object value = property.GetValue(cpu.info.apob.Data);
-                            AddLine($"{property.Name + ":",-20}{value ?? "N/A"}");
+                            var rawValue = (value as EncodedValueBase)?.RawValue.ToString() ?? "null";
+                            AddLine($"{property.Name + ":",-20}{value ?? "N/A",-20}({rawValue})");
                         }
                     }
                     else
