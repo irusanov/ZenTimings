@@ -174,17 +174,27 @@
                     </Grid.ColumnDefinitions>
 
                     <ComboBox x:Name="comboBoxPartNumber" IsReadOnly="True" Grid.Column="0" />
-                    <TextBlock
-                        Grid.Column="2"
-                        Text="{Binding MemoryType, FallbackValue=''}"
-                        Style="{DynamicResource ValueStyles}"
-                        Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}"
-                        TextAlignment="Right"
-                        HorizontalAlignment="Right"
-                        MinWidth="0"
-                        Margin="0"
-                        IsEnabled="False"
-                    />
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <TextBlock
+                            Text="ECC"
+                            Style="{DynamicResource ValueStyles}"
+                            Visibility="{Binding ECC, Mode=OneWay, Converter={StaticResource BoolToVis}}"
+                            TextAlignment="Right"
+                            Margin="0,0,5,0"
+                            IsEnabled="False"
+                            ToolTip="Error-Correcting Code memory detected"
+                        />
+                        <TextBlock
+                            Text="{Binding MemoryType, FallbackValue=''}"
+                            Style="{DynamicResource ValueStyles}"
+                            Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}"
+                            TextAlignment="Right"
+                            HorizontalAlignment="Right"
+                            MinWidth="0"
+                            Margin="0"
+                            IsEnabled="False"
+                        />
+                    </StackPanel>
 
                     <!-- Button Grid.Column="1"
                             Width="20"

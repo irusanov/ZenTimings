@@ -177,6 +177,7 @@ namespace ZenTimings
                     cpu.GetMemoryConfig()?.SpdInfo?.Values.FirstOrDefault(d => d.IsValid)?.PmicData ?? null
                 );
 
+                mainViewModel.ECC = DetectECC();
                 DataContext = mainViewModel;
 
                 if (cpu != null && settings.AdvancedMode)
@@ -398,6 +399,26 @@ namespace ZenTimings
                     comboBoxPartNumber.SelectionChanged += ComboBoxPartNumber_SelectionChanged;
                 }
             }
+        }
+
+        private bool DetectECC()
+        {
+            try
+            {
+                using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(
+                    "SELECT TotalWidth, DataWidth FROM Win32_PhysicalMemory"))
+                {
+                    foreach (ManagementObject obj in searcher.Get())
+                    {
+                        uint totalWidth = Convert.ToUInt32(obj["TotalWidth"] ?? 0);
+                        uint dataWidth = Convert.ToUInt32(obj["DataWidth"] ?? 0);
+                        if (totalWidth > dataWidth && totalWidth > 0)
+                            return true;
+                    }
+                }
+            }
+            catch { }
+            return false;
         }
 
         private void RefreshSensors()
