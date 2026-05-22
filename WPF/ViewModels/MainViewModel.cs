@@ -105,9 +105,7 @@ namespace ZenTimings.ViewModels
         }
         public MemType MemoryType { get; }
         public bool IsDimmTelemetryVisible => Settings.AdvancedMode && MemoryType == MemType.DDR5;
-
         public bool ECC { get; set; }
-
         public PowerTable PowerTable { get; }
         public Cpu.CodeName CodeName { get; }
         public bool WMIPresent { get; }
@@ -290,6 +288,9 @@ namespace ZenTimings.ViewModels
                     }
                 }
             }
+
+            // ECC
+            ECC = SystemInfo.SMBios.MemoryDevices.Any(d => d.HasEcc);
         }
 
         bool IsMismatch(
@@ -490,7 +491,6 @@ namespace ZenTimings.ViewModels
                     html += $"<tr><td>{property.Name}</td><td>{property.GetValue(cpu.powerTable, null)}</td></tr>";
             }
             html += "</table>";
-
 
             // AOD
             html += "<h2>AOD</h2>";
