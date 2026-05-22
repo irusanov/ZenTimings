@@ -178,7 +178,11 @@
                     </Grid.ColumnDefinitions>
 
                     <ComboBox x:Name="comboBoxPartNumber" IsReadOnly="True" Grid.Column="0" />
-                    <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <StackPanel 
+                        Grid.Column="2"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
                         <TextBlock
                             Text="ECC"
                             Style="{DynamicResource ValueStyles}"
@@ -191,7 +195,6 @@
                         <TextBlock
                             Text="{Binding MemoryType, FallbackValue=''}"
                             Style="{DynamicResource ValueStyles}"
-                            Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}"
                             TextAlignment="Right"
                             HorizontalAlignment="Right"
                             MinWidth="0"
