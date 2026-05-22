@@ -6,16 +6,33 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
     mc:Ignorable="d"
     Title="SPD Information"
-    Height="560"
-    Width="760"
-    MinWidth="640"
-    MinHeight="420"
+    Height="400"
+    Width="450"
+    MinWidth="400"
+    MinHeight="300"
     WindowStartupLocation="CenterOwner"
     BorderThickness="1"
     UseLayoutRounding="True"
     Style="{DynamicResource WindowStyles}">
+
+    <Window.Resources>
+        <Style x:Key="LabelStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
+            <Setter Property="Opacity" Value="0.6"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="2,0"/>
+        </Style>
+        <Style x:Key="ValueStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="{DynamicResource AccentTextColor}"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="2,0"/>
+        </Style>
+    </Window.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -23,39 +40,47 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Border Grid.Row="0" Style="{DynamicResource PanelStyles}">
+        <!-- Toolbar -->
+        <Border Grid.Row="0" Padding="10" Style="{DynamicResource PanelStyles}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="220"/>
+                    <ColumnDefinition Width="240"/>
+                    <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Text="Slot/DIMM" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <TextBlock Grid.Column="0"
+                           Text="DIMM Slot"
+                           Style="{StaticResource LabelStyle}"
+                           Margin="0,0,8,0"/>
                 <ComboBox x:Name="ComboSlots"
                           Grid.Column="1"
                           DisplayMemberPath="Display"
                           SelectedValuePath="Index"
                           SelectionChanged="ComboSlots_SelectionChanged"/>
-                <Button x:Name="BtnRefresh"
-                        Grid.Column="2"
-                        Margin="8,0,0,0"
-                        Width="72"
-                        Content="Refresh"
-                        Click="BtnRefresh_Click"/>
+
             </Grid>
         </Border>
 
         <Border Grid.Row="1" Style="{DynamicResource Separator}"/>
 
-        <TabControl x:Name="ProfilesTabControl" Grid.Row="2" adonisExtensions:LayerExtension.Layer="3">
+        <!-- Tab control -->
+        <TabControl x:Name="ProfilesTabControl"
+                    Margin="10"
+                    Grid.Row="2"
+                    BorderThickness="0">
+
             <TabItem x:Name="GeneralTab" Header="General">
                 <DataGrid x:Name="GeneralGrid"
                           AutoGenerateColumns="False"
                           HeadersVisibility="None"
                           GridLinesVisibility="None"
+                          HorizontalScrollBarVisibility="Auto"
+                          VerticalScrollBarVisibility="Auto"
                           CanUserAddRows="False"
                           CanUserDeleteRows="False"
                           CanUserResizeRows="False"
@@ -64,18 +89,40 @@
                           CanUserSortColumns="False"
                           IsReadOnly="True"
                           Focusable="False"
+                          ScrollViewer.CanContentScroll="True"
                           FontSize="11">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Width="220" Binding="{Binding Name}"/>
-                        <DataGridTextColumn Width="*" Binding="{Binding Value}"/>
+                        <DataGridTextColumn Width="240" Binding="{Binding Name}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
+                                    <Setter Property="Opacity" Value="0.75"/>
+                                    <Setter Property="Padding" Value="4,0"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Width="*" Binding="{Binding Value}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Foreground" Value="{DynamicResource AccentTextColor}"/>
+                                    <Setter Property="Padding" Value="4,0"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
         </TabControl>
 
-        <Border Grid.Row="3" Style="{DynamicResource BottomPanelStyles}">
-            <TextBlock x:Name="StatusText" Text="Ready" VerticalAlignment="Center"/>
+        <Border Grid.Row="3" Style="{DynamicResource Separator}"/>
+
+        <!-- Status bar -->
+        <Border Grid.Row="4" Style="{DynamicResource BottomPanelStyles}">
+            <TextBlock x:Name="StatusText"
+                       Text="Ready"
+                       Style="{StaticResource LabelStyle}"
+                       Opacity="0.75"
+                       VerticalAlignment="Center"/>
         </Border>
     </Grid>
 </local:ThemedAdonisWindow>
-

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using ZenStates.Core.DRAM;
@@ -34,16 +35,10 @@ namespace ZenTimings.Windows
             Loaded += SpdInfoWindow_Loaded;
         }
 
-        private void SpdInfoWindow_Loaded(object sender, RoutedEventArgs e)
+        private async void SpdInfoWindow_Loaded(object sender, RoutedEventArgs e)
         {
             _memoryConfig = CpuSingleton.Instance.memoryConfig;
-            LoadSlots();
-        }
-
-        private void BtnRefresh_Click(object sender, RoutedEventArgs e)
-        {
-            _memoryConfig?.RefreshSpdInfo();
-            LoadSlots();
+            await LoadSlotsAsync();
         }
 
         private void ComboSlots_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -52,87 +47,100 @@ namespace ZenTimings.Windows
             RenderSelected(selected);
         }
 
-        private void LoadSlots()
+        private async Task LoadSlotsAsync()
         {
+            StatusText.Text = "Reading SPD data…";
+            ComboSlots.IsEnabled = false;
+
+            List<SlotItem> loaded = null;
+            string error = null;
+
             try
             {
-                _slots.Clear();
-
-                // Use the already-cached SpdInfo; only do a full read when any entry is partial
-                var spdByAddress = _memoryConfig?.SpdInfo;
-                if (spdByAddress == null || spdByAddress.Count == 0)
+                loaded = await Task.Run(() =>
                 {
-                    SetNoDataState("No SPD data detected");
-                    return;
-                }
+                    var result = new List<SlotItem>();
 
-                bool hasPartial = false;
-                foreach (var entry in (IEnumerable)spdByAddress)
-                {
-                    var v = entry.GetType().GetProperty("Value")?.GetValue(entry, null);
-                    if (v == null) continue;
-                    var partialField = v.GetType().GetField("IsPartial");
-                    if (partialField != null && true.Equals(partialField.GetValue(v)))
-                    {
-                        hasPartial = true;
-                        break;
-                    }
-                }
-
-                if (hasPartial)
-                {
-                    StatusText.Text = "Partial SPD detected, refreshing…";
-                    _memoryConfig.RefreshSpdInfo();
-                    spdByAddress = _memoryConfig?.ReadAndDecodeAll();
+                    var spdByAddress = _memoryConfig?.SpdInfo;
                     if (spdByAddress == null || spdByAddress.Count == 0)
-                    {
-                        SetNoDataState("No SPD data detected after refresh");
-                        return;
-                    }
-                }
+                        return null;
 
-                int idx = 0;
-                foreach (var kvp in (IEnumerable)spdByAddress)
-                {
-                    var kvpType = kvp.GetType();
-                    var keyObj = kvpType.GetProperty("Key")?.GetValue(kvp, null);
-                    var valueObj = kvpType.GetProperty("Value")?.GetValue(kvp, null);
-
-                    byte address;
-                    try
+                    bool hasPartial = false;
+                    foreach (var entry in (IEnumerable)spdByAddress)
                     {
-                        address = Convert.ToByte(keyObj);
-                    }
-                    catch
-                    {
-                        continue;
+                        var v = entry.GetType().GetProperty("Value")?.GetValue(entry, null);
+                        if (v == null) continue;
+                        var partialField = v.GetType().GetField("IsPartial");
+                        if (partialField != null && true.Equals(partialField.GetValue(v)))
+                        {
+                            hasPartial = true;
+                            break;
+                        }
                     }
 
-                    var module = (_memoryConfig.Modules != null && idx < _memoryConfig.Modules.Count) ? _memoryConfig.Modules[idx] : null;
-                    var slotName = (module != null && !string.IsNullOrEmpty(module.Slot)) ? module.Slot : $"DIMM {idx}";
-                    _slots.Add(new SlotItem
+                    if (hasPartial)
                     {
-                        Index = idx,
-                        I2cAddress = address,
-                        Display = $"{slotName} (0x{address:X2})",
-                        SpdInfo = valueObj
-                    });
-                    idx++;
-                }
+                        Dispatcher.Invoke(() => StatusText.Text = "Partial SPD detected, refreshing…");
+                        _memoryConfig.RefreshSpdInfo();
+                    }
 
-                ComboSlots.ItemsSource = _slots;
-                if (_slots.Count > 0)
-                    ComboSlots.SelectedIndex = 0;
-                else
-                    SetNoDataState("No SPD data detected");
+                    int idx = 0;
+                    foreach (var kvp in (IEnumerable)_memoryConfig.SpdInfo)
+                    {
+                        var kvpType = kvp.GetType();
+                        var keyObj = kvpType.GetProperty("Key")?.GetValue(kvp, null);
+                        var valueObj = kvpType.GetProperty("Value")?.GetValue(kvp, null);
 
-                StatusText.Text = $"Loaded {_slots.Count} SPD module(s)";
+                        byte address;
+                        try { address = Convert.ToByte(keyObj); }
+                        catch { idx++; continue; }
+
+                        var module = (_memoryConfig.Modules != null && idx < _memoryConfig.Modules.Count)
+                            ? _memoryConfig.Modules[idx] : null;
+                        var slotName = (module != null && !string.IsNullOrEmpty(module.Slot))
+                            ? module.Slot : $"DIMM {idx}";
+
+                        result.Add(new SlotItem
+                        {
+                            Index = idx,
+                            I2cAddress = address,
+                            Display = $"{slotName} (0x{address:X2})",
+                            SpdInfo = valueObj
+                        });
+                        idx++;
+                    }
+
+                    return result;
+                });
             }
             catch (Exception ex)
             {
-                StatusText.Text = $"Error reading SPD: {ex.Message}";
-                SetNoDataState($"Error reading SPD: {ex.Message}");
+                error = ex.Message;
             }
+
+            // Back on UI thread
+            ComboSlots.IsEnabled = true;
+            _slots.Clear();
+
+            if (error != null)
+            {
+                SetNoDataState($"Error reading SPD: {error}");
+                return;
+            }
+
+            if (loaded == null || loaded.Count == 0)
+            {
+                SetNoDataState("No SPD data detected");
+                return;
+            }
+
+            foreach (var s in loaded)
+                _slots.Add(s);
+
+            ComboSlots.ItemsSource = null;
+            ComboSlots.ItemsSource = _slots;
+            ComboSlots.SelectedIndex = 0;
+            StatusText.Text = $"Loaded {_slots.Count} SPD module(s)";
         }
 
         private void RenderSelected(SlotItem slot)
@@ -266,11 +274,22 @@ namespace ZenTimings.Windows
 
         private static TabItem CreateProfileTab(string header, List<GridItem> rows)
         {
+            var nameStyle = new Style(typeof(TextBlock));
+            nameStyle.Setters.Add(new Setter(TextBlock.ForegroundProperty, new System.Windows.DynamicResourceExtension("TextColor")));
+            nameStyle.Setters.Add(new Setter(TextBlock.OpacityProperty, 0.75));
+            nameStyle.Setters.Add(new Setter(TextBlock.PaddingProperty, new Thickness(4, 0, 4, 0)));
+
+            var valueStyle = new Style(typeof(TextBlock));
+            valueStyle.Setters.Add(new Setter(TextBlock.ForegroundProperty, new System.Windows.DynamicResourceExtension("AccentTextColor")));
+            valueStyle.Setters.Add(new Setter(TextBlock.PaddingProperty, new Thickness(4, 0, 4, 0)));
+
             var grid = new DataGrid
             {
                 AutoGenerateColumns = false,
                 HeadersVisibility = DataGridHeadersVisibility.None,
                 GridLinesVisibility = DataGridGridLinesVisibility.None,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
                 CanUserAddRows = false,
                 CanUserDeleteRows = false,
                 CanUserResizeRows = false,
@@ -285,13 +304,15 @@ namespace ZenTimings.Windows
 
             grid.Columns.Add(new DataGridTextColumn
             {
-                Width = new DataGridLength(220),
-                Binding = new System.Windows.Data.Binding("Name")
+                Width = new DataGridLength(240),
+                Binding = new System.Windows.Data.Binding("Name"),
+                ElementStyle = nameStyle
             });
             grid.Columns.Add(new DataGridTextColumn
             {
                 Width = new DataGridLength(1, DataGridLengthUnitType.Star),
-                Binding = new System.Windows.Data.Binding("Value")
+                Binding = new System.Windows.Data.Binding("Value"),
+                ElementStyle = valueStyle
             });
 
             return new TabItem
