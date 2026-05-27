@@ -63,6 +63,12 @@
                           SelectedValuePath="Index"
                           SelectionChanged="ComboSlots_SelectionChanged"/>
 
+                <Button x:Name="ButtonDumpSpd"
+                        Grid.Column="3"
+                        Content="Dump SPD"
+                        Padding="10,4"
+                        Click="ButtonDumpSpd_Click"/>
+
             </Grid>
         </Border>
 

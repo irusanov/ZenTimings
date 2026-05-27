@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using ZenStates.Core.DRAM;
+using MessageBox = AdonisUI.Controls.MessageBox;
+using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
+using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
+using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace ZenTimings.Windows
 {
@@ -45,6 +49,62 @@ namespace ZenTimings.Windows
         {
             var selected = ComboSlots.SelectedItem as SlotItem;
             RenderSelected(selected);
+        }
+
+        private async void ButtonDumpSpd_Click(object sender, RoutedEventArgs e)
+        {
+            var selected = ComboSlots.SelectedItem as SlotItem;
+            if (selected == null)
+            {
+                MessageBox.Show("No DIMM slot selected.", "Dump SPD", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var dlg = new SaveFileDialog
+            {
+                Filter = "SPD files (*.spd)|*.spd|Binary files (*.bin)|*.bin|All files (*.*)|*.*",
+                FilterIndex = 1,
+                DefaultExt = "spd",
+                FileName = $"SPD_0x{selected.I2cAddress:X2}.spd",
+                RestoreDirectory = true
+            };
+
+            if (dlg.ShowDialog() != true)
+                return;
+
+            ButtonDumpSpd.IsEnabled = false;
+            StatusText.Text = $"Dumping SPD for {selected.Display}…";
+
+            bool success = false;
+            string error = null;
+
+            try
+            {
+                var filePath = dlg.FileName;
+                var address = selected.I2cAddress;
+                success = await Task.Run(() => Ddr5SpdReader.DumpDdr5SpdToFile(address, filePath));
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+            }
+
+            ButtonDumpSpd.IsEnabled = true;
+
+            if (error != null)
+            {
+                StatusText.Text = "Dump failed.";
+                MessageBox.Show($"Failed to dump SPD: {error}", "Dump SPD", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else if (!success)
+            {
+                StatusText.Text = "Dump failed.";
+                MessageBox.Show("Failed to dump SPD. The operation returned false.", "Dump SPD", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+            {
+                StatusText.Text = $"SPD dumped to {dlg.FileName}";
+            }
         }
 
         private async Task LoadSlotsAsync()
