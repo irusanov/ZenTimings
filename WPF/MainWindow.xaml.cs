@@ -43,6 +43,9 @@ namespace ZenTimings
         private readonly AppSettings settings = AppSettings.Instance;
         private readonly List<IPlugin> plugins = new List<IPlugin>();
         private SystemInfoWindow siWnd = null;
+        private Windows.TelemetryWindow telemetryWnd = null;
+        private OptionsDialog optionsWnd = null;
+        private AboutDialog aboutWnd = null;
         internal readonly Forms.NotifyIcon _notifyIcon;
         private bool compatMode;
         private Control timingsPanel;
@@ -962,17 +965,31 @@ namespace ZenTimings
 
         private void OptionsToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            OptionsDialog optionsWnd = new OptionsDialog(PowerCfgTimer);
-            optionsWnd.Show();
+            if (optionsWnd == null || !optionsWnd.IsLoaded)
+            {
+                optionsWnd = new OptionsDialog(PowerCfgTimer);
+                optionsWnd.Show();
+            }
+            else
+            {
+                optionsWnd.Activate();
+            }
         }
 
         private void AboutToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            AboutDialog aboutWnd = new AboutDialog()
+            if (aboutWnd == null || !aboutWnd.IsLoaded)
             {
-                Owner = this
-            };
-            aboutWnd.Show();
+                aboutWnd = new AboutDialog()
+                {
+                    Owner = this
+                };
+                aboutWnd.Show();
+            }
+            else
+            {
+                aboutWnd.Activate();
+            }
         }
 
         private void ButtonScreenshot_Click(object sender, RoutedEventArgs e)
@@ -1059,16 +1076,22 @@ namespace ZenTimings
                     telemetryWindowWidth = settings.TelemetryWindowWidth;
                 }
 
-                var telemetryWindow = new Windows.TelemetryWindow()
+                if (telemetryWnd == null || !telemetryWnd.IsLoaded)
                 {
-                    Width = telemetryWindowWidth,
-                    Height = telemetryWindowHeight,
-                    WindowStartupLocation = location,
-                    Top = telemetryWindowTop,
-                    Left = telemetryWindowLeft
-                };
-
-                telemetryWindow.Show();
+                    telemetryWnd = new Windows.TelemetryWindow()
+                    {
+                        Width = telemetryWindowWidth,
+                        Height = telemetryWindowHeight,
+                        WindowStartupLocation = location,
+                        Top = telemetryWindowTop,
+                        Left = telemetryWindowLeft
+                    };
+                    telemetryWnd.Show();
+                }
+                else
+                {
+                    telemetryWnd.Activate();
+                }
             }
             catch (Exception ex)
             {

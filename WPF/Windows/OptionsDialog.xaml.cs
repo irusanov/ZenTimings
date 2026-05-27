@@ -41,6 +41,9 @@ namespace ZenTimings.Windows
             checkBoxSavePosition.IsChecked = appSettings.SaveWindowPosition;
             checkBoxMinimizeToTray.IsChecked = appSettings.MinimizeToTray;
             checkBoxSingleInstance.IsChecked = appSettings.SingleInstance;
+            checkBoxAutoOpenTelemetry.IsChecked = appSettings.AutoOpenTelemetry;
+            bool isDdr5 = CpuSingleton.Instance.GetMemoryConfig().Type == ZenStates.Core.DRAM.MemType.DDR5;
+            checkBoxAutoOpenTelemetry.IsEnabled = isDdr5 && appSettings.AdvancedMode;
             comboBoxCornerRadius.SelectedIndex = appSettings?.CornerRadius ?? 0;
             //checkBoxAutoUninstallDriver.IsChecked = appSettings.AutoUninstallDriver;
             numericUpDownRefreshInterval.IsEnabled = appSettings.AutoRefresh && appSettings.AdvancedMode;
@@ -75,6 +78,7 @@ namespace ZenTimings.Windows
             appSettings.SaveWindowPosition = (bool)checkBoxSavePosition.IsChecked;
             appSettings.MinimizeToTray = (bool)checkBoxMinimizeToTray.IsChecked;
             appSettings.SingleInstance = (bool)checkBoxSingleInstance.IsChecked;
+            appSettings.AutoOpenTelemetry = (bool)checkBoxAutoOpenTelemetry.IsChecked;
             appSettings.CornerRadius = comboBoxCornerRadius.SelectedIndex;
             //appSettings.AutoUninstallDriver = (bool)checkBoxAutoUninstallDriver.IsChecked;
             appSettings.ScreenshotMode = (ScreenshotType)comboBoxScreenshot.SelectedIndex;
