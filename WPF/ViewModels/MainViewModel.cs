@@ -104,7 +104,7 @@ namespace ZenTimings.ViewModels
             set { _memoryFrequencyString = value; OnPropertyChanged(); }
         }
         public MemType MemoryType { get; }
-        public bool IsDimmTelemetryVisible => Settings.AdvancedMode && MemoryType == MemType.DDR5;
+        public bool IsDimmTelemetryAvailable => Settings.AdvancedMode && MemoryType == MemType.DDR5;
         public bool ECC { get; set; }
         public PowerTable PowerTable { get; }
         public Cpu.CodeName CodeName { get; }

@@ -951,6 +951,9 @@ namespace ZenTimings
             //#endif
             MinimizeFootprint();
 
+            if (settings.AutoOpenTelemetry && mainViewModel.IsDimmTelemetryAvailable)
+                TelemetryMonitorToolstripMenuItem_Click(this, null);
+
             //new Thread(() =>
             //{
             //    mainViewModel.AgesaVersion = GetAgesaVersion();
@@ -1032,6 +1035,9 @@ namespace ZenTimings
 
         private void TelemetryMonitorToolstripMenuItem_Click(object sender, RoutedEventArgs e)
         {
+            if (!mainViewModel.IsDimmTelemetryAvailable)
+                return;
+
             try
             {
                 double telemetryWindowWidth = 650;
