@@ -223,7 +223,7 @@ namespace ZenTimings.Windows
                     if (property.Name == "CpuId" || property.Name == "PatchLevel" || property.Name == "SmuTableVersion")
                         AddLine($"{property.Name + ":",-19}{property.GetValue(cpu.systemInfo, null):X8}");
                     else if (property.Name == "SmuVersion")
-                        AddLine($"{property.Name + ":",-19}{cpu.systemInfo.GetSmuVersionString()}");
+                        AddLine($"{property.Name + ":",-19}{cpu.systemInfo.SmuVersionString}");
                     else if (property.Name == "Model" || property.Name == "ExtendedModel" || property.Name == "BaseModel")
                         AddLine($"{property.Name + ":",-19}{property.GetValue(cpu.systemInfo, null)} (0x{property.GetValue(cpu.systemInfo, null):X})");
                     else if (property.Name != "SMBios")
@@ -321,7 +321,8 @@ namespace ZenTimings.Windows
                         foreach (PropertyInfo property in properties)
                         {
                             object value = property.GetValue(cpu.info.apob.Data);
-                            AddLine($"{property.Name + ":",-20}{value ?? "N/A"}");
+                            var rawValue = (value as EncodedValueBase)?.RawValue.ToString() ?? "null";
+                            AddLine($"{property.Name + ":",-20}{value ?? "N/A",-20}({rawValue})");
                         }
                     }
                     else

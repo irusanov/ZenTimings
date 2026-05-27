@@ -104,7 +104,8 @@ namespace ZenTimings.ViewModels
             set { _memoryFrequencyString = value; OnPropertyChanged(); }
         }
         public MemType MemoryType { get; }
-        public bool IsDimmTelemetryVisible => Settings.AdvancedMode && MemoryType == MemType.DDR5;
+        public bool IsDimmTelemetryAvailable => Settings.AdvancedMode && MemoryType == MemType.DDR5;
+        public bool ECC { get; set; }
         public PowerTable PowerTable { get; }
         public Cpu.CodeName CodeName { get; }
         public bool WMIPresent { get; }
@@ -240,7 +241,7 @@ namespace ZenTimings.ViewModels
             Plugins = plugins;
 
             CpuName = VendorUtils.GetCpuNameString(CpuSingleton.Instance.systemInfo);
-            SmuVersion = CpuSingleton.Instance?.systemInfo?.GetSmuVersionString() ?? "Unknown";
+            SmuVersion = CpuSingleton.Instance?.systemInfo?.SmuVersionString ?? "Unknown";
 
             TotalCapacity = CpuSingleton.Instance.GetMemoryConfig().TotalCapacity;
             MemoryType = memoryType;
@@ -249,11 +250,14 @@ namespace ZenTimings.ViewModels
             CodeName = CpuSingleton.Instance.info.codeName;
 
             // APOB
-            ApobData = CpuSingleton.Instance.info.apob.Data;
-            if (CpuSingleton.Instance.info.apob.ExtendedData.ProcOdt != null)
-                ApobExtendedData = CpuSingleton.Instance.info.apob.ExtendedData;
-            else
-                ApobExtendedData = ApobData;
+            if (CpuSingleton.Instance.info.apob.IsAvailable)
+            {
+                ApobData = CpuSingleton.Instance.info.apob.Data;
+                if (CpuSingleton.Instance.info.apob?.ExtendedData != null && CpuSingleton.Instance.info.apob.ExtendedData.ProcOdt != null)
+                    ApobExtendedData = CpuSingleton.Instance.info.apob.ExtendedData;
+                else
+                    ApobExtendedData = ApobData;
+            }
 
             //AgesaVersion = AGESA_SEARCHING;
             AgesaVersion = agesaVersion;
@@ -284,6 +288,9 @@ namespace ZenTimings.ViewModels
                     }
                 }
             }
+
+            // ECC
+            ECC = SystemInfo.SMBios.MemoryDevices.Any(d => d.HasEcc);
         }
 
         bool IsMismatch(
@@ -406,7 +413,7 @@ namespace ZenTimings.ViewModels
                 if (property.Name == "CpuId" || property.Name == "PatchLevel" || property.Name == "SmuTableVersion")
                     html += $"<tr><td>{property.Name}</td><td>{property.GetValue(cpu.systemInfo, null):X8}</td></tr>";
                 else if (property.Name == "SmuVersion")
-                    html += $"<tr><td>{property.Name}</td><td>{cpu.systemInfo.GetSmuVersionString()}</td></tr>";
+                    html += $"<tr><td>{property.Name}</td><td>{cpu.systemInfo.SmuVersionString}</td></tr>";
                 else if (property.Name == "Model" || property.Name == "ExtendedModel" || property.Name == "BaseModel")
                     html += $"<tr><td>{property.Name}</td><td>{property.GetValue(cpu.systemInfo, null)} (0x{property.GetValue(cpu.systemInfo, null):X})</td></tr>";
                 else if (property.Name != "SMBios")
@@ -484,7 +491,6 @@ namespace ZenTimings.ViewModels
                     html += $"<tr><td>{property.Name}</td><td>{property.GetValue(cpu.powerTable, null)}</td></tr>";
             }
             html += "</table>";
-
 
             // AOD
             html += "<h2>AOD</h2>";

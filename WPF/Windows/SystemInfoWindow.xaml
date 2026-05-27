@@ -11,6 +11,7 @@
     Title="System Info"
     Height="450"
     Width="800"
+    
     WindowStartupLocation="CenterOwner"
     BorderThickness="1"
     UseLayoutRounding="True"

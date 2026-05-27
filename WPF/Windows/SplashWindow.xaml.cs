@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -49,11 +50,19 @@ namespace ZenTimings.Windows
         {
             if (DriverHelper.IsPawnIoInstalled)
             {
-                if (appSettings.FirstStart
-                    && VendorUtils.IsRogMotherboard(CpuSingleton.Instance.systemInfo)
-                    && int.Parse(appSettings.Version.Replace("1.", "")) >= 12)
+                try
                 {
-                    appSettings.AppTheme = AppSettings.Theme.AsusRog;
+                    if (appSettings.FirstStart
+                        && VendorUtils.IsRogMotherboard(CpuSingleton.Instance.systemInfo)
+                        && int.Parse(appSettings.Version.Replace("1.", "")) >= 12)
+                    {
+                        appSettings.AppTheme = AppSettings.Theme.AsusRog;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Something went wrong, but it's not critical, so just log it and continue
+                    Debug.WriteLine(ex.Message);
                 }
 
                 if (appSettings.FirstStart) appSettings.FirstStart = false;

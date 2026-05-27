@@ -12,6 +12,8 @@ namespace ZenTimings
 
         public static Version Version => PawnIo.Version;
 
+        public static Version BundledVersion => new Version(PawnIOBuildInfo.Version);
+
         public static bool UninstallWinRing0()
         {
             return true;

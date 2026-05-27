@@ -33,7 +33,7 @@ namespace ZenTimings
     /// <summary>
     ///     Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow: ThemedAdonisWindow
+    public partial class MainWindow : ThemedAdonisWindow
     {
         private readonly AsusWMI AsusWmi = new AsusWMI();
         private readonly List<BiosACPIFunction> biosFunctions = new List<BiosACPIFunction>();
@@ -43,6 +43,9 @@ namespace ZenTimings
         private readonly AppSettings settings = AppSettings.Instance;
         private readonly List<IPlugin> plugins = new List<IPlugin>();
         private SystemInfoWindow siWnd = null;
+        private Windows.TelemetryWindow telemetryWnd = null;
+        private OptionsDialog optionsWnd = null;
+        private AboutDialog aboutWnd = null;
         internal readonly Forms.NotifyIcon _notifyIcon;
         private bool compatMode;
         private Control timingsPanel;
@@ -64,7 +67,7 @@ namespace ZenTimings
             if (DriverHelper.IsPawnIoInstalled)
             {
                 var currentVersion = DriverHelper.Version;
-                var newVersion = new Version(2, 2, 0, 0);
+                var newVersion = DriverHelper.BundledVersion;
                 var skippedVersion = !string.IsNullOrEmpty(AppSettings.Instance.DriverUpdateLastSkippedVersion)
                     ? new Version(AppSettings.Instance.DriverUpdateLastSkippedVersion)
                     : new Version(0, 0, 0, 0);
@@ -859,7 +862,7 @@ namespace ZenTimings
                     {
                         Owner = parent,
                         Width = parent.Width,
-                        Height = parent.Height
+                        Height = parent.Height,
                     };
                     debugWnd.Show();
                 }
@@ -951,6 +954,9 @@ namespace ZenTimings
             //#endif
             MinimizeFootprint();
 
+            if (settings.AutoOpenTelemetry && mainViewModel.IsDimmTelemetryAvailable)
+                TelemetryMonitorToolstripMenuItem_Click(this, null);
+
             //new Thread(() =>
             //{
             //    mainViewModel.AgesaVersion = GetAgesaVersion();
@@ -959,20 +965,31 @@ namespace ZenTimings
 
         private void OptionsToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            OptionsDialog optionsWnd = new OptionsDialog(PowerCfgTimer)
+            if (optionsWnd == null || !optionsWnd.IsLoaded)
             {
-                Owner = Application.Current.MainWindow
-            };
-            optionsWnd.Show();
+                optionsWnd = new OptionsDialog(PowerCfgTimer);
+                optionsWnd.Show();
+            }
+            else
+            {
+                optionsWnd.Activate();
+            }
         }
 
         private void AboutToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            AboutDialog aboutWnd = new AboutDialog()
+            if (aboutWnd == null || !aboutWnd.IsLoaded)
             {
-                Owner = Application.Current.MainWindow
-            };
-            aboutWnd.Show();
+                aboutWnd = new AboutDialog()
+                {
+                    Owner = this
+                };
+                aboutWnd.Show();
+            }
+            else
+            {
+                aboutWnd.Activate();
+            }
         }
 
         private void ButtonScreenshot_Click(object sender, RoutedEventArgs e)
@@ -1035,6 +1052,9 @@ namespace ZenTimings
 
         private void TelemetryMonitorToolstripMenuItem_Click(object sender, RoutedEventArgs e)
         {
+            if (!mainViewModel.IsDimmTelemetryAvailable)
+                return;
+
             try
             {
                 double telemetryWindowWidth = 650;
@@ -1056,21 +1076,42 @@ namespace ZenTimings
                     telemetryWindowWidth = settings.TelemetryWindowWidth;
                 }
 
-                var telemetryWindow = new Windows.TelemetryWindow()
+                if (telemetryWnd == null || !telemetryWnd.IsLoaded)
                 {
-                    Owner = this,
-                    Width = telemetryWindowWidth,
-                    Height = telemetryWindowHeight,
-                    WindowStartupLocation = location,
-                    Top = telemetryWindowTop,
-                    Left = telemetryWindowLeft
-                };
-
-                telemetryWindow.Show();
+                    telemetryWnd = new Windows.TelemetryWindow()
+                    {
+                        Width = telemetryWindowWidth,
+                        Height = telemetryWindowHeight,
+                        WindowStartupLocation = location,
+                        Top = telemetryWindowTop,
+                        Left = telemetryWindowLeft
+                    };
+                    telemetryWnd.Show();
+                }
+                else
+                {
+                    telemetryWnd.Activate();
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error opening Telemetry Monitor:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void SpdInfoToolstripMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var spdWindow = new SpdInfoWindow
+                {
+                    Owner = this
+                };
+                spdWindow.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error opening SPD Info:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

@@ -54,7 +54,14 @@
                             <MenuItem
                                 Header="_DIMM Telemetry"
                                 Click="TelemetryMonitorToolstripMenuItem_Click"
-                                Visibility="{Binding IsDimmTelemetryVisible, Mode=OneTime, Converter={StaticResource BoolToVis}}" />
+                                Visibility="{Binding IsDimmTelemetryAvailable, Mode=OneTime, Converter={StaticResource BoolToVis}}" />
+                            <MenuItem
+                                Header="_SPD Info"
+                                Click="SpdInfoToolstripMenuItem_Click"
+                                Visibility="{Binding IsDimmTelemetryAvailable, Mode=OneTime, Converter={StaticResource BoolToVis}}" />
+                            <Separator
+                                Foreground="{DynamicResource PanelBackground}"
+                                Visibility="{Binding IsDimmTelemetryAvailable, Mode=OneTime, Converter={StaticResource BoolToVis}}"/>
                             <MenuItem
                                 Header="System _Info"
                                 Click="SystemInfoToolstripMenuItem_Click"
@@ -171,17 +178,30 @@
                     </Grid.ColumnDefinitions>
 
                     <ComboBox x:Name="comboBoxPartNumber" IsReadOnly="True" Grid.Column="0" />
-                    <TextBlock
+                    <StackPanel 
                         Grid.Column="2"
-                        Text="{Binding MemoryType, FallbackValue=''}"
-                        Style="{DynamicResource ValueStyles}"
-                        Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}"
-                        TextAlignment="Right"
+                        Orientation="Horizontal"
                         HorizontalAlignment="Right"
-                        MinWidth="0"
-                        Margin="0"
-                        IsEnabled="False"
-                    />
+                        Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                        <TextBlock
+                            Text="ECC"
+                            Style="{DynamicResource ValueStyles}"
+                            Visibility="{Binding ECC, Mode=OneWay, Converter={StaticResource BoolToVis}}"
+                            TextAlignment="Right"
+                            Margin="0,0,5,0"
+                            IsEnabled="False"
+                            ToolTip="Error-Correcting Code memory detected"
+                        />
+                        <TextBlock
+                            Text="{Binding MemoryType, FallbackValue=''}"
+                            Style="{DynamicResource ValueStyles}"
+                            TextAlignment="Right"
+                            HorizontalAlignment="Right"
+                            MinWidth="0"
+                            Margin="0"
+                            IsEnabled="False"
+                        />
+                    </StackPanel>
 
                     <!-- Button Grid.Column="1"
                             Width="20"
