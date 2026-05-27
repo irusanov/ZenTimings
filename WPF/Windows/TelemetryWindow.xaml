@@ -195,6 +195,14 @@
                     HorizontalAlignment="Right"
                     Content="Reset Stats" Width="80" Height="24"
                     Click="BtnResetStats_Click"/>
+                <ToggleButton x:Name="ToggleAutoOpen"
+                              DockPanel.Dock="Right"
+                              Content="Auto-open"
+                              Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
+                              HorizontalAlignment="Right"
+                              Margin="0,0,12,0"
+                              FontSize="11"
+                              Click="ToggleAutoOpen_Click"/>
             </DockPanel>
         </Border>
     </Grid>

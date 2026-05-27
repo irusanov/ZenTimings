@@ -229,15 +229,6 @@
                      Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
                      Content="Save position on app close" />
 
-                <ToggleButton
-                     x:Name="checkBoxAutoOpenTelemetry"
-                     Content="Auto-open Telemetry Monitor"
-                     Grid.Row="1"
-                     Grid.Column="0"
-                     Grid.ColumnSpan="3"
-                     Margin="0 5 5 5"
-                     Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
-
                 <!--ToggleButton
                      x:Name="checkBoxDisableRoundedCorners"
                      Grid.Column="0"

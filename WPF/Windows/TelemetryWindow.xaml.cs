@@ -36,6 +36,7 @@ namespace ZenTimings.Windows
         {
             ModulesContainer.ItemsSource = moduleViewModels;
             AppSettings.Instance.PropertyChanged += AppSettings_PropertyChanged;
+            ToggleAutoOpen.IsChecked = AppSettings.Instance.AutoOpenTelemetry;
             await LoadModulesDataAsync();
             ConfigureAutoRefresh();
         }
@@ -391,6 +392,12 @@ namespace ZenTimings.Windows
 
             _windowOpenedAt = DateTime.Now;
             UptimeTimer_Tick(null, null);
+        }
+
+        private void ToggleAutoOpen_Click(object sender, RoutedEventArgs e)
+        {
+            AppSettings.Instance.AutoOpenTelemetry = ToggleAutoOpen.IsChecked == true;
+            AppSettings.Instance.Save();
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
