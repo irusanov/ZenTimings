@@ -39,8 +39,9 @@
                 <TextBlock Text=" - Fixed Proc DQ Drive Stength sometimes showing as N/A on auto" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Fixed crash on DragonRange family" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Fixed a bug in smbus driver which was leading to conflict with HWInfo" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Updated Telemetry window" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Updated Telemetry window and added option to auto-open" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Added SPD info window" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Added ECC indicator (PR-99 by tsg2k2)" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Hynix IC revision parser should not longer display incorrect 'O-die'" TextWrapping="WrapWithOverflow" />
             </StackPanel>
             <Border Padding="4 10" Grid.ColumnSpan="6" Grid.Row="2">
