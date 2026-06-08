@@ -13,8 +13,8 @@ namespace ZenTimings.Windows
 {
     public partial class TelemetryWindow : ThemedAdonisWindow
     {
-        private DispatcherTimer updateTimer;
-        private DispatcherTimer _uptimeTimer;
+        private readonly DispatcherTimer updateTimer;
+        private readonly DispatcherTimer _uptimeTimer;
         private DateTime _windowOpenedAt;
         private readonly MemoryConfig memoryConfig;
         private readonly ObservableCollection<ModuleViewModel> moduleViewModels = new ObservableCollection<ModuleViewModel>();
@@ -281,7 +281,7 @@ namespace ZenTimings.Windows
             vm.TelemetryItems.Add(item);
         }
 
-        private async void RefreshTelemetry()
+        internal void RefreshTelemetry()
         {
             if (_isRefreshing || memoryConfig == null)
                 return;
@@ -540,16 +540,47 @@ namespace ZenTimings.Windows
         private double maxValue = double.MinValue;
         private double sum = 0;
         private int count = 0;
+
         private readonly string unit;
         private readonly bool _isBoolean;
-        private ThermalAlarmLevel alarmLevel;
+
+        // Live alarm state
+        private ThermalAlarmLevel currentAlarmLevel;
+
+        // Alarm states captured when values were recorded
+        private ThermalAlarmLevel minAlarmLevel;
+        private ThermalAlarmLevel maxAlarmLevel;
 
         public string Name { get; }
 
-        public ThermalAlarmLevel AlarmLevel
+        public ThermalAlarmLevel CurrentAlarmLevel
         {
-            get => alarmLevel;
-            private set { alarmLevel = value; OnPropertyChanged(nameof(AlarmLevel)); }
+            get => currentAlarmLevel;
+            private set
+            {
+                currentAlarmLevel = value;
+                OnPropertyChanged(nameof(CurrentAlarmLevel));
+            }
+        }
+
+        public ThermalAlarmLevel MinAlarmLevel
+        {
+            get => minAlarmLevel;
+            private set
+            {
+                minAlarmLevel = value;
+                OnPropertyChanged(nameof(MinAlarmLevel));
+            }
+        }
+
+        public ThermalAlarmLevel MaxAlarmLevel
+        {
+            get => maxAlarmLevel;
+            private set
+            {
+                maxAlarmLevel = value;
+                OnPropertyChanged(nameof(MaxAlarmLevel));
+            }
         }
 
         public string Current => FormatValue(currentValue);
@@ -577,10 +608,20 @@ namespace ZenTimings.Windows
             currentValue = value;
 
             if (value < minValue)
+            {
                 minValue = value;
 
+                // Preserve alarm state at recorded minimum
+                MinAlarmLevel = CurrentAlarmLevel;
+            }
+
             if (value > maxValue)
+            {
                 maxValue = value;
+
+                // Preserve alarm state at recorded maximum
+                MaxAlarmLevel = CurrentAlarmLevel;
+            }
 
             sum += value;
             count++;
@@ -598,6 +639,9 @@ namespace ZenTimings.Windows
             sum = currentValue;
             count = 1;
 
+            MinAlarmLevel = CurrentAlarmLevel;
+            MaxAlarmLevel = CurrentAlarmLevel;
+
             OnPropertyChanged(nameof(Min));
             OnPropertyChanged(nameof(Max));
             OnPropertyChanged(nameof(Average));
@@ -606,16 +650,18 @@ namespace ZenTimings.Windows
         public void UpdateThermalAlarm(bool critHigh, bool high)
         {
             if (critHigh)
-                AlarmLevel = ThermalAlarmLevel.CriticalHigh;
+                CurrentAlarmLevel = ThermalAlarmLevel.CriticalHigh;
             else if (high)
-                AlarmLevel = ThermalAlarmLevel.High;
+                CurrentAlarmLevel = ThermalAlarmLevel.High;
             else
-                AlarmLevel = ThermalAlarmLevel.None;
+                CurrentAlarmLevel = ThermalAlarmLevel.None;
         }
 
         private string FormatValue(double value)
         {
-            if (_isBoolean) return value >= 0.5 ? "Yes" : "No";
+            if (_isBoolean)
+                return value >= 0.5 ? "Yes" : "No";
+
             string format = unit == "°C" ? "F2" : "F3";
             return $"{value.ToString(format)} {unit}";
         }

@@ -31,23 +31,66 @@
             <Setter Property="FontSize" Value="11"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
+        
         <Style x:Key="ValueStyle" TargetType="{x:Type TextBlock}">
             <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
             <Setter Property="FontSize" Value="11"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="TextWrapping" Value="Wrap"/>
         </Style>
-        <Style x:Key="TelemetryValueCellStyle" TargetType="{x:Type TextBlock}">
+
+        <!-- CURRENT column -->
+        <Style x:Key="TelemetryCurrentValueCellStyle" TargetType="{x:Type TextBlock}">
             <Setter Property="Foreground" Value="{DynamicResource AccentTextColor}"/>
             <Setter Property="Padding" Value="3,0"/>
+
             <Style.Triggers>
-                <DataTrigger Binding="{Binding AlarmLevel}" Value="{x:Static windows:ThermalAlarmLevel.High}">
+                <DataTrigger Binding="{Binding CurrentAlarmLevel}" Value="{x:Static windows:ThermalAlarmLevel.High}">
                     <Setter Property="Foreground" Value="{StaticResource ThermalAlarmHighBrush}"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding AlarmLevel}" Value="{x:Static windows:ThermalAlarmLevel.CriticalHigh}">
+
+                <DataTrigger Binding="{Binding CurrentAlarmLevel}" Value="{x:Static windows:ThermalAlarmLevel.CriticalHigh}">
                     <Setter Property="Foreground" Value="{StaticResource ThermalAlarmCriticalBrush}"/>
                 </DataTrigger>
             </Style.Triggers>
+        </Style>
+
+        <!-- MIN column -->
+        <Style x:Key="TelemetryMinValueCellStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="{DynamicResource AccentTextColor}"/>
+            <Setter Property="Padding" Value="3,0"/>
+
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding MinAlarmLevel}" Value="{x:Static windows:ThermalAlarmLevel.High}">
+                    <Setter Property="Foreground" Value="{StaticResource ThermalAlarmHighBrush}"/>
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding MinAlarmLevel}" Value="{x:Static windows:ThermalAlarmLevel.CriticalHigh}">
+                    <Setter Property="Foreground" Value="{StaticResource ThermalAlarmCriticalBrush}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- MAX column -->
+        <Style x:Key="TelemetryMaxValueCellStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="{DynamicResource AccentTextColor}"/>
+            <Setter Property="Padding" Value="3,0"/>
+
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding MaxAlarmLevel}" Value="{x:Static windows:ThermalAlarmLevel.High}">
+                    <Setter Property="Foreground" Value="{StaticResource ThermalAlarmHighBrush}"/>
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding MaxAlarmLevel}" Value="{x:Static windows:ThermalAlarmLevel.CriticalHigh}">
+                    <Setter Property="Foreground" Value="{StaticResource ThermalAlarmCriticalBrush}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- AVERAGE column (temporary: no alarm coloring yet) -->
+        <Style x:Key="TelemetryAverageValueCellStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="{DynamicResource AccentTextColor}"/>
+            <Setter Property="Padding" Value="3,0"/>
         </Style>
     </Window.Resources>
 
@@ -148,24 +191,28 @@
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
+                                        
                                         <DataGridTextColumn Header="Current" Binding="{Binding Current}" Width="*" MinWidth="64">
                                             <DataGridTextColumn.ElementStyle>
-                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TelemetryValueCellStyle}"/>
+                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TelemetryCurrentValueCellStyle}"/>
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
+
                                         <DataGridTextColumn Header="Min" Binding="{Binding Min}" Width="*" MinWidth="54">
                                             <DataGridTextColumn.ElementStyle>
-                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TelemetryValueCellStyle}"/>
+                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TelemetryMinValueCellStyle}"/>
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
+
                                         <DataGridTextColumn Header="Max" Binding="{Binding Max}" Width="*" MinWidth="54">
                                             <DataGridTextColumn.ElementStyle>
-                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TelemetryValueCellStyle}"/>
+                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TelemetryMaxValueCellStyle}"/>
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
+
                                         <DataGridTextColumn Header="Average" Binding="{Binding Average}" Width="*" MinWidth="64">
                                             <DataGridTextColumn.ElementStyle>
-                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TelemetryValueCellStyle}"/>
+                                                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TelemetryAverageValueCellStyle}"/>
                                             </DataGridTextColumn.ElementStyle>
                                         </DataGridTextColumn>
                                     </DataGrid.Columns>
@@ -207,6 +254,3 @@
         </Border>
     </Grid>
 </local:ThemedAdonisWindow>
-
-
-

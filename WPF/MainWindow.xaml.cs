@@ -1057,11 +1057,11 @@ namespace ZenTimings
 
             try
             {
-                double telemetryWindowWidth = 650;
-                double telemetryWindowHeight = 550;
+                double telemetryWindowWidth = 390;
+                double telemetryWindowHeight = 625;
                 double telemetryWindowTop = 0;
                 double telemetryWindowLeft = 0;
-                WindowStartupLocation location = WindowStartupLocation.CenterOwner;
+                WindowStartupLocation location = WindowStartupLocation.CenterScreen;
 
                 if (settings.SaveWindowPosition
                     && settings?.TelemetryWindowHeight != 0
