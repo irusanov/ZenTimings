@@ -200,7 +200,7 @@ namespace ZenTimings
                     return $"{(char)('A' + dieIndex - 1)}-Die";
             }
 
-            return $"0x{stepping:X2}";
+            return $"(Unknown 0x{stepping:X2})";
         }
 
         internal static string GetCpuNameString(SystemInfo info)
