@@ -412,7 +412,7 @@ namespace ZenTimings
             /*
             foreach (var sensor in plugins[1].Sensors)
             {
-                Console.WriteLine($"----Name: {sensor.Name}, Value: {sensor.Value}");
+                Debug.WriteLine($"----Name: {sensor.Name}, Value: {sensor.Value}");
             }
             */
         }
@@ -561,7 +561,7 @@ namespace ZenTimings
                     "Warning",
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
-                Console.WriteLine(ex.Message);
+                Debug.WriteLine(ex.Message);
             }
 
             BMC?.Dispose();
@@ -713,7 +713,7 @@ namespace ZenTimings
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Debug.WriteLine(ex.Message);
             }
         }
 
@@ -773,7 +773,7 @@ namespace ZenTimings
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Debug.WriteLine(ex.Message);
             }
         }
 
@@ -1215,7 +1215,7 @@ namespace ZenTimings
         private void ExportToolStripMenuItem_Click(object sender, RoutedEventArgs e)
         {
             //Config Config = new Config(cpu.memoryConfig, BMC.Config/*, cpu.powerTable*/);
-            //Console.WriteLine(Config.GetXML());
+            //Debug.WriteLine(Config.GetXML());
         }
 
         private void MotherboardLinkButton_Click(object sender, RoutedEventArgs e)

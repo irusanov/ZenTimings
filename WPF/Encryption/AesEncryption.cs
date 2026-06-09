@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -19,7 +20,7 @@ namespace ZenTimings.Encryption
             string xmlContent = XmlUtils.SerializeToXml(obj);
             byte[] encryptedData = EncryptString(xmlContent);
             File.WriteAllBytes(outputFile, encryptedData);
-            Console.WriteLine("XML file encrypted successfully!");
+            Debug.WriteLine("XML file encrypted successfully!");
         }
 
         public T DecryptXmlInMemory<T>(string inputFile)

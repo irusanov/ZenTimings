@@ -66,7 +66,7 @@ namespace ZenTimings.Plugin
                         {
                             if (GetPropValue(subsensor, "SensorType").ToString() == "Voltage")
                             {
-                                // Console.WriteLine($"----Index: {GetPropValue(subsensor, "Index")}, {GetPropValue(subsensor, "SensorType")}, Name: {GetPropValue(subsensor, "Name")}, Value: {GetPropValue(subsensor, "Value")}");
+                                // Debug.WriteLine($"----Index: {GetPropValue(subsensor, "Index")}, {GetPropValue(subsensor, "SensorType")}, Name: {GetPropValue(subsensor, "Name")}, Value: {GetPropValue(subsensor, "Value")}");
                                 try
                                 {
                                     Sensors.Add(

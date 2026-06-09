@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using ZenStates.Core;
 using ZenStates.Core.Drivers;
 using ZenTimings.Common;
@@ -79,9 +80,9 @@ namespace ZenTimings.Plugin
         private void UpdateSensorValue(uint planeValue, Sensor sensor)
         {
             uint vid = (planeValue >> 16) & 0xFF;
-            sensor.Value = Convert.ToSingle(Utils.VidToVoltage(vid));
+            sensor.Value = (float)Utils.VidToVoltage(vid);
 
-            Console.WriteLine($"{sensor.Name}: {sensor.Min} {sensor.Max}");
+            Debug.WriteLine($"{sensor.Name}: {sensor.Min} {sensor.Max}");
         }
 
         public void Open()

@@ -1,6 +1,7 @@
 using AdonisUI;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 
@@ -79,7 +80,7 @@ namespace ZenTimings
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Debug.WriteLine(ex.Message);
                 MessageBox.Show(
                     "Invalid or outdated settings file!\nSettings will be reset to defaults and any custom settings will be lost.",
                     "Error",
@@ -104,7 +105,7 @@ namespace ZenTimings
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Debug.WriteLine(ex.Message);
                 AdonisUI.Controls.MessageBox.Show(
                     "Could not save settings to file!",
                     "Error",

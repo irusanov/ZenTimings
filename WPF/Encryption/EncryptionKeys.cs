@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 
@@ -37,7 +38,7 @@ namespace ZenTimings.Encryption
                     File.WriteAllBytes(KeyFilePath, Key);
                     File.WriteAllBytes(IVFilePath, IV);
 
-                    Console.WriteLine("Encryption keys generated and stored.");
+                    Debug.WriteLine("Encryption keys generated and stored.");
                 }
             }
         }
