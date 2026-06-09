@@ -69,12 +69,10 @@ namespace ZenTimings.Plugin
             socPlaneValue = 0;
             vcorePlaneValue = 0;
 
-            if (Mutexes.WaitPciBus(10))
+            using (new PciBusLock())
             {
-                socPlaneValue = cpuInstance.ReadDword(cpuInstance.info.svi2.socAddress);
-                vcorePlaneValue = cpuInstance.ReadDword(cpuInstance.info.svi2.coreAddress);
-
-                Mutexes.ReleasePciBus();
+                socPlaneValue = cpuInstance.ReadDwordNoLock(cpuInstance.info.svi2.socAddress);
+                vcorePlaneValue = cpuInstance.ReadDwordNoLock(cpuInstance.info.svi2.coreAddress);
             }
         }
 
