@@ -139,11 +139,6 @@ namespace ZenTimings.Windows
 
         private void PrintChannels()
         {
-            if (!Mutexes.WaitPciBus(5000))
-            {
-                throw new Exception("Timeout waiting for PCI bus mutex");
-            }
-
             try
             {
                 uint channelsPerDimm = 1; // memoryConfig.Type >= ZenStates.Core.DRAM.MemoryConfig.MemType.DDR5 ? 2u : 1u;
@@ -189,12 +184,13 @@ namespace ZenTimings.Windows
                         AddLine($"Channel{i / channelsPerDimm}: <FAILED>");
                     }
                 }
-                AddLine();
             }
-            finally
+            catch (Exception ex)
             {
-                Mutexes.ReleasePciBus();
+                AddLine($"<FAILED: {ex.Message}>");
             }
+
+            AddLine();
         }
 
         private void Debug()
