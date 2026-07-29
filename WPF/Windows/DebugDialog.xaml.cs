@@ -170,7 +170,7 @@ namespace ZenTimings.Windows
                         {
                             AddLine("-- UMC Registers");
                             var startReg = offset | 0x50000;
-                            var endReg = offset | 0x50300;
+                            var endReg = offset | 0x50FFC;
                             while (startReg <= endReg)
                             {
                                 var data = cpu.ReadDword(startReg);
@@ -191,6 +191,26 @@ namespace ZenTimings.Windows
             }
 
             AddLine();
+        }
+
+        private bool PrintRawBinaryData(byte[] data)
+        {
+            if (data != null && typeof(byte[]).IsAssignableFrom(data.GetType()))
+            {
+                for (var i = 0; i < data.Length; i += 16)
+                {
+                    var hexLine = "";
+                    for (var j = 0; j < 16 && i + j < data.Length; j++)
+                    {
+                        hexLine += $"{data[i + j]:X2}";
+                        if (j < 15) hexLine += " ";
+                    }
+                    //AddLine($"0x{i:X8}: {hexLine}");
+                    AddLine($"{hexLine}");
+                }
+                return true;
+            }
+            return false;
         }
 
         private void Debug()
@@ -326,27 +346,31 @@ namespace ZenTimings.Windows
                         AddLine("<APOB table data not available>");
                     }
 
+
                     AddLine();
                     AddHeading("APOB: Raw");
+
                     AddLine();
+                    AddLine("-- Raw Header ---------------------------------");
+                    try
+                    {
+                        if (!PrintRawBinaryData(cpu.info.apob?.RawHeader))
+                        {
+                            AddLine("<APOB raw header not available>");
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        AddLine("<FAILED>");
+                        AddLine(ex.Message);
+                    }
+                    AddLine();
+                    
                     AddLine("-- Raw Data -----------------------------------");
                     try
                     {
-                        if (cpu.info.apob?.RawData != null)
-                        {
-                            for (var i = 0; i < cpu.info.apob.RawData.Length; i += 16)
-                            {
-                                var hexLine = "";
-                                for (var j = 0; j < 16 && i + j < cpu.info.apob.RawData.Length; j++)
-                                {
-                                    hexLine += $"{cpu.info.apob.RawData[i + j]:X2}";
-                                    if (j < 15) hexLine += " ";
-                                }
-                                //AddLine($"0x{i:X8}: {hexLine}");
-                                AddLine($"{hexLine}");
-                            }
-                        }
-                        else
+                        if (!PrintRawBinaryData(cpu.info.apob?.RawData))
                         {
                             AddLine("<APOB raw data not available>");
                         }
@@ -361,21 +385,7 @@ namespace ZenTimings.Windows
                     AddLine("-- Raw Extended Data --------------------------");
                     try
                     {
-                        if (cpu.info.apob?.RawData != null)
-                        {
-                            for (var i = 0; i < cpu.info.apob.RawExtendedData.Length; i += 16)
-                            {
-                                var hexLine = "";
-                                for (var j = 0; j < 16 && i + j < cpu.info.apob.RawExtendedData.Length; j++)
-                                {
-                                    hexLine += $"{cpu.info.apob.RawExtendedData[i + j]:X2}";
-                                    if (j < 15) hexLine += " ";
-                                }
-                                //AddLine($"0x{i:X8}: {hexLine}");
-                                AddLine($"{hexLine}");
-                            }
-                        }
-                        else
+                        if (!PrintRawBinaryData(cpu.info.apob?.RawExtendedData))
                         {
                             AddLine("<APOB raw extended data not available>");
                         }
