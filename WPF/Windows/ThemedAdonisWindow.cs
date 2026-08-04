@@ -31,6 +31,17 @@ namespace ZenTimings
             ApplyNativeBorderFromTheme();
         }
 
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+            if (ResizeMode == ResizeMode.CanMinimize || ResizeMode == ResizeMode.NoResize)
+            {
+                var maximizeButton = GetTemplateChild("PART_MaximizeRestoreButton") as System.Windows.Controls.Button;
+                if (maximizeButton != null)
+                    maximizeButton.Visibility = Visibility.Collapsed;
+            }
+        }
+
         protected override void OnSourceInitialized(EventArgs e)
         {
             base.OnSourceInitialized(e);
