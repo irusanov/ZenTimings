@@ -9,5 +9,6 @@
         float? Max { get; }
         void ResetMin();
         void ResetMax();
+        float? Update();
     }
 }

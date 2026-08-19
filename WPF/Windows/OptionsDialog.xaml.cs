@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
-using ZenStates.Core;
+using ZenStates.Core.Hardware;
 using static ZenTimings.AppSettings;
 
 namespace ZenTimings.Windows

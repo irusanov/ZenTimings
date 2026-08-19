@@ -8,9 +8,13 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using ZenStates.Core;
+using ZenStates.Core.Hardware;
 using Application = System.Windows.Application;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
+using DRAM = ZenStates.Core.Hardware.DRAM;
+using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
+using ZenStates.Core.Common;
 
 namespace ZenTimings.Windows
 {
@@ -23,7 +27,7 @@ namespace ZenTimings.Windows
         private readonly BiosMemController BMC;
         private readonly Cpu cpu;
 
-        private readonly ZenStates.Core.DRAM.MemoryConfig memoryConfig;
+        private readonly ZenStates.Core.Hardware.DRAM.MemoryConfig memoryConfig;
         //private readonly List<MemoryModule> modules;
 
         //private readonly uint baseAddress;
@@ -141,7 +145,7 @@ namespace ZenTimings.Windows
         {
             try
             {
-                uint channelsPerDimm = 1; // memoryConfig.Type >= ZenStates.Core.DRAM.MemoryConfig.MemType.DDR5 ? 2u : 1u;
+                uint channelsPerDimm = 1; // memoryConfig.Type >= DRAM.MemoryConfig.MemType.DDR5 ? 2u : 1u;
                 AddHeading("Memory Channels Info");
 
                 AddLine("-- UMC Configuration");
@@ -263,7 +267,7 @@ namespace ZenTimings.Windows
             {
                 AddLine($"{module.BankLabel} | {module.DeviceLocator}");
                 AddLine($"-- Slot: {module.Slot}");
-                if (module.Rank == ZenStates.Core.DRAM.MemRank.DR)
+                if (module.Rank == DRAM.MemRank.DR)
                     AddLine("-- Dual Rank");
                 else
                     AddLine("-- Single Rank");
@@ -274,7 +278,7 @@ namespace ZenTimings.Windows
                 AddLine();
             }
 
-            if (cpu.memoryConfig.Type == ZenStates.Core.DRAM.MemType.DDR5)
+            if (cpu.memoryConfig.Type == DRAM.MemType.DDR5)
             {
                 AddHeading("SMBUS Memory Modules");
                 AddLine();
@@ -299,7 +303,8 @@ namespace ZenTimings.Windows
                 properties = type.GetProperties();
 
                 foreach (var property in properties)
-                    AddLine($"{property.Name + ":",-18}{memoryConfig.Timings[0].Value[property.Name]}");
+                    if (property.Name != "Item")
+                        AddLine($"{property.Name + ":",-28}{memoryConfig.Timings[0].Value[property.Name]}");
             }
             catch
             {

@@ -6,8 +6,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
-using ZenStates.Core;
-using ZenStates.Core.DRAM;
+using ZenStates.Core.Hardware.DRAM;
+using ZenStates.Core.Hardware.DRAM.DDR5.Pmic;
+using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
+using ZenStates.Core.Hardware.DRAM.DDR5.Thermal;
 
 namespace ZenTimings.Windows
 {

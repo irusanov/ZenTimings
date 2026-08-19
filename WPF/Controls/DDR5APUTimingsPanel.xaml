@@ -291,7 +291,7 @@
                     <TextBlock Text="{Binding ApobExtendedData.ProcCaOdt, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding ApobExtendedData.ProcCkOdt, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding ApobExtendedData.ProcDqOdt, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
-                    <TextBlock Text="{Binding ApobExtendedData.ProcDqOdt, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                    <TextBlock Text="{Binding ApobExtendedData.ProcDqsOdt, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
 
                     <TextBlock Text="{Binding ApobExtendedData.ProcCaDs, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding ApobExtendedData.ProcDataDsApu, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />

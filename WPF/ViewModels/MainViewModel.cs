@@ -9,7 +9,10 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Xml.Serialization;
 using ZenStates.Core;
-using ZenStates.Core.DRAM;
+using ZenStates.Core.Hardware;
+using ZenStates.Core.Hardware.Apob;
+using ZenStates.Core.Hardware.DRAM;
+using ZenStates.Core.Hardware.DRAM.DDR5.Pmic;
 using ZenTimings.Plugin;
 
 namespace ZenTimings.ViewModels

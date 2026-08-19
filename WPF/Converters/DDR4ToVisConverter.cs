@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Data;
-using ZenStates.Core.DRAM;
+using ZenStates.Core.Hardware.DRAM;
 
 namespace ZenTimings.Converters
 {

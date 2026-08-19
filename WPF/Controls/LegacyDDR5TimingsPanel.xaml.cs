@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using ZenStates.Core;
+using ZenStates.Core.Hardware.Aod;
 
 namespace ZenTimings.Controls
 {

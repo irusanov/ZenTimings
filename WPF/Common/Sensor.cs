@@ -33,5 +33,11 @@
 
         public void ResetMin() => Min = null;
         public void ResetMax() => Max = null;
+
+        public virtual float? Update()
+        {
+            // This method should be overridden in derived classes to implement sensor-specific update logic.
+            return Value;
+        }
     }
 }

@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using ZenStates.Core;
-using ZenStates.Core.DRAM;
+using ZenStates.Core.Hardware;
+using ZenStates.Core.Hardware.Aod;
+using ZenStates.Core.Hardware.DRAM;
+using ZenStates.Core.OHWM;
 using static ZenTimings.BiosMemController;
 
 namespace ZenTimings.Windows
