@@ -41,8 +41,8 @@
     <ApplicationIcon>Resources\ZenTimings2022.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <VersionMajor>1</VersionMajor>
-    <VersionMinor>40</VersionMinor>
+    <VersionMajor>140</VersionMajor>
+    <VersionMinor>0</VersionMinor>
     <VersionBase>$(VersionMajor).$(VersionMinor)</VersionBase>
   </PropertyGroup>
   <PropertyGroup>
