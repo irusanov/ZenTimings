@@ -112,7 +112,7 @@
     <Compile Include="..\Common\UpdaterPersistenceProvider.cs">
       <Link>Common\UpdaterPersistenceProvider.cs</Link>
     </Compile>
-    <Compile Include="AgesaHelper.cs" />
+    <Compile Include="Helpers\AgesaHelper.cs" />
     <Compile Include="Controls\LegacyDDR5APUTimingsPanel.xaml.cs">
       <DependentUpon>LegacyDDR5APUTimingsPanel.xaml</DependentUpon>
     </Compile>
@@ -122,12 +122,13 @@
     <Compile Include="Controls\DDR5TimingsPanel19h.xaml.cs">
       <DependentUpon>DDR5TimingsPanel19h.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DriverHelper.cs" />
+    <Compile Include="Helpers\DriverHelper.cs" />
     <Compile Include="Encryption\UpdaterEncryption.cs" />
-    <Compile Include="ObservableObject.cs" />
-    <Compile Include="VendorUtils.cs" />
-    <Compile Include="AppSettings.cs" />
-    <Compile Include="SensorSettings.cs" />
+    <Compile Include="Common\ObservableObject.cs" />
+    <Compile Include="Helpers\StartupHelper.cs" />
+    <Compile Include="Utils\VendorUtils.cs" />
+    <Compile Include="Settings\AppSettings.cs" />
+    <Compile Include="Settings\SensorSettings.cs" />
     <Compile Include="Common\ISensor.cs" />
     <Compile Include="Common\Sensor.cs" />
     <Compile Include="Controls\DDR4TimingsPanel.xaml.cs">
@@ -166,8 +167,8 @@
       <DependentUpon>SensorSettingsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\ThemedAdonisWindow.cs" />
-    <Compile Include="WindowUtils.cs" />
-    <Compile Include="XmlUtils.cs" />
+    <Compile Include="Utils\WindowUtils.cs" />
+    <Compile Include="Utils\XmlUtils.cs" />
     <Compile Include="Windows\AboutDialog.xaml.cs">
       <DependentUpon>AboutDialog.xaml</DependentUpon>
     </Compile>
@@ -176,9 +177,6 @@
     </Compile>
     <Compile Include="Windows\DebugDialog.xaml.cs">
       <DependentUpon>DebugDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\OptionsDialog.xaml.cs">
-      <DependentUpon>OptionsDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\SaveScreenshotWindow.xaml.cs">
       <DependentUpon>SaveScreenshotWindow.xaml</DependentUpon>
@@ -226,6 +224,14 @@
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="Windows\OptionsDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="Windows\OptionsDialog.xaml.cs">
+      <DependentUpon>OptionsDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Windows\SpdInfoWindow.xaml">
@@ -373,10 +379,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\DriverUpdateWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\OptionsDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

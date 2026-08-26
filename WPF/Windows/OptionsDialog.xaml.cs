@@ -14,7 +14,6 @@ namespace ZenTimings.Windows
     /// </summary>
     public partial class OptionsDialog : ThemedAdonisWindow
     {
-        //private const string Caption = "Disabling auto-refresh might lead to inaccurate voltages and frequencies on first launch";
         internal readonly AppSettings appSettings = AppSettings.Instance;
         internal readonly SystemInfo _systemInfo = CpuSingleton.Instance.systemInfo;
         private readonly DispatcherTimer timerInstance;
@@ -34,15 +33,23 @@ namespace ZenTimings.Windows
 
             InitializeComponent();
 
+            LoadSettingsToUi();
+        }
+
+        private void LoadSettingsToUi()
+        {
             checkBoxAutoRefresh.IsChecked = appSettings.AutoRefresh;
             checkBoxAutoRefresh.IsEnabled = appSettings.AdvancedMode;
             checkBoxAdvancedMode.IsChecked = appSettings.AdvancedMode;
             checkBoxCheckUpdate.IsChecked = appSettings.CheckForUpdates;
             checkBoxSavePosition.IsChecked = appSettings.SaveWindowPosition;
             checkBoxMinimizeToTray.IsChecked = appSettings.MinimizeToTray;
+            checkBoxAutostart.IsChecked = appSettings.AutostartWithWindows;
+            numericUpDownAutostartDelay.IsEnabled = appSettings.AutostartWithWindows;
+            numericUpDownAutostartDelay.Text = appSettings.AutostartDelaySeconds.ToString();
+            checkBoxStartMinimized.IsChecked = appSettings.StartMinimized;
             checkBoxSingleInstance.IsChecked = appSettings.SingleInstance;
             comboBoxCornerRadius.SelectedIndex = appSettings?.CornerRadius ?? 0;
-            //checkBoxAutoUninstallDriver.IsChecked = appSettings.AutoUninstallDriver;
             numericUpDownRefreshInterval.IsEnabled = appSettings.AutoRefresh && appSettings.AdvancedMode;
             numericUpDownRefreshInterval.Text = appSettings.AutoRefreshInterval.ToString();
             msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
@@ -52,10 +59,34 @@ namespace ZenTimings.Windows
             textBoxScreenshotPath.Text = appSettings.ScreenshotSaveLocation;
         }
 
+        private void SaveSettingsFromUi()
+        {
+            appSettings.AutoRefresh = (bool)checkBoxAutoRefresh.IsChecked;
+            appSettings.AutoRefreshInterval = Convert.ToInt32(numericUpDownRefreshInterval.Text);
+            appSettings.AdvancedMode = (bool)checkBoxAdvancedMode.IsChecked;
+            appSettings.CheckForUpdates = (bool)checkBoxCheckUpdate.IsChecked;
+            appSettings.SaveWindowPosition = (bool)checkBoxSavePosition.IsChecked;
+            appSettings.MinimizeToTray = (bool)checkBoxMinimizeToTray.IsChecked;
+            appSettings.AutostartWithWindows = (bool)checkBoxAutostart.IsChecked;
+            appSettings.AutostartDelaySeconds = Convert.ToInt32(numericUpDownAutostartDelay.Text);
+            appSettings.StartMinimized = (bool)checkBoxStartMinimized.IsChecked;
+            StartupHelper.SetAutostart(appSettings.AutostartWithWindows, appSettings.AutostartDelaySeconds);
+            appSettings.SingleInstance = (bool)checkBoxSingleInstance.IsChecked;
+            appSettings.CornerRadius = comboBoxCornerRadius.SelectedIndex;
+            appSettings.ScreenshotMode = (ScreenshotType)comboBoxScreenshot.SelectedIndex;
+            appSettings.ScreenshotSaveLocation = textBoxScreenshotPath.Text.Trim();
+            appSettings.ImpedanceTableSrc = (ImpedanceTableSource)comboBoxImpedanceSource.SelectedIndex;
+        }
+
         private void CheckBoxAutoRefresh_Click(object sender, RoutedEventArgs e)
         {
             numericUpDownRefreshInterval.IsEnabled = (bool)checkBoxAutoRefresh.IsChecked;
             msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
+        }
+
+        private void CheckBoxAutostart_Click(object sender, RoutedEventArgs e)
+        {
+            numericUpDownAutostartDelay.IsEnabled = (bool)checkBoxAutostart.IsChecked;
         }
 
         private void CheckBoxAdvancedMode_Click(object sender, RoutedEventArgs e)
@@ -68,40 +99,11 @@ namespace ZenTimings.Windows
 
         private void ButtonSettingsApply_Click(object sender, RoutedEventArgs e)
         {
-            appSettings.AutoRefresh = (bool)checkBoxAutoRefresh.IsChecked;
-            appSettings.AutoRefreshInterval = Convert.ToInt32(numericUpDownRefreshInterval.Text);
-            appSettings.AdvancedMode = (bool)checkBoxAdvancedMode.IsChecked;
-            appSettings.CheckForUpdates = (bool)checkBoxCheckUpdate.IsChecked;
-            appSettings.SaveWindowPosition = (bool)checkBoxSavePosition.IsChecked;
-            appSettings.MinimizeToTray = (bool)checkBoxMinimizeToTray.IsChecked;
-            appSettings.SingleInstance = (bool)checkBoxSingleInstance.IsChecked;
-            appSettings.CornerRadius = comboBoxCornerRadius.SelectedIndex;
-            //appSettings.AutoUninstallDriver = (bool)checkBoxAutoUninstallDriver.IsChecked;
-            appSettings.ScreenshotMode = (ScreenshotType)comboBoxScreenshot.SelectedIndex;
-            appSettings.ScreenshotSaveLocation = textBoxScreenshotPath.Text.Trim();
-            appSettings.ImpedanceTableSrc = (ImpedanceTableSource)comboBoxImpedanceSource.SelectedIndex;
-
+            SaveSettingsFromUi();
             appSettings.Save();
 
             timerInstance.Interval = TimeSpan.FromMilliseconds(appSettings.AutoRefreshInterval);
             _Theme = appSettings.AppTheme;
-
-            if (notificationTimer != null)
-                if (notificationTimer.IsEnabled)
-                    notificationTimer.Stop();
-
-            notificationTimer = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromMilliseconds(6000)
-            };
-
-            notificationTimer.Tick += new EventHandler((s, x) =>
-            {
-                notificationTimer.Stop();
-                OptionsPopup.IsOpen = false;
-            });
-
-            notificationTimer.Start();
 
             if (checkBoxAutoRefresh.IsEnabled)
             {
@@ -111,23 +113,40 @@ namespace ZenTimings.Windows
                     timerInstance.Stop();
             }
 
-            if (_AdvancedMode != appSettings.AdvancedMode ||
-                _ImpedanceTableSource != appSettings.ImpedanceTableSrc ||
-                _CornerRadius != appSettings.CornerRadius)
+            var restartRequired = _AdvancedMode != appSettings.AdvancedMode ||
+                                   _ImpedanceTableSource != appSettings.ImpedanceTableSrc ||
+                                   _CornerRadius != appSettings.CornerRadius;
+
+            if (restartRequired)
             {
                 buttonSettingsRestart.Visibility = Visibility.Visible;
                 appSettings.Save();
                 OptionsPopupText.Text = "Some settings will be applied on next launch.";
             }
 
-            OptionsPopup.Width = OptionWindowContent.ActualWidth;
-            OptionsPopup.IsOpen = true;
+            ShowSavedNotification();
         }
 
-        private void ComboBoxTheme_CheckedChanged(object sender, RoutedEventArgs e)
+        private void ShowSavedNotification()
         {
-            //appSettings.DarkMode = (bool)comboBoxTheme.IsChecked;
-            //appSettings.ChangeTheme();
+            if (notificationTimer != null && notificationTimer.IsEnabled)
+                notificationTimer.Stop();
+
+            notificationTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(6000)
+            };
+
+            notificationTimer.Tick += (s, x) =>
+            {
+                notificationTimer.Stop();
+                OptionsPopup.IsOpen = false;
+            };
+
+            notificationTimer.Start();
+
+            OptionsPopup.Width = OptionWindowContent.ActualWidth;
+            OptionsPopup.IsOpen = true;
         }
 
         private void ButtonSettingsCancel_Click(object sender, RoutedEventArgs e)
@@ -137,14 +156,14 @@ namespace ZenTimings.Windows
 
         private void ButtonSettingsRestart_Click(object sender, RoutedEventArgs e)
         {
-            ProcessStartInfo Info = new ProcessStartInfo
+            var info = new ProcessStartInfo
             {
                 Arguments = "/C choice /C Y /N /D Y /T 1 & START \"\" \"" + Assembly.GetEntryAssembly().Location + "\"",
                 WindowStyle = ProcessWindowStyle.Hidden,
                 CreateNoWindow = true,
                 FileName = "cmd.exe"
             };
-            Process.Start(Info);
+            Process.Start(info);
             Application.Current.Shutdown();
         }
 

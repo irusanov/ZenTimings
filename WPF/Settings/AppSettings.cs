@@ -177,6 +177,9 @@ namespace ZenTimings
         public string UpdaterRemindLaterAt { get; set; } = "";
         public bool MinimizeToTray { get; set; }
         public bool SaveWindowPosition { get; set; } = true;
+        public bool AutostartWithWindows { get; set; }
+        public int AutostartDelaySeconds { get; set; } = 12;
+        public bool StartMinimized { get; set; }
         public bool AutoUninstallDriver { get; set; } = true;
         public double WindowLeft { get; set; } = -1;
         public double WindowTop { get; set; } = -1;

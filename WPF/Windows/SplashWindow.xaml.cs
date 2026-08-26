@@ -32,7 +32,8 @@ namespace ZenTimings.Windows
         {
             splash.Show();
             ApplySettings();
-            if (appSettings.CheckForUpdates) updater.CheckForUpdate();
+            if (appSettings.CheckForUpdates)
+                updater.CheckForUpdate();
         }
 
         public static void Stop() => splash.Close();

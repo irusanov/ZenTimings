@@ -576,10 +576,9 @@ namespace ZenTimings
         {
             cpu.memoryConfig.ReadTimings(offset);
             var timings = cpu.memoryConfig.Timings;
-            BaseDramTimings result = null;
 
             if (timings.Count == 0)
-                return result;
+                return null;
 
             var index = timings.FindIndex(m => m.Key.Equals(offset));
             return timings[index < 0 ? 0 : index].Value;
@@ -984,6 +983,11 @@ namespace ZenTimings
             SetWindowTitle();
             //ShowWindow();
 
+            if (settings.StartMinimized)
+            {
+                WindowState = WindowState.Minimized;
+            }
+
             SplashWindow.Stop();
 
             Application.Current.MainWindow = this;
@@ -1005,6 +1009,7 @@ namespace ZenTimings
                 settings.NotifiedChangelog = AssemblyVersion;
                 settings.Save();
             }
+
             //#endif
             //#if BETA
             //            MessageBox.Show("This is a BETA version of the application. Some functions might be working incorrectly.\n\n" +
@@ -1013,7 +1018,7 @@ namespace ZenTimings
             MinimizeFootprint();
 
             if (settings.AdvancedMode && settings.AutoOpenTelemetry)
-                TelemetryMonitorToolstripMenuItem_Click(this, null);
+                OpenSensorsWindow(settings.StartMinimized);
 
             //new Thread(() =>
             //{
@@ -1109,7 +1114,7 @@ namespace ZenTimings
             siWnd.Show();
         }
 
-        private void TelemetryMonitorToolstripMenuItem_Click(object sender, RoutedEventArgs e)
+        private void OpenSensorsWindow(bool startMinimized = false)
         {
             try
             {
@@ -1146,6 +1151,9 @@ namespace ZenTimings
                     sensorsWindw.Closed += (s, args) => StopTelemetryTimer();
                     sensorsWindw.Show();
 
+                    if (startMinimized)
+                        sensorsWindw.WindowState = WindowState.Minimized;
+
                     if (WindowState == WindowState.Minimized && !PowerCfgTimer.IsEnabled)
                         StartTelemetryTimer();
                 }
@@ -1158,6 +1166,11 @@ namespace ZenTimings
             {
                 MessageBox.Show($"Error opening Sensors window:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void TelemetryMonitorToolstripMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            OpenSensorsWindow();
         }
 
         private void SpdInfoToolstripMenuItem_Click(object sender, RoutedEventArgs e)
