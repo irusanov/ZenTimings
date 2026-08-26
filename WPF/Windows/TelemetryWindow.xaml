@@ -102,6 +102,7 @@
         </Grid.RowDefinitions>
         <!-- Module grid — all DIMMs visible simultaneously -->
         <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0" Margin="0">
+            <StackPanel>
             <ItemsControl x:Name="ModulesContainer">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -168,7 +169,8 @@
                                       IsReadOnly="True"
                                       FontSize="11"
                                       RowHeight="18"
-                                          ColumnHeaderHeight="20"
+                                      ColumnHeaderHeight="20"
+                                      PreviewMouseWheel="DataGrid_PreviewMouseWheel"
                                       adonisExtensions:LayerExtension.Layer="3"
                                       Visibility="{Binding HasTelemetry, Converter={StaticResource BoolToVis}}">
                                     <DataGrid.ColumnHeaderStyle>
@@ -231,6 +233,85 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
+
+            <!-- Sensor groups — SuperIO sensors grouped per chip -->
+                <ItemsControl x:Name="SensorGroupsContainer">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <GroupBox adonisExtensions:LayerExtension.Layer="3"
+                                  Background="{DynamicResource PanelBackground}"
+                                  Padding="6,3"
+                                  Margin="0">
+                            <GroupBox.Header>
+                                <TextBlock Text="{Binding Header}" VerticalAlignment="Center" FontSize="11"/>
+                            </GroupBox.Header>
+                            <DataGrid ItemsSource="{Binding TelemetryItems}"
+                                      AutoGenerateColumns="False"
+                                      GridLinesVisibility="None"
+                                      HeadersVisibility="Column"
+                                      CanUserDeleteRows="False"
+                                      CanUserResizeRows="False"
+                                      CanUserReorderColumns="False"
+                                      CanUserResizeColumns="False"
+                                      CanUserSortColumns="False"
+                                      Focusable="False"
+                                      IsReadOnly="True"
+                                      FontSize="11"
+                                      RowHeight="18"
+                                      ColumnHeaderHeight="20"
+                                      PreviewMouseWheel="DataGrid_PreviewMouseWheel"
+                                      adonisExtensions:LayerExtension.Layer="3">
+                                <DataGrid.ColumnHeaderStyle>
+                                    <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                                        <Setter Property="Margin" Value="0,0,0,2"/>
+                                    </Style>
+                                </DataGrid.ColumnHeaderStyle>
+                                <DataGrid.RowStyle>
+                                    <Style TargetType="{x:Type DataGridRow}">
+                                        <Setter Property="Focusable" Value="False"/>
+                                        <Setter Property="Background" Value="Transparent"/>
+                                    </Style>
+                                </DataGrid.RowStyle>
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Sensor" Binding="{Binding Name}" Width="*" MinWidth="100">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="{x:Type TextBlock}">
+                                                <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
+                                                <Setter Property="Padding" Value="3,0"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+
+                                    <DataGridTextColumn Header="Current" Binding="{Binding Current}" Width="*" MinWidth="64">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TelemetryCurrentValueCellStyle}"/>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+
+                                    <DataGridTextColumn Header="Min" Binding="{Binding Min}" Width="*" MinWidth="54">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TelemetryMinValueCellStyle}"/>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+
+                                    <DataGridTextColumn Header="Max" Binding="{Binding Max}" Width="*" MinWidth="54">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TelemetryMaxValueCellStyle}"/>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+
+                                    <DataGridTextColumn Header="Average" Binding="{Binding Average}" Width="*" MinWidth="64">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TelemetryAverageValueCellStyle}"/>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            </StackPanel>
         </ScrollViewer>
 
         <Border Grid.Row="1" Style="{DynamicResource Separator}"/>

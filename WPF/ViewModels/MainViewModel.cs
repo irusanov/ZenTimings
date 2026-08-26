@@ -244,7 +244,7 @@ namespace ZenTimings.ViewModels
             Plugins = plugins;
 
             CpuName = VendorUtils.GetCpuNameString(CpuSingleton.Instance.systemInfo);
-            SmuVersion = CpuSingleton.Instance?.systemInfo?.SmuVersionString ?? "Unknown";
+            SmuVersion = CpuSingleton.Instance?.systemInfo?.SmuVersion.ToString() ?? "Unknown";
 
             TotalCapacity = CpuSingleton.Instance.GetMemoryConfig().TotalCapacity;
             MemoryType = memoryType;
@@ -416,7 +416,7 @@ namespace ZenTimings.ViewModels
                 if (property.Name == "CpuId" || property.Name == "PatchLevel" || property.Name == "SmuTableVersion")
                     html += $"<tr><td>{property.Name}</td><td>{property.GetValue(cpu.systemInfo, null):X8}</td></tr>";
                 else if (property.Name == "SmuVersion")
-                    html += $"<tr><td>{property.Name}</td><td>{cpu.systemInfo.SmuVersionString}</td></tr>";
+                    html += $"<tr><td>{property.Name}</td><td>{cpu.systemInfo.SmuVersion}</td></tr>";
                 else if (property.Name == "Model" || property.Name == "ExtendedModel" || property.Name == "BaseModel")
                     html += $"<tr><td>{property.Name}</td><td>{property.GetValue(cpu.systemInfo, null)} (0x{property.GetValue(cpu.systemInfo, null):X})</td></tr>";
                 else if (property.Name != "SMBios")

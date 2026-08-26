@@ -5,7 +5,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Threading;
+using ZenStates.Core.Hardware;
 using ZenStates.Core.Hardware.DRAM;
 using ZenStates.Core.Hardware.DRAM.DDR5.Pmic;
 using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
@@ -20,6 +22,8 @@ namespace ZenTimings.Windows
         private DateTime _windowOpenedAt;
         private readonly MemoryConfig memoryConfig;
         private readonly ObservableCollection<ModuleViewModel> moduleViewModels = new ObservableCollection<ModuleViewModel>();
+        private readonly ObservableCollection<SensorGroupViewModel> sensorGroupViewModels = new ObservableCollection<SensorGroupViewModel>();
+        private readonly List<SensorTelemetryLink> sensorTelemetryLinks = new List<SensorTelemetryLink>();
         private bool _isRefreshing;
 
         public TelemetryWindow()
@@ -37,9 +41,11 @@ namespace ZenTimings.Windows
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             ModulesContainer.ItemsSource = moduleViewModels;
+            SensorGroupsContainer.ItemsSource = sensorGroupViewModels;
             AppSettings.Instance.PropertyChanged += AppSettings_PropertyChanged;
             ToggleAutoOpen.IsChecked = AppSettings.Instance.AutoOpenTelemetry;
             await LoadModulesDataAsync();
+            LoadSensorGroups();
             ConfigureAutoRefresh();
         }
 
@@ -380,6 +386,7 @@ namespace ZenTimings.Windows
         private void RefreshTimer_Tick(object sender, EventArgs e)
         {
             RefreshTelemetry();
+            RefreshSensorGroups();
         }
 
         private void BtnResetStats_Click(object sender, RoutedEventArgs e)
@@ -392,14 +399,127 @@ namespace ZenTimings.Windows
                 }
             }
 
+            foreach (var group in sensorGroupViewModels)
+            {
+                foreach (var item in group.TelemetryItems)
+                {
+                    item.ResetStats();
+                }
+            }
+
             _windowOpenedAt = DateTime.Now;
             UptimeTimer_Tick(null, null);
+        }
+
+        // Builds the sensor group view models from SystemInfo.SensorGroups (grouped per SuperIO chip).
+        private void LoadSensorGroups()
+        {
+            sensorGroupViewModels.Clear();
+            sensorTelemetryLinks.Clear();
+
+            var systemInfo = CpuSingleton.Instance?.systemInfo;
+            if (systemInfo == null)
+                return;
+
+            foreach (var group in systemInfo.SensorGroups)
+            {
+                var groupVm = new SensorGroupViewModel { Header = group.ChipName };
+
+                foreach (var sensor in group.Sensors)
+                {
+                    var unit = GetSensorUnit(sensor.SensorType);
+                    var initialValue = GetSensorDisplayValue(sensor);
+                    var item = new TelemetryItemViewModel(sensor.Name, initialValue, unit);
+                    groupVm.TelemetryItems.Add(item);
+                    sensorTelemetryLinks.Add(new SensorTelemetryLink(sensor, item));
+                }
+
+                if (groupVm.TelemetryItems.Count > 0)
+                    sensorGroupViewModels.Add(groupVm);
+            }
+        }
+
+        // Refreshes sensor values from SystemInfo, updating min/max/average stats.
+        private void RefreshSensorGroups()
+        {
+            var systemInfo = CpuSingleton.Instance?.systemInfo;
+            if (systemInfo == null || sensorTelemetryLinks.Count == 0)
+                return;
+
+            try
+            {
+                systemInfo.UpdateSensors();
+
+                foreach (var link in sensorTelemetryLinks)
+                {
+                    link.Item.UpdateValue(GetSensorDisplayValue(link.Sensor));
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusText.Text = $"Error refreshing sensors: {ex.Message}";
+            }
+        }
+
+        private static double GetSensorDisplayValue(Sensor sensor)
+        {
+            var value = sensor.Value ?? 0;
+            return sensor.SensorType == SensorType.Fan ? Math.Round(value) : value;
+        }
+
+        private static string GetSensorUnit(SensorType sensorType)
+        {
+            switch (sensorType)
+            {
+                case SensorType.Voltage: return "V";
+                case SensorType.Current: return "A";
+                case SensorType.Power: return "W";
+                case SensorType.Clock: return "MHz";
+                case SensorType.Temperature: return "°C";
+                case SensorType.Load: return "%";
+                case SensorType.Frequency: return "Hz";
+                case SensorType.Fan: return "RPM";
+                case SensorType.Flow: return "L/h";
+                case SensorType.Control: return "%";
+                case SensorType.Level: return "%";
+                case SensorType.Factor: return "";
+                case SensorType.Data: return "GB";
+                case SensorType.SmallData: return "MB";
+                case SensorType.Throughput: return "B/s";
+                case SensorType.TimeSpan: return "s";
+                case SensorType.Timing: return "ns";
+                case SensorType.Energy: return "mWh";
+                case SensorType.Noise: return "dBA";
+                case SensorType.Conductivity: return "µS/cm";
+                case SensorType.Humidity: return "%";
+                default: return "";
+            }
         }
 
         private void ToggleAutoOpen_Click(object sender, RoutedEventArgs e)
         {
             AppSettings.Instance.AutoOpenTelemetry = ToggleAutoOpen.IsChecked == true;
             AppSettings.Instance.Save();
+        }
+
+        // The DataGrids own internal ScrollViewer swallows mouse wheel events even when
+        // they have nothing to scroll, preventing the outer window ScrollViewer from
+        // scrolling while the cursor is over a row. Forward unhandled wheel events up.
+        private void DataGrid_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Handled)
+                return;
+
+            e.Handled = true;
+
+            var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
+            {
+                RoutedEvent = MouseWheelEvent,
+                Source = sender
+            };
+
+            if (sender is FrameworkElement element && element.Parent is UIElement parent)
+                parent.RaiseEvent(eventArg);
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
@@ -516,6 +636,38 @@ namespace ZenTimings.Windows
         {
             get => logoResourceName;
             set { logoResourceName = value; OnPropertyChanged(nameof(LogoResourceName)); }
+        }
+
+        public ObservableCollection<TelemetryItemViewModel> TelemetryItems { get; } = new ObservableCollection<TelemetryItemViewModel>();
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+    public class SensorTelemetryLink
+    {
+        public SensorTelemetryLink(Sensor sensor, TelemetryItemViewModel item)
+        {
+            Sensor = sensor;
+            Item = item;
+        }
+
+        public Sensor Sensor { get; }
+        public TelemetryItemViewModel Item { get; }
+    }
+
+    public class SensorGroupViewModel : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private string header;
+
+        public string Header
+        {
+            get => header;
+            set { header = value; OnPropertyChanged(nameof(Header)); }
         }
 
         public ObservableCollection<TelemetryItemViewModel> TelemetryItems { get; } = new ObservableCollection<TelemetryItemViewModel>();
@@ -664,7 +816,7 @@ namespace ZenTimings.Windows
             if (_isBoolean)
                 return value >= 0.5 ? "Yes" : "No";
 
-            string format = unit == "°C" ? "F2" : "F3";
+            string format = unit == "°C" ? "F2" : unit == "RPM" ? "F0" : "F3";
             return $"{value.ToString(format)} {unit}";
         }
 

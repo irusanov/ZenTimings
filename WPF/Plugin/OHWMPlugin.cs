@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using ZenTimings.Common;
 
@@ -31,6 +32,7 @@ namespace ZenTimings.Plugin
             }
             catch (Exception ex)
             {
+                Debug.WriteLine(ex);
                 Close();
             }
         }

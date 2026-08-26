@@ -41,7 +41,7 @@ namespace ZenTimings.Windows
                     if (property.Name == "CpuId" || property.Name == "PatchLevel" || property.Name == "SmuTableVersion")
                         items.Add(new GridItem() { Name = property.Name, Value = $"{property.GetValue(si, null):X8}" });
                     else if (property.Name == "SmuVersion")
-                        items.Add(new GridItem() { Name = property.Name, Value = si.SmuVersionString });
+                        items.Add(new GridItem() { Name = property.Name, Value = si.SmuVersion.ToString() });
                     else if (property.Name != "SMBios")
                         items.Add(new GridItem()
                         { Name = property.Name, Value = property.GetValue(si, null).ToString() });

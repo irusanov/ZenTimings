@@ -133,6 +133,7 @@ namespace ZenTimings
 
                 SplashWindow.Loading("Core");
                 cpu = CpuSingleton.Instance;
+                cpu.systemInfo.UpdateSensors();
 
                 if (cpu.info.family.Equals(Cpu.Family.UNSUPPORTED))
                 {
