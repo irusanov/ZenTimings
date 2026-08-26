@@ -685,6 +685,15 @@ namespace ZenTimings.Windows
         CriticalHigh
     }
 
+    public enum SensorIconKind
+    {
+        Generic,
+        Voltage,
+        Temperature,
+        Power,
+        Fan
+    }
+
     public class TelemetryItemViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
@@ -706,6 +715,20 @@ namespace ZenTimings.Windows
         private ThermalAlarmLevel maxAlarmLevel;
 
         public string Name { get; }
+
+        public SensorIconKind IconKind => GetIconKind(unit);
+
+        private static SensorIconKind GetIconKind(string unit)
+        {
+            switch (unit)
+            {
+                case "V": return SensorIconKind.Voltage;
+                case "°C": return SensorIconKind.Temperature;
+                case "W": return SensorIconKind.Power;
+                case "RPM": return SensorIconKind.Fan;
+                default: return SensorIconKind.Generic;
+            }
+        }
 
         public ThermalAlarmLevel CurrentAlarmLevel
         {
