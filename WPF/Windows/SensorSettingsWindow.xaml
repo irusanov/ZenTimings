@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+    adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
     xmlns:windows="clr-namespace:ZenTimings.Windows"
     mc:Ignorable="d"
     Title="Manage Sensors"
