@@ -994,6 +994,11 @@ namespace ZenTimings
 
             this.Topmost = false;
 
+            if (settings.CheckForUpdates && SplashWindow.DeferUpdateCheck)
+            {
+                ((App)Application.Current).updater.CheckForUpdate(suppressNetworkErrorDialog: true);
+            }
+
             IntPtr handle = new WindowInteropHelper(Application.Current.MainWindow).Handle;
             HwndSource source = HwndSource.FromHwnd(handle);
 

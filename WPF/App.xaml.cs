@@ -38,8 +38,11 @@ namespace ZenTimings
 
             updater = new Updater();
 
+            bool startedFromScheduledTask = Array.Exists(e.Args,
+                arg => arg.Equals(StartupHelper.AutostartArgument, StringComparison.OrdinalIgnoreCase));
+
             GC.KeepAlive(instanceMutex);
-            SplashWindow.Start();
+            SplashWindow.Start(startedFromScheduledTask && AppSettings.Instance.AutostartWithWindows);
             base.OnStartup(e);
         }
     }

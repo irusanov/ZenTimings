@@ -1,4 +1,4 @@
-﻿using AdonisUI.Controls;
+using AdonisUI.Controls;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -52,7 +52,7 @@ namespace ZenTimings
             }
         }
 
-        public void CheckForUpdate(bool manualUpdate = false)
+        public void CheckForUpdate(bool manualUpdate = false, bool suppressNetworkErrorDialog = false)
         {
             if (!manualUpdate) SplashWindow.Loading("Checking for updates...");
 
@@ -72,11 +72,11 @@ namespace ZenTimings
             }
             catch (WebException ex)
             {
-                string message = "There is a problem reaching the update server. Please check your internet connection and try again later.";
                 Debug.WriteLine($"Update check WebException: {ex.Message}");
 
-                //if (manual)
+                if (!suppressNetworkErrorDialog)
                 {
+                    string message = "There is a problem reaching the update server. Please check your internet connection and try again later.";
                     MessageBox.Show(message, @"Update Check Failed",
                         MessageBoxButton.OK, MessageBoxImage.Error);
                 }

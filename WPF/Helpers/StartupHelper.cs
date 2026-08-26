@@ -14,6 +14,7 @@ namespace ZenTimings
     {
         private const string TaskName = "ZenTimings";
         private const int DefaultDelaySeconds = 5;
+        public const string AutostartArgument = "/autostart";
 
         private static string ExecutablePath => Process.GetCurrentProcess().MainModule.FileName;
 
@@ -105,11 +106,12 @@ namespace ZenTimings
                 "    <RunOnlyIfIdle>false</RunOnlyIfIdle>\n" +
                 "    <WakeToRun>false</WakeToRun>\n" +
                 "    <ExecutionTimeLimit>PT0S</ExecutionTimeLimit>\n" +
-                "    <Priority>7</Priority>\n" +
+                "    <Priority>3</Priority>\n" +
                 "  </Settings>\n" +
                 "  <Actions Context=\"Author\">\n" +
                 "    <Exec>\n" +
                 "      <Command>\"" + ExecutablePath + "\"</Command>\n" +
+                "      <Arguments>" + AutostartArgument + "</Arguments>\n" +
                 "    </Exec>\n" +
                 "  </Actions>\n" +
                 "</Task>";

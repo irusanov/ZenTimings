@@ -28,11 +28,19 @@ namespace ZenTimings.Windows
             InitializeComponent();
         }
 
-        public static void Start()
+        // True when the app was launched by the scheduled task created for
+        // AutostartWithWindows (i.e. right after user logon). In this case the
+        // update check is deferred until the main window is opened, instead of
+        // being performed on the splash screen.
+        public static bool DeferUpdateCheck { get; private set; }
+
+        public static void Start(bool deferUpdateCheck = false)
         {
+            DeferUpdateCheck = deferUpdateCheck;
+
             splash.Show();
             ApplySettings();
-            if (appSettings.CheckForUpdates)
+            if (appSettings.CheckForUpdates && !DeferUpdateCheck)
                 updater.CheckForUpdate();
         }
 
