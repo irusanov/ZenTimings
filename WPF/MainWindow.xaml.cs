@@ -47,7 +47,7 @@ namespace ZenTimings
         private readonly AppSettings settings = AppSettings.Instance;
         private readonly List<IPlugin> plugins = new List<IPlugin>();
         private SystemInfoWindow siWnd = null;
-        private Windows.TelemetryWindow telemetryWnd = null;
+        private SensorsWindow sensorsWindw = null;
         private OptionsDialog optionsWnd = null;
         private AboutDialog aboutWnd = null;
         internal readonly Forms.NotifyIcon _notifyIcon;
@@ -682,7 +682,7 @@ namespace ZenTimings
 
         private void StartTelemetryTimer()
         {
-            if (settings.AutoRefresh && telemetryWnd != null && telemetryWnd.IsLoaded && !TelemetryTimer.IsEnabled)
+            if (settings.AutoRefresh && sensorsWindw != null && sensorsWindw.IsLoaded && !TelemetryTimer.IsEnabled)
             {
                 TelemetryTimer.Interval = TimeSpan.FromMilliseconds(settings.AutoRefreshInterval);
                 TelemetryTimer.Start();
@@ -697,7 +697,7 @@ namespace ZenTimings
 
         private void TelemetryTimer_Tick(object sender, EventArgs e)
         {
-            if (telemetryWnd == null || !telemetryWnd.IsLoaded)
+            if (sensorsWindw == null || !sensorsWindw.IsLoaded)
             {
                 StopTelemetryTimer();
                 return;
@@ -712,7 +712,7 @@ namespace ZenTimings
                         cpu.memoryConfig.RefreshTelemetry(settings.AutoRefreshInterval);
 
                     Dispatcher.Invoke(DispatcherPriority.ApplicationIdle,
-                        new Action(() => telemetryWnd?.RefreshTelemetry()));
+                        new Action(() => sensorsWindw?.RefreshTelemetry()));
                 }).Start();
             }
             catch (Exception ex)
@@ -1119,21 +1119,21 @@ namespace ZenTimings
                 WindowStartupLocation location = WindowStartupLocation.CenterScreen;
 
                 if (settings.SaveWindowPosition
-                    && settings?.TelemetryWindowHeight != 0
-                    && settings?.TelemetryWindowWidth != 0
-                    && settings?.TelemetryWindowLeft != -1
-                    && settings?.TelemetryWindowTop != -1)
+                    && settings?.SensorsWindowHeight != 0
+                    && settings?.SensorsWindowWidth != 0
+                    && settings?.SensorsWindowLeft != -1
+                    && settings?.SensorsWindowTop != -1)
                 {
                     location = WindowStartupLocation.Manual;
-                    telemetryWindowLeft = settings.TelemetryWindowLeft;
-                    telemetryWindowTop = settings.TelemetryWindowTop;
-                    telemetryWindowHeight = settings.TelemetryWindowHeight;
-                    telemetryWindowWidth = settings.TelemetryWindowWidth;
+                    telemetryWindowLeft = settings.SensorsWindowLeft;
+                    telemetryWindowTop = settings.SensorsWindowTop;
+                    telemetryWindowHeight = settings.SensorsWindowHeight;
+                    telemetryWindowWidth = settings.SensorsWindowWidth;
                 }
 
-                if (telemetryWnd == null || !telemetryWnd.IsLoaded)
+                if (sensorsWindw == null || !sensorsWindw.IsLoaded)
                 {
-                    telemetryWnd = new Windows.TelemetryWindow()
+                    sensorsWindw = new Windows.SensorsWindow()
                     {
                         Width = telemetryWindowWidth,
                         Height = telemetryWindowHeight,
@@ -1141,15 +1141,15 @@ namespace ZenTimings
                         Top = telemetryWindowTop,
                         Left = telemetryWindowLeft
                     };
-                    telemetryWnd.Closed += (s, args) => StopTelemetryTimer();
-                    telemetryWnd.Show();
+                    sensorsWindw.Closed += (s, args) => StopTelemetryTimer();
+                    sensorsWindw.Show();
 
                     if (WindowState == WindowState.Minimized && !PowerCfgTimer.IsEnabled)
                         StartTelemetryTimer();
                 }
                 else
                 {
-                    telemetryWnd.Activate();
+                    sensorsWindw.Activate();
                 }
             }
             catch (Exception ex)

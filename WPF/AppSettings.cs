@@ -12,7 +12,7 @@ namespace ZenTimings
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public const int VersionMajor = 1;
-        public const int VersionMinor = 13;
+        public const int VersionMinor = 14;
 
         private static readonly string Filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.xml");
         public const string AGESA_UNKNOWN = "Unknown";
@@ -184,10 +184,10 @@ namespace ZenTimings
         public double SysInfoWindowTop { get; set; } = -1;
         public double SysInfoWindowWidth { get; set; }
         public double SysInfoWindowHeight { get; set; }
-        public double TelemetryWindowLeft { get; set; } = -1;
-        public double TelemetryWindowTop { get; set; } = -1;
-        public double TelemetryWindowWidth { get; set; }
-        public double TelemetryWindowHeight { get; set; }
+        public double SensorsWindowLeft { get; set; } = -1;
+        public double SensorsWindowTop { get; set; } = -1;
+        public double SensorsWindowWidth { get; set; }
+        public double SensorsWindowHeight { get; set; }
         public string NotifiedChangelog { get; set; } = "";
         public bool SingleInstance { get; set; } = true;
         public bool AutoOpenTelemetry { get; set; } = false;

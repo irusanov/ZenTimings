@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
-using ZenTimings;
 using ZenStates.Core.Hardware;
 using ZenStates.Core.Hardware.DRAM;
 using ZenStates.Core.Hardware.DRAM.DDR5.Pmic;
@@ -51,7 +50,7 @@ namespace ZenTimings.Windows
         }
     }
 
-    public partial class TelemetryWindow : ThemedAdonisWindow
+    public partial class SensorsWindow : ThemedAdonisWindow
     {
         private readonly DispatcherTimer updateTimer;
         private readonly DispatcherTimer _uptimeTimer;
@@ -62,7 +61,7 @@ namespace ZenTimings.Windows
         private readonly List<SensorTelemetryLink> sensorTelemetryLinks = new List<SensorTelemetryLink>();
         private bool _isRefreshing;
 
-        public TelemetryWindow()
+        public SensorsWindow()
         {
             InitializeComponent();
             memoryConfig = CpuSingleton.Instance.memoryConfig;
@@ -423,7 +422,7 @@ namespace ZenTimings.Windows
 
             //if (pmicData.TelemetryReportsTotalPower)
             {
-            UpdateTelemetryItem(vm, "Total Power", pmicData.TotalW);
+                UpdateTelemetryItem(vm, "Total Power", pmicData.TotalW);
             }
 
             UpdateTelemetryItem(vm, "PMIC High Temp", pmicData.HighTemperatureWarning);
@@ -737,10 +736,10 @@ namespace ZenTimings.Windows
             // Save window position and size if enabled
             if (appSettings.SaveWindowPosition)
             {
-                appSettings.TelemetryWindowLeft = Left;
-                appSettings.TelemetryWindowTop = Top;
-                appSettings.TelemetryWindowHeight = Height;
-                appSettings.TelemetryWindowWidth = Width;
+                appSettings.SensorsWindowLeft = Left;
+                appSettings.SensorsWindowTop = Top;
+                appSettings.SensorsWindowHeight = Height;
+                appSettings.SensorsWindowWidth = Width;
                 appSettings.Save();
             }
         }

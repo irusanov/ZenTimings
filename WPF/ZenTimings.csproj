@@ -159,8 +159,8 @@
     <Compile Include="Windows\SpdInfoWindow.xaml.cs">
       <DependentUpon>SpdInfoWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\TelemetryWindow.xaml.cs">
-      <DependentUpon>TelemetryWindow.xaml</DependentUpon>
+    <Compile Include="Windows\SensorsWindow.xaml.cs">
+      <DependentUpon>SensorsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\ThemedAdonisWindow.cs" />
     <Compile Include="WindowUtils.cs" />
@@ -229,7 +229,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\TelemetryWindow.xaml">
+    <Page Include="Windows\SensorsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
