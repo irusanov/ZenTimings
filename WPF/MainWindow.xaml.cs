@@ -1087,7 +1087,8 @@ namespace ZenTimings
                 && settings?.SysInfoWindowHeight != 0
                 && settings?.SysInfoWindowWidth != 0
                 && settings?.SysInfoWindowLeft != -1
-                && settings?.SysInfoWindowTop != -1)
+                && settings?.SysInfoWindowTop != -1
+                && IsPositionOnScreen(settings.SysInfoWindowLeft, settings.SysInfoWindowTop, settings.SysInfoWindowWidth, settings.SysInfoWindowHeight))
             {
                 location = WindowStartupLocation.Manual;
                 sysInfoWindowLeft = settings.SysInfoWindowLeft;
@@ -1122,7 +1123,8 @@ namespace ZenTimings
                     && settings?.SensorsWindowHeight != 0
                     && settings?.SensorsWindowWidth != 0
                     && settings?.SensorsWindowLeft != -1
-                    && settings?.SensorsWindowTop != -1)
+                    && settings?.SensorsWindowTop != -1
+                    && IsPositionOnScreen(settings.SensorsWindowLeft, settings.SensorsWindowTop, settings.SensorsWindowWidth, settings.SensorsWindowHeight))
                 {
                     location = WindowStartupLocation.Manual;
                     telemetryWindowLeft = settings.SensorsWindowLeft;
@@ -1251,6 +1253,20 @@ namespace ZenTimings
             return version;
         }
 
+        // Checks whether the given window rectangle is fully within the combined bounds of all
+        // monitors (the virtual screen). Used to detect saved positions that are no longer valid,
+        // e.g. after a monitor was disconnected or the display layout changed.
+        private static bool IsPositionOnScreen(double left, double top, double width, double height)
+        {
+            double virtualLeft = SystemParameters.VirtualScreenLeft;
+            double virtualTop = SystemParameters.VirtualScreenTop;
+            double virtualRight = virtualLeft + SystemParameters.VirtualScreenWidth;
+            double virtualBottom = virtualTop + SystemParameters.VirtualScreenHeight;
+
+            return left >= virtualLeft && top >= virtualTop &&
+                   left + width <= virtualRight && top + height <= virtualBottom;
+        }
+
         private void RestoreWindowPosition()
         {
             if (settings.SaveWindowPosition)
@@ -1260,23 +1276,9 @@ namespace ZenTimings
                     return;
                 }
 
-                WindowStartupLocation = WindowStartupLocation.Manual;
-
-                // Get the current screen bounds
-                System.Windows.Forms.Screen screen = System.Windows.Forms.Screen.FromHandle(new System.Windows.Interop.WindowInteropHelper(this).Handle);
-                System.Drawing.Rectangle screenBounds = screen.Bounds;
-
-                // Check if the saved window position is outside the screen bounds
-                if (settings.WindowLeft < screenBounds.Left || settings.WindowLeft + Width > screenBounds.Right ||
-                    settings.WindowTop < screenBounds.Top || settings.WindowTop + Height > screenBounds.Bottom)
+                if (IsPositionOnScreen(settings.WindowLeft, settings.WindowTop, Width, Height))
                 {
-                    // Reset the window position to a default value
-                    Left = (screenBounds.Width - Width) / 2 + screenBounds.Left;
-                    Top = (screenBounds.Height - Height) / 2 + screenBounds.Top;
-                }
-                else
-                {
-                    // Set the window position to the saved values
+                    WindowStartupLocation = WindowStartupLocation.Manual;
                     Left = settings.WindowLeft;
                     Top = settings.WindowTop;
                 }
