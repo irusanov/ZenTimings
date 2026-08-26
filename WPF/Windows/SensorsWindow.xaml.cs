@@ -225,7 +225,7 @@ namespace ZenTimings.Windows
                     }
 
                     if (spdEntry.Value.ThermalData != null && spdEntry.Value.ThermalData.IsValid)
-                        InitializeThermalTelemetry(vm, spdEntry.Value.ThermalData);
+                        InitializeThermalTelemetry(vm, spdEntry.Value.ThermalData, slotIndex);
 
                     if (spdEntry.Value.PmicData != null && spdEntry.Value.PmicData.IsValid)
                     {
@@ -356,10 +356,19 @@ namespace ZenTimings.Windows
 
         private static string GetPmicSensorKey(int slotIndex, string sensorName) => $"PMIC|{slotIndex}|{sensorName}";
 
-        private void InitializeThermalTelemetry(ModuleViewModel vm, Ddr5ThermalData thermalData)
+        private void InitializeThermalTelemetry(ModuleViewModel vm, Ddr5ThermalData thermalData, int slotIndex)
         {
             vm.HasTelemetry = true;
-            var item = new TelemetryItemViewModel("SPD Hub Temp", thermalData.TemperatureC, "°C");
+
+            var key = GetPmicSensorKey(slotIndex, "SPD Hub Temp");
+            if (SensorSettings.Instance.HiddenSensors.Contains(key))
+            {
+                vm.HiddenCount++;
+                vm.HiddenKeys.Add(key);
+                return;
+            }
+
+            var item = new TelemetryItemViewModel("SPD Hub Temp", thermalData.TemperatureC, "°C") { GroupKey = key };
             item.UpdateThermalAlarm(thermalData.AlarmCritHigh, thermalData.AlarmHigh);
             vm.TelemetryItems.Add(item);
         }
@@ -600,37 +609,95 @@ namespace ZenTimings.Windows
             UpdateNoSensorsMessage();
         }
 
-        private async void UnhideSection_Click(object sender, RoutedEventArgs e)
+        // Opens the global sensor visibility settings dialog listing every known sensor,
+        // grouped by module/chip, with checkboxes to show/hide them.
+        private async void BtnSensorSettings_Click(object sender, RoutedEventArgs e)
         {
-            if (!(sender is System.Windows.Controls.Button button))
-                return;
+            var groups = BuildSensorSettingsCatalog();
+            var dialog = new SensorSettingsWindow(groups) { Owner = this };
 
-            List<string> keysToUnhide = null;
-            if (button.Tag is ModuleViewModel || button.Tag is SensorGroupViewModel)
+            if (dialog.ShowDialog() == true)
             {
-                keysToUnhide = button.Tag is ModuleViewModel moduleVm
-                    ? new List<string>(moduleVm.HiddenKeys)
-                    : new List<string>(((SensorGroupViewModel)button.Tag).HiddenKeys);
+                var hiddenSensors = SensorSettings.Instance.HiddenSensors;
+                bool changed = false;
+
+                foreach (var group in groups)
+                {
+                    foreach (var entryItem in group.Entries)
+                    {
+                        bool isHidden = !entryItem.IsVisible;
+                        bool alreadyHidden = hiddenSensors.Contains(entryItem.Key);
+
+                        if (isHidden && !alreadyHidden)
+                        {
+                            hiddenSensors.Add(entryItem.Key);
+                            changed = true;
+                        }
+                        else if (!isHidden && alreadyHidden)
+                        {
+                            hiddenSensors.Remove(entryItem.Key);
+                            changed = true;
+                        }
+                    }
+                }
+
+                if (changed)
+                    SensorSettings.Instance.Save();
+
+                LoadSensorGroups();
+                RefreshSensorGroups();
+                await LoadModulesDataAsync();
+                UpdateNoSensorsMessage();
+            }
+        }
+
+        // Builds the list of every known sensor (visible or hidden), grouped by module/chip,
+        // for display in the sensor settings dialog.
+        private List<SensorSettingsGroup> BuildSensorSettingsCatalog()
+        {
+            var groups = new List<SensorSettingsGroup>();
+
+            foreach (var module in moduleViewModels)
+            {
+                var group = new SensorSettingsGroup { Header = module.Header };
+
+                foreach (var item in module.TelemetryItems)
+                {
+                    if (!string.IsNullOrEmpty(item.GroupKey))
+                        group.Entries.Add(new SensorSettingsEntry(item.GroupKey, item.Name, true));
+                }
+
+                foreach (var key in module.HiddenKeys)
+                    group.Entries.Add(new SensorSettingsEntry(key, GetSensorNameFromKey(key), false));
+
+                if (group.Entries.Count > 0)
+                    groups.Add(group);
             }
 
-            if (keysToUnhide == null || keysToUnhide.Count == 0)
-                return;
-
-            var hiddenSensors = SensorSettings.Instance.HiddenSensors;
-            bool changed = false;
-            foreach (var key in keysToUnhide)
+            foreach (var sensorGroup in sensorGroupViewModels)
             {
-                if (hiddenSensors.Remove(key))
-                    changed = true;
+                var group = new SensorSettingsGroup { Header = sensorGroup.Header };
+
+                foreach (var item in sensorGroup.TelemetryItems)
+                {
+                    if (!string.IsNullOrEmpty(item.GroupKey))
+                        group.Entries.Add(new SensorSettingsEntry(item.GroupKey, item.Name, true));
+                }
+
+                foreach (var key in sensorGroup.HiddenKeys)
+                    group.Entries.Add(new SensorSettingsEntry(key, GetSensorNameFromKey(key), false));
+
+                if (group.Entries.Count > 0)
+                    groups.Add(group);
             }
 
-            if (changed)
-                SensorSettings.Instance.Save();
+            return groups;
+        }
 
-            LoadSensorGroups();
-            RefreshSensorGroups();
-            await LoadModulesDataAsync();
-            UpdateNoSensorsMessage();
+        private static string GetSensorNameFromKey(string key)
+        {
+            int idx = key.LastIndexOf('|');
+            return idx >= 0 && idx < key.Length - 1 ? key.Substring(idx + 1) : key;
         }
 
         private void RefreshSensorGroups()

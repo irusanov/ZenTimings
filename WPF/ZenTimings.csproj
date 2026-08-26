@@ -127,7 +127,7 @@
     <Compile Include="ObservableObject.cs" />
     <Compile Include="VendorUtils.cs" />
     <Compile Include="AppSettings.cs" />
-    <Compile Include="TelemetrySettings.cs" />
+    <Compile Include="SensorSettings.cs" />
     <Compile Include="Common\ISensor.cs" />
     <Compile Include="Common\Sensor.cs" />
     <Compile Include="Controls\DDR4TimingsPanel.xaml.cs">
@@ -161,6 +161,9 @@
     </Compile>
     <Compile Include="Windows\SensorsWindow.xaml.cs">
       <DependentUpon>SensorsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\SensorSettingsWindow.xaml.cs">
+      <DependentUpon>SensorSettingsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\ThemedAdonisWindow.cs" />
     <Compile Include="WindowUtils.cs" />
@@ -230,6 +233,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\SensorsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\SensorSettingsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

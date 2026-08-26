@@ -35,6 +35,7 @@
         <Geometry x:Key="IconPower">M16,7V3H14V7H10V3H8V7H7.5A1.5,1.5 0 0,0 6,8.5V12.5A6,6 0 0,0 10,18.08V22H14V18.08A6,6 0 0,0 18,12.5V8.5A1.5,1.5 0 0,0 16.5,7H16Z</Geometry>
         <Geometry x:Key="IconFan">M12.5,2C17,2 17,6 14,7.5C13.5,8 13,9 13,10L11,10C11,9 10.5,8 10,7.5C7,6 7,2 11.5,2C11.83,2 12.17,2 12.5,2M12.5,22C8,22 8,18 11,16.5C11.5,16 12,15 12,14L14,14C14,15 14.5,16 15,16.5C18,18 18,22 13.5,22C13.17,22 12.83,22 12.5,22M2,11.5C2,7 6,7 7.5,10C8,10.5 9,11 10,11L10,13C9,13 8,13.5 7.5,14C6,17 2,17 2,12.5C2,12.17 2,11.83 2,11.5M22,11.5C22,17 18,17 16.5,14C16,13.5 15,13 14,13L14,11C15,11 16,10.5 16.5,10C18,7 22,7 22,11.5C22,11.83 22,12.17 22,11.5M12,10.5A1.5,1.5 0 0,0 10.5,12A1.5,1.5 0 0,0 12,13.5A1.5,1.5 0 0,0 13.5,12A1.5,1.5 0 0,0 12,10.5Z</Geometry>
         <Geometry x:Key="IconGeneric">M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4Z</Geometry>
+        <Geometry x:Key="IconSettings">M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.53,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.72,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.72,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.53,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z</Geometry>
 
         <Style x:Key="SensorIconStyle" TargetType="{x:Type Path}">
             <Setter Property="Width" Value="11"/>
@@ -160,9 +161,6 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Grid.Column="0" Text="{Binding HeaderDisplay}" VerticalAlignment="Center" FontSize="11"/>
-                                    <Button Grid.Column="1" Content="Show All" Click="UnhideSection_Click" Tag="{Binding}"
-                                            Visibility="{Binding HiddenCount, Converter={StaticResource CountToVis}}"
-                                            Margin="6,0,0,0" Padding="8,2" FontSize="11" VerticalAlignment="Center"/>
                                 </Grid>
                             </GroupBox.Header>
                             <StackPanel>
@@ -307,9 +305,6 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Grid.Column="0" Text="{Binding HeaderDisplay}" VerticalAlignment="Center" FontSize="11"/>
-                                    <Button Grid.Column="1" Content="Show All" Click="UnhideSection_Click" Tag="{Binding}"
-                                            Visibility="{Binding HiddenCount, Converter={StaticResource CountToVis}}"
-                                            Margin="6,0,0,0" Padding="8,2" FontSize="11" VerticalAlignment="Center"/>
                                 </Grid>
                             </GroupBox.Header>
                             <DataGrid ItemsSource="{Binding TelemetryItems}"
@@ -403,6 +398,14 @@
         <Border Grid.Row="2" Style="{DynamicResource BottomPanelStyles}">
             <DockPanel>
                 <TextBlock x:Name="StatusText" Text="Ready" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" FontSize="11"/>
+                <Button x:Name="BtnSensorSettings" DockPanel.Dock="Right"
+                    HorizontalAlignment="Right"
+                    Width="24" Height="24" Padding="0"
+                    Margin="6,0,0,0"
+                    ToolTip="Manage Sensors"
+                    Click="BtnSensorSettings_Click">
+                    <Path Data="{StaticResource IconSettings}" Stretch="Uniform" Width="12" Height="12" Fill="{DynamicResource TextColor}"/>
+                </Button>
                 <Button x:Name="BtnResetStats" DockPanel.Dock="Right"
                     HorizontalAlignment="Right"
                     Content="Reset Stats" Width="80" Height="24"
