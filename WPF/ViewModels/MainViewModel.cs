@@ -206,14 +206,25 @@ namespace ZenTimings.ViewModels
             }
         }
 
-        private float _apuVddioV;
-        public float ApuVddioV
+        private float _ApuVddio;
+        public float ApuVddio
         {
-            get => _apuVddioV;
+            get => _ApuVddio;
             set
             {
-                _apuVddioV = value;
-                OnPropertyChanged("ApuVddioV");
+                _ApuVddio = value;
+                OnPropertyChanged("ApuVddio");
+            }
+        }
+
+        private float _Vsoc;
+        public float Vsoc
+        {
+            get => _Vsoc;
+            set
+            {
+                _Vsoc = value;
+                OnPropertyChanged("Vsoc");
             }
         }
 
@@ -306,28 +317,42 @@ namespace ZenTimings.ViewModels
             // ECC
             ECC = SystemInfo.SMBios.MemoryDevices.Any(d => d.HasEcc);
 
-            // APU VDDIO: prefer live SuperIO sensor reading, fall back to the static AOD table value.
-            RefreshApuVddio();
+            // VDDIO / VSOC: prefer live SuperIO sensor readings, fall back to the static AOD table / power table values.
+            RefreshSensors();
         }
 
         private static readonly string[] ApuVddioSensorNames = { "VDIMM", "VDDIO", "CPU VDDIO" };
+        private static readonly string[] VsocSensorNames = { "CPU NB/SoC" };
 
-        // Call after CpuSingleton.Instance.systemInfo.UpdateSensors() to refresh the live sensor reading.
-        public void RefreshApuVddio()
+        // Call after CpuSingleton.Instance.systemInfo.UpdateSensors() to refresh the live sensor readings.
+        public void RefreshSensors()
         {
-            Sensor apuVddioSensor = CpuSingleton.Instance?.systemInfo?.SensorGroups
+            var sensors = CpuSingleton.Instance?.systemInfo?.SensorGroups
                 .SelectMany(g => g.Sensors)
-                .FirstOrDefault(s => ApuVddioSensorNames.Contains(s.Name, StringComparer.OrdinalIgnoreCase));
+                .ToList();
+
+            Sensor apuVddioSensor = sensors?.FirstOrDefault(s => ApuVddioSensorNames.Contains(s.Name, StringComparer.OrdinalIgnoreCase));
 
             if (apuVddioSensor?.Value != null)
             {
-                ApuVddioV = apuVddioSensor.Value.Value;
+                ApuVddio = apuVddioSensor.Value.Value;
             }
             else
             {
                 var aodData = CpuSingleton.Instance.info.aod?.Table?.Data;
                 if (aodData?.ApuVddio != null)
-                    ApuVddioV = aodData.ApuVddio.RawValue / 1000.0f;
+                    ApuVddio = aodData.ApuVddio.RawValue / 1000.0f;
+            }
+
+            Sensor vsocSensor = sensors?.FirstOrDefault(s => VsocSensorNames.Contains(s.Name, StringComparer.OrdinalIgnoreCase));
+
+            if (vsocSensor?.Value != null)
+            {
+                Vsoc = vsocSensor.Value.Value;
+            }
+            else if (PowerTable != null)
+            {
+                Vsoc = PowerTable.VDDCR_SOC;
             }
         }
 

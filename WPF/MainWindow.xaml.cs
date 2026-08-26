@@ -769,7 +769,7 @@ namespace ZenTimings
                         if (voltagesUpdated)
                             mainViewModel.PmicData = cpu.memoryConfig.SpdInfo.Values.ElementAtOrDefault(comboBoxPartNumber?.SelectedIndex ?? 0)?.PmicData ?? null;
 
-                        mainViewModel.RefreshApuVddio();
+                        mainViewModel.RefreshSensors();
 
                         lastMclk = newMclk;
 
