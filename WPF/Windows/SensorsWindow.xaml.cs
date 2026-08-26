@@ -288,7 +288,7 @@ namespace ZenTimings.Windows
         {
             vm.HasTelemetry = true;
 
-            var hiddenSensors = TelemetrySettings.Instance.HiddenSensors;
+            var hiddenSensors = SensorSettings.Instance.HiddenSensors;
             int hiddenCount = 0;
 
             void AddPmicItem(string name, double value, string unit)
@@ -503,7 +503,7 @@ namespace ZenTimings.Windows
             if (systemInfo == null)
                 return;
 
-            var hiddenSensors = TelemetrySettings.Instance.HiddenSensors;
+            var hiddenSensors = SensorSettings.Instance.HiddenSensors;
 
             foreach (var group in systemInfo.SensorGroups)
             {
@@ -548,7 +548,7 @@ namespace ZenTimings.Windows
             if (selectedItems.Count == 0)
                 return;
 
-            var hiddenSensors = TelemetrySettings.Instance.HiddenSensors;
+            var hiddenSensors = SensorSettings.Instance.HiddenSensors;
             bool changed = false;
 
             foreach (var item in selectedItems)
@@ -595,7 +595,7 @@ namespace ZenTimings.Windows
             //}
 
             if (changed)
-                TelemetrySettings.Instance.Save();
+                SensorSettings.Instance.Save();
 
             UpdateNoSensorsMessage();
         }
@@ -616,7 +616,7 @@ namespace ZenTimings.Windows
             if (keysToUnhide == null || keysToUnhide.Count == 0)
                 return;
 
-            var hiddenSensors = TelemetrySettings.Instance.HiddenSensors;
+            var hiddenSensors = SensorSettings.Instance.HiddenSensors;
             bool changed = false;
             foreach (var key in keysToUnhide)
             {
@@ -625,7 +625,7 @@ namespace ZenTimings.Windows
             }
 
             if (changed)
-                TelemetrySettings.Instance.Save();
+                SensorSettings.Instance.Save();
 
             LoadSensorGroups();
             RefreshSensorGroups();

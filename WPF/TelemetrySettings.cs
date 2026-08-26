@@ -6,13 +6,13 @@ using System.IO;
 namespace ZenTimings
 {
     [Serializable]
-    public sealed class TelemetrySettings
+    public sealed class SensorSettings
     {
-        private static readonly string Filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "telemetry_settings.xml");
+        private static readonly string Filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings_sensors.xml");
 
-        private static TelemetrySettings _instance;
+        private static SensorSettings _instance;
 
-        public static TelemetrySettings Instance
+        public static SensorSettings Instance
         {
             get
             {
@@ -25,13 +25,13 @@ namespace ZenTimings
 
         public List<string> HiddenSensors { get; set; } = new List<string>();
 
-        private static TelemetrySettings Load()
+        private static SensorSettings Load()
         {
             try
             {
                 if (File.Exists(Filename))
                 {
-                    return XmlUtils.DeserializeFromXml<TelemetrySettings>(Filename);
+                    return XmlUtils.DeserializeFromXml<SensorSettings>(Filename);
                 }
             }
             catch (Exception ex)
@@ -39,7 +39,7 @@ namespace ZenTimings
                 Debug.WriteLine(ex.Message);
             }
 
-            return new TelemetrySettings();
+            return new SensorSettings();
         }
 
         public void Save()
