@@ -53,7 +53,7 @@ namespace ZenTimings.Windows
     public partial class SensorsWindow : ThemedAdonisWindow
     {
         private readonly DispatcherTimer updateTimer;
-        private readonly DispatcherTimer _uptimeTimer;
+        private readonly DispatcherTimer _uptimeStatusTimer;
         private DateTime _windowOpenedAt;
         private readonly MemoryConfig memoryConfig;
         private readonly ObservableCollection<ModuleViewModel> moduleViewModels = new ObservableCollection<ModuleViewModel>();
@@ -69,8 +69,8 @@ namespace ZenTimings.Windows
             updateTimer = new DispatcherTimer();
             updateTimer.Tick += RefreshTimer_Tick;
 
-            _uptimeTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
-            _uptimeTimer.Tick += UptimeTimer_Tick;
+            _uptimeStatusTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+            _uptimeStatusTimer.Tick += UptimeTimer_Tick;
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
@@ -122,7 +122,7 @@ namespace ZenTimings.Windows
         private void StartAutoRefresh()
         {
             _windowOpenedAt = DateTime.Now;
-            _uptimeTimer.Start();
+            _uptimeStatusTimer.Start();
             UptimeTimer_Tick(null, null);
             int interval = AppSettings.Instance.AutoRefreshInterval;
             updateTimer.Interval = TimeSpan.FromMilliseconds(interval);
@@ -132,7 +132,7 @@ namespace ZenTimings.Windows
         private void StopAutoRefresh()
         {
             updateTimer.Stop();
-            _uptimeTimer.Stop();
+            _uptimeStatusTimer.Stop();
             _windowOpenedAt = DateTime.Now;
             StatusText.Text = "Auto-refresh off";
         }
@@ -645,9 +645,138 @@ namespace ZenTimings.Windows
                     SensorSettings.Instance.Save();
 
                 LoadSensorGroups();
+                UpdateSensorGroupsAfterSettingsChange();
                 RefreshSensorGroups();
-                await LoadModulesDataAsync();
+                await UpdateModulesAfterSettingsChangeAsync();
                 UpdateNoSensorsMessage();
+            }
+        }
+
+        private void UpdateSensorGroupsAfterSettingsChange()
+        {
+            var systemInfo = CpuSingleton.Instance?.systemInfo;
+            if (systemInfo == null)
+                return;
+
+            var hiddenSensors = SensorSettings.Instance.HiddenSensors;
+
+            foreach (var group in systemInfo.SensorGroups)
+            {
+                var groupVm = sensorGroupViewModels.FirstOrDefault(g => g.Header == group.ChipName);
+                if (groupVm == null)
+                {
+                    groupVm = new SensorGroupViewModel { Header = group.ChipName };
+                    sensorGroupViewModels.Add(groupVm);
+                }
+
+                // Drop items that just became hidden.
+                for (int i = groupVm.TelemetryItems.Count - 1; i >= 0; i--)
+                {
+                    var existingItem = groupVm.TelemetryItems[i];
+                    if (hiddenSensors.Contains(existingItem.GroupKey))
+                    {
+                        groupVm.TelemetryItems.RemoveAt(i);
+                        var link = sensorTelemetryLinks.FirstOrDefault(l => l.Item == existingItem);
+                        if (link != null)
+                            sensorTelemetryLinks.Remove(link);
+                    }
+                }
+
+                groupVm.HiddenKeys.Clear();
+                int hiddenCount = 0;
+
+                foreach (var sensor in group.Sensors)
+                {
+                    var key = GetSensorKey(group.ChipName, sensor.Name);
+                    if (hiddenSensors.Contains(key))
+                    {
+                        hiddenCount++;
+                        groupVm.HiddenKeys.Add(key);
+                        continue;
+                    }
+
+                    // Already visible - keep the existing item so its recorded stats are preserved.
+                    if (groupVm.TelemetryItems.Any(i => i.GroupKey == key))
+                        continue;
+
+                    var unit = GetSensorUnit(sensor.SensorType);
+                    var initialValue = GetSensorDisplayValue(sensor);
+                    var newItem = new TelemetryItemViewModel(sensor.Name, initialValue, unit) { GroupKey = key };
+                    groupVm.TelemetryItems.Add(newItem);
+                    sensorTelemetryLinks.Add(new SensorTelemetryLink(sensor, newItem));
+                }
+
+                groupVm.HiddenCount = hiddenCount;
+            }
+        }
+
+        // Adds/removes module telemetry items to reflect the current hidden set, without recreating
+        // unaffected items (which would reset their recorded stats).
+        private async Task UpdateModulesAfterSettingsChangeAsync()
+        {
+            if (memoryConfig == null)
+                return;
+
+            _isRefreshing = true;
+
+            Tuple<List<ModuleViewModel>, string> result = null;
+            Exception loadError = null;
+
+            try
+            {
+                result = await Task.Run(() => BuildModuleViewModels());
+            }
+            catch (Exception ex)
+            {
+                loadError = ex;
+            }
+
+            if (loadError != null)
+            {
+                StatusText.Text = $"Error loading modules: {loadError.Message}";
+                _isRefreshing = false;
+                return;
+            }
+
+            var freshList = result.Item1;
+
+            if (moduleViewModels.Count != freshList.Count)
+            {
+                // Module count changed (unexpected here) - fall back to a full replace.
+                moduleViewModels.Clear();
+                foreach (var vm in freshList)
+                    moduleViewModels.Add(vm);
+            }
+            else
+            {
+                for (int i = 0; i < freshList.Count; i++)
+                    MergeModuleViewModel(moduleViewModels[i], freshList[i]);
+            }
+
+            StatusText.Text = result.Item2;
+            _isRefreshing = false;
+        }
+
+        // Merges freshly-built module telemetry into the existing view model in place, keeping the
+        // existing TelemetryItemViewModel instances for sensors that remain visible so their
+        // recorded min/max/average values are not reset.
+        private static void MergeModuleViewModel(ModuleViewModel existing, ModuleViewModel fresh)
+        {
+            existing.HiddenCount = fresh.HiddenCount;
+            existing.HiddenKeys.Clear();
+            existing.HiddenKeys.AddRange(fresh.HiddenKeys);
+
+            for (int i = existing.TelemetryItems.Count - 1; i >= 0; i--)
+            {
+                var key = existing.TelemetryItems[i].GroupKey;
+                if (fresh.TelemetryItems.All(f => f.GroupKey != key))
+                    existing.TelemetryItems.RemoveAt(i);
+            }
+
+            foreach (var freshItem in fresh.TelemetryItems)
+            {
+                if (existing.TelemetryItems.All(e => e.GroupKey != freshItem.GroupKey))
+                    existing.TelemetryItems.Add(freshItem);
             }
         }
 
@@ -795,7 +924,7 @@ namespace ZenTimings.Windows
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             updateTimer?.Stop();
-            _uptimeTimer?.Stop();
+            _uptimeStatusTimer?.Stop();
             AppSettings.Instance.PropertyChanged -= AppSettings_PropertyChanged;
 
             AppSettings appSettings = AppSettings.Instance;
