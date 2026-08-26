@@ -8,13 +8,13 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using ZenStates.Core;
+using ZenStates.Core.Common;
 using ZenStates.Core.Hardware;
+using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
 using Application = System.Windows.Application;
+using DRAM = ZenStates.Core.Hardware.DRAM;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
-using DRAM = ZenStates.Core.Hardware.DRAM;
-using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
-using ZenStates.Core.Common;
 
 namespace ZenTimings.Windows
 {
@@ -371,7 +371,7 @@ namespace ZenTimings.Windows
                         AddLine(ex.Message);
                     }
                     AddLine();
-                    
+
                     AddLine("-- Raw Data -----------------------------------");
                     try
                     {
