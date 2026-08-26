@@ -23,8 +23,11 @@
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <windows:CountToVisibilityConverter x:Key="CountToVis" />
+        <windows:WidthOffsetConverter x:Key="WidthOffset" />
         <SolidColorBrush x:Key="ThermalAlarmHighBrush"     Color="{DynamicResource {x:Static adonisUi:Colors.AlertColor}}"/>
         <SolidColorBrush x:Key="ThermalAlarmCriticalBrush" Color="{DynamicResource {x:Static adonisUi:Colors.ErrorColor}}"/>
+        <SolidColorBrush x:Key="SubtleSelectionBrush" Color="{DynamicResource {x:Static adonisUi:Colors.AccentColor}}" Opacity="0.15"/>
 
         <!-- Sensor type icons -->
         <Geometry x:Key="IconVoltage">M7,2V13H10V22L17,10H13L17,2H7Z</Geometry>
@@ -146,12 +149,21 @@
             <ItemsControl x:Name="ModulesContainer">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <GroupBox adonisExtensions:LayerExtension.Layer="3"
+                        <GroupBox x:Name="ModuleGroupBox" adonisExtensions:LayerExtension.Layer="3"
                                   Background="{DynamicResource PanelBackground}"
                                   Padding="6,3"
                                   Margin="0">
                             <GroupBox.Header>
-                                <TextBlock Text="{Binding Header}" VerticalAlignment="Center" FontSize="11"/>
+                                <Grid Width="{Binding ActualWidth, ElementName=ModuleGroupBox, Converter={StaticResource WidthOffset}}" MinHeight="22">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding HeaderDisplay}" VerticalAlignment="Center" FontSize="11"/>
+                                    <Button Grid.Column="1" Content="Show All" Click="UnhideSection_Click" Tag="{Binding}"
+                                            Visibility="{Binding HiddenCount, Converter={StaticResource CountToVis}}"
+                                            Margin="6,0,0,0" Padding="8,2" FontSize="11" VerticalAlignment="Center"/>
+                                </Grid>
                             </GroupBox.Header>
                             <StackPanel>
 
@@ -210,9 +222,16 @@
                                       FontSize="11"
                                       RowHeight="18"
                                       ColumnHeaderHeight="20"
+                                      SelectionMode="Extended"
+                                      SelectionUnit="FullRow"
                                       PreviewMouseWheel="DataGrid_PreviewMouseWheel"
                                       adonisExtensions:LayerExtension.Layer="3"
                                       Visibility="{Binding HasTelemetry, Converter={StaticResource BoolToVis}}">
+                                    <DataGrid.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Hide" Click="HideSensors_Click"/>
+                                        </ContextMenu>
+                                    </DataGrid.ContextMenu>
                                     <DataGrid.ColumnHeaderStyle>
                                         <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
                                             <Setter Property="Margin" Value="0,0,0,2"/>
@@ -222,6 +241,12 @@
                                         <Style TargetType="{x:Type DataGridRow}">
                                             <Setter Property="Focusable" Value="False"/>
                                             <Setter Property="Background" Value="Transparent"/>
+                                            <EventSetter Event="PreviewMouseLeftButtonDown" Handler="SensorRow_PreviewMouseLeftButtonDown"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter Property="Background" Value="{StaticResource SubtleSelectionBrush}"/>
+                                                </Trigger>
+                                            </Style.Triggers>
                                         </Style>
                                     </DataGrid.RowStyle>
                                     <DataGrid.Columns>
@@ -271,12 +296,21 @@
                 <ItemsControl x:Name="SensorGroupsContainer">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <GroupBox adonisExtensions:LayerExtension.Layer="3"
+                        <GroupBox x:Name="SensorGroupBox" adonisExtensions:LayerExtension.Layer="3"
                                   Background="{DynamicResource PanelBackground}"
                                   Padding="6,3"
                                   Margin="0">
                             <GroupBox.Header>
-                                <TextBlock Text="{Binding Header}" VerticalAlignment="Center" FontSize="11"/>
+                                <Grid Width="{Binding ActualWidth, ElementName=SensorGroupBox, Converter={StaticResource WidthOffset}}" MinHeight="22">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding HeaderDisplay}" VerticalAlignment="Center" FontSize="11"/>
+                                    <Button Grid.Column="1" Content="Show All" Click="UnhideSection_Click" Tag="{Binding}"
+                                            Visibility="{Binding HiddenCount, Converter={StaticResource CountToVis}}"
+                                            Margin="6,0,0,0" Padding="8,2" FontSize="11" VerticalAlignment="Center"/>
+                                </Grid>
                             </GroupBox.Header>
                             <DataGrid ItemsSource="{Binding TelemetryItems}"
                                       AutoGenerateColumns="False"
@@ -292,8 +326,15 @@
                                       FontSize="11"
                                       RowHeight="18"
                                       ColumnHeaderHeight="20"
+                                      SelectionMode="Extended"
+                                      SelectionUnit="FullRow"
                                       PreviewMouseWheel="DataGrid_PreviewMouseWheel"
                                       adonisExtensions:LayerExtension.Layer="3">
+                                <DataGrid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Hide" Click="HideSensors_Click"/>
+                                    </ContextMenu>
+                                </DataGrid.ContextMenu>
                                 <DataGrid.ColumnHeaderStyle>
                                     <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
                                         <Setter Property="Margin" Value="0,0,0,2"/>
@@ -303,6 +344,12 @@
                                     <Style TargetType="{x:Type DataGridRow}">
                                         <Setter Property="Focusable" Value="False"/>
                                         <Setter Property="Background" Value="Transparent"/>
+                                        <EventSetter Event="PreviewMouseLeftButtonDown" Handler="SensorRow_PreviewMouseLeftButtonDown"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Background" Value="{StaticResource SubtleSelectionBrush}"/>
+                                            </Trigger>
+                                        </Style.Triggers>
                                     </Style>
                                 </DataGrid.RowStyle>
                                 <DataGrid.Columns>

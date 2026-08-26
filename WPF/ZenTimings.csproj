@@ -127,6 +127,7 @@
     <Compile Include="ObservableObject.cs" />
     <Compile Include="VendorUtils.cs" />
     <Compile Include="AppSettings.cs" />
+    <Compile Include="TelemetrySettings.cs" />
     <Compile Include="Common\ISensor.cs" />
     <Compile Include="Common\Sensor.cs" />
     <Compile Include="Controls\DDR4TimingsPanel.xaml.cs">

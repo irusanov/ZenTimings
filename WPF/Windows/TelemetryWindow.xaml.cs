@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using ZenTimings;
 using ZenStates.Core.Hardware;
 using ZenStates.Core.Hardware.DRAM;
 using ZenStates.Core.Hardware.DRAM.DDR5.Pmic;
@@ -15,6 +16,41 @@ using ZenStates.Core.Hardware.DRAM.DDR5.Thermal;
 
 namespace ZenTimings.Windows
 {
+    public class CountToVisibilityConverter : System.Windows.Data.IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return value is int count && count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
+    public class WidthOffsetConverter : System.Windows.Data.IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value is double width)
+            {
+                double offset = 16;
+                if (parameter != null && double.TryParse(parameter.ToString(), out double parsedOffset))
+                    offset = parsedOffset;
+
+                return Math.Max(0, width - offset);
+            }
+
+            return value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
     public partial class TelemetryWindow : ThemedAdonisWindow
     {
         private readonly DispatcherTimer updateTimer;
@@ -197,7 +233,7 @@ namespace ZenTimings.Windows
                         vm.HasPmic = true;
                         vm.PmicVendor = spdEntry.Value.PmicData.VendorName ?? "N/A";
                         vm.PmicRevision = $"{spdEntry.Value.PmicData.RevisionMajor}.{spdEntry.Value.PmicData.RevisionMinor}";
-                        InitializePmicTelemetry(vm, spdEntry.Value.PmicData);
+                        InitializePmicTelemetry(vm, spdEntry.Value.PmicData, slotIndex);
                     }
 
                     var header = new System.Text.StringBuilder($"DIMM {slotIndex}");
@@ -249,48 +285,77 @@ namespace ZenTimings.Windows
             return Tuple.Create(vms, warning ?? "No memory modules detected");
         }
 
-        private void InitializePmicTelemetry(ModuleViewModel vm, Ddr5PmicData pmicData)
+        private void InitializePmicTelemetry(ModuleViewModel vm, Ddr5PmicData pmicData, int slotIndex)
         {
             vm.HasTelemetry = true;
 
+            var hiddenSensors = TelemetrySettings.Instance.HiddenSensors;
+            int hiddenCount = 0;
+
+            void AddPmicItem(string name, double value, string unit)
+            {
+                var key = GetPmicSensorKey(slotIndex, name);
+                if (hiddenSensors.Contains(key))
+                {
+                    hiddenCount++;
+                    vm.HiddenKeys.Add(key);
+                    return;
+                }
+
+                vm.TelemetryItems.Add(new TelemetryItemViewModel(name, value, unit) { GroupKey = key });
+            }
+
             // VDD (SWA)
-            vm.TelemetryItems.Add(new TelemetryItemViewModel("VDD (SWA)", pmicData.SwaAdcMv / 1000.0, "V"));
+            AddPmicItem("VDD (SWA)", pmicData.SwaAdcMv / 1000.0, "V");
 
             // VDDQ (SWB)
-            vm.TelemetryItems.Add(new TelemetryItemViewModel("VDDQ (SWB)", pmicData.SwbAdcMv / 1000.0, "V"));
+            AddPmicItem("VDDQ (SWB)", pmicData.SwbAdcMv / 1000.0, "V");
 
             // VPP (SWC)
-            vm.TelemetryItems.Add(new TelemetryItemViewModel("VPP (SWC)", pmicData.SwcAdcMv / 1000.0, "V"));
+            AddPmicItem("VPP (SWC)", pmicData.SwcAdcMv / 1000.0, "V");
 
             // VIN Bulk
-            vm.TelemetryItems.Add(new TelemetryItemViewModel("VIN Bulk", pmicData.VinBulkMv / 1000.0, "V"));
+            AddPmicItem("VIN Bulk", pmicData.VinBulkMv / 1000.0, "V");
 
             // 1.8V LDO
-            vm.TelemetryItems.Add(new TelemetryItemViewModel("VOUT 1.8V", pmicData.Vout18AdcMv / 1000.0, "V"));
+            AddPmicItem("VOUT 1.8V", pmicData.Vout18AdcMv / 1000.0, "V");
 
             // 1.0V LDO
-            vm.TelemetryItems.Add(new TelemetryItemViewModel("VOUT 1.0V", pmicData.Vout10AdcMv / 1000.0, "V"));
+            AddPmicItem("VOUT 1.0V", pmicData.Vout10AdcMv / 1000.0, "V");
 
             // PMIC Temperature
             if (!string.IsNullOrEmpty(pmicData.PmicTemperature))
             {
                 if (double.TryParse(pmicData.PmicTemperature.Replace("°C", "").Trim(), out double tempValue))
                 {
-                    vm.TelemetryItems.Add(new TelemetryItemViewModel("PMIC Temp", tempValue, "°C"));
+                    AddPmicItem("PMIC Temp", tempValue, "°C");
                 }
             }
 
             // Total Power
             //if (pmicData.TelemetryReportsTotalPower)
             {
-                vm.TelemetryItems.Add(new TelemetryItemViewModel("Total Power", pmicData.TotalW, "W"));
+                AddPmicItem("Total Power", pmicData.TotalW, "W");
             }
 
             // High Temperature Warning
-            var pmicHighTempItem = new TelemetryItemViewModel("PMIC High Temp", pmicData.HighTemperatureWarning);
-            pmicHighTempItem.UpdateThermalAlarm(pmicData.CriticalTemperatureShutdown, pmicData.HighTemperatureWarning);
-            vm.TelemetryItems.Add(pmicHighTempItem);
+            var pmicHighTempKey = GetPmicSensorKey(slotIndex, "PMIC High Temp");
+            if (hiddenSensors.Contains(pmicHighTempKey))
+            {
+                hiddenCount++;
+                vm.HiddenKeys.Add(pmicHighTempKey);
+            }
+            else
+            {
+                var pmicHighTempItem = new TelemetryItemViewModel("PMIC High Temp", pmicData.HighTemperatureWarning) { GroupKey = pmicHighTempKey };
+                pmicHighTempItem.UpdateThermalAlarm(pmicData.CriticalTemperatureShutdown, pmicData.HighTemperatureWarning);
+                vm.TelemetryItems.Add(pmicHighTempItem);
+            }
+
+            vm.HiddenCount = hiddenCount;
         }
+
+        private static string GetPmicSensorKey(int slotIndex, string sensorName) => $"PMIC|{slotIndex}|{sensorName}";
 
         private void InitializeThermalTelemetry(ModuleViewModel vm, Ddr5ThermalData thermalData)
         {
@@ -422,7 +487,6 @@ namespace ZenTimings.Windows
             UptimeTimer_Tick(null, null);
         }
 
-        // Builds the sensor group view models from SystemInfo.SensorGroups (grouped per SuperIO chip).
         private void LoadSensorGroups()
         {
             sensorGroupViewModels.Clear();
@@ -432,25 +496,136 @@ namespace ZenTimings.Windows
             if (systemInfo == null)
                 return;
 
+            var hiddenSensors = TelemetrySettings.Instance.HiddenSensors;
+
             foreach (var group in systemInfo.SensorGroups)
             {
                 var groupVm = new SensorGroupViewModel { Header = group.ChipName };
+                int hiddenCount = 0;
 
                 foreach (var sensor in group.Sensors)
                 {
+                    var key = GetSensorKey(group.ChipName, sensor.Name);
+                    if (hiddenSensors.Contains(key))
+                    {
+                        hiddenCount++;
+                        groupVm.HiddenKeys.Add(key);
+                        continue;
+                    }
+
                     var unit = GetSensorUnit(sensor.SensorType);
                     var initialValue = GetSensorDisplayValue(sensor);
-                    var item = new TelemetryItemViewModel(sensor.Name, initialValue, unit);
+                    var item = new TelemetryItemViewModel(sensor.Name, initialValue, unit) { GroupKey = key };
                     groupVm.TelemetryItems.Add(item);
                     sensorTelemetryLinks.Add(new SensorTelemetryLink(sensor, item));
                 }
 
-                if (groupVm.TelemetryItems.Count > 0)
+                groupVm.HiddenCount = hiddenCount;
+
+                if (groupVm.TelemetryItems.Count > 0 || hiddenCount > 0)
                     sensorGroupViewModels.Add(groupVm);
             }
         }
 
-        // Refreshes sensor values from SystemInfo, updating min/max/average stats.
+        private static string GetSensorKey(string chipName, string sensorName) => $"{chipName}|{sensorName}";
+
+        // Hides the sensors currently selected in the DataGrid the context menu was opened on.
+        private void HideSensors_Click(object sender, RoutedEventArgs e)
+        {
+            if (!(sender is System.Windows.Controls.MenuItem menuItem) ||
+                !(menuItem.Parent is System.Windows.Controls.ContextMenu contextMenu) ||
+                !(contextMenu.PlacementTarget is System.Windows.Controls.DataGrid dataGrid))
+                return;
+
+            var selectedItems = dataGrid.SelectedItems.OfType<TelemetryItemViewModel>().ToList();
+            if (selectedItems.Count == 0)
+                return;
+
+            var hiddenSensors = TelemetrySettings.Instance.HiddenSensors;
+            bool changed = false;
+
+            foreach (var item in selectedItems)
+            {
+                if (string.IsNullOrEmpty(item.GroupKey))
+                    continue;
+
+                if (!hiddenSensors.Contains(item.GroupKey))
+                {
+                    hiddenSensors.Add(item.GroupKey);
+                    changed = true;
+                }
+
+                foreach (var group in sensorGroupViewModels)
+                {
+                    if (group.TelemetryItems.Remove(item))
+                    {
+                        group.HiddenCount++;
+                        group.HiddenKeys.Add(item.GroupKey);
+                        break;
+                    }
+                }
+
+                foreach (var module in moduleViewModels)
+                {
+                    if (module.TelemetryItems.Remove(item))
+                    {
+                        module.HiddenCount++;
+                        module.HiddenKeys.Add(item.GroupKey);
+                        break;
+                    }
+                }
+
+                var link = sensorTelemetryLinks.FirstOrDefault(l => l.Item == item);
+                if (link != null)
+                    sensorTelemetryLinks.Remove(link);
+            }
+
+            // Remove groups that no longer have any visible sensors.
+            //for (int i = sensorGroupViewModels.Count - 1; i >= 0; i--)
+            //{
+            //    if (sensorGroupViewModels[i].TelemetryItems.Count == 0 && sensorGroupViewModels[i].HiddenCount == 0)
+            //        sensorGroupViewModels.RemoveAt(i);
+            //}
+
+            if (changed)
+                TelemetrySettings.Instance.Save();
+
+            UpdateNoSensorsMessage();
+        }
+
+        private async void UnhideSection_Click(object sender, RoutedEventArgs e)
+        {
+            if (!(sender is System.Windows.Controls.Button button))
+                return;
+
+            List<string> keysToUnhide = null;
+            if (button.Tag is ModuleViewModel || button.Tag is SensorGroupViewModel)
+            {
+                keysToUnhide = button.Tag is ModuleViewModel moduleVm
+                    ? new List<string>(moduleVm.HiddenKeys)
+                    : new List<string>(((SensorGroupViewModel)button.Tag).HiddenKeys);
+            }
+
+            if (keysToUnhide == null || keysToUnhide.Count == 0)
+                return;
+
+            var hiddenSensors = TelemetrySettings.Instance.HiddenSensors;
+            bool changed = false;
+            foreach (var key in keysToUnhide)
+            {
+                if (hiddenSensors.Remove(key))
+                    changed = true;
+            }
+
+            if (changed)
+                TelemetrySettings.Instance.Save();
+
+            LoadSensorGroups();
+            RefreshSensorGroups();
+            await LoadModulesDataAsync();
+            UpdateNoSensorsMessage();
+        }
+
         private void RefreshSensorGroups()
         {
             var systemInfo = CpuSingleton.Instance?.systemInfo;
@@ -513,9 +688,6 @@ namespace ZenTimings.Windows
             AppSettings.Instance.Save();
         }
 
-        // The DataGrids own internal ScrollViewer swallows mouse wheel events even when
-        // they have nothing to scroll, preventing the outer window ScrollViewer from
-        // scrolling while the cursor is over a row. Forward unhandled wheel events up.
         private void DataGrid_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (e.Handled)
@@ -531,6 +703,19 @@ namespace ZenTimings.Windows
 
             if (sender is FrameworkElement element && element.Parent is UIElement parent)
                 parent.RaiseEvent(eventArg);
+        }
+
+        // Clicking an already-selected row deselects it instead of leaving it selected.
+        private void SensorRow_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (!(sender is System.Windows.Controls.DataGridRow row))
+                return;
+
+            if (row.IsSelected && Keyboard.Modifiers == ModifierKeys.None)
+            {
+                row.IsSelected = false;
+                e.Handled = true;
+            }
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
@@ -569,12 +754,21 @@ namespace ZenTimings.Windows
         private bool hasTelemetry;
         private bool hasLogo;
         private string logoResourceName;
+        private int hiddenCount;
 
         public string Header
         {
             get => header;
-            set { header = value; OnPropertyChanged(nameof(Header)); }
+            set { header = value; OnPropertyChanged(nameof(Header)); OnPropertyChanged(nameof(HeaderDisplay)); }
         }
+
+        public int HiddenCount
+        {
+            get => hiddenCount;
+            set { hiddenCount = value; OnPropertyChanged(nameof(HiddenCount)); OnPropertyChanged(nameof(HeaderDisplay)); }
+        }
+
+        public string HeaderDisplay => HiddenCount > 0 ? $"{Header} ({HiddenCount} hidden)" : Header;
 
         public string PartNumber
         {
@@ -651,6 +845,8 @@ namespace ZenTimings.Windows
 
         public ObservableCollection<TelemetryItemViewModel> TelemetryItems { get; } = new ObservableCollection<TelemetryItemViewModel>();
 
+        public List<string> HiddenKeys { get; } = new List<string>();
+
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -674,14 +870,25 @@ namespace ZenTimings.Windows
         public event PropertyChangedEventHandler PropertyChanged;
 
         private string header;
+        private int hiddenCount;
 
         public string Header
         {
             get => header;
-            set { header = value; OnPropertyChanged(nameof(Header)); }
+            set { header = value; OnPropertyChanged(nameof(Header)); OnPropertyChanged(nameof(HeaderDisplay)); }
         }
 
+        public int HiddenCount
+        {
+            get => hiddenCount;
+            set { hiddenCount = value; OnPropertyChanged(nameof(HiddenCount)); OnPropertyChanged(nameof(HeaderDisplay)); }
+        }
+
+        public string HeaderDisplay => HiddenCount > 0 ? $"{Header} ({HiddenCount} hidden)" : Header;
+
         public ObservableCollection<TelemetryItemViewModel> TelemetryItems { get; } = new ObservableCollection<TelemetryItemViewModel>();
+
+        public List<string> HiddenKeys { get; } = new List<string>();
 
         protected void OnPropertyChanged(string propertyName)
         {
@@ -726,6 +933,9 @@ namespace ZenTimings.Windows
         private ThermalAlarmLevel maxAlarmLevel;
 
         public string Name { get; }
+
+        // Identifies the sensor's group + name for persisting hide/unhide state.
+        public string GroupKey { get; set; }
 
         public SensorIconKind IconKind => GetIconKind(unit);
 
