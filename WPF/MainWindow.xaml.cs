@@ -745,6 +745,8 @@ namespace ZenTimings
 
                     //ReadDDR4MemoryConfig();
                     cpu.RefreshPowerTable();
+                    cpu.systemInfo.UpdateSensors();
+
                     var voltagesUpdated = false;
                     if (cpu.memoryConfig?.SpdInfo?.Values != null)
                     {
@@ -766,6 +768,8 @@ namespace ZenTimings
 
                         if (voltagesUpdated)
                             mainViewModel.PmicData = cpu.memoryConfig.SpdInfo.Values.ElementAtOrDefault(comboBoxPartNumber?.SelectedIndex ?? 0)?.PmicData ?? null;
+
+                        mainViewModel.RefreshApuVddio();
 
                         lastMclk = newMclk;
 

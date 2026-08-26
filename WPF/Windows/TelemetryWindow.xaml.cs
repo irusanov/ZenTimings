@@ -634,7 +634,7 @@ namespace ZenTimings.Windows
 
             try
             {
-                systemInfo.UpdateSensors();
+                //systemInfo.UpdateSensors();
 
                 foreach (var link in sensorTelemetryLinks)
                 {

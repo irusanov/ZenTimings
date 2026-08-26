@@ -206,6 +206,17 @@ namespace ZenTimings.ViewModels
             }
         }
 
+        private float _apuVddioV;
+        public float ApuVddioV
+        {
+            get => _apuVddioV;
+            set
+            {
+                _apuVddioV = value;
+                OnPropertyChanged("ApuVddioV");
+            }
+        }
+
         private Ddr5PmicData _ddr5PmicData;
         public Ddr5PmicData PmicData
         {
@@ -294,6 +305,30 @@ namespace ZenTimings.ViewModels
 
             // ECC
             ECC = SystemInfo.SMBios.MemoryDevices.Any(d => d.HasEcc);
+
+            // APU VDDIO: prefer live SuperIO sensor reading, fall back to the static AOD table value.
+            RefreshApuVddio();
+        }
+
+        private static readonly string[] ApuVddioSensorNames = { "VDIMM", "VDDIO", "CPU VDDIO" };
+
+        // Call after CpuSingleton.Instance.systemInfo.UpdateSensors() to refresh the live sensor reading.
+        public void RefreshApuVddio()
+        {
+            Sensor apuVddioSensor = CpuSingleton.Instance?.systemInfo?.SensorGroups
+                .SelectMany(g => g.Sensors)
+                .FirstOrDefault(s => ApuVddioSensorNames.Contains(s.Name, StringComparer.OrdinalIgnoreCase));
+
+            if (apuVddioSensor?.Value != null)
+            {
+                ApuVddioV = apuVddioSensor.Value.Value;
+            }
+            else
+            {
+                var aodData = CpuSingleton.Instance.info.aod?.Table?.Data;
+                if (aodData?.ApuVddio != null)
+                    ApuVddioV = aodData.ApuVddio.RawValue / 1000.0f;
+            }
         }
 
         bool IsMismatch(

@@ -246,7 +246,7 @@
                             IsEnabled="{Binding PowerTable.CLDO_VDDG_IOD, Mode=OneWay, Converter={StaticResource FloatToBool}}" />
                     <TextBlock Text="MEM VDD" IsEnabled="True" TextAlignment="Right" />
                     <TextBlock Text="MEM VDDQ" IsEnabled="True" TextAlignment="Right" />
-                    <TextBlock x:Name="labelApuVddio" Text="CPU VDDIO" IsEnabled="False" TextAlignment="Right" />
+                    <TextBlock x:Name="labelApuVddio" Text="CPU VDDIO" IsEnabled="{Binding ApuVddioV}" TextAlignment="Right" />
                     <TextBlock x:Name="labelMemVpp" Text="MEM VPP" IsEnabled="True" TextAlignment="Right" />
                     <TextBlock x:Name="labelVddMisc" Text="VDD MISC" IsEnabled="{Binding PowerTable.VDD_MISC}" TextAlignment="Right" />
 
@@ -296,7 +296,7 @@
                     <TextBlock Text="{Binding PowerTable.CLDO_VDDG_IOD, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding SwaAdcV, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding SwbAdcV, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" Style="{DynamicResource ValueStyles}" />
-                    <TextBlock x:Name="textBoxApuVddio" Text="N/A" Style="{DynamicResource ValueStyles}" />
+                    <TextBlock x:Name="textBoxApuVddio" Text="{Binding ApuVddioV, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding VppAdcV, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" Style="{DynamicResource ValueStyles}" />
                     <TextBlock x:Name="textBoxVddMisc" Text="{Binding PowerTable.VDD_MISC, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" Style="{DynamicResource ValueStyles}" />
 
