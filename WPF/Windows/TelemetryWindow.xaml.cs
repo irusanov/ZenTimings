@@ -461,6 +461,14 @@ namespace ZenTimings.Windows
 
         private void RefreshTimer_Tick(object sender, EventArgs e)
         {
+            // The main window already refreshes shared sensor/telemetry data while it is running normally.
+            // Only do it here when the main window's own refresh is paused (i.e. it is minimized),
+            // to avoid refreshing the same data twice.
+            if (Application.Current.MainWindow?.WindowState == WindowState.Minimized)
+            {
+                RefreshTelemetry();
+                CpuSingleton.Instance?.systemInfo?.UpdateSensors();
+            }
             RefreshTelemetry();
             RefreshSensorGroups();
         }
