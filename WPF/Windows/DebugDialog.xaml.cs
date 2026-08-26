@@ -27,7 +27,7 @@ namespace ZenTimings.Windows
         private readonly BiosMemController BMC;
         private readonly Cpu cpu;
 
-        private readonly ZenStates.Core.Hardware.DRAM.MemoryConfig memoryConfig;
+        private readonly DRAM.MemoryConfig memoryConfig;
         //private readonly List<MemoryModule> modules;
 
         //private readonly uint baseAddress;
@@ -240,6 +240,9 @@ namespace ZenTimings.Windows
 
                 foreach (var property in properties)
                 {
+                    if (property.Name == "Hardware" || property.Name == "SensorGroups")
+                        continue;
+
                     if (property.Name == "CpuId" || property.Name == "PatchLevel" || property.Name == "SmuTableVersion")
                         AddLine($"{property.Name + ":",-19}{property.GetValue(cpu.systemInfo, null):X8}");
                     else if (property.Name == "SmuVersion")
@@ -527,6 +530,17 @@ namespace ZenTimings.Windows
                 AddLine(ex.Message);
             }
 
+            AddLine();
+
+            AddHeading("SuperIO");
+            foreach (var hardware in cpu.systemInfo.Hardware)
+            {
+                if (hardware.HardwareType == HardwareType.SuperIO)
+                {
+                    var report = hardware.GetReport();
+                    AddLine(report);
+                }
+            }
             AddLine();
 
             // All WMI classes in root namespace

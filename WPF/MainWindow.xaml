@@ -53,7 +53,8 @@
                         <MenuItem Header="_Tools">
                             <MenuItem
                                 Header="_Sensors"
-                                Click="TelemetryMonitorToolstripMenuItem_Click" />
+                                Click="TelemetryMonitorToolstripMenuItem_Click"
+                                Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
                             <MenuItem
                                 Header="_SPD Info"
                                 Click="SpdInfoToolstripMenuItem_Click"

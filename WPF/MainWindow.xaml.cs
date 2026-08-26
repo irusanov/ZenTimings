@@ -1012,7 +1012,7 @@ namespace ZenTimings
             //#endif
             MinimizeFootprint();
 
-            if (settings.AutoOpenTelemetry)
+            if (settings.AdvancedMode && settings.AutoOpenTelemetry)
                 TelemetryMonitorToolstripMenuItem_Click(this, null);
 
             //new Thread(() =>

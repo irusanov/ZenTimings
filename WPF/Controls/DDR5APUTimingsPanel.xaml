@@ -237,7 +237,7 @@
 
                     <TextBlock Text="" Style="{DynamicResource DividerTextBlock}" />
 
-                    <TextBlock Text="VSOC (SMU)" TextAlignment="Right" />
+                    <TextBlock Text="VSOC" TextAlignment="Right" />
                     <TextBlock Text="CLDO VDDP" TextAlignment="Right" IsEnabled="{Binding PowerTable.CLDO_VDDP, Mode=OneWay, Converter={StaticResource FloatToBool}}" />
                     <TextBlock Text="MEM VDD" TextAlignment="Right" />
                     <TextBlock Text="MEM VDDQ" TextAlignment="Right" />
