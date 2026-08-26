@@ -1008,7 +1008,7 @@ namespace ZenTimings
             //#endif
             MinimizeFootprint();
 
-            if (settings.AutoOpenTelemetry && mainViewModel.IsDimmTelemetryAvailable)
+            if (settings.AutoOpenTelemetry)
                 TelemetryMonitorToolstripMenuItem_Click(this, null);
 
             //new Thread(() =>
@@ -1106,9 +1106,6 @@ namespace ZenTimings
 
         private void TelemetryMonitorToolstripMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            if (!mainViewModel.IsDimmTelemetryAvailable)
-                return;
-
             try
             {
                 double telemetryWindowWidth = 390;
@@ -1153,7 +1150,7 @@ namespace ZenTimings
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error opening Telemetry Monitor:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error opening Sensors window:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

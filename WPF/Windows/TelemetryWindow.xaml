@@ -9,7 +9,7 @@
     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
     xmlns:windows="clr-namespace:ZenTimings.Windows"
     mc:Ignorable="d"
-    Title="DIMM Telemetry"
+    Title="Sensors"
     Height="500"
     Width="392"
     MinWidth="400"
@@ -337,6 +337,17 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
+
+            <!-- Shown when no supported sensors were found on this system -->
+            <TextBlock x:Name="NoSensorsMessage"
+                       Text="No sensors available on this system"
+                       Margin="4,12"
+                       FontStyle="Italic"
+                       FontSize="12"
+                       HorizontalAlignment="Center"
+                       Foreground="{DynamicResource TextColor}"
+                       Opacity="0.6"
+                       Visibility="Collapsed"/>
             </StackPanel>
         </ScrollViewer>
 

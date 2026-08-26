@@ -46,7 +46,17 @@ namespace ZenTimings.Windows
             ToggleAutoOpen.IsChecked = AppSettings.Instance.AutoOpenTelemetry;
             await LoadModulesDataAsync();
             LoadSensorGroups();
+            UpdateNoSensorsMessage();
             ConfigureAutoRefresh();
+        }
+
+        // Shows a message when neither memory module telemetry nor SuperIO sensors are available.
+        private void UpdateNoSensorsMessage()
+        {
+            bool hasAnySensors = moduleViewModels.Count > 0 || sensorGroupViewModels.Count > 0;
+            NoSensorsMessage.Visibility = hasAnySensors ? Visibility.Collapsed : Visibility.Visible;
+            if (!hasAnySensors)
+                StatusText.Text = "No sensors available on this system";
         }
 
         private void UptimeTimer_Tick(object sender, EventArgs e)
@@ -96,7 +106,8 @@ namespace ZenTimings.Windows
         {
             if (memoryConfig == null)
             {
-                StatusText.Text = "Memory configuration not available";
+                // Memory module telemetry (SPD/PMIC) is only supported on some platforms (e.g. DDR5).
+                // Skip this section entirely instead of showing an error.
                 return;
             }
 

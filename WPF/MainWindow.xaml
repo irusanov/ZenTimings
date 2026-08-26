@@ -52,9 +52,8 @@
                         </MenuItem>
                         <MenuItem Header="_Tools">
                             <MenuItem
-                                Header="_DIMM Telemetry"
-                                Click="TelemetryMonitorToolstripMenuItem_Click"
-                                Visibility="{Binding IsDimmTelemetryAvailable, Mode=OneTime, Converter={StaticResource BoolToVis}}" />
+                                Header="_Sensors"
+                                Click="TelemetryMonitorToolstripMenuItem_Click" />
                             <MenuItem
                                 Header="_SPD Info"
                                 Click="SpdInfoToolstripMenuItem_Click"
