@@ -161,6 +161,9 @@
     <Compile Include="Windows\SensorsWindow.xaml.cs">
       <DependentUpon>SensorsWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\AppIcon.xaml.cs">
+      <DependentUpon>AppIcon.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\SensorSettingsWindow.xaml.cs">
       <DependentUpon>SensorSettingsWindow.xaml</DependentUpon>
     </Compile>
@@ -400,6 +403,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
+    <Resource Include="Themes\AppIcons.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Page Include="Controls\AppIcon.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
