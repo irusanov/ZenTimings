@@ -609,6 +609,90 @@ namespace ZenTimings.Windows
             UpdateNoSensorsMessage();
         }
 
+        // Hides every sensor in the DataGrid the context menu was opened on whose current, min and max values are all zero.
+        private void HideZeroValueSensors_Click(object sender, RoutedEventArgs e)
+        {
+            HideSensorsMatching(sender, i => i.IsAllZero);
+        }
+
+        // Hides every fan sensor in the DataGrid the context menu was opened on.
+        private void HideAllFans_Click(object sender, RoutedEventArgs e)
+        {
+            HideSensorsMatching(sender, i => i.IconKind == SensorIconKind.Fan);
+        }
+
+        // Hides every temperature sensor in the DataGrid the context menu was opened on.
+        private void HideAllTemperatures_Click(object sender, RoutedEventArgs e)
+        {
+            HideSensorsMatching(sender, i => i.IconKind == SensorIconKind.Temperature);
+        }
+
+        // Hides every voltage sensor in the DataGrid the context menu was opened on.
+        private void HideAllVoltages_Click(object sender, RoutedEventArgs e)
+        {
+            HideSensorsMatching(sender, i => i.IconKind == SensorIconKind.Voltage);
+        }
+
+        // Hides every sensor in the DataGrid the context menu was opened on that matches the given predicate.
+        private void HideSensorsMatching(object sender, Func<TelemetryItemViewModel, bool> predicate)
+        {
+            if (!(sender is System.Windows.Controls.MenuItem menuItem) ||
+                !(menuItem.Parent is System.Windows.Controls.ContextMenu contextMenu) ||
+                !(contextMenu.PlacementTarget is System.Windows.Controls.DataGrid dataGrid))
+                return;
+
+            var matchingItems = dataGrid.ItemsSource?.OfType<TelemetryItemViewModel>()
+                .Where(predicate)
+                .ToList();
+
+            if (matchingItems == null || matchingItems.Count == 0)
+                return;
+
+            var hiddenSensors = SensorSettings.Instance.HiddenSensors;
+            bool changed = false;
+
+            foreach (var item in matchingItems)
+            {
+                if (string.IsNullOrEmpty(item.GroupKey))
+                    continue;
+
+                if (!hiddenSensors.Contains(item.GroupKey))
+                {
+                    hiddenSensors.Add(item.GroupKey);
+                    changed = true;
+                }
+
+                foreach (var group in sensorGroupViewModels)
+                {
+                    if (group.TelemetryItems.Remove(item))
+                    {
+                        group.HiddenCount++;
+                        group.HiddenKeys.Add(item.GroupKey);
+                        break;
+                    }
+                }
+
+                foreach (var module in moduleViewModels)
+                {
+                    if (module.TelemetryItems.Remove(item))
+                    {
+                        module.HiddenCount++;
+                        module.HiddenKeys.Add(item.GroupKey);
+                        break;
+                    }
+                }
+
+                var link = sensorTelemetryLinks.FirstOrDefault(l => l.Item == item);
+                if (link != null)
+                    sensorTelemetryLinks.Remove(link);
+            }
+
+            if (changed)
+                SensorSettings.Instance.Save();
+
+            UpdateNoSensorsMessage();
+        }
+
         // Opens the global sensor visibility settings dialog listing every known sensor,
         // grouped by module/chip, with checkboxes to show/hide them.
         private async void BtnSensorSettings_Click(object sender, RoutedEventArgs e)
@@ -1188,6 +1272,13 @@ namespace ZenTimings.Windows
         public string Min => minValue != double.MaxValue ? FormatValue(minValue) : "-";
         public string Max => maxValue != double.MinValue ? FormatValue(maxValue) : "-";
         public string Average => count > 0 ? FormatValue(sum / count) : "-";
+
+        // True when current, min and max values are all zero (or min/max have never been recorded).
+        public bool IsAllZero =>
+            !_isBoolean &&
+            currentValue == 0 &&
+            (minValue == double.MaxValue || minValue == 0) &&
+            (maxValue == double.MinValue || maxValue == 0);
 
         public TelemetryItemViewModel(string name, double initialValue, string unit = "")
         {
