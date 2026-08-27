@@ -7,6 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+    adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
     xmlns:converters="clr-namespace:ZenTimings.Converters"
     mc:Ignorable="d"
     Style="{DynamicResource WindowStyles}"
@@ -33,16 +34,24 @@
 
             <StackPanel Orientation="Vertical" Margin="15,15,5,15" Grid.ColumnSpan="6" Grid.Row="0" Width="424">
                 <!-- TextBlock Text="Changelog" FontSize="14" FontWeight="Bold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" /-->
-                <TextBlock Text="v1.39" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0" />
+                <TextBlock Text="v1.40" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0" />
 
                 <TextBlock Text="" />
-                <TextBlock Text=" - Fixed Proc DQ Drive Stength sometimes showing as N/A on auto" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Fixed crash on DragonRange family" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Fixed a bug in smbus driver which was leading to conflict with HWInfo" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Updated Telemetry window and added option to auto-open" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Added SPD info window" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Added ECC indicator (PR-99 by tsg2k2)" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Hynix IC revision parser should not longer display incorrect 'O-die'" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Renamed Telemetry window to Sensors and enabled it for all systems" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Added a sensor management dialog to show/hide individual sensors" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Added icons for sensors" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Sensors window now keeps updating while the main window is minimized" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Bind VSOC and VDDIO to SuperIO when available, falling back to PMT" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Added autostart option" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Added icons to sections in the options dialog" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Fixed telemetry/sensors window alarm colors not recording max values" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Fixed incorrect read function used for SVI2 planes (Zen3 and earlier)" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Fixed incorrect handling of corner radius (W11)" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Unmatched Hynix dies are now displayed as 'Unknown' instead of an incorrect value" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Removed the maximize button when maximizing is not applicable" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Added SuperIO hardware support, ported from LibreHardwareMonitor" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Updated DDR5 UMC timings with additional entries" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Extended data in Debug report" TextWrapping="WrapWithOverflow" />
             </StackPanel>
             <Border Padding="4 10" Grid.ColumnSpan="6" Grid.Row="2">
                 <Button x:Name="Changelog_Close" Content="OK" Width="80" IsCancel="True" />
