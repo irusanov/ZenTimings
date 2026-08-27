@@ -228,6 +228,17 @@ namespace ZenTimings.ViewModels
             }
         }
 
+        private float _Vmisc;
+        public float Vmisc
+        {
+            get => _Vmisc;
+            set
+            {
+                _Vmisc = value;
+                OnPropertyChanged("Vmisc");
+            }
+        }
+
         private Ddr5PmicData _ddr5PmicData;
         public Ddr5PmicData PmicData
         {
@@ -321,21 +332,38 @@ namespace ZenTimings.ViewModels
             RefreshSensors();
         }
 
-        private static readonly string[] ApuVddioSensorNames = { "VDIMM", "VDDIO", "CPU VDDIO" };
-        private static readonly string[] VsocSensorNames = { "CPU NB/SoC" };
+        private static readonly string[] ApuVddioSensorNames = { "CPU VDDIO", "VDIMM", "VDDIO", "CPU VDDIO Memory" };
+        private static readonly string[] VsocSensorNames = { "CPU NB/SoC", "Vcore SoC", "VSOC", "VDDCR_SOC", "CPU SoC", "Northbridge/SoC" };
+        private static readonly string[] VmiscSensorNames = { "CPU MISC", "VMISC", "Vcore Misc", "VDD Misc" };
 
-        // Call after CpuSingleton.Instance.systemInfo.UpdateSensors() to refresh the live sensor readings.
-        public void RefreshSensors()
+        private bool _sensorsDetected;
+        private Sensor _apuVddioSensor;
+        private Sensor _vsocSensor;
+        private Sensor _vmiscSensor;
+
+        // Locates the relevant sensors once and caches them so subsequent refreshes don't need to search by name again.
+        private void DetectSensors()
         {
             var sensors = CpuSingleton.Instance?.systemInfo?.SensorGroups
                 .SelectMany(g => g.Sensors)
                 .ToList();
 
-            Sensor apuVddioSensor = sensors?.FirstOrDefault(s => ApuVddioSensorNames.Contains(s.Name, StringComparer.OrdinalIgnoreCase));
+            _apuVddioSensor = sensors?.FirstOrDefault(s => ApuVddioSensorNames.Contains(s.Name, StringComparer.OrdinalIgnoreCase));
+            _vsocSensor = sensors?.FirstOrDefault(s => VsocSensorNames.Contains(s.Name, StringComparer.OrdinalIgnoreCase));
+            _vmiscSensor = sensors?.FirstOrDefault(s => VmiscSensorNames.Contains(s.Name, StringComparer.OrdinalIgnoreCase));
 
-            if (apuVddioSensor?.Value != null)
+            _sensorsDetected = true;
+        }
+
+        // Call after CpuSingleton.Instance.systemInfo.UpdateSensors() to refresh the live sensor readings.
+        public void RefreshSensors()
+        {
+            if (!_sensorsDetected)
+                DetectSensors();
+
+            if (_apuVddioSensor?.Value != null)
             {
-                ApuVddio = apuVddioSensor.Value.Value;
+                ApuVddio = _apuVddioSensor.Value.Value;
             }
             else
             {
@@ -344,15 +372,22 @@ namespace ZenTimings.ViewModels
                     ApuVddio = aodData.ApuVddio.RawValue / 1000.0f;
             }
 
-            Sensor vsocSensor = sensors?.FirstOrDefault(s => VsocSensorNames.Contains(s.Name, StringComparer.OrdinalIgnoreCase));
-
-            if (vsocSensor?.Value != null)
+            if (_vsocSensor?.Value != null)
             {
-                Vsoc = vsocSensor.Value.Value;
+                Vsoc = _vsocSensor.Value.Value;
             }
             else if (PowerTable != null)
             {
                 Vsoc = PowerTable.VDDCR_SOC;
+            }
+
+            if (_vmiscSensor?.Value != null)
+            {
+                Vmisc = _vmiscSensor.Value.Value;
+            }
+            else if (PowerTable != null)
+            {
+                Vmisc = PowerTable.VDD_MISC;
             }
         }
 

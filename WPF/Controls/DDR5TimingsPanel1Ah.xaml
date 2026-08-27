@@ -271,7 +271,7 @@
                     <TextBlock Text="MEM VDDQ" IsEnabled="True" TextAlignment="Right" />
                     <TextBlock x:Name="labelApuVddio" Text="CPU VDDIO" IsEnabled="{Binding ApuVddio}" TextAlignment="Right" />
                     <TextBlock x:Name="labelMemVpp" Text="MEM VPP" IsEnabled="True" TextAlignment="Right" />
-                    <TextBlock x:Name="labelVddMisc" Text="VDD MISC" IsEnabled="{Binding PowerTable.VDD_MISC}" TextAlignment="Right" />
+                    <TextBlock x:Name="labelVddMisc" Text="VDD MISC" IsEnabled="{Binding Vmisc}" TextAlignment="Right" />
 
                     <TextBlock Text="ProcOdt Pu" ToolTip="Processor Odt Impedance Pull Up" TextAlignment="Right" />
                     <TextBlock Text="ProcOdt Pd" ToolTip="Processor Odt Impedance Pull Down" TextAlignment="Right" />
@@ -314,7 +314,7 @@
                     <TextBlock Text="{Binding SwbAdcV, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" Style="{DynamicResource ValueStyles}" />
                     <TextBlock x:Name="textBoxApuVddio" Text="{Binding ApuVddio, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding VppAdcV, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" Style="{DynamicResource ValueStyles}" />
-                    <TextBlock x:Name="textBoxVddMisc" Text="{Binding PowerTable.VDD_MISC, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" Style="{DynamicResource ValueStyles}" />
+                    <TextBlock x:Name="textBoxVddMisc" Text="{Binding Vmisc, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" Style="{DynamicResource ValueStyles}" />
 
                     <TextBlock Text="{Binding ApobData.ProcOdtPullUpP0, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding ApobData.ProcOdtPullDownP0, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
