@@ -4,7 +4,7 @@ using System.Diagnostics;
 using ZenStates.Core;
 using ZenStates.Core.Drivers;
 using ZenStates.Core.Hardware.MutexLock;
-using ZenTimings.Common;
+using ZenStates.Core.Hardware;
 
 namespace ZenTimings.Plugin
 {
@@ -37,8 +37,8 @@ namespace ZenTimings.Plugin
             {
                 Sensors = new List<Sensor>
                 {
-                    new Sensor("VSOC", 0),
-                    new Sensor("VCORE", 1),
+                    new Sensor("VSOC", 0, SensorType.Voltage),
+                    new Sensor("VCORE", 1, SensorType.Voltage),
                 };
             }
         }
@@ -56,8 +56,8 @@ namespace ZenTimings.Plugin
 
                 if (timeout > 0)
                 {
-                    UpdateSensorValue(socPlaneValue, Sensors[0]);
-                    UpdateSensorValue(vcorePlaneValue, Sensors[1]);
+                    UpdateSensorValue(socPlaneValue, Sensors[0].Index);
+                    UpdateSensorValue(vcorePlaneValue, Sensors[1].Index);
 
                     return true;
                 }
@@ -78,12 +78,12 @@ namespace ZenTimings.Plugin
             }
         }
 
-        private void UpdateSensorValue(uint planeValue, Sensor sensor)
+        private void UpdateSensorValue(uint planeValue, int sensorIndex)
         {
             uint vid = (planeValue >> 16) & 0xFF;
-            sensor.Value = (float)Utils.VidToVoltage(vid);
+            Sensors[sensorIndex].Value = (float)Utils.VidToVoltage(vid);
 
-            Debug.WriteLine($"{sensor.Name}: {sensor.Min} {sensor.Max}");
+            Debug.WriteLine($"{Sensors[sensorIndex].Name}: {Sensors[sensorIndex].Min} {Sensors[sensorIndex].Max}");
         }
 
         public void Open()

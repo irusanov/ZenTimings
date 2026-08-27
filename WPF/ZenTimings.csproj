@@ -129,8 +129,6 @@
     <Compile Include="Utils\VendorUtils.cs" />
     <Compile Include="Settings\AppSettings.cs" />
     <Compile Include="Settings\SensorSettings.cs" />
-    <Compile Include="Common\ISensor.cs" />
-    <Compile Include="Common\Sensor.cs" />
     <Compile Include="Controls\DDR4TimingsPanel.xaml.cs">
       <DependentUpon>DDR4TimingsPanel.xaml</DependentUpon>
     </Compile>

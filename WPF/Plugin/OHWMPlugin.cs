@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using ZenTimings.Common;
+using ZenStates.Core.Hardware;
 
 namespace ZenTimings.Plugin
 {
@@ -72,7 +72,7 @@ namespace ZenTimings.Plugin
                                 try
                                 {
                                     Sensors.Add(
-                                        new Sensor((string)GetPropValue(subsensor, "Name"), (int)GetPropValue(subsensor, "Index"))
+                                        new Sensor((string)GetPropValue(subsensor, "Name"), (int)GetPropValue(subsensor, "Index"), SensorType.Voltage)
                                         {
                                             Value = GetPropValue(subsensor, "Value") ?? 0,
                                         }

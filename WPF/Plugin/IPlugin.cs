@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ZenTimings.Common;
+using ZenStates.Core.Hardware;
 
 namespace ZenTimings.Plugin
 {
