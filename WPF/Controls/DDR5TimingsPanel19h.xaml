@@ -52,8 +52,11 @@
                     <TextBlock Text="tPHYWRD" TextAlignment="Right" />
                     <TextBlock Text="tPHYWRL" TextAlignment="Right" />
                     <TextBlock Text="tRDPRE" TextAlignment="Right" />
-                    <TextBlock Text="CA ODT A" TextAlignment="Right" />
-                    <TextBlock Text="CA ODT B" TextAlignment="Right" />
+                    <StackPanel Orientation="Vertical" Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text="CA ODT A" TextAlignment="Right" />
+                        <TextBlock Text="CA ODT B" TextAlignment="Right" />
+                        <TextBlock Text="tCCD_L" TextAlignment="Right" />
+                    </StackPanel>
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" MinWidth="60">
@@ -112,8 +115,11 @@
                     <TextBlock Text="{Binding Timings.RDPRE, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
 
-                    <TextBlock Text="{Binding ApobExtendedData.CaOdtA, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
-                    <TextBlock Text="{Binding ApobExtendedData.CaOdtB, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                    <StackPanel Orientation="Vertical" Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text="{Binding ApobExtendedData.CaOdtA, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                        <TextBlock Text="{Binding ApobExtendedData.CaOdtB, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                        <TextBlock Text="{Binding CcdlData.Tccdl, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                    </StackPanel>
                 </StackPanel>
             </Grid>
 
@@ -153,8 +159,11 @@
                     <TextBlock Text="PowerDown" TextAlignment="Right" />
                     <TextBlock Text="tWRPRE" TextAlignment="Right" />
                     
-                    <TextBlock Text="CK ODT A" TextAlignment="Right" />
-                    <TextBlock Text="CK ODT B" TextAlignment="Right" />
+                    <StackPanel Orientation="Vertical" Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text="CK ODT A" TextAlignment="Right" />
+                        <TextBlock Text="CK ODT B" TextAlignment="Right" />
+                        <TextBlock Text="tCCD_L_WR" TextAlignment="Right" />
+                    </StackPanel>
 
                 </StackPanel>
 
@@ -218,14 +227,16 @@
                     <TextBlock Text="{Binding Timings.WRPRE, FallbackValue='N/A'}"
                            Style="{DynamicResource ValueStyles}" />
 
-                    <TextBlock Text="{Binding ApobExtendedData.CkOdtA, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
-                    <TextBlock Text="{Binding ApobExtendedData.CkOdtB, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                    <StackPanel Orientation="Vertical" Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text="{Binding ApobExtendedData.CkOdtA, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                        <TextBlock Text="{Binding ApobExtendedData.CkOdtB, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                        <TextBlock Text="{Binding CcdlData.Tccdlwr, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                    </StackPanel>
                 </StackPanel>
             </Grid>
 
             <!-- Third Column -->
-            <Grid ShowGridLines="False"
-              Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+            <Grid ShowGridLines="False" Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
@@ -272,6 +283,7 @@
                     
                     <TextBlock Text="CS ODT A" TextAlignment="Right" />
                     <TextBlock Text="CS ODT B" TextAlignment="Right" />
+                    <TextBlock Text="tCCD_L_WR2" TextAlignment="Right" />
                 </StackPanel>
 
                 <StackPanel Grid.Column="1">
@@ -316,6 +328,7 @@
 
                     <TextBlock Text="{Binding ApobExtendedData.CsOdtA, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
                     <TextBlock Text="{Binding ApobExtendedData.CsOdtB, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                    <TextBlock Text="{Binding CcdlData.Tccdlwr2, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
                 </StackPanel>
             </Grid>
         </StackPanel>

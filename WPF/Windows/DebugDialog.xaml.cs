@@ -344,9 +344,20 @@ namespace ZenTimings.Windows
 
                         foreach (PropertyInfo property in properties)
                         {
-                            object value = property.GetValue(cpu.info.apob.Data);
+                            object value = property.GetValue(cpu.info.apob.Data, null);
                             var rawValue = (value as EncodedValueBase)?.RawValue.ToString() ?? "null";
                             AddLine($"{property.Name + ":",-20}{value ?? "N/A",-20}({rawValue})");
+                        }
+
+                        if (cpu.info.apob?.CcdlData != null)
+                        {
+                            type = cpu.info.apob.CcdlData.GetType();
+
+                            foreach (FieldInfo field in type.GetFields())
+                            {
+                                object value = field.GetValue(cpu.info.apob.CcdlData);
+                                AddLine(string.Format("{0,-20}{1,-20}", field.Name + ":", value ?? "N/A"));
+                            }
                         }
                     }
                     else

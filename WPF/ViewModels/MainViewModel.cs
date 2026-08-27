@@ -163,14 +163,21 @@ namespace ZenTimings.ViewModels
         public ApobData ApobData
         {
             get => _apobData;
-            set { _apobData = value; OnPropertyChanged(); }
+            set { _apobData = value; OnPropertyChanged("ApobData"); }
         }
 
         private ApobData _apobExtendedData;
         public ApobData ApobExtendedData
         {
             get => _apobExtendedData;
-            set { _apobExtendedData = value; OnPropertyChanged(); }
+            set { _apobExtendedData = value; OnPropertyChanged("ApobExtendedData"); }
+        }
+
+        private CcdlData _ccdlData;
+        public CcdlData CcdlData
+        {
+            get => _ccdlData;
+            set { _ccdlData = value; OnPropertyChanged("CcdlData"); }
         }
 
         private float _swaAdcV;
@@ -293,6 +300,8 @@ namespace ZenTimings.ViewModels
                     ApobExtendedData = CpuSingleton.Instance.info.apob.ExtendedData;
                 else
                     ApobExtendedData = ApobData;
+
+                CcdlData = CpuSingleton.Instance.info.apob.CcdlData;
             }
 
             //AgesaVersion = AGESA_SEARCHING;

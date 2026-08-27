@@ -56,6 +56,7 @@
                         <TextBlock Text="CA ODT A" TextAlignment="Right" />
                         <TextBlock Text="CK ODT A" TextAlignment="Right" />
                         <TextBlock Text="CS ODT A" TextAlignment="Right" />
+                        <TextBlock Text="tCCD_L" TextAlignment="Right" />
                     </StackPanel>
 
                     <!--TextBlock Text="tXP"
@@ -123,6 +124,7 @@
                         <TextBlock Text="{Binding ApobData.CaOdtA, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
                         <TextBlock Text="{Binding ApobData.CkOdtA, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
                         <TextBlock Text="{Binding ApobData.CsOdtA, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                        <TextBlock Text="{Binding CcdlData.Tccdl, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
                     </StackPanel>
 
                     <!--TextBlock Text="{Binding Timings.XP, FallbackValue='N/A'}"
@@ -171,6 +173,7 @@
                         <TextBlock Text="CA ODT B" TextAlignment="Right" />
                         <TextBlock Text="CK ODT B" TextAlignment="Right" />
                         <TextBlock Text="CS ODT B" TextAlignment="Right" />
+                        <TextBlock Text="tCCD_L_WR" TextAlignment="Right" />
                     </StackPanel>
                 </StackPanel>
 
@@ -238,6 +241,7 @@
                         <TextBlock Text="{Binding ApobData.CaOdtB, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
                         <TextBlock Text="{Binding ApobData.CkOdtB, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
                         <TextBlock Text="{Binding ApobData.CsOdtB, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
+                        <TextBlock Text="{Binding CcdlData.Tccdlwr, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
                     </StackPanel>
                 </StackPanel>
             </Grid>
@@ -291,6 +295,7 @@
                     <TextBlock Text="RttPark" TextAlignment="Right" />
                     <TextBlock Text="RttParkDqs" TextAlignment="Right" />
                     <TextBlock Text="Nitro" ToolTip="RxData/TxData/ControlLine" TextAlignment="Right" />
+                    <TextBlock Text="tCCD_L_WR2" TextAlignment="Right" />
                 </StackPanel>
 
                 <StackPanel Grid.Column="1">
@@ -335,6 +340,7 @@
                     <TextBlock Text="{Binding ApobData.RttParkDqsP0, FallbackValue='N/A', Mode=OneWay}" Style="{DynamicResource ValueStyles}" />
 
                     <TextBlock Text="{Binding Timings.Nitro, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}" />
+                    <TextBlock Text="{Binding CcdlData.Tccdlwr2, FallbackValue='N/A'}" Style="{DynamicResource ValueStyles}" />
                 </StackPanel>
             </Grid>
         </StackPanel>
