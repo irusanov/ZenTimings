@@ -44,7 +44,6 @@ namespace ZenTimings
         private readonly BiosMemController BMC;
         private readonly Cpu cpu;
         private readonly DispatcherTimer PowerCfgTimer = new DispatcherTimer();
-        private readonly DispatcherTimer TelemetryTimer = new DispatcherTimer();
         private readonly AppSettings settings = AppSettings.Instance;
         private readonly List<IPlugin> plugins = new List<IPlugin>();
         private SystemInfoWindow siWnd = null;
@@ -183,8 +182,6 @@ namespace ZenTimings
 
                     PowerCfgTimer.Interval = TimeSpan.FromMilliseconds(settings.AutoRefreshInterval);
                     PowerCfgTimer.Tick += PowerCfgTimer_Tick;
-
-                    TelemetryTimer.Tick += TelemetryTimer_Tick;
 
                     SplashWindow.Loading("Reading power table");
                     if (!WaitForPowerTable())
@@ -686,47 +683,6 @@ namespace ZenTimings
                 PowerCfgTimer.Stop();
         }
 
-        private void StartTelemetryTimer()
-        {
-            if (settings.AutoRefresh && sensorsWindw != null && sensorsWindw.IsLoaded && !TelemetryTimer.IsEnabled)
-            {
-                TelemetryTimer.Interval = TimeSpan.FromMilliseconds(settings.AutoRefreshInterval);
-                TelemetryTimer.Start();
-            }
-        }
-
-        private void StopTelemetryTimer()
-        {
-            if (TelemetryTimer.IsEnabled)
-                TelemetryTimer.Stop();
-        }
-
-        private void TelemetryTimer_Tick(object sender, EventArgs e)
-        {
-            if (sensorsWindw == null || !sensorsWindw.IsLoaded)
-            {
-                StopTelemetryTimer();
-                return;
-            }
-
-            try
-            {
-                new Thread(() =>
-                {
-                    Thread.CurrentThread.IsBackground = true;
-                    if (cpu.memoryConfig?.SpdInfo?.Values != null)
-                        cpu.memoryConfig.RefreshTelemetry(settings.AutoRefreshInterval);
-
-                    Dispatcher.Invoke(DispatcherPriority.ApplicationIdle,
-                        new Action(() => sensorsWindw?.RefreshTelemetryGroups()));
-                }).Start();
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-            }
-        }
-
         private void PowerCfgTimer_Tick(object sender, EventArgs e)
         {
             // Run refresh operation in a new thread
@@ -947,15 +903,13 @@ namespace ZenTimings
 
         private void AdonisWindow_StateChanged(object sender, EventArgs e)
         {
-            // Do not refresh if app is minimized
-            if (WindowState == WindowState.Minimized)
+            // Do not refresh if app is minimized and sensors window is not open, to save CPU usage
+            if (WindowState == WindowState.Minimized && (sensorsWindw == null || !sensorsWindw.IsLoaded))
             {
                 StopAutoRefresh();
-                StartTelemetryTimer();
             }
             else if (WindowState == WindowState.Normal)
             {
-                StopTelemetryTimer();
                 StartAutoRefresh();
             }
 
@@ -1160,14 +1114,10 @@ namespace ZenTimings
                         Top = telemetryWindowTop,
                         Left = telemetryWindowLeft
                     };
-                    sensorsWindw.Closed += (s, args) => StopTelemetryTimer();
                     sensorsWindw.Show();
 
                     if (startMinimized)
                         sensorsWindw.WindowState = WindowState.Minimized;
-
-                    if (WindowState == WindowState.Minimized && !PowerCfgTimer.IsEnabled)
-                        StartTelemetryTimer();
                 }
                 else
                 {
