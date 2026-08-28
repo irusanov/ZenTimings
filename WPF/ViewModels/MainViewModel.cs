@@ -13,6 +13,7 @@ using ZenStates.Core.Hardware;
 using ZenStates.Core.Hardware.Apob;
 using ZenStates.Core.Hardware.DRAM;
 using ZenStates.Core.Hardware.DRAM.DDR5.Pmic;
+using ZenTimings.Helpers;
 using ZenTimings.Plugin;
 
 namespace ZenTimings.ViewModels

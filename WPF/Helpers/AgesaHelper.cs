@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using ZenStates.Core;
 
-namespace ZenTimings
+namespace ZenTimings.Helpers
 {
     internal static class AgesaHelper
     {

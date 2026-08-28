@@ -122,7 +122,6 @@
     <Compile Include="Controls\DDR5TimingsPanel19h.xaml.cs">
       <DependentUpon>DDR5TimingsPanel19h.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Helpers\DriverCleaner.cs" />
     <Compile Include="Helpers\DriverHelper.cs" />
     <Compile Include="Encryption\UpdaterEncryption.cs" />
     <Compile Include="Common\ObservableObject.cs" />

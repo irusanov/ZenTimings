@@ -11,6 +11,7 @@ using ZenStates.Core;
 using ZenStates.Core.Common;
 using ZenStates.Core.Hardware;
 using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
+using ZenTimings.Helpers;
 using Application = System.Windows.Application;
 using DRAM = ZenStates.Core.Hardware.DRAM;
 using MessageBox = AdonisUI.Controls.MessageBox;

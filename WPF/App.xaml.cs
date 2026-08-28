@@ -4,6 +4,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Markup;
 using ZenStates.Core.OHWM;
+using ZenTimings.Helpers;
 using ZenTimings.Windows;
 
 namespace ZenTimings

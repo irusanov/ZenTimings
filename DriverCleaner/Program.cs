@@ -98,13 +98,13 @@ namespace ZenTimings.DriverCleaner
 
         private static int Main(string[] args)
         {
-            bool showNotifications = false;
+            bool showNotifications = true;
 
             for (int i = 0; i < args.Length; i++)
             {
-                if (string.Equals(args[i], "/notify", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(args[i], "/silent", StringComparison.OrdinalIgnoreCase))
                 {
-                    showNotifications = true;
+                    showNotifications = false;
                     break;
                 }
             }

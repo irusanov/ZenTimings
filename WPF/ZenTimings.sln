@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.8.12021.73 stable
+VisualStudioVersion = 18.8.12021.73
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenTimings", "ZenTimings.csproj", "{69D27E70-6B45-4E0F-B0A4-A53C3625B732}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -12,7 +12,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenTimings-legacy", "..\WPF
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OHWMPlugin", "..\OHWMPlugin\OHWMPlugin.csproj", "{29941469-27AD-4C9B-8DE2-7E971105A99C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DriverCleaner", "..\DriverCleaner\DriverCleaner.csproj", "{8739E01D-D719-42CE-993F-09B0088D43BB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UninstallDriver", "..\DriverCleaner\UninstallDriver.csproj", "{8739E01D-D719-42CE-993F-09B0088D43BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

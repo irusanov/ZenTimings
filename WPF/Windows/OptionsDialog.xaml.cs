@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using ZenStates.Core.Hardware;
+using ZenTimings.Helpers;
 using static ZenTimings.AppSettings;
 
 namespace ZenTimings.Windows

@@ -1,9 +1,8 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Windows;
 
-namespace ZenTimings
+namespace ZenTimings.Helpers
 {
     // ZenTimings requires administrator privileges (see app.manifest), so a normal
     // HKCU\...\Run registry entry will not work: Windows cannot silently elevate an

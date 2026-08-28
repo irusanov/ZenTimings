@@ -4,7 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using ZenStates.Core.PawnIo;
 
-namespace ZenTimings
+namespace ZenTimings.Helpers
 {
     internal static class DriverHelper
     {
@@ -77,6 +77,36 @@ namespace ZenTimings
             catch
             {
                 return null;
+            }
+        }
+
+        public static void UninstallInpoutx64(bool showNotifications = true)
+        {
+            try
+            {
+                string helperPath = Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    "UninstallDriver.exe");
+
+                if (!File.Exists(helperPath))
+                    return;
+
+                ProcessStartInfo startInfo = new ProcessStartInfo();
+
+                string arguments = showNotifications ? string.Empty : "/silent";
+
+                startInfo.FileName = helperPath;
+                startInfo.UseShellExecute = true;
+                startInfo.Verb = "runas";
+                startInfo.Arguments = arguments;
+                startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+                Process.Start(startInfo);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                // UAC cancelled or helper could not be started.
             }
         }
     }
