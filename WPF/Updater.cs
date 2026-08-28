@@ -120,7 +120,8 @@ namespace ZenTimings
 
         private UpdaterArgs FetchUpdateInfo()
         {
-            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
+            // After upgrading to .NET 4.7.2, the best supported TLS version is automatically negotiated, so we don't need to force TLS 1.2 anymore.
+            //ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
             using (var client = new WebClient())
             {
                 byte[] xmlData = client.DownloadData(updateUrl);
