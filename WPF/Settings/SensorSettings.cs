@@ -31,7 +31,7 @@ namespace ZenTimings
             {
                 if (File.Exists(Filename))
                 {
-                    return XmlUtils.DeserializeFromXml<SensorSettings>(Filename);
+                    return XmlUtils.DeserializeFromXmlFile<SensorSettings>(Filename);
                 }
             }
             catch (Exception ex)

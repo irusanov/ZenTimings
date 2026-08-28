@@ -76,7 +76,7 @@ namespace ZenTimings
             {
                 if (File.Exists(Filename))
                 {
-                    return XmlUtils.DeserializeFromXml<AppSettings>(Filename);
+                    return XmlUtils.DeserializeFromXmlFile<AppSettings>(Filename);
                 }
             }
             catch (Exception ex)
