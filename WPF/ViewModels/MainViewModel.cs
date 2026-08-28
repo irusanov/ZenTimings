@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-using System.Windows;
 using System.Xml.Serialization;
 using ZenStates.Core;
 using ZenStates.Core.Hardware;
@@ -18,19 +15,9 @@ using ZenTimings.Plugin;
 
 namespace ZenTimings.ViewModels
 {
-    public class MainViewModel : INotifyPropertyChanged
+    public class MainViewModel : ObservableObject
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
-        {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-            });
-        }
-
-        private static string AGESA_SEARCHING = "Searching for AGESA version...";
+        private static readonly string AGESA_SEARCHING = "Searching for AGESA version...";
 
         private readonly string SmuVersion;
 
@@ -40,6 +27,9 @@ namespace ZenTimings.ViewModels
             get => _timings;
             set
             {
+                // Not using SetProperty's equality short-circuit here: MemoryFrequency must be
+                // recomputed from the new timings object every time this is assigned, even if a
+                // future caller happened to pass back an equal instance.
                 _timings = value;
                 MemoryFrequency = value.Frequency;
                 OnPropertyChanged();
@@ -54,7 +44,7 @@ namespace ZenTimings.ViewModels
         public string MotherboardInfo
         {
             get => _motherboardInfo;
-            set { _motherboardInfo = value; OnPropertyChanged(); }
+            set => SetProperty(ref _motherboardInfo, value);
         }
 
         private string _agesaVersion = AGESA_SEARCHING;
@@ -75,6 +65,7 @@ namespace ZenTimings.ViewModels
                 }
                 IsAgesaVersionVisible = !string.IsNullOrEmpty(_agesaVersion);
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(IsSearchingForAgesaVersion));
             }
         }
 
@@ -82,7 +73,7 @@ namespace ZenTimings.ViewModels
         public bool IsAgesaVersionVisible
         {
             get => _isAgesaVersionVisible;
-            set { _isAgesaVersionVisible = value; OnPropertyChanged(); }
+            set => SetProperty(ref _isAgesaVersionVisible, value);
         }
 
         public bool IsSearchingForAgesaVersion => _agesaVersion == AGESA_SEARCHING;
@@ -95,9 +86,8 @@ namespace ZenTimings.ViewModels
             get => _memoryFrequency;
             set
             {
-                _memoryFrequency = value;
-                MemoryFrequencyString = $"{Math.Floor(MemoryFrequency)} MT/s";
-                OnPropertyChanged();
+                if (SetProperty(ref _memoryFrequency, value))
+                    MemoryFrequencyString = $"{Math.Floor(value)} MT/s";
             }
         }
 
@@ -105,7 +95,7 @@ namespace ZenTimings.ViewModels
         public string MemoryFrequencyString
         {
             get => _memoryFrequencyString;
-            set { _memoryFrequencyString = value; OnPropertyChanged(); }
+            set => SetProperty(ref _memoryFrequencyString, value);
         }
         public MemType MemoryType { get; }
         public bool IsDimmTelemetryAvailable => Settings.AdvancedMode && MemoryType == MemType.DDR5;
@@ -164,87 +154,63 @@ namespace ZenTimings.ViewModels
         public ApobData ApobData
         {
             get => _apobData;
-            set { _apobData = value; OnPropertyChanged("ApobData"); }
+            set => SetProperty(ref _apobData, value);
         }
 
         private ApobData _apobExtendedData;
         public ApobData ApobExtendedData
         {
             get => _apobExtendedData;
-            set { _apobExtendedData = value; OnPropertyChanged("ApobExtendedData"); }
+            set => SetProperty(ref _apobExtendedData, value);
         }
 
         private CcdlData _ccdlData;
         public CcdlData CcdlData
         {
             get => _ccdlData;
-            set { _ccdlData = value; OnPropertyChanged("CcdlData"); }
+            set => SetProperty(ref _ccdlData, value);
         }
 
         private float _swaAdcV;
         public float SwaAdcV
         {
             get => _swaAdcV;
-            set
-            {
-                _swaAdcV = value;
-                OnPropertyChanged("SwaAdcV");
-            }
+            set => SetProperty(ref _swaAdcV, value);
         }
 
         private float _swbAdcV;
         public float SwbAdcV
         {
             get => _swbAdcV;
-            set
-            {
-                _swbAdcV = value;
-                OnPropertyChanged("SwbAdcV");
-            }
+            set => SetProperty(ref _swbAdcV, value);
         }
 
         private float _vppAdcV;
         public float VppAdcV
         {
             get => _vppAdcV;
-            set
-            {
-                _vppAdcV = value;
-                OnPropertyChanged("VppAdcV");
-            }
+            set => SetProperty(ref _vppAdcV, value);
         }
 
-        private float _ApuVddio;
+        private float _apuVddio;
         public float ApuVddio
         {
-            get => _ApuVddio;
-            set
-            {
-                _ApuVddio = value;
-                OnPropertyChanged("ApuVddio");
-            }
+            get => _apuVddio;
+            set => SetProperty(ref _apuVddio, value);
         }
 
-        private float _Vsoc;
+        private float _vsoc;
         public float Vsoc
         {
-            get => _Vsoc;
-            set
-            {
-                _Vsoc = value;
-                OnPropertyChanged("Vsoc");
-            }
+            get => _vsoc;
+            set => SetProperty(ref _vsoc, value);
         }
 
-        private float _Vmisc;
+        private float _vmisc;
         public float Vmisc
         {
-            get => _Vmisc;
-            set
-            {
-                _Vmisc = value;
-                OnPropertyChanged("Vmisc");
-            }
+            get => _vmisc;
+            set => SetProperty(ref _vmisc, value);
         }
 
         private Ddr5PmicData _ddr5PmicData;
@@ -257,16 +223,14 @@ namespace ZenTimings.ViewModels
 
                 _ddr5PmicData = value;
 
-                if (PmicData.SwaAdcMv > 0)
-                    SwaAdcV = PmicData.SwaAdcMv / 1000.0f;
+                if (value.SwaAdcMv > 0)
+                    SwaAdcV = value.SwaAdcMv / 1000.0f;
 
-                if (PmicData.SwbAdcMv > 0)
-                    SwbAdcV = PmicData.SwbAdcMv / 1000.0f;
+                if (value.SwbAdcMv > 0)
+                    SwbAdcV = value.SwbAdcMv / 1000.0f;
 
-                if (PmicData.SwcAdcMv > 0)
-                    VppAdcV = PmicData.SwcAdcMv / 1000.0f;
-
-                //OnPropertyChanged("PmicData");
+                if (value.SwcAdcMv > 0)
+                    VppAdcV = value.SwcAdcMv / 1000.0f;
             }
         }
 
