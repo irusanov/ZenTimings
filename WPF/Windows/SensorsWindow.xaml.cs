@@ -373,7 +373,7 @@ namespace ZenTimings.Windows
             vm.TelemetryItems.Add(item);
         }
 
-        internal void RefreshTelemetry()
+        internal void RefreshTelemetryGroups()
         {
             if (_isRefreshing || memoryConfig == null)
                 return;
@@ -474,10 +474,10 @@ namespace ZenTimings.Windows
             // to avoid refreshing the same data twice.
             if (Application.Current.MainWindow?.WindowState == WindowState.Minimized)
             {
-                RefreshTelemetry();
+                CpuSingleton.Instance?.memoryConfig.RefreshTelemetry();
                 CpuSingleton.Instance?.systemInfo?.UpdateSensors();
             }
-            RefreshTelemetry();
+            RefreshTelemetryGroups();
             RefreshSensorGroups();
         }
 

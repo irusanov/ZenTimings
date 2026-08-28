@@ -57,6 +57,8 @@ namespace ZenTimings.Windows
             comboBoxScreenshot.SelectedIndex = (int)appSettings.ScreenshotMode;
             comboBoxImpedanceSource.SelectedIndex = (int)appSettings.ImpedanceTableSrc;
             textBoxScreenshotPath.Text = appSettings.ScreenshotSaveLocation;
+            checkBoxAutoUninstallDriver.IsChecked = appSettings.AutoUninstallDriver;
+            checkBoxAutoUninstallDriverNotification.IsChecked = appSettings.AutoUninstallDriverNotification;
         }
 
         private void SaveSettingsFromUi()
@@ -76,6 +78,8 @@ namespace ZenTimings.Windows
             appSettings.ScreenshotMode = (ScreenshotType)comboBoxScreenshot.SelectedIndex;
             appSettings.ScreenshotSaveLocation = textBoxScreenshotPath.Text.Trim();
             appSettings.ImpedanceTableSrc = (ImpedanceTableSource)comboBoxImpedanceSource.SelectedIndex;
+            appSettings.AutoUninstallDriver = (bool)checkBoxAutoUninstallDriver.IsChecked;
+            appSettings.AutoUninstallDriverNotification = (bool)checkBoxAutoUninstallDriverNotification.IsChecked;
         }
 
         private void CheckBoxAutoRefresh_Click(object sender, RoutedEventArgs e)

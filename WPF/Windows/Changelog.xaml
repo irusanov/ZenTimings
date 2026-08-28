@@ -44,6 +44,7 @@
                 <TextBlock Text=" - Sensors window now keeps updating while the main window is minimized" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Bind VSOC and VDDIO to SuperIO when available, falling back to PMT" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Added autostart option" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Added automatic inpoutx64 driver cleanup on app close (toggle from Options)" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Added icons to sections in the options dialog" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Fixed telemetry/sensors window alarm colors not recording max values" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Fixed incorrect read function used for SVI2 planes (Zen3 and earlier)" TextWrapping="WrapWithOverflow" />

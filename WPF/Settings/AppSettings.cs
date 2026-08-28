@@ -181,6 +181,7 @@ namespace ZenTimings
         public int AutostartDelaySeconds { get; set; } = 12;
         public bool StartMinimized { get; set; }
         public bool AutoUninstallDriver { get; set; } = true;
+        public bool AutoUninstallDriverNotification { get; set; } = true;
         public double WindowLeft { get; set; } = -1;
         public double WindowTop { get; set; } = -1;
         public double SysInfoWindowLeft { get; set; } = -1;

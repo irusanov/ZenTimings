@@ -125,8 +125,9 @@
                     Style="{StaticResource SettingToggle}"
                     Click="CheckBoxAutoRefresh_Click" />
 
-                <TextBox
+                <controls:NumericTextBox
                     x:Name="numericUpDownRefreshInterval"
+                    Minimum="20"
                     Grid.Column="1"
                     Grid.Row="1"
                     Margin="5 0 5 0" />
@@ -284,7 +285,7 @@
                     Content="Autostart on logon"
                     Click="CheckBoxAutostart_Click" />
 
-                <TextBox
+                <controls:NumericTextBox
                     x:Name="numericUpDownAutostartDelay"
                     Grid.Column="1"
                     Grid.Row="0"
@@ -321,6 +322,46 @@
                     Grid.ColumnSpan="3"
                     Style="{StaticResource SettingToggle}"
                     Content="Save position on app close" />
+            </Grid>
+        </StackPanel>
+        
+        <!-- Driver -->
+        <StackPanel Style="{StaticResource SectionPanel}">
+            <StackPanel Style="{StaticResource SectionHeaderPanel}">
+                <controls:AppIcon Kind="IconDriver" Style="{StaticResource SectionIcon}" />
+                <TextBlock Text="Driver" Style="{StaticResource SectionHeader}" />
+            </StackPanel>
+            <Border Style="{DynamicResource Separator}" />
+
+            <Grid Style="{StaticResource SectionGrid}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="140" />
+                    <ColumnDefinition Width="78" />
+                    <ColumnDefinition Width="78" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+
+                <ToggleButton
+                    x:Name="checkBoxAutoUninstallDriver"
+                    Grid.Column="0"
+                    Grid.Row="0"
+                    Grid.ColumnSpan="3"
+                    Style="{StaticResource SettingToggle}"
+                    Content="Uninstall inpoutx64 driver on close" />
+
+                <ToggleButton
+                    x:Name="checkBoxAutoUninstallDriverNotification"
+                    Grid.Column="0"
+                    Grid.Row="1"
+                    Grid.ColumnSpan="3"
+                    Style="{StaticResource SettingToggle}"
+                    IsEnabled="{Binding IsChecked, ElementName=checkBoxAutoUninstallDriver}"
+                    Content="Show notification toast on uninstall" />
             </Grid>
         </StackPanel>
 

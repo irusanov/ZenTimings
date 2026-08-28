@@ -21,6 +21,7 @@ using ZenStates.Core.Hardware.Aod;
 using ZenStates.Core.Hardware.DRAM;
 using ZenStates.Core.OHWM;
 using ZenTimings.Controls;
+using ZenTimings.Helpers;
 using ZenTimings.Plugin;
 using ZenTimings.ViewModels;
 using ZenTimings.Windows;
@@ -55,7 +56,6 @@ namespace ZenTimings
         private Control timingsPanel;
         private readonly MainViewModel mainViewModel;
         private float lastMclk = 0;
-        //private Computer computer;
 
         private readonly string AssemblyProduct = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(
             Assembly.GetExecutingAssembly(),
@@ -133,11 +133,10 @@ namespace ZenTimings
 
                 SplashWindow.Loading("Core");
                 cpu = CpuSingleton.Instance;
-                cpu.systemInfo.UpdateSensors();
 
                 if (cpu.info.family.Equals(Cpu.Family.UNSUPPORTED))
                 {
-                    throw new ApplicationException("CPU is not supported.");
+                    throw new ApplicationException("CPU family is not supported.");
                 }
                 else if (cpu.info.codeName.Equals(Cpu.CodeName.Unsupported))
                 {
@@ -160,6 +159,10 @@ namespace ZenTimings
 
                 InitializeComponent();
                 //SetResourceReference(NativeBorderBrushProperty, "WindowBorderColor");
+
+                SplashWindow.Loading("Sensors");
+                cpu.systemInfo.UpdateSensors();
+
                 SplashWindow.Loading("Memory modules");
                 ReadMemoryModulesInfo();
 
@@ -168,26 +171,14 @@ namespace ZenTimings
                 var memoryType = cpu.GetMemoryConfig().Type;
 
                 // Motherboard logo
+                SplashWindow.Loading("Resources");
                 var motherboardLogoName = VendorUtils.GetMotherboardLogo(cpu.systemInfo);
                 if (motherboardLogoName != null)
                 {
                     motherboardLogoImage.SetResourceReference(Image.SourceProperty, motherboardLogoName);
                 }
 
-                mainViewModel = new MainViewModel(
-                    ReadTimings(),
-                    memoryType,
-                    compatMode,
-                    settings,
-                    plugins,
-                    motherboardLogoName,
-                    GetAgesaVersion(),
-                    cpu.GetMemoryConfig()?.SpdInfo?.Values.FirstOrDefault(d => d.IsValid)?.PmicData ?? null
-                );
-
-                DataContext = mainViewModel;
-
-                if (cpu != null && settings.AdvancedMode)
+                if (settings.AdvancedMode)
                 {
 
                     PowerCfgTimer.Interval = TimeSpan.FromMilliseconds(settings.AutoRefreshInterval);
@@ -199,6 +190,12 @@ namespace ZenTimings
                     if (!WaitForPowerTable())
                     {
                         SplashWindow.Loading("Power table error!");
+                    }
+
+                    SplashWindow.Loading("IO Driver");
+                    if (!WaitForInpoutDriverLoad())
+                    {
+                        HandleError("I/O driver is not responding or not loaded.");
                     }
 
                     SplashWindow.Loading("Plugins");
@@ -221,16 +218,30 @@ namespace ZenTimings
                     }
                 }
 
+                mainViewModel = new MainViewModel(
+                    ReadTimings(),
+                    memoryType,
+                    compatMode,
+                    settings,
+                    plugins,
+                    motherboardLogoName,
+                    GetAgesaVersion(),
+                    cpu.GetMemoryConfig()?.SpdInfo?.Values.FirstOrDefault(d => d.IsValid)?.PmicData ?? null
+                );
+
+                DataContext = mainViewModel;
+
                 SplashWindow.Loading("Done");
 
                 AddTimingsPanel(memoryType);
 
+                // This blocks needs to be after the timings panel is added, because DDR4 still targets the actual elements for some of the timings
                 if (settings.AdvancedMode)
                 {
                     if (memoryType == MemType.DDR4 || memoryType == MemType.LPDDR4)
                     {
-                        ReadSVI();
                         ReadDDR4MemoryConfig();
+                        ReadSVI();
                     }
                     StartAutoRefresh();
                 }
@@ -335,7 +346,10 @@ namespace ZenTimings
             //cpu?.io?.Close(settings.AutoUninstallDriver);
             cpu?.Dispose();
 
-            //Driver.Cleanup();
+            if (settings.AutoUninstallDriver)
+            {
+                DriverCleaner.Clean(settings.AutoUninstallDriverNotification);
+            }
         }
 
         private void ExitApplication(bool save = true)
@@ -598,7 +612,7 @@ namespace ZenTimings
             //return result;
         }
 
-        private bool WaitForDriverLoad()
+        private bool WaitForInpoutDriverLoad()
         {
             Stopwatch timer = new Stopwatch();
             timer.Start();
@@ -608,7 +622,7 @@ namespace ZenTimings
             do
             {
                 temp = cpu.io.IsInpOutDriverOpen();
-            } while (!temp && timer.Elapsed.TotalMilliseconds < 10000);
+            } while (!temp && timer.Elapsed.TotalMilliseconds < 5000);
 
             timer.Stop();
 
@@ -623,45 +637,37 @@ namespace ZenTimings
                 return false;
             }
 
-            if (WaitForDriverLoad())
+            Stopwatch timer = new Stopwatch();
+            int timeout = 100000;
+
+            // TODO: Move to Core DLL
+            var memoryConfig = cpu.memoryConfig.Timings.FirstOrDefault().Value;
+            if (memoryConfig != null)
             {
-                Stopwatch timer = new Stopwatch();
-                int timeout = 100000;
-
-                // TODO: Move to Core DLL
-                var memoryConfig = cpu.memoryConfig.Timings.FirstOrDefault().Value;
-                if (memoryConfig != null)
-                {
-                    cpu.powerTable.ConfiguredClockSpeed = memoryConfig.Frequency;
-                    cpu.powerTable.MemRatio = memoryConfig.Ratio;
-                }
-
-                timer.Start();
-
-                SMU.Status status;
-                // Refresh each 200ms seconds until table is transferred to DRAM or timeout
-                do
-                {
-                    status = cpu.RefreshPowerTable();
-                    if (status != SMU.Status.OK)
-                        Thread.Sleep(200);  // It's ok to block the current thread
-                } while (status != SMU.Status.OK && timer.Elapsed.TotalMilliseconds < timeout);
-
-                timer.Stop();
-
-                if (status != SMU.Status.OK)
-                {
-                    HandleError("Could not get power table.\nSkipping.");
-                    return false;
-                }
-
-                return true;
+                cpu.powerTable.ConfiguredClockSpeed = memoryConfig.Frequency;
+                cpu.powerTable.MemRatio = memoryConfig.Ratio;
             }
-            else
+
+            timer.Start();
+
+            SMU.Status status;
+            // Refresh each 200ms seconds until table is transferred to DRAM or timeout
+            do
             {
-                HandleError("I/O driver is not responding or not loaded.");
+                status = cpu.RefreshPowerTable();
+                if (status != SMU.Status.OK)
+                    Thread.Sleep(200);  // It's ok to block the current thread
+            } while (status != SMU.Status.OK && timer.Elapsed.TotalMilliseconds < timeout);
+
+            timer.Stop();
+
+            if (status != SMU.Status.OK)
+            {
+                HandleError("Could not get power table.\nSkipping.");
                 return false;
             }
+
+            return true;
         }
 
         private void StartAutoRefresh()
@@ -711,7 +717,7 @@ namespace ZenTimings
                         cpu.memoryConfig.RefreshTelemetry(settings.AutoRefreshInterval);
 
                     Dispatcher.Invoke(DispatcherPriority.ApplicationIdle,
-                        new Action(() => sensorsWindw?.RefreshTelemetry()));
+                        new Action(() => sensorsWindw?.RefreshTelemetryGroups()));
                 }).Start();
             }
             catch (Exception ex)

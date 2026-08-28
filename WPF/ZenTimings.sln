@@ -1,13 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.12.35521.163
+# Visual Studio Version 18
+VisualStudioVersion = 18.8.12021.73 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenTimings", "ZenTimings.csproj", "{69D27E70-6B45-4E0F-B0A4-A53C3625B732}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8739E01D-D719-42CE-993F-09B0088D43BB} = {8739E01D-D719-42CE-993F-09B0088D43BB}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenTimings-legacy", "..\WPF-no-themes\ZenTimings-legacy.csproj", "{C745505A-2C8B-44DF-9240-76D51738D9EF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OHWMPlugin", "..\OHWMPlugin\OHWMPlugin.csproj", "{29941469-27AD-4C9B-8DE2-7E971105A99C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DriverCleaner", "..\DriverCleaner\DriverCleaner.csproj", "{8739E01D-D719-42CE-993F-09B0088D43BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +31,10 @@ Global
 		{29941469-27AD-4C9B-8DE2-7E971105A99C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{29941469-27AD-4C9B-8DE2-7E971105A99C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{29941469-27AD-4C9B-8DE2-7E971105A99C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8739E01D-D719-42CE-993F-09B0088D43BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8739E01D-D719-42CE-993F-09B0088D43BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8739E01D-D719-42CE-993F-09B0088D43BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8739E01D-D719-42CE-993F-09B0088D43BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
