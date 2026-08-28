@@ -310,7 +310,7 @@ namespace ZenTimings
 
             notifyIcon.MouseClick += NotifyIcon_MouseClick;
             notifyIcon.ContextMenuStrip = new Forms.ContextMenuStrip();
-            notifyIcon.ContextMenuStrip.Items.Add($"{AssemblyProduct} {AssemblyVersion}", null, OnAppContextMenuItemClick);
+            notifyIcon.ContextMenuStrip.Items.Add($"{AssemblyProduct} v{AssemblyVersion}", null, OnAppContextMenuItemClick);
             notifyIcon.ContextMenuStrip.Items.Add("-");
             notifyIcon.ContextMenuStrip.Items.Add("Exit", null, (object sender, EventArgs e) => ExitApplication());
 
@@ -815,7 +815,7 @@ namespace ZenTimings
 
             Dispatcher.Invoke(() =>
             {
-                Title = $"{AssemblyTitle} {AssemblyVersion.Substring(0, AssemblyVersion.LastIndexOf('.'))}";
+                Title = $"{AssemblyTitle} v{AssemblyVersion.Substring(0, AssemblyVersion.LastIndexOf('.'))}";
 #if DEBUG && !BETA
                 if (settings.AdvancedMode)
                     Title += $@"{AssemblyVersion.Substring(AssemblyVersion.LastIndexOf('.'))} (debug)";

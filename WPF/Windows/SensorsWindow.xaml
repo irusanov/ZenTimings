@@ -277,7 +277,7 @@
                                         </Style>
                                     </DataGrid.RowStyle>
                                     <DataGrid.Columns>
-                                        <DataGridTemplateColumn Header="Parameter" CellTemplate="{StaticResource SensorNameCellTemplate}" Width="*" MinWidth="120"/>
+                                        <DataGridTemplateColumn Header="Sensor" CellTemplate="{StaticResource SensorNameCellTemplate}" Width="*" MinWidth="120"/>
 
                                         <DataGridTextColumn Header="Current" Binding="{Binding Current}" Width="*" MinWidth="64">
                                             <DataGridTextColumn.ElementStyle>
