@@ -250,7 +250,7 @@
                     Grid.Row="0"
                     Style="{StaticResource SettingCombo}">
                     <ComboBoxItem Content="Legacy" />
-                    <ComboBoxItem Content="Extended (experimental)" />
+                    <ComboBoxItem Content="Extended" />
                 </ComboBox>
             </Grid>
         </StackPanel>
@@ -397,7 +397,7 @@
                     Grid.Row="0"
                     Style="{StaticResource SettingCombo}">
                     <ComboBoxItem Content="App Window" />
-                    <ComboBoxItem Content="Desktop" />
+                    <ComboBoxItem Content="Full Desktop" />
                 </ComboBox>
 
                 <TextBlock

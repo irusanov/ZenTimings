@@ -348,7 +348,8 @@ namespace ZenTimings
 
             if (settings.AutoUninstallDriver)
             {
-                DriverHelper.UninstallInpoutx64(settings.AutoUninstallDriverNotification);
+                App.CleanupDriverIfLastInstance(settings.AutoUninstallDriverNotification);
+                //DriverHelper.UninstallInpoutx64(settings.AutoUninstallDriverNotification);
             }
         }
 

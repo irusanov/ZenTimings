@@ -39,14 +39,14 @@
                 <TextBlock Text="" />
                 <TextBlock Text=" - Added CCD_L timings for DDR5 in advanced mode" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Renamed Telemetry window to Sensors and enabled it for all systems" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Added a sensor management dialog to show/hide individual sensors" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Added a sensor settings dialog to show/hide individual sensors" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Added icons for sensors" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Sensors window now keeps updating while the main window is minimized" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Bind VSOC and VDDIO to SuperIO when available, falling back to PMT" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Added autostart option" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Added automatic inpoutx64 driver cleanup on app close (toggle from Options)" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Added icons to sections in the options dialog" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Fixed telemetry/sensors window alarm colors not recording max values" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Fixed sensors window alarm colors not recording max values" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Fixed incorrect read function used for SVI2 planes (Zen3 and earlier)" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Fixed incorrect handling of corner radius (W11)" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Unmatched Hynix dies are now displayed as 'Unknown' instead of an incorrect value" TextWrapping="WrapWithOverflow" />

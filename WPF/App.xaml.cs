@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 using System.Windows;
@@ -15,6 +16,7 @@ namespace ZenTimings
     public partial class App
     {
         internal const string mutexName = "Local\\ZenTimings";
+        private const string cleanupMutexName = "Local\\ZenTimings.DriverCleanup";
         internal static Mutex instanceMutex;
         internal bool createdNew;
         public Updater updater;
@@ -26,8 +28,7 @@ namespace ZenTimings
             if (!createdNew && AppSettings.Instance.SingleInstance)
             {
                 // App is already running! Exit the application and show the other window.
-                InteropMethods.PostMessage((IntPtr)InteropMethods.HWND_BROADCAST, InteropMethods.WM_SHOWME,
-                    IntPtr.Zero, IntPtr.Zero);
+                InteropMethods.PostMessage((IntPtr)InteropMethods.HWND_BROADCAST, InteropMethods.WM_SHOWME, IntPtr.Zero, IntPtr.Zero);
                 Current.Shutdown();
                 Environment.Exit(0);
             }
@@ -45,6 +46,61 @@ namespace ZenTimings
             GC.KeepAlive(instanceMutex);
             SplashWindow.Start(startedFromScheduledTask && AppSettings.Instance.AutostartWithWindows);
             base.OnStartup(e);
+        }
+
+        internal static void CleanupDriverIfLastInstance(bool showNotification = true)
+        {
+            using (Mutex cleanupMutex =
+                new Mutex(false, cleanupMutexName))
+            {
+                try
+                {
+                    cleanupMutex.WaitOne();
+
+                    if (IsLastInstance())
+                    {
+                        DriverHelper.UninstallInpoutx64(showNotification);
+                    }
+                }
+                finally
+                {
+                    cleanupMutex.ReleaseMutex();
+                }
+            }
+        }
+
+        private static bool IsLastInstance()
+        {
+            int currentProcessId = Process.GetCurrentProcess().Id;
+            Process[] processes = Process.GetProcessesByName("ZenTimings");
+
+            try
+            {
+                foreach (Process process in processes)
+                {
+                    try
+                    {
+                        if (process.Id != currentProcessId)
+                        {
+                            return false;
+                        }
+                    }
+                    catch
+                    {
+                        // The process may have exited between
+                        // enumeration and inspection.
+                    }
+                }
+
+                return true;
+            }
+            finally
+            {
+                foreach (Process process in processes)
+                {
+                    process.Dispose();
+                }
+            }
         }
     }
 }
