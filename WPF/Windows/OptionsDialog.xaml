@@ -105,7 +105,6 @@
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
 
                 <ToggleButton
@@ -155,29 +154,6 @@
                     Grid.ColumnSpan="3"
                     Style="{StaticResource SettingToggle}"
                     Content="Single instance" />
-
-                <TextBlock
-                    Grid.Column="0"
-                    Grid.Row="4"
-                    Style="{StaticResource SettingLabel}"
-                    Text="Theme" />
-                <ComboBox
-                    x:Name="comboBoxTheme"
-                    Grid.ColumnSpan="2"
-                    Grid.Column="1"
-                    Grid.Row="4"
-                    Style="{StaticResource SettingCombo}"
-                    SelectionChanged="ComboBoxTheme_SelectionChanged">
-                    <ComboBoxItem Content="Light" />
-                    <ComboBoxItem Content="Dark" />
-                    <ComboBoxItem Content="Dark Mint" />
-                    <ComboBoxItem Content="Dark Mint Gradient" />
-                    <ComboBoxItem Content="Asus ROG" />
-                    <ComboBoxItem Content="Dracula" />
-                    <ComboBoxItem Content="Retro Wave" />
-                    <ComboBoxItem Content="Burnt Orange" />
-                    <ComboBoxItem Content="Black" />
-                </ComboBox>
             </Grid>
         </StackPanel>
 
@@ -198,18 +174,42 @@
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
 
                 <TextBlock
                     Grid.Column="0"
                     Grid.Row="0"
                     Style="{StaticResource SettingLabel}"
+                    Text="Theme" />
+                <ComboBox
+                    x:Name="comboBoxTheme"
+                    Grid.ColumnSpan="2"
+                    Grid.Column="1"
+                    Grid.Row="0"
+                    Style="{StaticResource SettingCombo}"
+                    SelectionChanged="ComboBoxTheme_SelectionChanged">
+                    <ComboBoxItem Content="Light" />
+                    <ComboBoxItem Content="Dark" />
+                    <ComboBoxItem Content="Dark Mint" />
+                    <ComboBoxItem Content="Dark Mint Gradient" />
+                    <ComboBoxItem Content="Asus ROG" />
+                    <ComboBoxItem Content="Dracula" />
+                    <ComboBoxItem Content="Retro Wave" />
+                    <ComboBoxItem Content="Burnt Orange" />
+                    <ComboBoxItem Content="Black" />
+                </ComboBox>
+
+                <TextBlock
+                    Grid.Column="0"
+                    Grid.Row="1"
+                    Style="{StaticResource SettingLabel}"
                     Text="Corner radius (Win 11)" />
                 <ComboBox
                     x:Name="comboBoxCornerRadius"
                     Grid.ColumnSpan="2"
                     Grid.Column="1"
-                    Grid.Row="0"
+                    Grid.Row="1"
                     Style="{StaticResource SettingCombo}">
                     <ComboBoxItem Content="Auto" />
                     <ComboBoxItem Content="No Radius" />
