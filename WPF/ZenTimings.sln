@@ -4,9 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 18.8.12021.73
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenTimings", "ZenTimings.csproj", "{69D27E70-6B45-4E0F-B0A4-A53C3625B732}"
-	ProjectSection(ProjectDependencies) = postProject
-		{8739E01D-D719-42CE-993F-09B0088D43BB} = {8739E01D-D719-42CE-993F-09B0088D43BB}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenTimings-legacy", "..\WPF-no-themes\ZenTimings-legacy.csproj", "{C745505A-2C8B-44DF-9240-76D51738D9EF}"
 EndProject
