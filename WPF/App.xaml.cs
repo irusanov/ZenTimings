@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -8,6 +8,7 @@ using System.Windows.Markup;
 using ZenStates.Core.OHWM;
 using ZenTimings.Helpers;
 using ZenTimings.Windows;
+using static ZenTimings.Helpers.DriverCleaner;
 
 namespace ZenTimings
 {
@@ -29,7 +30,8 @@ namespace ZenTimings
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            IsDriverCleanupMode = e.Args.Any(a => string.Equals(a, "/driver-cleanup", StringComparison.OrdinalIgnoreCase));
+            IsDriverCleanupMode = e.Args.Any(
+                a => string.Equals(a, "/driver-cleanup", StringComparison.OrdinalIgnoreCase));
 
             if (IsDriverCleanupMode)
             {
@@ -62,12 +64,11 @@ namespace ZenTimings
                 typeof(FrameworkElement),
                 new FrameworkPropertyMetadata(
                     XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
+                        CultureInfo.CurrentCulture.IetfLanguageTag)));
 
             updater = new Updater();
 
-            bool startedFromScheduledTask = Array.Exists(
-                e.Args,
-                arg => arg.Equals(StartupHelper.AutostartArgument, StringComparison.OrdinalIgnoreCase));
+            bool startedFromScheduledTask = Array.Exists(e.Args, arg => arg.Equals(StartupHelper.AutostartArgument, StringComparison.OrdinalIgnoreCase));
 
             GC.KeepAlive(instanceMutex);
 
@@ -78,7 +79,7 @@ namespace ZenTimings
 
         private static void StartCleanupProcess(StartupEventArgs e)
         {
-            bool showNotifications = !e.Args.Any(a => string.Equals(a, "/silent", StringComparison.OrdinalIgnoreCase));
+            NotificationLevel notificationLevel = GetNotificationLevel(e.Args);
 
             using (Mutex cleanupMutex = new Mutex(false, cleanupMutexName))
             {
@@ -86,7 +87,7 @@ namespace ZenTimings
 
                 try
                 {
-                    DriverCleaner.Cleanup(showNotifications);
+                    DriverCleaner.Cleanup(notificationLevel);
                 }
                 finally
                 {
@@ -95,6 +96,16 @@ namespace ZenTimings
             }
 
             Environment.Exit(0);
+        }
+
+        private static NotificationLevel GetNotificationLevel(string[] args)
+        {
+            string value = args.FirstOrDefault(a => a.StartsWith("/notifications:", StringComparison.OrdinalIgnoreCase))?.Substring("/notifications:".Length);
+
+            if (Enum.TryParse(value, true, out NotificationLevel level))
+                return level;
+
+            return NotificationLevel.All;
         }
 
         private static void WaitForDriverCleanup()
@@ -117,7 +128,7 @@ namespace ZenTimings
             }
         }
 
-        internal static void CleanupDriverIfLastInstance(bool showNotification = true)
+        internal static void CleanupDriverIfLastInstance(NotificationLevel notificationLevel = NotificationLevel.All)
         {
             using (Mutex cleanupMutex = new Mutex(false, cleanupMutexName))
             {
@@ -128,7 +139,7 @@ namespace ZenTimings
                     if (!IsLastInstance())
                         return;
 
-                    if (!StartDriverCleanup(showNotification))
+                    if (!StartDriverCleanup(notificationLevel))
                         return;
                 }
                 finally
@@ -166,7 +177,7 @@ namespace ZenTimings
             }
         }
 
-        internal static bool StartDriverCleanup(bool showNotifications = true)
+        internal static bool StartDriverCleanup(NotificationLevel notificationLevel = NotificationLevel.All)
         {
             if (IsDriverCleanupMode)
                 return false;
@@ -174,11 +185,12 @@ namespace ZenTimings
             try
             {
                 string exePath = Process.GetCurrentProcess().MainModule.FileName;
+                string arguments = "/driver-cleanup /notifications:" + notificationLevel.ToString().ToLowerInvariant();
 
                 Process.Start(new ProcessStartInfo
                 {
                     FileName = exePath,
-                    Arguments = showNotifications ? "/driver-cleanup" : "/driver-cleanup /silent",
+                    Arguments = arguments,
                     UseShellExecute = true,
                     CreateNoWindow = true,
                     WindowStyle = ProcessWindowStyle.Hidden

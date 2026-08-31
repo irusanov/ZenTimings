@@ -7,6 +7,7 @@ using System.Windows.Threading;
 using ZenStates.Core.Hardware;
 using ZenTimings.Helpers;
 using static ZenTimings.AppSettings;
+using static ZenTimings.Helpers.DriverCleaner;
 
 namespace ZenTimings.Windows
 {
@@ -59,7 +60,10 @@ namespace ZenTimings.Windows
             comboBoxImpedanceSource.SelectedIndex = (int)appSettings.ImpedanceTableSrc;
             textBoxScreenshotPath.Text = appSettings.ScreenshotSaveLocation;
             checkBoxAutoUninstallDriver.IsChecked = appSettings.AutoUninstallDriver;
-            checkBoxAutoUninstallDriverNotification.IsChecked = appSettings.AutoUninstallDriverNotification;
+            var notificationLevelIndex = appSettings.AutoUninstallDriverNotificationLevel + 1;
+            if (notificationLevelIndex > comboBoxDriverNotification.Items.Count - 1)
+                notificationLevelIndex = comboBoxDriverNotification.Items.Count - 1;
+            comboBoxDriverNotification.SelectedIndex = notificationLevelIndex;
         }
 
         private void SaveSettingsFromUi()
@@ -80,7 +84,7 @@ namespace ZenTimings.Windows
             appSettings.ScreenshotSaveLocation = textBoxScreenshotPath.Text.Trim();
             appSettings.ImpedanceTableSrc = (ImpedanceTableSource)comboBoxImpedanceSource.SelectedIndex;
             appSettings.AutoUninstallDriver = (bool)checkBoxAutoUninstallDriver.IsChecked;
-            appSettings.AutoUninstallDriverNotification = (bool)checkBoxAutoUninstallDriverNotification.IsChecked;
+            appSettings.AutoUninstallDriverNotificationLevel = comboBoxDriverNotification.SelectedIndex - 1;
         }
 
         private void CheckBoxAutoRefresh_Click(object sender, RoutedEventArgs e)

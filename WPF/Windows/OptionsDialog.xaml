@@ -354,14 +354,23 @@
                     Style="{StaticResource SettingToggle}"
                     Content="Uninstall inpoutx64 driver on close" />
 
-                <ToggleButton
-                    x:Name="checkBoxAutoUninstallDriverNotification"
+                <TextBlock
                     Grid.Column="0"
                     Grid.Row="1"
-                    Grid.ColumnSpan="3"
-                    Style="{StaticResource SettingToggle}"
-                    IsEnabled="{Binding IsChecked, ElementName=checkBoxAutoUninstallDriver}"
-                    Content="Show notification toast on uninstall" />
+                    Style="{StaticResource SettingLabel}"
+                    Text="Uninstall notifications" />
+
+                <ComboBox
+                    x:Name="comboBoxDriverNotification"
+                    Grid.Column="1"
+                    Grid.Row="1"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource SettingCombo}"
+                    IsEnabled="{Binding IsChecked, ElementName=checkBoxAutoUninstallDriver}">
+                    <ComboBoxItem Content="None" />
+                    <ComboBoxItem Content="Errors only" />
+                    <ComboBoxItem Content="All" />
+                </ComboBox>
             </Grid>
         </StackPanel>
 

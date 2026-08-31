@@ -25,6 +25,7 @@ using ZenTimings.Helpers;
 using ZenTimings.Plugin;
 using ZenTimings.ViewModels;
 using ZenTimings.Windows;
+using static ZenTimings.Helpers.DriverCleaner;
 using Forms = System.Windows.Forms;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
@@ -345,7 +346,7 @@ namespace ZenTimings
 
             if (settings.AutoUninstallDriver)
             {
-                App.CleanupDriverIfLastInstance(settings.AutoUninstallDriverNotification);
+                App.CleanupDriverIfLastInstance((NotificationLevel)settings.AutoUninstallDriverNotificationLevel);
                 //DriverHelper.UninstallInpoutx64(settings.AutoUninstallDriverNotification);
             }
         }

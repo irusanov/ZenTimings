@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using ZenTimings.Helpers;
+using static ZenTimings.Helpers.DriverCleaner;
 
 namespace ZenTimings
 {
@@ -13,7 +14,7 @@ namespace ZenTimings
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public const int VersionMajor = 1;
-        public const int VersionMinor = 14;
+        public const int VersionMinor = 15;
 
         private static readonly string Filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.xml");
         public const string AGESA_UNKNOWN = "Unknown";
@@ -182,7 +183,7 @@ namespace ZenTimings
         public int AutostartDelaySeconds { get; set; } = 12;
         public bool StartMinimized { get; set; }
         public bool AutoUninstallDriver { get; set; } = true;
-        public bool AutoUninstallDriverNotification { get; set; } = true;
+        public int AutoUninstallDriverNotificationLevel { get; set; } = (int)NotificationLevel.All;
         public double WindowLeft { get; set; } = -1;
         public double WindowTop { get; set; } = -1;
         public double SysInfoWindowLeft { get; set; } = -1;
