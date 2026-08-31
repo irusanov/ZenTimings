@@ -555,6 +555,10 @@ namespace ZenTimings.Windows
             }
             AddLine();
 
+            AddHeading("SMBios");
+            AddLine(SystemInfo.SMBios.GetReport());
+            AddLine();
+
             // All WMI classes in root namespace
             /*AddHeading("WMI: Root Classes");
             List<string> namespaces = WMI.GetClassNamesWithinWmiNamespace(wmiScope);
