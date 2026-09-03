@@ -64,7 +64,6 @@ namespace ZenTimings
                 typeof(FrameworkElement),
                 new FrameworkPropertyMetadata(
                     XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
-                        CultureInfo.CurrentCulture.IetfLanguageTag)));
 
             updater = new Updater();
 

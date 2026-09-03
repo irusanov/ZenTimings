@@ -13,7 +13,7 @@
     mc:Ignorable="d"
     x:Name="OptionsWindow"
     Title="Options"
-    Height="560"
+    MinHeight="280"
     Width="450"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterOwner"
@@ -61,7 +61,12 @@
         </Style>
     </local:ThemedAdonisWindow.Resources>
 
-    <StackPanel x:Name="OptionWindowContent" Margin="4 0">
+    <Grid x:Name="OptionWindowContent" Margin="4 0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
         <Popup
             x:Name="OptionsPopup"
             Panel.ZIndex="100"
@@ -85,8 +90,23 @@
             </TextBlock>
         </Popup>
 
-        <!-- General -->
-        <StackPanel Style="{StaticResource SectionPanel}">
+        <TabControl
+            Grid.Row="0"
+            Margin="0 2 0 0"
+            Padding="0"
+            Background="{DynamicResource PanelBackground}"
+            BorderThickness="0,1"
+            ClipToBounds="True"
+            SnapsToDevicePixels="True"
+            ScrollViewer.CanContentScroll="True"
+            BorderBrush="{DynamicResource SeparatorColor}"
+            Template="{DynamicResource TabControlControlTemplate}">
+            <TabItem
+                Header="General"
+                Background="{DynamicResource PanelBackground}"
+                BorderThickness="0,1,1,1"
+                BorderBrush="{DynamicResource SeparatorColor}">
+                <StackPanel Style="{StaticResource SectionPanel}">
             <StackPanel Style="{StaticResource SectionHeaderPanel}">
                 <controls:AppIcon Kind="IconGeneral" Style="{StaticResource SectionIcon}" />
                 <TextBlock Text="General" Style="{StaticResource SectionHeader}" />
@@ -155,10 +175,16 @@
                     Style="{StaticResource SettingToggle}"
                     Content="Single instance" />
             </Grid>
-        </StackPanel>
+                </StackPanel>
+            </TabItem>
 
-        <!-- Appearance -->
-        <StackPanel Style="{StaticResource SectionPanel}">
+            <TabItem
+                Header="Appearance"
+                Background="{DynamicResource PanelBackground}"
+                BorderThickness="1"
+                Margin="-1,0,0,0"
+                BorderBrush="{DynamicResource SeparatorColor}">
+                <StackPanel Style="{StaticResource SectionPanel}">
             <StackPanel Style="{StaticResource SectionHeaderPanel}">
                 <controls:AppIcon Kind="IconAppearance" Style="{StaticResource SectionIcon}" />
                 <TextBlock Text="Appearance" Style="{StaticResource SectionHeader}" />
@@ -217,10 +243,16 @@
                     <ComboBoxItem Content="Small Radius" />
                 </ComboBox>
             </Grid>
-        </StackPanel>
+                </StackPanel>
+            </TabItem>
 
-        <!-- Sensors -->
-        <StackPanel Style="{StaticResource SectionPanel}">
+            <TabItem
+                Header="Sensors"
+                Background="{DynamicResource PanelBackground}"
+                BorderThickness="1"
+                Margin="-1,0,0,0"
+                BorderBrush="{DynamicResource SeparatorColor}">
+                <StackPanel Style="{StaticResource SectionPanel}">
             <StackPanel Style="{StaticResource SectionHeaderPanel}">
                 <controls:AppIcon Kind="IconTemperature" Style="{StaticResource SectionIcon}" />
                 <TextBlock Text="Sensors" Style="{StaticResource SectionHeader}" />
@@ -253,10 +285,16 @@
                     <ComboBoxItem Content="Extended" />
                 </ComboBox>
             </Grid>
-        </StackPanel>
+                </StackPanel>
+            </TabItem>
 
-        <!-- Startup & Window -->
-        <StackPanel Style="{StaticResource SectionPanel}">
+            <TabItem
+                Header="Startup &amp; Window"
+                Background="{DynamicResource PanelBackground}"
+                BorderThickness="1"
+                Margin="-1,0,0,0"
+                BorderBrush="{DynamicResource SeparatorColor}">
+                <StackPanel Style="{StaticResource SectionPanel}">
             <StackPanel Style="{StaticResource SectionHeaderPanel}">
                 <controls:AppIcon Kind="IconStartup" Style="{StaticResource SectionIcon}" />
                 <TextBlock Text="Startup &amp; Window" Style="{StaticResource SectionHeader}" />
@@ -323,10 +361,16 @@
                     Style="{StaticResource SettingToggle}"
                     Content="Save position on app close" />
             </Grid>
-        </StackPanel>
-        
-        <!-- Driver -->
-        <StackPanel Style="{StaticResource SectionPanel}">
+                </StackPanel>
+            </TabItem>
+
+            <TabItem
+                Header="Driver"
+                Background="{DynamicResource PanelBackground}"
+                BorderThickness="1"
+                Margin="-1,0,0,0"
+                BorderBrush="{DynamicResource SeparatorColor}">
+                <StackPanel Style="{StaticResource SectionPanel}">
             <StackPanel Style="{StaticResource SectionHeaderPanel}">
                 <controls:AppIcon Kind="IconDriver" Style="{StaticResource SectionIcon}" />
                 <TextBlock Text="Driver" Style="{StaticResource SectionHeader}" />
@@ -372,10 +416,16 @@
                     <ComboBoxItem Content="All" />
                 </ComboBox>
             </Grid>
-        </StackPanel>
+                </StackPanel>
+            </TabItem>
 
-        <!-- Screenshot -->
-        <StackPanel Style="{StaticResource SectionPanel}">
+            <TabItem
+                Header="Screenshot"
+                Background="{DynamicResource PanelBackground}"
+                BorderThickness="1"
+                Margin="-1,0,0,0"
+                BorderBrush="{DynamicResource SeparatorColor}">
+                <StackPanel Style="{StaticResource SectionPanel}">
             <StackPanel Style="{StaticResource SectionHeaderPanel}">
                 <controls:AppIcon Kind="IconScreenshot" Style="{StaticResource SectionIcon}" />
                 <TextBlock Text="Screenshot" Style="{StaticResource SectionHeader}" />
@@ -436,9 +486,11 @@
                     VerticalAlignment="Top"
                     Click="ButtonBrowseScreenshotPath_Click" />
             </Grid>
-        </StackPanel>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
 
-        <Grid>
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition />
@@ -473,5 +525,5 @@
                 Margin="6"
                 Click="ButtonSettingsCancel_Click" />
         </Grid>
-    </StackPanel>
+    </Grid>
 </local:ThemedAdonisWindow>

@@ -150,11 +150,11 @@ namespace ZenTimings.ViewModels
 
         //private readonly ApobData[] _channelsApobData;
 
-        private ApobData _apobData;
-        public ApobData ApobData
-        {
-            get => _apobData;
-            set => SetProperty(ref _apobData, value);
+        private ApobData _apobMainData;
+        public ApobData ApobMainData
+        {   
+            get => _apobMainData;
+            set => SetProperty(ref _apobMainData, value);
         }
 
         private ApobData _apobExtendedData;
@@ -162,6 +162,16 @@ namespace ZenTimings.ViewModels
         {
             get => _apobExtendedData;
             set => SetProperty(ref _apobExtendedData, value);
+        }
+
+        public ApobBlockData ApobData
+        {
+            get
+            {
+                if (ApobExtendedData != null && ApobExtendedData.ProcOdt != null && ApobExtendedData.ProcOdt.Equals(ApobMainData.ProcOdt))
+                    return ApobExtendedData;
+                return ApobMainData;
+            }
         }
 
         private CcdlData _ccdlData;
@@ -260,12 +270,8 @@ namespace ZenTimings.ViewModels
             // APOB
             if (CpuSingleton.Instance.info.apob.IsAvailable)
             {
-                ApobData = CpuSingleton.Instance.info.apob.Data;
-                if (CpuSingleton.Instance.info.apob?.ExtendedData != null && CpuSingleton.Instance.info.apob.ExtendedData.ProcOdt != null)
-                    ApobExtendedData = CpuSingleton.Instance.info.apob.ExtendedData;
-                else
-                    ApobExtendedData = ApobData;
-
+                ApobMainData = CpuSingleton.Instance.info.apob.Data;
+                ApobExtendedData = CpuSingleton.Instance.info.apob?.ExtendedData;
                 CcdlData = CpuSingleton.Instance.info.apob.CcdlData;
             }
 
