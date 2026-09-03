@@ -1101,7 +1101,7 @@ namespace ZenTimings
                 {
                     Filter = "Binary files (*.bin)|*.bin|APOB files (*.apob)|*.apob|All files (*.*)|*.*",
                     DefaultExt = "bin",
-                    FileName = $"APOB_{DateTime.Now:yyyyMMdd_HHmmss}.bin"
+                    FileName = $"APOB_{cpu.info.codeName}_{cpu.systemInfo.CpuId:X8}_{DateTime.Now:yyyyMMdd_HHmmss}.bin"
                 };
 
                 if (saveFileDialog.ShowDialog() == Forms.DialogResult.OK)
