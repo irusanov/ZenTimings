@@ -326,7 +326,8 @@
                         <GroupBox x:Name="SensorGroupBox" adonisExtensions:LayerExtension.Layer="3"
                                   Background="{DynamicResource PanelBackground}"
                                   Padding="6,3"
-                                  Margin="0">
+                                  Margin="0"
+                                  Visibility="{Binding TelemetryItems.Count, Converter={StaticResource CountToVis}}">
                             <GroupBox.Header>
                                 <Grid Width="{Binding ActualWidth, ElementName=SensorGroupBox, Converter={StaticResource WidthOffset}}" MinHeight="22">
                                     <Grid.ColumnDefinitions>
