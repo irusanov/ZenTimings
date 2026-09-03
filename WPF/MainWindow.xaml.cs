@@ -1081,6 +1081,66 @@ namespace ZenTimings
             siWnd.Show();
         }
 
+        private void DumpApobTable_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (cpu?.info.apob == null || cpu.info.apob.RawTable == null)
+                {
+                    MessageBoxModel messageBox = new MessageBoxModel
+                    {
+                        Text = "APOB table is not available on this system.",
+                            Caption = "APOB Dump",
+                            Buttons = new[] { MessageBoxButtons.Ok() }
+                        };
+                    MessageBox.Show(messageBox);
+                    return;
+                }
+
+                Forms.SaveFileDialog saveFileDialog = new Forms.SaveFileDialog
+                {
+                    Filter = "Binary files (*.bin)|*.bin|APOB files (*.apob)|*.apob|All files (*.*)|*.*",
+                    DefaultExt = "bin",
+                    FileName = $"APOB_{DateTime.Now:yyyyMMdd_HHmmss}.bin"
+                };
+
+                if (saveFileDialog.ShowDialog() == Forms.DialogResult.OK)
+                {
+                    try
+                    {
+                        File.WriteAllBytes(saveFileDialog.FileName, cpu.info.apob.RawTable);
+                        MessageBoxModel successBox = new MessageBoxModel
+                        {
+                            Text = $"APOB table successfully exported to:\n{saveFileDialog.FileName}",
+                            Caption = "APOB Dump",
+                            Buttons = new[] { MessageBoxButtons.Ok() }
+                        };
+                        MessageBox.Show(successBox);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBoxModel errorBox = new MessageBoxModel
+                        {
+                            Text = $"Error writing file:\n{ex.Message}",
+                            Caption = "APOB Dump Error",
+                            Buttons = new[] { MessageBoxButtons.Ok() }
+                        };
+                        MessageBox.Show(errorBox);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBoxModel errorBox = new MessageBoxModel
+                {
+                    Text = $"Error during APOB dump:\n{ex.Message}",
+                    Caption = "APOB Dump Error",
+                    Buttons = new[] { MessageBoxButtons.Ok() }
+                };
+                MessageBox.Show(errorBox);
+            }
+        }
+
         private void OpenSensorsWindow(bool startMinimized = false)
         {
             try

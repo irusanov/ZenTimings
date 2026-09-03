@@ -67,6 +67,8 @@
                                 Click="SystemInfoToolstripMenuItem_Click"
                                 Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
                             <MenuItem Header="_Options" Click="OptionsToolStripMenuItem_Click" />
+                            <Separator Foreground="{DynamicResource PanelBackground}" />
+                            <MenuItem Header="Dump _APOB table" Click="DumpApobTable_Click" />
                             <MenuItem Header="_Debug" Click="DebugToolstripItem_Click" />
                         </MenuItem>
                         <MenuItem Header="_Help">
