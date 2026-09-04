@@ -46,6 +46,7 @@ namespace ZenTimings
         private readonly AppSettings settings = AppSettings.Instance;
         private readonly List<IPlugin> plugins = new List<IPlugin>();
         private SystemInfoWindow siWnd = null;
+        private AdvancedTimingsWindow advancedTimingsWnd = null;
         private SensorsWindow sensorsWindw = null;
         private OptionsDialog optionsWnd = null;
         private AboutDialog aboutWnd = null;
@@ -1077,6 +1078,22 @@ namespace ZenTimings
             };
 
             siWnd.Show();
+        }
+
+        private void AdvancedTimingsToolstripMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (advancedTimingsWnd == null || !advancedTimingsWnd.IsLoaded)
+            {
+                advancedTimingsWnd = new AdvancedTimingsWindow
+                {
+                    Owner = this
+                };
+                advancedTimingsWnd.Show();
+            }
+            else
+            {
+                advancedTimingsWnd.Activate();
+            }
         }
 
         private void DumpApobTable_Click(object sender, RoutedEventArgs e)

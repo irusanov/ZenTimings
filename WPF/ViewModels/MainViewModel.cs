@@ -463,17 +463,28 @@ namespace ZenTimings.ViewModels
                 font-weight: 500;
             }
 
-            tr.mismatch td {
-                background: #fff1f2;
+            tr.primary td {
+                background: #fffbeb;
             }
 
             tr.primary td:first-child {
-                color: #0f172a;
+                background: #fef3c7;
+                color: #b45309;
                 font-weight: 700;
             }
 
             tr.secondary td:first-child {
                 color: #475569;
+            }
+
+            tr.mismatch td {
+                background: #fff1f2;
+            }
+
+            tr.mismatch td:first-child {
+                background: #ffe4e6;
+                color: #be123c;
+                font-weight: 700;
             }
             </style>
             </head>
@@ -517,11 +528,11 @@ namespace ZenTimings.ViewModels
                 .Where(p => p.GetIndexParameters().Length == 0)
                 .ToList();
 
-            var primaryTimings = new HashSet<string>
+            var primaryTimings = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "tCL", "tRCD", "tRP", "tRAS", "tRC",
-                "tRRDS", "tRRDL", "tFAW",
-                "tCWL", "tWR"
+                "CL", "RCDWR", "RCDRD", "RP", "RAS", "RC",
+                "RRDS", "RRDL", "FAW",
+                "CWL", "WR"
             };
 
             // Timings
@@ -539,7 +550,8 @@ namespace ZenTimings.ViewModels
             foreach (var prop in timingProperties)
             {
                 bool mismatch = IsMismatch(prop, uniqueTimings);
-                string rowClass = mismatch ? " mismatch" : "";
+                bool isPrimary = primaryTimings.Contains(prop.Name);
+                string rowClass = mismatch ? "mismatch" : isPrimary ? "primary" : "secondary";
 
                 html += $"<tr class='{rowClass}'>";
                 html += $"<td>{prop.Name}</td>";

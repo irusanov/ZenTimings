@@ -7,6 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
     adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
     mc:Ignorable="d"
     Title="System Info"
@@ -22,6 +23,37 @@
     Closing="AdonisWindow_Closing">
 
     <Window.Resources>
+        <SolidColorBrush x:Key="TimingMismatchBrush" Color="{DynamicResource {x:Static adonisUi:Colors.AlertColor}}"/>
+        <SolidColorBrush x:Key="TimingMismatchBackgroundBrush" Color="{DynamicResource {x:Static adonisUi:Colors.AlertColor}}" Opacity="0.16"/>
+
+        <Style x:Key="TimingRowStyle" TargetType="{x:Type DataGridRow}">
+            <Setter Property="Background" Value="Transparent" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsMismatch}" Value="True">
+                    <Setter Property="Background" Value="{StaticResource TimingMismatchBackgroundBrush}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="TimingNameTextStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="{DynamicResource TextColor}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsMismatch}" Value="True">
+                    <Setter Property="Foreground" Value="{StaticResource TimingMismatchBrush}" />
+                    <Setter Property="FontWeight" Value="Bold" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="TimingValueTextStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="{DynamicResource AccentTextColor}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsMismatch}" Value="True">
+                    <Setter Property="Foreground" Value="{StaticResource TimingMismatchBrush}" />
+                    <Setter Property="FontWeight" Value="SemiBold" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
 
     <ScrollViewer Padding="0" Margin="0" HorizontalScrollBarVisibility="Disabled">
@@ -74,6 +106,7 @@
                     Focusable="False"
                     IsReadOnly="True"
                     ScrollViewer.CanContentScroll="False"
+                    RowStyle="{StaticResource TimingRowStyle}"
                     IsEnabled="False" FontSize="11">
                     <!--DataGrid.Columns>
                         <DataGridTextColumn Width="150" Binding="{Binding Name}">
