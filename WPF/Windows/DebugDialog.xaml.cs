@@ -9,6 +9,7 @@ using System.Windows;
 using ZenStates.Core;
 using ZenStates.Core.Hardware;
 using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
+using ZenStates.Core.OHWM;
 using ZenTimings.Helpers;
 using Application = System.Windows.Application;
 using DRAM = ZenStates.Core.Hardware.DRAM;
@@ -323,15 +324,22 @@ namespace ZenTimings.Windows
 
             // Configured DRAM memory controller settings from BIOS
             AddHeading("BIOS: Memory Controller Config");
-            try
+            if (BMC?.Table == null)
             {
-                for (var i = 0; i < BMC.Table.Length; i++)
-                    AddLine($"Index {i:D3}: {BMC.Table[i]:X2} ({BMC.Table[i]})");
+                AddLine("<Not for this platform>");
             }
-            catch (Exception ex)
+            else
             {
-                AddLine("<FAILED>");
-                AddLine(ex.Message);
+                try
+                {
+                    for (var i = 0; i < BMC.Table.Length; i++)
+                        AddLine($"Index {i:D3}: {BMC.Table[i]:X2} ({BMC.Table[i]})");
+                }
+                catch (Exception ex)
+                {
+                    AddLine("<FAILED>");
+                    AddLine(ex.Message);
+                }
             }
 
             AddLine();
@@ -505,6 +513,7 @@ namespace ZenTimings.Windows
             {
                 textBoxDebugOutput.Text = result;
                 SetControlsState();
+                base.MinimizeFootprint();
             }));
         }
 

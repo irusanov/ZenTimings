@@ -1,7 +1,9 @@
 ﻿using AdonisUI.Controls;
 using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
+using ZenStates.Core.OHWM;
 
 namespace ZenTimings
 {
@@ -26,9 +28,15 @@ namespace ZenTimings
             Loaded += ThemedAdonisWindow_Loaded;
         }
 
+        protected void MinimizeFootprint()
+        {
+            InteropMethods.EmptyWorkingSet(Process.GetCurrentProcess().Handle);
+        }
+
         private void ThemedAdonisWindow_Loaded(object sender, RoutedEventArgs e)
         {
             ApplyNativeBorderFromTheme();
+            MinimizeFootprint();
         }
 
         public override void OnApplyTemplate()

@@ -796,11 +796,6 @@ namespace ZenTimings
             MinimizeFootprint();
         }
 
-        private static void MinimizeFootprint()
-        {
-            InteropMethods.EmptyWorkingSet(Process.GetCurrentProcess().Handle);
-        }
-
         public void SetWindowTitle()
         {
             string AssemblyTitle = "ZT";
