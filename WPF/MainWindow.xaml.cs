@@ -233,6 +233,7 @@ namespace ZenTimings
                 AddTimingsPanel(memoryType);
 
                 // This blocks needs to be after the timings panel is added, because DDR4 still targets the actual elements for some of the timings
+                // TODO: Check if works now with the new MVVM approach
                 if (settings.AdvancedMode)
                 {
                     if (memoryType == MemType.DDR4 || memoryType == MemType.LPDDR4)
@@ -1105,9 +1106,9 @@ namespace ZenTimings
                     MessageBoxModel messageBox = new MessageBoxModel
                     {
                         Text = "APOB table is not available on this system.",
-                            Caption = "APOB Dump",
-                            Buttons = new[] { MessageBoxButtons.Ok() }
-                        };
+                        Caption = "APOB Dump",
+                        Buttons = new[] { MessageBoxButtons.Ok() }
+                    };
                     MessageBox.Show(messageBox);
                     return;
                 }

@@ -152,7 +152,7 @@ namespace ZenTimings.ViewModels
 
         private ApobData _apobMainData;
         public ApobData ApobMainData
-        {   
+        {
             get => _apobMainData;
             set => SetProperty(ref _apobMainData, value);
         }

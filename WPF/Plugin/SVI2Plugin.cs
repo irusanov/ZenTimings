@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using ZenStates.Core;
 using ZenStates.Core.Drivers;
-using ZenStates.Core.Hardware.MutexLock;
 using ZenStates.Core.Hardware;
+using ZenStates.Core.Hardware.MutexLock;
 
 namespace ZenTimings.Plugin
 {

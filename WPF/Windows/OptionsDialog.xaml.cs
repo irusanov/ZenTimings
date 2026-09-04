@@ -7,7 +7,6 @@ using System.Windows.Threading;
 using ZenStates.Core.Hardware;
 using ZenTimings.Helpers;
 using static ZenTimings.AppSettings;
-using static ZenTimings.Helpers.DriverCleaner;
 
 namespace ZenTimings.Windows
 {
