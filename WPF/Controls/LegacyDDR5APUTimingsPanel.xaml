@@ -237,12 +237,12 @@
 
                     <TextBlock Text="" Style="{DynamicResource DividerTextBlock}" />
 
-                    <TextBlock Text="VSOC" TextAlignment="Right" />
+                    <TextBlock Text="VSOC" TextAlignment="Right" IsEnabled="{Binding Vsoc}" />
                     <TextBlock Text="CLDO VDDP" TextAlignment="Right" IsEnabled="{Binding PowerTable.CLDO_VDDP, Mode=OneWay, Converter={StaticResource FloatToBool}}" />
-                    <TextBlock Text="MEM VDD" TextAlignment="Right" />
-                    <TextBlock Text="MEM VDDQ" TextAlignment="Right" />
+                    <TextBlock Text="MEM VDD" IsEnabled="{Binding SwaAdcV}" TextAlignment="Right" />
+                    <TextBlock Text="MEM VDDQ" IsEnabled="{Binding SwbAdcV}" TextAlignment="Right" />
                     <TextBlock x:Name="labelApuVddio" Text="CPU VDDIO" IsEnabled="{Binding ApuVddio}" TextAlignment="Right" />
-                    <TextBlock Text="MEM VPP" TextAlignment="Right" />
+                    <TextBlock Text="MEM VPP" IsEnabled="{Binding VppAdcV}" TextAlignment="Right"/>
                     <TextBlock x:Name="labelVddMisc" Text="VDD MISC" IsEnabled="{Binding Vmisc}" TextAlignment="Right" />
 
                     <TextBlock Text="" TextAlignment="Right" />
