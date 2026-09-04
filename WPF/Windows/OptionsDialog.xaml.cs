@@ -44,6 +44,7 @@ namespace ZenTimings.Windows
             checkBoxAutoRefresh.IsEnabled = appSettings.AdvancedMode;
             checkBoxAdvancedMode.IsChecked = appSettings.AdvancedMode;
             checkBoxCheckUpdate.IsChecked = appSettings.CheckForUpdates;
+            checkBoxBetaUpdates.IsChecked = appSettings.ParticipateInBetaUpdates;
             checkBoxSavePosition.IsChecked = appSettings.SaveWindowPosition;
             checkBoxMinimizeToTray.IsChecked = appSettings.MinimizeToTray;
             checkBoxAutostart.IsChecked = appSettings.AutostartWithWindows;
@@ -72,6 +73,7 @@ namespace ZenTimings.Windows
             appSettings.AutoRefreshInterval = Convert.ToInt32(numericUpDownRefreshInterval.Text);
             appSettings.AdvancedMode = (bool)checkBoxAdvancedMode.IsChecked;
             appSettings.CheckForUpdates = (bool)checkBoxCheckUpdate.IsChecked;
+            appSettings.ParticipateInBetaUpdates = (bool)checkBoxBetaUpdates.IsChecked;
             appSettings.SaveWindowPosition = (bool)checkBoxSavePosition.IsChecked;
             appSettings.MinimizeToTray = (bool)checkBoxMinimizeToTray.IsChecked;
             appSettings.AutostartWithWindows = (bool)checkBoxAutostart.IsChecked;

@@ -27,12 +27,13 @@ namespace ZenTimings
         private static string ChangelogText { get; set; }
         private static readonly UpdaterPersistenceProvider persistence = new UpdaterPersistenceProvider();
 
-#if DEBUG
-        private const string updateUrl = "https://zentimings.com/Update_debug.xml";
-        private const string signatureUrl = "https://zentimings.com/Update_debug.xml.sig";
-#else
         private const string updateUrl = "https://zentimings.com/Update.xml";
         private const string signatureUrl = "https://zentimings.com/Update.xml.sig";
+        private const string betaUpdateUrl = "https://zentimings.com/Update_beta.xml";
+        private const string betaSignatureUrl = "https://zentimings.com/Update_beta.xml.sig";
+#if DEBUG
+        private const string debugUpdateUrl = "https://zentimings.com/Update_debug.xml";
+        private const string debugSignatureUrl = "https://zentimings.com/Update_debug.xml.sig";
 #endif
 
         protected virtual void OnUpdateCheckCompleteEvent(EventArgs e)
@@ -50,6 +51,32 @@ namespace ZenTimings
                     Assembly.GetExecutingAssembly(), typeof(AssemblyFileVersionAttribute), false);
                 return new Version(attr.Version);
             }
+        }
+
+        private static bool UseBetaUpdates => AppSettings.Instance.ParticipateInBetaUpdates;
+
+        private static string GetUpdateUrl()
+        {
+            if (UseBetaUpdates)
+                return betaUpdateUrl;
+
+#if DEBUG
+            return debugUpdateUrl;
+#else
+            return updateUrl;
+#endif
+        }
+
+        private static string GetSignatureUrl()
+        {
+            if (UseBetaUpdates)
+                return betaSignatureUrl;
+
+#if DEBUG
+            return debugSignatureUrl;
+#else
+            return signatureUrl;
+#endif
         }
 
         public void CheckForUpdate(bool manualUpdate = false, bool suppressNetworkErrorDialog = false)
@@ -124,8 +151,8 @@ namespace ZenTimings
             //ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
             using (var client = new WebClient())
             {
-                byte[] xmlData = client.DownloadData(updateUrl);
-                byte[] signature = client.DownloadData(signatureUrl);
+                byte[] xmlData = client.DownloadData(GetUpdateUrl());
+                byte[] signature = client.DownloadData(GetSignatureUrl());
 
                 if (!UpdaterSignature.Verify(xmlData, signature))
                 {
@@ -162,7 +189,8 @@ namespace ZenTimings
             if (isUpdateAvailable && (manual || !persistence.GetSkippedVersion().Equals(remoteVersion)))
             {
                 var shortVersion = string.Join(".", updaterArgs.Version.Split('.'), 0, 2);
-                var zipFileName = $"ZenTimings_v{shortVersion}.zip";
+                var zipSuffix = UseBetaUpdates ? "_beta" : string.Empty;
+                var zipFileName = $"ZenTimings_v{shortVersion}{zipSuffix}.zip";
                 var downloadUrl = $"{GitHubReleaseBaseUrl}/v{shortVersion}/{zipFileName}";
                 var checksumUrl = $"{GitHubReleaseBaseUrl}/v{shortVersion}/{zipFileName}.sha256";
                 var zipSignatureUrl = $"{GitHubReleaseBaseUrl}/v{shortVersion}/{zipFileName}.sig";

@@ -125,6 +125,7 @@
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
 
                 <ToggleButton
@@ -168,9 +169,17 @@
                     Content="Check for updates" />
 
                 <ToggleButton
-                    x:Name="checkBoxSingleInstance"
+                    x:Name="checkBoxBetaUpdates"
                     Grid.Column="0"
                     Grid.Row="3"
+                    Grid.ColumnSpan="3"
+                    Style="{StaticResource SettingToggle}"
+                    Content="Participate in beta updates" />
+
+                <ToggleButton
+                    x:Name="checkBoxSingleInstance"
+                    Grid.Column="0"
+                    Grid.Row="4"
                     Grid.ColumnSpan="3"
                     Style="{StaticResource SettingToggle}"
                     Content="Single instance" />

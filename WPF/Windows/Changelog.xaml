@@ -46,6 +46,7 @@
                 <TextBlock Text=" - Added autostart option" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Added automatic inpoutx64 driver cleanup on app close (toggle from Options)" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Added icons to sections in the options dialog" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Improve KrackanPoint support" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Fixed sensors window alarm colors not recording max values" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Fixed incorrect read function used for SVI2 planes (Zen3 and earlier)" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Fixed incorrect handling of corner radius (W11)" TextWrapping="WrapWithOverflow" />

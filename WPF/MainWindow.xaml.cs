@@ -1,5 +1,3 @@
-//#define BETA
-
 using AdonisUI.Controls;
 using System;
 using System.Collections.Generic;
