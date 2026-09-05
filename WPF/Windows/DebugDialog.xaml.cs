@@ -4,16 +4,15 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Management;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using ZenStates.Core;
 using ZenStates.Core.Hardware;
 using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
-using ZenStates.Core.OHWM;
 using ZenTimings.Helpers;
 using Application = System.Windows.Application;
 using DRAM = ZenStates.Core.Hardware.DRAM;
-using MessageBox = AdonisUI.Controls.MessageBox;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace ZenTimings.Windows
@@ -33,10 +32,8 @@ namespace ZenTimings.Windows
         //private readonly uint baseAddress;
         private readonly string wmiAMDACPI = "AMD_ACPI";
         private readonly string wmiScope = "root\\wmi";
-        private ManagementObject classInstance;
         private string instanceName;
-        private ManagementBaseObject pack;
-        private string result = "";
+        private readonly StringBuilder result = new StringBuilder();
 
         public DebugDialog(BiosMemController biosMemCtrl, AsusWMI asusWmi)
         {
@@ -75,47 +72,47 @@ namespace ZenTimings.Windows
         {
             try
             {
-                classInstance = new ManagementObject(wmiScope,
-                    $"{wmiAMDACPI}.InstanceName='{instanceName}'",
-                    null);
-
-                // Get function names with their IDs
-                string[] functionObjects = { "GetObjectID", "GetObjectID2" };
-                var index = 1;
-
-                foreach (var functionObject in functionObjects)
+                using (var classInstance = new ManagementObject(wmiScope, $"{wmiAMDACPI}.InstanceName='{instanceName}'", null))
                 {
-                    AddHeading($"WMI: Bios Functions {index}");
+                    // Get function names with their IDs
+                    string[] functionObjects = { "GetObjectID", "GetObjectID2" };
+                    var index = 1;
 
-                    try
+                    foreach (var functionObject in functionObjects)
                     {
-                        pack = WMI.InvokeMethodAndGetValue(classInstance, functionObject, "pack", null, 0);
+                        AddHeading($"WMI: Bios Functions {index}");
 
-                        if (pack != null)
+                        try
                         {
-                            var ID = (uint[])pack.GetPropertyValue("ID");
-                            var IDString = (string[])pack.GetPropertyValue("IDString");
-                            var Length = (byte)pack.GetPropertyValue("Length");
-
-                            for (var i = 0; i < Length; ++i)
+                            using (var pack = WMI.InvokeMethodAndGetValue(classInstance, functionObject, "pack", null, 0))
                             {
-                                if (IDString[i] == "")
-                                    break;
-                                AddLine($"{IDString[i] + ":",-30}{ID[i]:X8}");
+                                if (pack != null)
+                                {
+                                    var ID = (uint[])pack.GetPropertyValue("ID");
+                                    var IDString = (string[])pack.GetPropertyValue("IDString");
+                                    var Length = (byte)pack.GetPropertyValue("Length");
+
+                                    for (var i = 0; i < Length; ++i)
+                                    {
+                                        if (IDString[i] == "")
+                                            break;
+                                        AddLine($"{IDString[i] + ":",-30}{ID[i]:X8}");
+                                    }
+                                }
+                                else
+                                {
+                                    AddLine("<FAILED>");
+                                }
                             }
                         }
-                        else
+                        catch
                         {
-                            AddLine("<FAILED>");
+                            // ignored
                         }
-                    }
-                    catch
-                    {
-                        // ignored
-                    }
 
-                    index++;
-                    AddLine();
+                        index++;
+                        AddLine();
+                    }
                 }
             }
             catch
@@ -133,12 +130,12 @@ namespace ZenTimings.Windows
                 Environment.NewLine +
                 "######################################################" +
                 Environment.NewLine;
-            result += h;
+            result.Append(h);
         }
 
         private void AddLine(string row = "")
         {
-            result += row + Environment.NewLine;
+            result.Append(row + Environment.NewLine);
         }
 
         private void PrintChannels()
@@ -221,14 +218,15 @@ namespace ZenTimings.Windows
         {
             Application.Current.Dispatcher.Invoke(new Action(() => { SetControlsState(false); }));
 
-            result =
+            result.Clear();
+            result.Append(
                 $"{System.Windows.Forms.Application.ProductName} {System.Windows.Forms.Application.ProductVersion} Debug Report" +
                 Environment.NewLine +
                 $"{"Core Version: "}{cpu.Version}" +
                 Environment.NewLine +
                 $"{"PawnIO Version: "}{DriverHelper.Version}" +
                 Environment.NewLine +
-                Environment.NewLine;
+                Environment.NewLine);
 
             var type = cpu.systemInfo.GetType();
             var properties = type.GetProperties();
@@ -324,22 +322,15 @@ namespace ZenTimings.Windows
 
             // Configured DRAM memory controller settings from BIOS
             AddHeading("BIOS: Memory Controller Config");
-            if (BMC?.Table == null)
+            try
             {
-                AddLine("<Not for this platform>");
+                for (var i = 0; i < BMC.Table.Length; i++)
+                    AddLine($"Index {i:D3}: {BMC.Table[i]:X2} ({BMC.Table[i]})");
             }
-            else
+            catch (Exception ex)
             {
-                try
-                {
-                    for (var i = 0; i < BMC.Table.Length; i++)
-                        AddLine($"Index {i:D3}: {BMC.Table[i]:X2} ({BMC.Table[i]})");
-                }
-                catch (Exception ex)
-                {
-                    AddLine("<FAILED>");
-                    AddLine(ex.Message);
-                }
+                AddLine("<FAILED>");
+                AddLine(ex.Message);
             }
 
             AddLine();
@@ -511,9 +502,8 @@ namespace ZenTimings.Windows
 
             Application.Current.Dispatcher.Invoke(new Action(() =>
             {
-                textBoxDebugOutput.Text = result;
+                textBoxDebugOutput.Text = result.ToString();
                 SetControlsState();
-                base.MinimizeFootprint();
             }));
         }
 
