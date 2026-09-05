@@ -7,6 +7,7 @@ using System.Linq;
 using System.Management;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
@@ -339,15 +340,16 @@ namespace ZenTimings
             foreach (IPlugin plugin in plugins)
                 plugin?.Close();
 
+            sensorsWindw?.Close();
+            optionsWnd?.Close();
+
             _notifyIcon?.Dispose();
             AsusWmi?.Dispose();
-            //cpu?.io?.Close(settings.AutoUninstallDriver);
             cpu?.Dispose();
 
             if (settings.AutoUninstallDriver)
             {
                 App.CleanupDriverIfLastInstance((NotificationLevel)settings.AutoUninstallDriverNotificationLevel);
-                //DriverHelper.UninstallInpoutx64(settings.AutoUninstallDriverNotification);
             }
         }
 
@@ -454,59 +456,58 @@ namespace ZenTimings
 
                 string instanceName = WMI.GetInstanceName(scope, className);
 
-                ManagementObject classInstance = new ManagementObject(scope,
-                    $"{className}.InstanceName='{instanceName}'",
-                    null);
-
-                /* // Get possible values (index) of a memory option in BIOS
-                var dvaluesPack = WMI.InvokeMethodAndGetValue(classInstance, "Getdvalues", "pack", "ID", 0x20035);
-                if (dvaluesPack != null)
+                using (ManagementObject classInstance = new ManagementObject(scope, $"{className}.InstanceName='{instanceName}'", null))
                 {
-                    uint[] DValuesBuffer = (uint[])dvaluesPack.GetPropertyValue("DValuesBuffer");
-                    for (var i = 0; i < DValuesBuffer.Length; i++)
+                    /* // Get possible values (index) of a memory option in BIOS
+                    var dvaluesPack = WMI.InvokeMethodAndGetValue(classInstance, "Getdvalues", "pack", "ID", 0x20035);
+                    if (dvaluesPack != null)
                     {
-                        Debug.WriteLine("{0}", DValuesBuffer[i]);
-                    }
-                }*/
-
-                // Get function names with their IDs
-                var wmiFunctionsDict = AOD.GetWmiFunctions();
-                if (wmiFunctionsDict != null)
-                {
-                    foreach (var kvp in wmiFunctionsDict)
-                    {
-                        biosFunctions.Add(new BiosACPIFunction(kvp.Key, kvp.Value));
-                    }
-                }
-
-                // Get APCB config from BIOS. Holds memory parameters.
-                BiosACPIFunction cmd = GetFunctionByIdString("Get APCB Config");
-                if (cmd == null)
-                {
-                    // throw new Exception("Could not get memory controller config");
-                    // Use AOD table as an alternative path for now
-                    BMC.Table = cpu.info.aod.Table.RawAodTable;
-                }
-                else
-                {
-                    byte[] apcbConfig = WMI.RunCommand(classInstance, cmd.ID);
-                    // BiosACPIFunction cmd = new BiosACPIFunction("Get APCB Config", 0x00010001);
-                    cmd = GetFunctionByIdString("Get memory voltages");
-                    if (cmd != null)
-                    {
-                        byte[] voltages = WMI.RunCommand(classInstance, cmd.ID);
-
-                        // MEM_VDDIO is ushort, offset 27
-                        // MEM_VTT is ushort, offset 29
-                        for (int i = 27; i <= 30; i++)
+                        uint[] DValuesBuffer = (uint[])dvaluesPack.GetPropertyValue("DValuesBuffer");
+                        for (var i = 0; i < DValuesBuffer.Length; i++)
                         {
-                            byte value = voltages[i];
-                            if (value > 0)
-                                apcbConfig[i] = value;
+                            Debug.WriteLine("{0}", DValuesBuffer[i]);
+                        }
+                    }*/
+
+                    // Get function names with their IDs
+                    var wmiFunctionsDict = AOD.GetWmiFunctions();
+                    if (wmiFunctionsDict != null)
+                    {
+                        foreach (var kvp in wmiFunctionsDict)
+                        {
+                            biosFunctions.Add(new BiosACPIFunction(kvp.Key, kvp.Value));
                         }
                     }
 
-                    BMC.Table = apcbConfig ?? new byte[] { };
+                    // Get APCB config from BIOS. Holds memory parameters.
+                    BiosACPIFunction cmd = GetFunctionByIdString("Get APCB Config");
+                    if (cmd == null)
+                    {
+                        // throw new Exception("Could not get memory controller config");
+                        // Use AOD table as an alternative path for now
+                        BMC.Table = cpu.info.aod.Table.RawAodTable;
+                    }
+                    else
+                    {
+                        byte[] apcbConfig = WMI.RunCommand(classInstance, cmd.ID);
+                        // BiosACPIFunction cmd = new BiosACPIFunction("Get APCB Config", 0x00010001);
+                        cmd = GetFunctionByIdString("Get memory voltages");
+                        if (cmd != null)
+                        {
+                            byte[] voltages = WMI.RunCommand(classInstance, cmd.ID);
+
+                            // MEM_VDDIO is ushort, offset 27
+                            // MEM_VTT is ushort, offset 29
+                            for (int i = 27; i <= 30; i++)
+                            {
+                                byte value = voltages[i];
+                                if (value > 0)
+                                    apcbConfig[i] = value;
+                            }
+                        }
+
+                        BMC.Table = apcbConfig ?? new byte[] { };
+                    }
                 }
 
                 float vdimm = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVddio) / 1000);
@@ -684,12 +685,16 @@ namespace ZenTimings
                 PowerCfgTimer.Stop();
         }
 
+        private volatile bool isRefreshing = false;
         private void PowerCfgTimer_Tick(object sender, EventArgs e)
         {
-            // Run refresh operation in a new thread
-            try
+            if (isRefreshing) return;
+            isRefreshing = true;
+
+            // Run refresh operation in a new task
+            Task.Run(() =>
             {
-                new Thread(() =>
+                try
                 {
                     Thread.CurrentThread.IsBackground = true;
 
@@ -740,12 +745,16 @@ namespace ZenTimings
                         // SetFrequencyString();
                         // RefreshSensors();
                     }));
-                }).Start();
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-            }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    isRefreshing = false;
+                }
+            });
         }
 
         private ImageSource GetIcon(string iconSource, double width)
@@ -1239,31 +1248,37 @@ namespace ZenTimings
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://www.paypal.com/donate/?hosted_button_id=NLSRLE9MVDPCW");
+            OpenUrl("https://www.paypal.com/donate/?hosted_button_id=NLSRLE9MVDPCW");
         }
 
         private void MenuItem_Click_1(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://revolut.me/ivanrusanov");
+            OpenUrl("https://revolut.me/ivanrusanov");
         }
 
         private void MenuItem_Click_2(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://discord.gg/8cfR3UZ");
+            OpenUrl("https://discord.gg/8cfR3UZ");
         }
 
         private void MenuItem_Click_3(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://github.com/irusanov/ZenTimings");
+            OpenUrl("https://github.com/irusanov/ZenTimings");
         }
         private void MenuItem_Click_4(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://docs.google.com/spreadsheets/d/12zg6yT_H7H-W1voyw1ZoIrj0GSE7WI4Ug-uLlv-Asa8/edit?gid=937453961#gid=937453961");
+            OpenUrl("https://docs.google.com/spreadsheets/d/12zg6yT_H7H-W1voyw1ZoIrj0GSE7WI4Ug-uLlv-Asa8/edit?gid=937453961#gid=937453961");
         }
 
         private void MenuItem_Click_6(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://drive.google.com/drive/folders/1HAJO9_jxvQrIkLb4Ws9ZfKHcHFQ_yOqp?usp=sharing");
+            OpenUrl("https://drive.google.com/drive/folders/1HAJO9_jxvQrIkLb4Ws9ZfKHcHFQ_yOqp?usp=sharing");
+        }
+
+        private static void OpenUrl(string url)
+        {
+            if (string.IsNullOrEmpty(url)) return;
+            using (Process.Start(url)) { }
         }
 
         private void ExportToolStripMenuItem_Click(object sender, RoutedEventArgs e)
