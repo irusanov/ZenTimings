@@ -164,11 +164,13 @@ namespace ZenTimings.ViewModels
             set => SetProperty(ref _apobExtendedData, value);
         }
 
-        public ApobBlockData ApobData
+        public ApobData ApobData
         {
             get
             {
-                if (ApobExtendedData != null && ApobExtendedData.ProcOdt != null && ApobExtendedData.ProcOdt.Equals(ApobMainData.ProcOdt))
+                if (ApobExtendedData != null 
+                    && ApobExtendedData.ProcOdt != null 
+                    && ApobExtendedData.ProcOdt.RawValue.Equals(ApobMainData.ProcOdt.RawValue))
                     return ApobExtendedData;
                 return ApobMainData;
             }
@@ -273,6 +275,13 @@ namespace ZenTimings.ViewModels
                 ApobMainData = CpuSingleton.Instance.info.apob.Data;
                 ApobExtendedData = CpuSingleton.Instance.info.apob?.ExtendedData;
                 CcdlData = CpuSingleton.Instance.info.apob.CcdlData;
+
+                // Uncomment the following lines to test APOB parsing from a debug report file instead of live data.
+                //string text = File.ReadAllText("debug_report.txt");
+                //Apob testApob = Apob.CreateFromDebugReport(text);
+                //ApobMainData = testApob.Data;
+                //ApobExtendedData = testApob?.ExtendedData;
+                //CcdlData = testApob.CcdlData;
             }
 
             //AgesaVersion = AGESA_SEARCHING;

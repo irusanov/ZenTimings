@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -1002,6 +1003,9 @@ namespace ZenTimings.Windows
             updateTimer?.Stop();
             _uptimeStatusTimer?.Stop();
             AppSettings.Instance.PropertyChanged -= AppSettings_PropertyChanged;
+            sensorTelemetryLinks.Clear();
+            moduleViewModels.Clear();
+            sensorGroupViewModels.Clear();
 
             AppSettings appSettings = AppSettings.Instance;
 
@@ -1347,7 +1351,7 @@ namespace ZenTimings.Windows
                 return value >= 0.5 ? "Yes" : "No";
 
             string format = unit == "°C" ? "F2" : unit == "RPM" ? "F0" : "F3";
-            return $"{value.ToString(format)} {unit}";
+            return $"{value.ToString(format, CultureInfo.InvariantCulture)} {unit}";
         }
 
         protected void OnPropertyChanged(string propertyName)
