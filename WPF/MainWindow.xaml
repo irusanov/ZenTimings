@@ -12,6 +12,8 @@
     adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
     mc:Ignorable="d"
     Title="ZenTimings"
+    CanSnapToOtherWindows="False"
+    SnapIdentifier="MainWindow"
     Width="386"
     WindowStartupLocation="CenterScreen"
     ResizeMode="CanMinimize"

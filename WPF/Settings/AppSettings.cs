@@ -1,8 +1,10 @@
 using AdonisUI;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using ZenTimings.Helpers;
 using static ZenTimings.Helpers.DriverCleaner;
@@ -14,7 +16,7 @@ namespace ZenTimings
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public const int VersionMajor = 1;
-        public const int VersionMinor = 15;
+        public const int VersionMinor = 16;
 
         private static readonly string Filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.xml");
         public const string AGESA_UNKNOWN = "Unknown";
@@ -180,6 +182,8 @@ namespace ZenTimings
         public string UpdaterRemindLaterAt { get; set; } = "";
         public bool MinimizeToTray { get; set; }
         public bool SaveWindowPosition { get; set; } = true;
+        public bool EnableWindowSnapping { get; set; } = true;
+        public string WindowSnapStates { get; set; } = "";
         public bool AutostartWithWindows { get; set; }
         public int AutostartDelaySeconds { get; set; } = 12;
         public bool StartMinimized { get; set; }
@@ -201,5 +205,44 @@ namespace ZenTimings
         public bool FirstStart { get; set; } = true;
         public int CornerRadius { get; set; } = 0;
         public ImpedanceTableSource ImpedanceTableSrc { get; set; } = ImpedanceTableSource.APOB;
+
+        public string GetWindowSnapTarget(string windowId)
+        {
+            if (string.IsNullOrWhiteSpace(windowId) || string.IsNullOrWhiteSpace(WindowSnapStates))
+                return null;
+
+            foreach (var entry in WindowSnapStates.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                var parts = entry.Split(new[] { '=' }, 2);
+                if (parts.Length == 2 && string.Equals(parts[0], windowId, StringComparison.OrdinalIgnoreCase))
+                    return string.IsNullOrWhiteSpace(parts[1]) ? null : parts[1];
+            }
+
+            return null;
+        }
+
+        public void SetWindowSnapTarget(string windowId, string targetId)
+        {
+            if (string.IsNullOrWhiteSpace(windowId))
+                return;
+
+            var entries = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            if (!string.IsNullOrWhiteSpace(WindowSnapStates))
+            {
+                foreach (var entry in WindowSnapStates.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    var parts = entry.Split(new[] { '=' }, 2);
+                    if (parts.Length == 2 && !string.IsNullOrWhiteSpace(parts[0]))
+                        entries[parts[0]] = parts[1];
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(targetId))
+                entries.Remove(windowId);
+            else
+                entries[windowId] = targetId;
+
+            WindowSnapStates = string.Join(";", entries.Select(x => $"{x.Key}={x.Value}"));
+        }
     }
 }
