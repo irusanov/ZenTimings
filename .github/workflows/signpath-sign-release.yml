@@ -1,0 +1,63 @@
+name: Sign Release
+
+# Manually triggered only - you run this from the Actions tab when you're
+# ready to cut a release. It does NOT publish a GitHub Release itself;
+# it just builds, signs, and hands you back a signed zip as a workflow
+# artifact for you to download and upload by hand.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to sign and release'
+        required: true
+
+jobs:
+  build-and-sign:
+    runs-on: windows-latest   # must be GitHub-hosted for OSS origin verification
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive   # pulls in the ZenStates-Core submodule
+
+      # ZenTimings.csproj is an old-style .NET Framework project (not SDK-style),
+      # so it must be built with classic MSBuild, not the dotnet CLI - dotnet
+      # build/publish uses a different resgen pipeline that fails on non-string
+      # .resx resources (icons/images) with MSB3822/MSB3823.
+      #
+      # The solution file lives at WPF\ZenTimings.sln, not the repo root.
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Restore NuGet packages
+        run: nuget restore WPF\ZenTimings.sln
+        shell: pwsh
+
+      - name: Build
+        run: msbuild WPF\ZenTimings.sln /p:Configuration=Release
+        shell: pwsh
+
+      - name: Upload unsigned artifact
+        id: upload-unsigned-artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: unsigned
+          path: WPF\bin\Release\*
+
+      - name: Submit signing request
+        uses: signpath/github-action-submit-signing-request@v2
+        with:
+          api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
+          organization-id: 'f6b94766-123f-4577-a699-c091366c2d72'
+          project-slug: 'ZenTimings'
+          signing-policy-slug: 'release-signing'
+          artifact-configuration-slug: 'zentimings-release-configuration'
+          github-artifact-id: '${{ steps.upload-unsigned-artifact.outputs.artifact-id }}'
+          wait-for-completion: true
+          output-artifact-directory: 'signed'
+
+      - name: Upload signed artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ZenTimings-${{ inputs.version }}-signed
+          path: signed/*
