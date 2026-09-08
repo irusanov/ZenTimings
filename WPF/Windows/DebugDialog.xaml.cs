@@ -554,5 +554,10 @@ namespace ZenTimings.Windows
         {
             SaveToFile(true);
         }
+
+        private async void ThemedAdonisWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            await Task.Run(Debug);
+        }
     }
 }

@@ -53,30 +53,32 @@
                             <!-- MenuItem Header="Export..." HorizontalAlignment="Left" Click="ExportToolStripMenuItem_Click" /-->
                         </MenuItem>
                         <MenuItem Header="_Tools">
+                            <MenuItem Header="_Options" Click="OptionsToolStripMenuItem_Click" />
+                            <Separator Foreground="{DynamicResource PanelBackground}" />
                             <MenuItem
                                 Header="_Sensors"
                                 Click="TelemetryMonitorToolstripMenuItem_Click"
                                 Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
-                            <MenuItem
-                                Header="_SPD Info"
-                                Click="SpdInfoToolstripMenuItem_Click"
-                                Visibility="{Binding IsDimmTelemetryAvailable, Mode=OneTime, Converter={StaticResource BoolToVis}}" />
-                            <Separator
-                                Foreground="{DynamicResource PanelBackground}"
-                                Visibility="{Binding IsDimmTelemetryAvailable, Mode=OneTime, Converter={StaticResource BoolToVis}}"/>
-                            <MenuItem
-                                Header="System _Info"
-                                Click="SystemInfoToolstripMenuItem_Click"
-                                Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
-                            <MenuItem
-                                Header="Advanced _timings"
-                                Click="AdvancedTimingsToolstripMenuItem_Click"
-                                Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
-                            <MenuItem Header="_Options" Click="OptionsToolStripMenuItem_Click" />
+                            <MenuItem Header="Advanced Info">
+                                <MenuItem
+                                    Header="System"
+                                    Click="SystemInfoToolstripMenuItem_Click"
+                                    Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
+                                <MenuItem
+                                    Header="Timings"
+                                    Click="AdvancedTimingsToolstripMenuItem_Click"
+                                    Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
+                                <MenuItem
+                                    Header="SPD"
+                                    Click="SpdInfoToolstripMenuItem_Click"
+                                    Visibility="{Binding IsDimmTelemetryAvailable, Mode=OneTime, Converter={StaticResource BoolToVis}}" />
+                            </MenuItem>
                             <Separator Foreground="{DynamicResource PanelBackground}" />
-                            <MenuItem Header="Dump _APOB table" Click="DumpApobTable_Click" />
-                            <MenuItem Header="Open a debug report" Click="OpenDebugLogAsMockWindow_Click" />
-                            <MenuItem Header="_Debug" Click="DebugToolstripItem_Click" />
+                            <MenuItem Header="_Debug">
+                                <MenuItem Header="Dump _APOB table" Click="DumpApobTable_Click" />
+                                <MenuItem Header="Open a debug report" Click="OpenDebugLogAsMockWindow_Click" />
+                                <MenuItem Header="Save a debug report" Click="DebugToolstripItem_Click" />
+                            </MenuItem>
                         </MenuItem>
                         <MenuItem Header="_Help">
                             <MenuItem Header="_About" Click="AboutToolStripMenuItem_Click" />

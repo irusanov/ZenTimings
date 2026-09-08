@@ -17,7 +17,7 @@
     WindowStartupLocation="CenterOwner"
     BorderThickness="1"
     UseLayoutRounding="True"
-    Style="{DynamicResource WindowStyles}">
+    Style="{DynamicResource WindowStyles}" Loaded="ThemedAdonisWindow_Loaded">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="147*"/>
