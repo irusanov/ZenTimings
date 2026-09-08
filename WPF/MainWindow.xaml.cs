@@ -56,6 +56,7 @@ namespace ZenTimings
         private Control timingsPanel;
         private readonly MainViewModel mainViewModel;
         private float lastMclk = 0;
+        private readonly bool isMockWindow = false;
 
         private readonly string AssemblyProduct = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(
             Assembly.GetExecutingAssembly(),
@@ -252,6 +253,18 @@ namespace ZenTimings
             }
         }
 
+        private MainWindow(MainViewModel viewModel)
+        {
+            cpu = CpuSingleton.Instance;
+            this.isMockWindow = true;
+
+            IconSource = GetIcon("pack://application:,,,/ZenTimings;component/Resources/ZenTimings2022.ico", 16);
+            InitializeComponent();
+
+            DataContext = viewModel;
+            AddTimingsPanel(viewModel.MemoryType);
+        }
+
         private void AddTimingsPanel(MemType memoryType)
         {
             // Add timings panel
@@ -355,6 +368,12 @@ namespace ZenTimings
 
         private void ExitApplication(bool save = true)
         {
+            if (isMockWindow)
+            {
+                Close();
+                return;
+            }
+
             if (save) settings.Save();
             Cleanup();
             Application.Current?.Shutdown();
@@ -945,6 +964,14 @@ namespace ZenTimings
         {
             this.Topmost = true;
 
+            if (isMockWindow)
+            {
+                //SetWindowTitle();
+                this.Topmost = false;
+                MinimizeFootprint();
+                return;
+            }
+
             RestoreWindowPosition();
             SetWindowTitle();
             //ShowWindow();
@@ -1234,6 +1261,11 @@ namespace ZenTimings
 
         private void AdonisWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            if (isMockWindow)
+            {
+                return;
+            }
+
             siWnd?.Close();
 
             if (settings.SaveWindowPosition)
@@ -1395,6 +1427,46 @@ namespace ZenTimings
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to open changelog: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void OpenDebugLogAsMockWindow_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Forms.OpenFileDialog openFileDialog = new Forms.OpenFileDialog
+                {
+                    Filter = "Text files (*.txt;*.log)|*.txt;*.log|All files (*.*)|*.*",
+                    Title = "Open ZenTimings debug report"
+                };
+
+                if (openFileDialog.ShowDialog() != Forms.DialogResult.OK)
+                    return;
+
+                string debugReportText = File.ReadAllText(openFileDialog.FileName);
+
+                var viewModel = new MainViewModel(
+                    ReadTimings(),
+                    cpu.GetMemoryConfig().Type,
+                    compatMode,
+                    settings,
+                    plugins,
+                    null,
+                    GetAgesaVersion(),
+                    cpu.GetMemoryConfig()?.SpdInfo?.Values.FirstOrDefault(d => d.IsValid)?.PmicData ?? null
+                );
+
+                MainWindow mockWindow = new MainWindow(viewModel)
+                {
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.Manual
+                };
+
+                mockWindow.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error opening debug report:\n{ex.Message}", "Mock Window", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
