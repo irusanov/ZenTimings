@@ -10,6 +10,7 @@
     adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
     xmlns:windows="clr-namespace:ZenTimings.Windows"
     xmlns:controls="clr-namespace:ZenTimings.Controls"
+    xmlns:converters="clr-namespace:ZenTimings.Converters"
     mc:Ignorable="d"
     Title="Sensors"
     SnapIdentifier="SensorsWindow"
@@ -26,7 +27,7 @@
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
-        <windows:CountToVisibilityConverter x:Key="CountToVis" />
+        <converters:CountToVisibilityConverter x:Key="CountToVis" />
         <windows:WidthOffsetConverter x:Key="WidthOffset" />
         <SolidColorBrush x:Key="ThermalAlarmHighBrush"     Color="{DynamicResource {x:Static adonisUi:Colors.AlertColor}}"/>
         <SolidColorBrush x:Key="ThermalAlarmCriticalBrush" Color="{DynamicResource {x:Static adonisUi:Colors.ErrorColor}}"/>

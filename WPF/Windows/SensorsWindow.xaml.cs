@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -13,22 +12,10 @@ using ZenStates.Core.Hardware.DRAM;
 using ZenStates.Core.Hardware.DRAM.DDR5.Pmic;
 using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
 using ZenStates.Core.Hardware.DRAM.DDR5.Thermal;
+using ZenTimings.ViewModels;
 
 namespace ZenTimings.Windows
 {
-    public class CountToVisibilityConverter : System.Windows.Data.IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            return value is int count && count > 0 ? Visibility.Visible : Visibility.Collapsed;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotSupportedException();
-        }
-    }
-
     public class WidthOffsetConverter : System.Windows.Data.IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -142,8 +129,6 @@ namespace ZenTimings.Windows
         {
             if (memoryConfig == null)
             {
-                // Memory module telemetry (SPD/PMIC) is only supported on some platforms (e.g. DDR5).
-                // Skip this section entirely instead of showing an error.
                 return;
             }
 
@@ -333,10 +318,13 @@ namespace ZenTimings.Windows
             }
 
             // Total Power
-            //if (pmicData.TelemetryReportsTotalPower)
+            // HwInfo seems to set the telemetry to report total power mode on first launch
+            if (!(pmicData.TelemetryReportsPower && pmicData.TelemetryReportsTotalPower))
             {
-                AddPmicItem("Total Power", pmicData.TotalW, "W");
+                Ddr5PmicReader.SetTotalPowerMode(pmicData.I2cAddress, true);
             }
+
+            AddPmicItem("Total Power", pmicData.TotalW, "W");
 
             // High Temperature Warning
             var pmicHighTempKey = GetPmicSensorKey(slotIndex, "PMIC High Temp");
@@ -453,19 +441,13 @@ namespace ZenTimings.Windows
         private void UpdateTelemetryItem(ModuleViewModel vm, string name, double value)
         {
             var item = vm.TelemetryItems.FirstOrDefault(i => i.Name == name);
-            if (item != null)
-            {
-                item.UpdateValue(value);
-            }
+            item?.UpdateValue(value);
         }
 
         private void UpdateTelemetryItem(ModuleViewModel vm, string name, bool value)
         {
             var item = vm.TelemetryItems.FirstOrDefault(i => i.Name == name);
-            if (item != null)
-            {
-                item.UpdateValue(value ? 1.0 : 0.0);
-            }
+            item?.UpdateValue(value ? 1.0 : 0.0);
         }
 
         private void RefreshTimer_Tick(object sender, EventArgs e)
@@ -588,13 +570,6 @@ namespace ZenTimings.Windows
                 if (link != null)
                     sensorTelemetryLinks.Remove(link);
             }
-
-            // Remove groups that no longer have any visible sensors.
-            //for (int i = sensorGroupViewModels.Count - 1; i >= 0; i--)
-            //{
-            //    if (sensorGroupViewModels[i].TelemetryItems.Count == 0 && sensorGroupViewModels[i].HiddenCount == 0)
-            //        sensorGroupViewModels.RemoveAt(i);
-            //}
 
             if (changed)
                 SensorSettings.Instance.Save();
@@ -1021,121 +996,6 @@ namespace ZenTimings.Windows
         }
     }
 
-    public class ModuleViewModel : INotifyPropertyChanged
-    {
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private string header;
-        private string partNumber;
-        private string manufacturer;
-        private string capacity;
-        private string rank;
-        private string memoryChip;
-        private string pmicVendor;
-        private string pmicRevision;
-        private bool hasPmic;
-        private bool hasTelemetry;
-        private bool hasLogo;
-        private string logoResourceName;
-        private int hiddenCount;
-
-        public string Header
-        {
-            get => header;
-            set { header = value; OnPropertyChanged(nameof(Header)); OnPropertyChanged(nameof(HeaderDisplay)); }
-        }
-
-        public int HiddenCount
-        {
-            get => hiddenCount;
-            set { hiddenCount = value; OnPropertyChanged(nameof(HiddenCount)); OnPropertyChanged(nameof(HeaderDisplay)); }
-        }
-
-        public string HeaderDisplay => HiddenCount > 0 ? $"{Header} ({HiddenCount} hidden)" : Header;
-
-        public string PartNumber
-        {
-            get => partNumber;
-            set { partNumber = value; OnPropertyChanged(nameof(PartNumber)); }
-        }
-
-        public string Manufacturer
-        {
-            get => manufacturer;
-            set { manufacturer = value; OnPropertyChanged(nameof(Manufacturer)); }
-        }
-
-        public string Capacity
-        {
-            get => capacity;
-            set { capacity = value; OnPropertyChanged(nameof(Capacity)); }
-        }
-
-        public string Rank
-        {
-            get => rank;
-            set { rank = value; OnPropertyChanged(nameof(Rank)); }
-        }
-
-        public string MemoryChip
-        {
-            get => memoryChip;
-            set { memoryChip = value; OnPropertyChanged(nameof(MemoryChip)); }
-        }
-
-        public string PmicVendor
-        {
-            get => pmicVendor;
-            set { pmicVendor = value; OnPropertyChanged(nameof(PmicVendor)); }
-        }
-
-        public string PmicRevision
-        {
-            get => pmicRevision;
-            set { pmicRevision = value; OnPropertyChanged(nameof(PmicRevision)); }
-        }
-
-        public bool HasPmic
-        {
-            get => hasPmic;
-            set { hasPmic = value; OnPropertyChanged(nameof(HasPmic)); }
-        }
-
-        public bool HasTelemetry
-        {
-            get => hasTelemetry;
-            set
-            {
-                hasTelemetry = value;
-                OnPropertyChanged(nameof(HasTelemetry));
-                OnPropertyChanged(nameof(HasNoTelemetry));
-            }
-        }
-
-        public bool HasNoTelemetry => !HasTelemetry;
-
-        public bool HasLogo
-        {
-            get => hasLogo;
-            set { hasLogo = value; OnPropertyChanged(nameof(HasLogo)); }
-        }
-
-        public string LogoResourceName
-        {
-            get => logoResourceName;
-            set { logoResourceName = value; OnPropertyChanged(nameof(LogoResourceName)); }
-        }
-
-        public ObservableCollection<TelemetryItemViewModel> TelemetryItems { get; } = new ObservableCollection<TelemetryItemViewModel>();
-
-        public List<string> HiddenKeys { get; } = new List<string>();
-
-        protected void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-    }
-
     public class SensorTelemetryLink
     {
         public SensorTelemetryLink(Sensor sensor, TelemetryItemViewModel item)
@@ -1146,37 +1006,6 @@ namespace ZenTimings.Windows
 
         public Sensor Sensor { get; }
         public TelemetryItemViewModel Item { get; }
-    }
-
-    public class SensorGroupViewModel : INotifyPropertyChanged
-    {
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private string header;
-        private int hiddenCount;
-
-        public string Header
-        {
-            get => header;
-            set { header = value; OnPropertyChanged(nameof(Header)); OnPropertyChanged(nameof(HeaderDisplay)); }
-        }
-
-        public int HiddenCount
-        {
-            get => hiddenCount;
-            set { hiddenCount = value; OnPropertyChanged(nameof(HiddenCount)); OnPropertyChanged(nameof(HeaderDisplay)); }
-        }
-
-        public string HeaderDisplay => HiddenCount > 0 ? $"{Header} ({HiddenCount} hidden)" : Header;
-
-        public ObservableCollection<TelemetryItemViewModel> TelemetryItems { get; } = new ObservableCollection<TelemetryItemViewModel>();
-
-        public List<string> HiddenKeys { get; } = new List<string>();
-
-        protected void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
     }
 
     public enum ThermalAlarmLevel
@@ -1193,170 +1022,5 @@ namespace ZenTimings.Windows
         Temperature,
         Power,
         Fan
-    }
-
-    public class TelemetryItemViewModel : INotifyPropertyChanged
-    {
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private double currentValue;
-        private double minValue = double.MaxValue;
-        private double maxValue = double.MinValue;
-        private double sum = 0;
-        private int count = 0;
-
-        private readonly string unit;
-        private readonly bool _isBoolean;
-
-        // Live alarm state
-        private ThermalAlarmLevel currentAlarmLevel;
-
-        // Alarm states captured when values were recorded
-        private ThermalAlarmLevel minAlarmLevel;
-        private ThermalAlarmLevel maxAlarmLevel;
-
-        public string Name { get; }
-
-        // Identifies the sensor's group + name for persisting hide/unhide state.
-        public string GroupKey { get; set; }
-
-        public SensorIconKind IconKind => GetIconKind(unit);
-
-        private static SensorIconKind GetIconKind(string unit)
-        {
-            switch (unit)
-            {
-                case "V": return SensorIconKind.Voltage;
-                case "°C": return SensorIconKind.Temperature;
-                case "W": return SensorIconKind.Power;
-                case "RPM": return SensorIconKind.Fan;
-                default: return SensorIconKind.Generic;
-            }
-        }
-
-        public ThermalAlarmLevel CurrentAlarmLevel
-        {
-            get => currentAlarmLevel;
-            private set
-            {
-                currentAlarmLevel = value;
-                OnPropertyChanged(nameof(CurrentAlarmLevel));
-            }
-        }
-
-        public ThermalAlarmLevel MinAlarmLevel
-        {
-            get => minAlarmLevel;
-            private set
-            {
-                minAlarmLevel = value;
-                OnPropertyChanged(nameof(MinAlarmLevel));
-            }
-        }
-
-        public ThermalAlarmLevel MaxAlarmLevel
-        {
-            get => maxAlarmLevel;
-            private set
-            {
-                maxAlarmLevel = value;
-                OnPropertyChanged(nameof(MaxAlarmLevel));
-            }
-        }
-
-        public string Current => FormatValue(currentValue);
-        public string Min => minValue != double.MaxValue ? FormatValue(minValue) : "-";
-        public string Max => maxValue != double.MinValue ? FormatValue(maxValue) : "-";
-        public string Average => count > 0 ? FormatValue(sum / count) : "-";
-
-        // True when current, min and max values are all zero (or min/max have never been recorded).
-        public bool IsAllZero =>
-            !_isBoolean &&
-            currentValue == 0 &&
-            (minValue == double.MaxValue || minValue == 0) &&
-            (maxValue == double.MinValue || maxValue == 0);
-
-        public TelemetryItemViewModel(string name, double initialValue, string unit = "")
-        {
-            Name = name;
-            this.unit = unit;
-            UpdateValue(initialValue);
-        }
-
-        public TelemetryItemViewModel(string name, bool initialValue)
-        {
-            Name = name;
-            this.unit = "";
-            _isBoolean = true;
-            UpdateValue(initialValue ? 1.0 : 0.0);
-        }
-
-        public void UpdateValue(double value)
-        {
-            currentValue = value;
-
-            if (value < minValue)
-            {
-                minValue = value;
-
-                // Preserve alarm state at recorded minimum
-                MinAlarmLevel = CurrentAlarmLevel;
-            }
-
-            if (value > maxValue)
-            {
-                maxValue = value;
-
-                // Preserve alarm state at recorded maximum
-                MaxAlarmLevel = CurrentAlarmLevel;
-            }
-
-            sum += value;
-            count++;
-
-            OnPropertyChanged(nameof(Current));
-            OnPropertyChanged(nameof(Min));
-            OnPropertyChanged(nameof(Max));
-            OnPropertyChanged(nameof(Average));
-        }
-
-        public void ResetStats()
-        {
-            minValue = currentValue;
-            maxValue = currentValue;
-            sum = currentValue;
-            count = 1;
-
-            MinAlarmLevel = CurrentAlarmLevel;
-            MaxAlarmLevel = CurrentAlarmLevel;
-
-            OnPropertyChanged(nameof(Min));
-            OnPropertyChanged(nameof(Max));
-            OnPropertyChanged(nameof(Average));
-        }
-
-        public void UpdateThermalAlarm(bool critHigh, bool high)
-        {
-            if (critHigh)
-                CurrentAlarmLevel = ThermalAlarmLevel.CriticalHigh;
-            else if (high)
-                CurrentAlarmLevel = ThermalAlarmLevel.High;
-            else
-                CurrentAlarmLevel = ThermalAlarmLevel.None;
-        }
-
-        private string FormatValue(double value)
-        {
-            if (_isBoolean)
-                return value >= 0.5 ? "Yes" : "No";
-
-            string format = unit == "°C" ? "F2" : unit == "RPM" ? "F0" : "F3";
-            return $"{value.ToString(format, CultureInfo.InvariantCulture)} {unit}";
-        }
-
-        protected void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
     }
 }
