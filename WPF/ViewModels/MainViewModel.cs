@@ -10,6 +10,7 @@ using ZenStates.Core.Hardware;
 using ZenStates.Core.Hardware.Apob;
 using ZenStates.Core.Hardware.DRAM;
 using ZenStates.Core.Hardware.DRAM.DDR5.Pmic;
+using ZenStates.Core.Hardware.Mock;
 using ZenTimings.Helpers;
 using ZenTimings.Plugin;
 
@@ -18,6 +19,11 @@ namespace ZenTimings.ViewModels
     public class MainViewModel : ObservableObject
     {
         private static readonly string AGESA_SEARCHING = "Searching for AGESA version...";
+
+        // Non-null only when this view model is showing a debug report instead of live hardware
+        // (see the MockSystemData-accepting constructor overload below). Every place that would
+        // otherwise reach for CpuSingleton.Instance checks this first.
+        private readonly MockSystemData mockData;
 
         private readonly string SmuVersion;
 
@@ -53,14 +59,17 @@ namespace ZenTimings.ViewModels
             get => _agesaVersion;
             set
             {
+                string mbName = mockData != null ? mockData.MbName : CpuSingleton.Instance.systemInfo.MbName;
+                string biosVersion = mockData != null ? mockData.BiosVersion : CpuSingleton.Instance.systemInfo.BiosVersion;
+
                 if (string.IsNullOrEmpty(value) || value == AppSettings.AGESA_UNKNOWN || value == AGESA_SEARCHING)
                 {
-                    MotherboardInfo = $@"{CpuSingleton.Instance.systemInfo.MbName} | BIOS {CpuSingleton.Instance.systemInfo.BiosVersion} ({SmuVersion})";
+                    MotherboardInfo = $@"{mbName} | BIOS {biosVersion} ({SmuVersion})";
                     _agesaVersion = value == AGESA_SEARCHING ? AGESA_SEARCHING : null;
                 }
                 else
                 {
-                    MotherboardInfo = $@"{CpuSingleton.Instance.systemInfo.MbName} | BIOS {CpuSingleton.Instance.systemInfo.BiosVersion}";
+                    MotherboardInfo = $@"{mbName} | BIOS {biosVersion}";
                     _agesaVersion = $"AGESA {value} (SMU {SmuVersion})";
                 }
                 IsAgesaVersionVisible = !string.IsNullOrEmpty(_agesaVersion);
@@ -263,47 +272,54 @@ namespace ZenTimings.ViewModels
             List<IPlugin> plugins,
             string motherboardLogoName,
             string agesaVersion,
-            Ddr5PmicData pmicData)
+            Ddr5PmicData pmicData,
+            MockSystemData mockData = null)
         {
+            this.mockData = mockData;
             Timings = timings;
             Settings = settings;
             Plugins = plugins;
 
-            CpuName = VendorUtils.GetCpuNameString(CpuSingleton.Instance.systemInfo);
-            SmuVersion = CpuSingleton.Instance?.systemInfo?.SmuVersion.ToString() ?? "Unknown";
+            if (mockData != null)
+            {
+                // Debug-report-driven ("mock") window: everything comes from the parsed report,
+                // never from the live machine's CpuSingleton.
+                CpuName = mockData.CpuName ?? "Unknown CPU";
+                SmuVersion = mockData.SmuVersion ?? "Unknown";
+                TotalCapacity = mockData.TotalCapacity;
+                CodeName = mockData.CpuInfo.codeName;
+                PowerTable = mockData.PowerTable;
+            }
+            else
+            {
+                CpuName = VendorUtils.GetCpuNameString(CpuSingleton.Instance.systemInfo);
+                SmuVersion = CpuSingleton.Instance?.systemInfo?.SmuVersion.ToString() ?? "Unknown";
+                TotalCapacity = CpuSingleton.Instance.GetMemoryConfig().TotalCapacity;
+                CodeName = CpuSingleton.Instance.info.codeName;
+                PowerTable = CpuSingleton.Instance?.powerTable;
+            }
 
-            TotalCapacity = CpuSingleton.Instance.GetMemoryConfig().TotalCapacity;
             MemoryType = memoryType;
 
-            PowerTable = CpuSingleton.Instance?.powerTable;
-            CodeName = CpuSingleton.Instance.info.codeName;
-
-            // APOB
-            if (CpuSingleton.Instance.info.apob.IsAvailable)
+            // APOB - either the mock report's own instance, or the live one
+            Apob apob = mockData != null ? mockData.Apob : CpuSingleton.Instance.info.apob;
+            if (apob != null && apob.IsAvailable)
             {
-                ApobMainData = CpuSingleton.Instance.info.apob.Data;
-                ApobExtendedData = CpuSingleton.Instance.info.apob?.ExtendedData;
-                CcdlData = CpuSingleton.Instance.info.apob.CcdlData;
-
-                // Uncomment the following lines to test APOB parsing from a debug report file instead of live data.
-                //string text = File.ReadAllText("debug_report.txt");
-                //Apob testApob = Apob.CreateFromDebugReport(text);
-                //ApobMainData = testApob.Data;
-                //ApobExtendedData = testApob?.ExtendedData;
-                //CcdlData = testApob.CcdlData;
-
+                ApobMainData = apob.Data;
+                ApobExtendedData = apob.ExtendedData;
+                CcdlData = apob.CcdlData;
                 ApobData = MergeApobData(ApobMainData, ApobExtendedData);
             }
 
             //AgesaVersion = AGESA_SEARCHING;
-            AgesaVersion = agesaVersion;
+            AgesaVersion = mockData != null ? (mockData.AgesaVersion ?? agesaVersion) : agesaVersion;
 
-            WMIPresent = (!compatMode && memoryType == MemType.DDR4)
-                         || memoryType == MemType.LPDDR4;
+            WMIPresent = mockData == null &&
+                         ((!compatMode && memoryType == MemType.DDR4) || memoryType == MemType.LPDDR4);
 
             IsMotherboardLogoVisible = motherboardLogoName != null;
             MotherboardLogoTooltip = motherboardLogoName != null
-                ? $"Click to visit {CpuSingleton.Instance.systemInfo.MbName} page"
+                ? $"Click to visit {(mockData != null ? mockData.MbName : CpuSingleton.Instance.systemInfo.MbName)} page"
                 : string.Empty;
 
             if (memoryType == MemType.DDR5 || memoryType == MemType.LPDDR5)
@@ -312,9 +328,10 @@ namespace ZenTimings.ViewModels
                 {
                     PmicData = pmicData;
                 }
-                else
+                else if (mockData == null)
                 {
-                    // fallback to AOD table
+                    // fallback to AOD table (not available for a mock report - the debug report's
+                    // AOD table isn't parsed back into a Table.Data instance yet)
                     var aodData = CpuSingleton.Instance.info.aod?.Table?.Data;
                     if (aodData != null)
                     {
@@ -325,11 +342,23 @@ namespace ZenTimings.ViewModels
                 }
             }
 
-            // ECC
-            ECC = SystemInfo.SMBios.MemoryDevices.Any(d => d.HasEcc);
+            // ECC: not captured by the debug report today, so left at its default (false) for mock data
+            ECC = mockData == null && SystemInfo.SMBios.MemoryDevices.Any(d => d.HasEcc);
 
-            // VDDIO / VSOC: prefer live SuperIO sensor readings, fall back to the static AOD table values.
-            RefreshSensors();
+            // VDDIO / VSOC: prefer live SuperIO sensor readings, fall back to the static AOD table
+            // values. Neither of those exists for a mock report, but its own power table has real
+            // VDDCR_SOC/VDD_MISC readings, so use those directly instead of leaving the fields blank.
+            // (ApuVddio has no such fallback in mock mode - it's only ever sourced from live SuperIO
+            // sensors or the AOD table, neither of which a debug report currently reconstructs.)
+            if (mockData == null)
+            {
+                RefreshSensors();
+            }
+            else if (mockData.PowerTable != null)
+            {
+                Vsoc = mockData.PowerTable.VDDCR_SOC;
+                Vmisc = mockData.PowerTable.VDD_MISC;
+            }
         }
 
         private static readonly string[] ApuVddioSensorNames = { "CPU VDDIO", "VDIMM", "VDDIO", "CPU VDDIO Memory" };

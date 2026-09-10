@@ -18,6 +18,7 @@ using ZenStates.Core;
 using ZenStates.Core.Hardware;
 using ZenStates.Core.Hardware.Aod;
 using ZenStates.Core.Hardware.DRAM;
+using ZenStates.Core.Hardware.Mock;
 using ZenStates.Core.OHWM;
 using ZenTimings.Controls;
 using ZenTimings.Helpers;
@@ -253,7 +254,7 @@ namespace ZenTimings
             }
         }
 
-        private MainWindow(MainViewModel viewModel)
+        private MainWindow(MainViewModel viewModel, MockSystemData mockData)
         {
             cpu = CpuSingleton.Instance;
             this.isMockWindow = true;
@@ -262,10 +263,15 @@ namespace ZenTimings
             InitializeComponent();
 
             DataContext = viewModel;
-            AddTimingsPanel(viewModel.MemoryType);
+            AddTimingsPanel(viewModel.MemoryType, mockData.CpuInfo.family, mockData.CpuInfo.smuType, mockData.Apob != null && mockData.Apob.IsAvailable);
         }
 
         private void AddTimingsPanel(MemType memoryType)
+        {
+            AddTimingsPanel(memoryType, cpu.info.family, cpu.smu.SMU_TYPE, cpu.info.apob.IsAvailable);
+        }
+
+        private void AddTimingsPanel(MemType memoryType, Cpu.Family family, SMU.SmuType smuType, bool apobAvailable)
         {
             // Add timings panel
             switch (memoryType)
@@ -281,20 +287,20 @@ namespace ZenTimings
 
                 case MemType.DDR5:
                     {
-                        if (!cpu.info.apob.IsAvailable || settings.ImpedanceTableSrc == AppSettings.ImpedanceTableSource.AOD)
+                        if (!apobAvailable || settings.ImpedanceTableSrc == AppSettings.ImpedanceTableSource.AOD)
                         {
-                            if (cpu.smu.SMU_TYPE == SMU.SmuType.TYPE_APU2)
+                            if (smuType == SMU.SmuType.TYPE_APU2)
                                 timingsPanel = new LegacyDDR5APUTimingsPanel();
                             else
                                 timingsPanel = new LegacyDDR5TimingsPanel();
                             break;
                         }
 
-                        if (cpu.smu.SMU_TYPE == SMU.SmuType.TYPE_APU2)
+                        if (smuType == SMU.SmuType.TYPE_APU2)
                         {
                             timingsPanel = new DDR5APUTimingsPanel();
                         }
-                        else if (cpu.info.family == Cpu.Family.FAMILY_1AH)
+                        else if (family == Cpu.Family.FAMILY_1AH)
                         {
                             timingsPanel = new DDR5TimingsPanel1Ah();
                         }
@@ -1444,22 +1450,33 @@ namespace ZenTimings
                     return;
 
                 string debugReportText = File.ReadAllText(openFileDialog.FileName);
+                MockSystemData mockData = MockSystemData.CreateFromDebugReport(debugReportText);
+
+                if (mockData.Warnings.Count > 0)
+                {
+                    Debug.WriteLine($"MockSystemData warnings for {openFileDialog.FileName}:");
+                    foreach (string warning in mockData.Warnings)
+                        Debug.WriteLine(" - " + warning);
+                }
+
+                BaseDramTimings mockTimings = mockData.Timings.Count > 0 ? mockData.Timings[0].Value : null;
 
                 var viewModel = new MainViewModel(
-                    ReadTimings(),
-                    cpu.GetMemoryConfig().Type,
-                    compatMode,
+                    mockTimings,
+                    mockData.MemoryType,
+                    compatMode: false,
                     settings,
-                    plugins,
+                    new List<IPlugin>(),
                     null,
-                    GetAgesaVersion(),
-                    cpu.GetMemoryConfig()?.SpdInfo?.Values.FirstOrDefault(d => d.IsValid)?.PmicData ?? null
+                    mockData.AgesaVersion,
+                    null,
+                    mockData
                 );
 
-                MainWindow mockWindow = new MainWindow(viewModel)
+                MainWindow mockWindow = new MainWindow(viewModel, mockData)
                 {
                     Owner = this,
-                    WindowStartupLocation = WindowStartupLocation.Manual
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen
                 };
 
                 mockWindow.Show();
