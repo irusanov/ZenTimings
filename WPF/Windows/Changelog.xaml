@@ -20,10 +20,6 @@
     Topmost="True" Icon="/ZenTimings;component/Resources/new-icon/16.png"
     SizeToContent="WidthAndHeight">
 
-    <Window.Resources>
-        <converters:DDR5ToVisConverter x:Key="DDR5ToBool" />
-    </Window.Resources>
-
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <Grid>
             <Grid.RowDefinitions>
@@ -34,7 +30,7 @@
 
             <StackPanel Orientation="Vertical" Margin="15,15,5,15" Grid.ColumnSpan="6" Grid.Row="0" Width="424">
                 <!-- TextBlock Text="Changelog" FontSize="14" FontWeight="Bold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" /-->
-                <TextBlock Text="{Binding Version}" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0" />
+                <TextBlock Text="{Binding Version, Mode=OneWay}" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0" />
 
                 <TextBlock Text="" />
                 <TextBlock Text=" - Added CCD_L timings for DDR5 in advanced mode" TextWrapping="WrapWithOverflow" />

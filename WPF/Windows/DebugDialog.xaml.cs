@@ -13,8 +13,8 @@ using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
 using ZenTimings.Helpers;
 using Application = System.Windows.Application;
 using DRAM = ZenStates.Core.Hardware.DRAM;
-using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 using MessageBox = AdonisUI.Controls.MessageBox;
+using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace ZenTimings.Windows
 {
