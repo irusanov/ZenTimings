@@ -174,9 +174,9 @@ namespace ZenTimings.ViewModels
         }
 
 
-        private ApobData _apobData;
+        private ApobDataView _apobData;
 
-        public ApobData ApobData
+        public ApobDataView ApobData
         {
             get => _apobData;
             set => SetProperty(ref _apobData, value);
@@ -308,7 +308,7 @@ namespace ZenTimings.ViewModels
                 ApobMainData = apob.Data;
                 ApobExtendedData = apob.ExtendedData;
                 CcdlData = apob.CcdlData;
-                ApobData = MergeApobData(ApobMainData, ApobExtendedData);
+                ApobData = new ApobDataView(ApobMainData, ApobExtendedData);
             }
 
             //AgesaVersion = AGESA_SEARCHING;
@@ -418,41 +418,6 @@ namespace ZenTimings.ViewModels
             {
                 Vmisc = PowerTable.VDD_MISC;
             }
-        }
-
-        private ApobData MergeApobData(ApobData main, ApobData extended)
-        {
-            if (extended == null)
-                return main;
-
-            var result = main;
-            var type = typeof(ApobData);
-            var props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-
-            foreach (var p in props)
-            {
-                if (!p.CanRead || !p.CanWrite)
-                    continue;
-
-                var extendedVal = p.GetValue(extended);
-
-                // If extended has a non-null value and main prop is null, use extended's value.
-                if (extendedVal != null && p.GetValue(main) == null)
-                {
-                    p.SetValue(result, extendedVal);
-                    continue;
-                }
-
-                // If main has the property, use main's value.
-                var mainProp = type.GetProperty(p.Name, BindingFlags.Public | BindingFlags.Instance);
-                if (mainProp != null && mainProp.CanRead)
-                {
-                    var mainVal = main == null ? null : mainProp.GetValue(main);
-                    p.SetValue(result, mainVal);
-                }
-            }
-
-            return result;
         }
 
         bool IsMismatch(
