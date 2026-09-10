@@ -48,7 +48,9 @@
                     </Grid.ColumnDefinitions>
                     <Menu x:Name="MainMenu" Grid.Column="0" Style="{DynamicResource MenuStyles}">
                         <MenuItem Header="_File">
-                            <MenuItem Header="Export as HTML" Click="ExportAsHtmlMenuItem_Click" />
+                            <MenuItem Header="Export">
+                                <MenuItem Header="As HTML" Click="ExportAsHtmlMenuItem_Click" />
+                            </MenuItem>
                             <MenuItem Header="E_xit" Click="ExitToolStripMenuItem_Click" />
                             <!-- MenuItem Header="Export..." HorizontalAlignment="Left" Click="ExportToolStripMenuItem_Click" /-->
                         </MenuItem>
@@ -76,7 +78,8 @@
                             <Separator Foreground="{DynamicResource PanelBackground}" />
                             <MenuItem Header="_Debug">
                                 <MenuItem Header="Dump _APOB table" Click="DumpApobTable_Click" />
-                                <MenuItem Header="Open a debug report" Click="OpenDebugLogAsMockWindow_Click" />
+                                <Separator Foreground="{DynamicResource PanelBackground}" />
+                                <MenuItem Header="Open a debug report (beta)" Click="OpenDebugLogAsMockWindow_Click" />
                                 <MenuItem Header="Save a debug report" Click="DebugToolstripItem_Click" />
                             </MenuItem>
                         </MenuItem>

@@ -14,6 +14,7 @@ using ZenTimings.Helpers;
 using Application = System.Windows.Application;
 using DRAM = ZenStates.Core.Hardware.DRAM;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
+using MessageBox = AdonisUI.Controls.MessageBox;
 
 namespace ZenTimings.Windows
 {
@@ -252,6 +253,7 @@ namespace ZenTimings.Windows
 
                 }
                 AddLine($"{"DRAM Base Address:",-19}{(long)cpu.powerTable.DramBaseAddress:X16}");
+                AddLine($"{"MemType:",-19}{memoryConfig.Type}");
                 //AddLine($"{"DRAM Base Address:",-19}{((long)cpu.powerTable.DramBaseAddressHi << 32) | cpu.powerTable.DramBaseAddress:X16}");
             }
             catch
