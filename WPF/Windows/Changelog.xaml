@@ -31,8 +31,11 @@
             <StackPanel Orientation="Vertical" Margin="15,15,5,15" Grid.ColumnSpan="6" Grid.Row="0" Width="424">
                 <!-- TextBlock Text="Changelog" FontSize="14" FontWeight="Bold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" /-->
                 <TextBlock Text="{Binding Version, Mode=OneWay}" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0" />
-
+                <TextBlock Text=" - Fixed issue with NCT6687DR detection on MSI motherboards" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Fixed display of impedances from extended table" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text="" />
+
+                <TextBlock Text="Version 140.571 - beta" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0" />
                 <TextBlock Text=" - Added CCD_L timings for DDR5 in advanced mode" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Renamed Telemetry window to Sensors and enabled it for all systems" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Added a sensor settings dialog to show/hide individual sensors" TextWrapping="WrapWithOverflow" />

@@ -95,7 +95,7 @@
 
                         <Border Grid.Column="1" Padding="10" Grid.ColumnSpan="2">
                             <StackPanel>
-                                <Label x:Name="labelProductName" Content="ZenTimings" Padding="0 0 5 10" FontSize="14" />
+                                <Label x:Name="labelProductName" Content="ZenTimings" Padding="0 0 5 10" FontSize="15" />
                                 <TextBlock x:Name="labelVersion" Text="" Padding="0 2 5 2" />
                                 <TextBlock x:Name="labelCopyright" Text="" Padding="0 2 5 2" />
                                 <TextBlock x:Name="labelCompanyName" Text="" Padding="0 2 5 2" />
