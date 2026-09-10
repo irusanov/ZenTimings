@@ -11,6 +11,7 @@
     adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
     mc:Ignorable="d"
     Title="System Info"
+    SnapIdentifier="SystemInfoWindow"
     Height="450"
     Width="800"
     

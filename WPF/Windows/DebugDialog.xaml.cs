@@ -13,6 +13,7 @@ using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
 using ZenTimings.Helpers;
 using Application = System.Windows.Application;
 using DRAM = ZenStates.Core.Hardware.DRAM;
+using MessageBox = AdonisUI.Controls.MessageBox;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace ZenTimings.Windows
@@ -252,6 +253,7 @@ namespace ZenTimings.Windows
 
                 }
                 AddLine($"{"DRAM Base Address:",-19}{(long)cpu.powerTable.DramBaseAddress:X16}");
+                AddLine($"{"MemType:",-19}{memoryConfig.Type}");
                 //AddLine($"{"DRAM Base Address:",-19}{((long)cpu.powerTable.DramBaseAddressHi << 32) | cpu.powerTable.DramBaseAddress:X16}");
             }
             catch
@@ -553,6 +555,11 @@ namespace ZenTimings.Windows
         private void ButtonDebugSaveAs_Click(object sender, RoutedEventArgs e)
         {
             SaveToFile(true);
+        }
+
+        private async void ThemedAdonisWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            await Task.Run(Debug);
         }
     }
 }

@@ -154,7 +154,8 @@
                     Grid.Row="3"
                     Grid.ColumnSpan="3"
                     Style="{StaticResource SettingToggle}"
-                    Content="Participate in beta updates" />
+                    Content="Receive Beta updates"
+                    IsEnabled="{Binding IsChecked, ElementName=checkBoxCheckUpdate}"/>
 
                 <ToggleButton
                     x:Name="checkBoxSingleInstance"
@@ -284,6 +285,7 @@
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
 
                 <ToggleButton
@@ -331,6 +333,14 @@
                     Grid.ColumnSpan="3"
                     Style="{StaticResource SettingToggle}"
                     Content="Save position on app close" />
+
+                <ToggleButton
+                    x:Name="checkBoxWindowSnapping"
+                    Grid.Column="0"
+                    Grid.Row="4"
+                    Grid.ColumnSpan="3"
+                    Style="{StaticResource SettingToggle}"
+                    Content="Snap windows together" />
             </Grid>
         </StackPanel>
 

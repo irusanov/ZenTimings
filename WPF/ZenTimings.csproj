@@ -108,6 +108,7 @@
     <Compile Include="..\Common\UpdaterPersistenceProvider.cs">
       <Link>Common\UpdaterPersistenceProvider.cs</Link>
     </Compile>
+    <Compile Include="Converters\CountToVisibilityConverter.cs" />
     <Compile Include="Helpers\AgesaHelper.cs" />
     <Compile Include="Controls\LegacyDDR5APUTimingsPanel.xaml.cs">
       <DependentUpon>LegacyDDR5APUTimingsPanel.xaml</DependentUpon>
@@ -149,6 +150,9 @@
     <Compile Include="Plugin\SVI2Plugin.cs" />
     <Compile Include="Properties\BuildNumberTemplate.cs" />
     <Compile Include="Updater.cs" />
+    <Compile Include="ViewModels\ModuleViewModel.cs" />
+    <Compile Include="ViewModels\SensorGroupViewModel.cs" />
+    <Compile Include="ViewModels\TelemetryItemViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Windows\AdvancedTimingsWindow.xaml.cs">
       <DependentUpon>AdvancedTimingsWindow.xaml</DependentUpon>

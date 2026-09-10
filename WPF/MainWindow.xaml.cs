@@ -18,6 +18,7 @@ using ZenStates.Core;
 using ZenStates.Core.Hardware;
 using ZenStates.Core.Hardware.Aod;
 using ZenStates.Core.Hardware.DRAM;
+using ZenStates.Core.Hardware.Mock;
 using ZenStates.Core.OHWM;
 using ZenTimings.Controls;
 using ZenTimings.Helpers;
@@ -56,6 +57,7 @@ namespace ZenTimings
         private Control timingsPanel;
         private readonly MainViewModel mainViewModel;
         private float lastMclk = 0;
+        private readonly bool isMockWindow = false;
 
         private readonly string AssemblyProduct = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(
             Assembly.GetExecutingAssembly(),
@@ -252,7 +254,24 @@ namespace ZenTimings
             }
         }
 
+        private MainWindow(MainViewModel viewModel, MockSystemData mockData)
+        {
+            cpu = CpuSingleton.Instance;
+            this.isMockWindow = true;
+
+            IconSource = GetIcon("pack://application:,,,/ZenTimings;component/Resources/ZenTimings2022.ico", 16);
+            InitializeComponent();
+
+            DataContext = viewModel;
+            AddTimingsPanel(viewModel.MemoryType, mockData.CpuInfo.family, mockData.CpuInfo.smuType, mockData.Apob != null && mockData.Apob.IsAvailable);
+        }
+
         private void AddTimingsPanel(MemType memoryType)
+        {
+            AddTimingsPanel(memoryType, cpu.info.family, cpu.smu.SMU_TYPE, cpu.info.apob.IsAvailable);
+        }
+
+        private void AddTimingsPanel(MemType memoryType, Cpu.Family family, SMU.SmuType smuType, bool apobAvailable)
         {
             // Add timings panel
             switch (memoryType)
@@ -268,20 +287,20 @@ namespace ZenTimings
 
                 case MemType.DDR5:
                     {
-                        if (!cpu.info.apob.IsAvailable || settings.ImpedanceTableSrc == AppSettings.ImpedanceTableSource.AOD)
+                        if (!apobAvailable || settings.ImpedanceTableSrc == AppSettings.ImpedanceTableSource.AOD)
                         {
-                            if (cpu.smu.SMU_TYPE == SMU.SmuType.TYPE_APU2)
+                            if (smuType == SMU.SmuType.TYPE_APU2)
                                 timingsPanel = new LegacyDDR5APUTimingsPanel();
                             else
                                 timingsPanel = new LegacyDDR5TimingsPanel();
                             break;
                         }
 
-                        if (cpu.smu.SMU_TYPE == SMU.SmuType.TYPE_APU2)
+                        if (smuType == SMU.SmuType.TYPE_APU2)
                         {
                             timingsPanel = new DDR5APUTimingsPanel();
                         }
-                        else if (cpu.info.family == Cpu.Family.FAMILY_1AH)
+                        else if (family == Cpu.Family.FAMILY_1AH)
                         {
                             timingsPanel = new DDR5TimingsPanel1Ah();
                         }
@@ -355,6 +374,12 @@ namespace ZenTimings
 
         private void ExitApplication(bool save = true)
         {
+            if (isMockWindow)
+            {
+                Close();
+                return;
+            }
+
             if (save) settings.Save();
             Cleanup();
             Application.Current?.Shutdown();
@@ -945,6 +970,14 @@ namespace ZenTimings
         {
             this.Topmost = true;
 
+            if (isMockWindow)
+            {
+                //SetWindowTitle();
+                this.Topmost = false;
+                MinimizeFootprint();
+                return;
+            }
+
             RestoreWindowPosition();
             SetWindowTitle();
             //ShowWindow();
@@ -1234,6 +1267,11 @@ namespace ZenTimings
 
         private void AdonisWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            if (isMockWindow)
+            {
+                return;
+            }
+
             siWnd?.Close();
 
             if (settings.SaveWindowPosition)
@@ -1395,6 +1433,57 @@ namespace ZenTimings
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to open changelog: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void OpenDebugLogAsMockWindow_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Forms.OpenFileDialog openFileDialog = new Forms.OpenFileDialog
+                {
+                    Filter = "Text files (*.txt;*.log)|*.txt;*.log|All files (*.*)|*.*",
+                    Title = "Open ZenTimings debug report"
+                };
+
+                if (openFileDialog.ShowDialog() != Forms.DialogResult.OK)
+                    return;
+
+                string debugReportText = File.ReadAllText(openFileDialog.FileName);
+                MockSystemData mockData = MockSystemData.CreateFromDebugReport(debugReportText);
+
+                if (mockData.Warnings.Count > 0)
+                {
+                    Debug.WriteLine($"MockSystemData warnings for {openFileDialog.FileName}:");
+                    foreach (string warning in mockData.Warnings)
+                        Debug.WriteLine(" - " + warning);
+                }
+
+                BaseDramTimings mockTimings = mockData.Timings.Count > 0 ? mockData.Timings[0].Value : null;
+
+                var viewModel = new MainViewModel(
+                    mockTimings,
+                    mockData.MemoryType,
+                    compatMode: false,
+                    settings,
+                    new List<IPlugin>(),
+                    null,
+                    mockData.AgesaVersion,
+                    null,
+                    mockData
+                );
+
+                MainWindow mockWindow = new MainWindow(viewModel, mockData)
+                {
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen
+                };
+
+                mockWindow.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error opening debug report:\n{ex.Message}", "Mock Window", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

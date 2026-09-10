@@ -45,6 +45,7 @@ namespace ZenTimings.Windows
             checkBoxCheckUpdate.IsChecked = appSettings.CheckForUpdates;
             checkBoxBetaUpdates.IsChecked = appSettings.ParticipateInBetaUpdates;
             checkBoxSavePosition.IsChecked = appSettings.SaveWindowPosition;
+            checkBoxWindowSnapping.IsChecked = appSettings.EnableWindowSnapping;
             checkBoxMinimizeToTray.IsChecked = appSettings.MinimizeToTray;
             checkBoxAutostart.IsChecked = appSettings.AutostartWithWindows;
             numericUpDownAutostartDelay.IsEnabled = appSettings.AutostartWithWindows;
@@ -74,6 +75,7 @@ namespace ZenTimings.Windows
             appSettings.CheckForUpdates = (bool)checkBoxCheckUpdate.IsChecked;
             appSettings.ParticipateInBetaUpdates = (bool)checkBoxBetaUpdates.IsChecked;
             appSettings.SaveWindowPosition = (bool)checkBoxSavePosition.IsChecked;
+            appSettings.EnableWindowSnapping = (bool)checkBoxWindowSnapping.IsChecked;
             appSettings.MinimizeToTray = (bool)checkBoxMinimizeToTray.IsChecked;
             appSettings.AutostartWithWindows = (bool)checkBoxAutostart.IsChecked;
             appSettings.AutostartDelaySeconds = Convert.ToInt32(numericUpDownAutostartDelay.Text);
