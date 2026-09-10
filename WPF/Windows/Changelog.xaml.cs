@@ -21,9 +21,9 @@ namespace ZenTimings.Windows
             this.DataContext = new
             {
 #if BETA
-                Version = $"{Version} - beta",
+                Version = $"Version {Version} - beta",
 #else
-                Version,
+                Version = $"Version {Version}",
 #endif
             };
         }
