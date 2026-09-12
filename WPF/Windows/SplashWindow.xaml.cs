@@ -37,10 +37,10 @@ namespace ZenTimings.Windows
 
         public static void Start(bool deferUpdateCheck = false)
         {
-            DeferUpdateCheck = deferUpdateCheck;
-
-            splash.Show();
             ApplySettings();
+            DeferUpdateCheck = deferUpdateCheck;
+            splash.Show();
+
             if (appSettings.CheckForUpdates && !DeferUpdateCheck)
                 updater.CheckForUpdate();
         }
