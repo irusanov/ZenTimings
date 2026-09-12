@@ -150,6 +150,7 @@
     <Compile Include="Plugin\SVI2Plugin.cs" />
     <Compile Include="Properties\BuildNumberTemplate.cs" />
     <Compile Include="Updater.cs" />
+    <Compile Include="ViewModels\ApobDataView.cs" />
     <Compile Include="ViewModels\ModuleViewModel.cs" />
     <Compile Include="ViewModels\SensorGroupViewModel.cs" />
     <Compile Include="ViewModels\TelemetryItemViewModel.cs" />
