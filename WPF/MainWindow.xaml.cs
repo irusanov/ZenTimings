@@ -169,7 +169,7 @@ namespace ZenTimings
                 cpu.systemInfo.UpdateSensors();
 
                 SplashWindow.Loading("Memory modules");
-                ReadMemoryModulesInfo();
+                ReadMemoryModulesInfo(cpu.GetMemoryConfig()?.Modules);
 
                 SplashWindow.Loading("Timings");
 
@@ -393,9 +393,8 @@ namespace ZenTimings
             return biosFunctions.Find(x => x.IDString == name);
         }
 
-        private void ReadMemoryModulesInfo()
+        private void ReadMemoryModulesInfo(List<MemoryModule> modules)
         {
-            var modules = cpu.GetMemoryConfig()?.Modules;
             if (modules?.Count > 0)
             {
                 foreach (MemoryModule module in modules)
@@ -448,7 +447,7 @@ namespace ZenTimings
                 if (comboBoxPartNumber.Items.Count > 0)
                 {
                     comboBoxPartNumber.SelectedIndex = 0;
-                    comboBoxPartNumber.SelectionChanged += ComboBoxPartNumber_SelectionChanged;
+                    if (!isMockWindow) comboBoxPartNumber.SelectionChanged += ComboBoxPartNumber_SelectionChanged;
                 }
             }
         }
@@ -1481,6 +1480,19 @@ namespace ZenTimings
                     Owner = this,
                     WindowStartupLocation = WindowStartupLocation.CenterScreen
                 };
+
+                mockWindow.ReadMemoryModulesInfo(mockData.Modules);
+
+                if (mockWindow.comboBoxPartNumber.Items.Count > 0)
+                {
+                    mockWindow.comboBoxPartNumber.SelectedIndex = 0;
+                    // Not supported yet
+                    //mockWindow.comboBoxPartNumber.SelectionChanged += new SelectionChangedEventHandler((_s, _e) =>
+                    //{
+                    //    var dctOffset = mockData.Modules[mockWindow.comboBoxPartNumber.SelectedIndex].DctOffset;
+                    //    mockWindow.mainViewModel.Timings = mockData.Timings[(int)(dctOffset >> 24)].Value;
+                    //});
+                }
 
                 mockWindow.Show();
             }
