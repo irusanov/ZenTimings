@@ -20,9 +20,12 @@ using ZenStates.Core.Hardware.Aod;
 using ZenStates.Core.Hardware.DRAM;
 using ZenStates.Core.Hardware.Mock;
 using ZenStates.Core.OHWM;
+using ZenTimings.Common;
 using ZenTimings.Controls;
 using ZenTimings.Helpers;
 using ZenTimings.Plugin;
+using ZenTimings.Settings;
+using ZenTimings.Utils;
 using ZenTimings.ViewModels;
 using ZenTimings.Windows;
 using static ZenTimings.Helpers.DriverCleaner;
@@ -564,7 +567,7 @@ namespace ZenTimings
 
                 // When ProcODT is 0, then all other resistance values are 0
                 // Happens when one DIMM installed in A1 or A2 slot
-                if (BMC.Table == null || Utils.AllZero(BMC.Table) || BMC.Config.ProcODT < 1)
+                if (BMC.Table == null || ZenStates.Core.Utils.AllZero(BMC.Table) || BMC.Config.ProcODT < 1)
                     // throw new Exception("Failed to read AMD ACPI. Odt, Setup and Drive strength parameters will be empty.");
                     return;
 

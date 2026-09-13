@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Management;
 using ZenStates.Core.Hardware;
 
-namespace ZenTimings
+namespace ZenTimings.Common
 {
     public class AsusWMI : IDisposable
     {

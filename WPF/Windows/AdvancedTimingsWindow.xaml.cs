@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using ZenStates.Core.Hardware.DRAM;
+using ZenTimings.Common;
 
 namespace ZenTimings.Windows
 {

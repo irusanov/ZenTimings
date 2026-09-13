@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Threading;
 
-namespace ZenTimings
+namespace ZenTimings.Common
 {
     public abstract class ObservableObject : INotifyPropertyChanged
     {

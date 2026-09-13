@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Xml.Serialization;
 
-namespace ZenTimings
+namespace ZenTimings.Utils
 {
     internal class XmlUtils
     {

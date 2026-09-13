@@ -6,7 +6,9 @@ using ZenStates.Core.Hardware;
 using ZenStates.Core.Hardware.Aod;
 using ZenStates.Core.Hardware.DRAM;
 using ZenStates.Core.OHWM;
-using static ZenTimings.BiosMemController;
+using ZenTimings.Common;
+using ZenTimings.Settings;
+using static ZenTimings.Common.BiosMemController;
 
 namespace ZenTimings.Windows
 {

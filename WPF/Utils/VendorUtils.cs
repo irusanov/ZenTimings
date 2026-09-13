@@ -2,7 +2,7 @@ using System;
 using ZenStates.Core.Hardware;
 using ZenStates.Core.Hardware.DRAM;
 
-namespace ZenTimings
+namespace ZenTimings.Utils
 {
     internal static class VendorUtils
     {

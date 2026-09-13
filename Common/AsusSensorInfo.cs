@@ -1,6 +1,6 @@
-﻿using static ZenTimings.AsusWMI;
+﻿using static ZenTimings.Common.AsusWMI;
 
-namespace ZenTimings
+namespace ZenTimings.Common
 {
     /*
      * Sample data for core voltage from Crosshair VI Hero

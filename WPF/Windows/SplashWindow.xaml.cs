@@ -2,7 +2,10 @@
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Threading;
+using ZenTimings.Common;
 using ZenTimings.Helpers;
+using ZenTimings.Settings;
+using ZenTimings.Utils;
 
 namespace ZenTimings.Windows
 {

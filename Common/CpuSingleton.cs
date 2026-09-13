@@ -1,6 +1,6 @@
 ﻿using ZenStates.Core;
 
-namespace ZenTimings
+namespace ZenTimings.Common
 {
     internal sealed class CpuSingleton
     {

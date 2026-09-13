@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using ZenTimings.Utils;
 
-namespace ZenTimings
+namespace ZenTimings.Settings
 {
     [Serializable]
     public sealed class SensorSettings

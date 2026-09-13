@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.InteropServices;
 
-namespace ZenTimings
+namespace ZenTimings.Common
 {
     public class Screenshot : IDisposable
     {

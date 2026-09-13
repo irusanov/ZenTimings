@@ -7,9 +7,10 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using ZenTimings.Helpers;
+using ZenTimings.Utils;
 using static ZenTimings.Helpers.DriverCleaner;
 
-namespace ZenTimings
+namespace ZenTimings.Settings
 {
     [Serializable]
     public sealed class AppSettings : INotifyPropertyChanged

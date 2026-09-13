@@ -1,6 +1,7 @@
 using System;
+using ZenTimings.Settings;
 
-namespace ZenTimings
+namespace ZenTimings.Common
 {
     public sealed class UpdaterPersistenceProvider
     {
