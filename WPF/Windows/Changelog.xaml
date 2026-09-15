@@ -31,12 +31,19 @@
             <StackPanel Orientation="Vertical" Margin="15,15,5,15" Grid.ColumnSpan="6" Grid.Row="0" Width="424">
                 <!-- TextBlock Text="Changelog" FontSize="14" FontWeight="Bold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" /-->
                 <TextBlock Text="{Binding Version, Mode=OneWay}" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0" />
+                <TextBlock Text=" - Switch to total power mode reporting on PMIC init" />
+                <TextBlock Text=" - Read and display more values from saved debug reports (still WIP)" />
+                <TextBlock Text=" - Fixed CCD_L group reading on Zen4 APU (Phoenix)" />
+                <TextBlock Text=" - Fixed empty numeric input handling in Options windows" />
+                <TextBlock Text="" />
+
+                <TextBlock Text="Version 140.576 - beta" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0" />
                 <TextBlock Text=" - Fixed issue with NCT6687DR detection on MSI motherboards" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Fixed display of impedances from extended table" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text="" />
 
                 <TextBlock Text="Version 140.571 - beta" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0" />
-                <TextBlock Text=" - Added CCD_L timings for DDR5 in advanced mode" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Added CCD_L timings for DDR5 in advanced mode, based on @deadfellow34's findings" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Renamed Telemetry window to Sensors and enabled it for all systems" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Added a sensor settings dialog to show/hide individual sensors" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Added icons for sensors" TextWrapping="WrapWithOverflow" />
@@ -52,7 +59,7 @@
                 <TextBlock Text=" - Fixed memory leak in Debug window" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Unmatched Hynix dies are now displayed as 'Unknown' instead of an incorrect value" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Removed the maximize button when maximizing is not applicable" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Added SuperIO hardware support, ported from LibreHardwareMonitor" TextWrapping="WrapWithOverflow" />
+                <TextBlock Text=" - Added SuperIO hardware support, ported from @LibreHardwareMonitor" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Updated DDR5 UMC timings with additional entries" TextWrapping="WrapWithOverflow" />
                 <TextBlock Text=" - Extended data in Debug report" TextWrapping="WrapWithOverflow" />
             </StackPanel>
