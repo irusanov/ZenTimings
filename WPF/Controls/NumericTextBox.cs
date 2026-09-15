@@ -102,6 +102,23 @@ namespace ZenTimings.Controls
 
         #endregion
 
+        #region FallbackValue
+
+        public static readonly DependencyProperty FallbackValueProperty =
+            DependencyProperty.Register(
+                nameof(FallbackValue),
+                typeof(int),
+                typeof(NumericTextBox),
+                new FrameworkPropertyMetadata(0, OnFallbackValueChanged));
+
+        public int FallbackValue
+        {
+            get { return (int)GetValue(FallbackValueProperty); }
+            set { SetValue(FallbackValueProperty, value); }
+        }
+
+        #endregion
+
         protected override void OnPreviewTextInput(TextCompositionEventArgs e)
         {
             if (string.IsNullOrEmpty(e.Text))
@@ -150,6 +167,12 @@ namespace ZenTimings.Controls
             }
 
             base.OnPreviewKeyDown(e);
+        }
+
+        protected override void OnLostKeyboardFocus(KeyboardFocusChangedEventArgs e)
+        {
+            CommitText();
+            base.OnLostKeyboardFocus(e);
         }
 
         protected override void OnTextChanged(TextChangedEventArgs e)
@@ -253,7 +276,7 @@ namespace ZenTimings.Controls
             if (!int.TryParse(text, out value))
                 return false;
 
-            return value >= Minimum && value <= Maximum;
+            return value <= Maximum;
         }
 
         private void UpdateValueFromText()
@@ -263,18 +286,10 @@ namespace ZenTimings.Controls
 
             if (string.IsNullOrEmpty(Text))
             {
-                if (AllowEmpty)
+                if (Value != null)
                 {
                     _updatingValue = true;
                     Value = null;
-                    _updatingValue = false;
-                }
-                else
-                {
-                    SetTextInternal(Minimum.ToString());
-
-                    _updatingValue = true;
-                    Value = Minimum;
                     _updatingValue = false;
                 }
 
@@ -287,10 +302,56 @@ namespace ZenTimings.Controls
                 return;
 
             if (value < Minimum)
+                return;
+
+            if (value > Maximum)
+                value = Maximum;
+
+            if (Value != value)
+            {
+                _updatingValue = true;
+                Value = value;
+                _updatingValue = false;
+            }
+        }
+
+        private void CommitText()
+        {
+            if (string.IsNullOrEmpty(Text))
+            {
+                if (!AllowEmpty)
+                {
+                    int fallbackValue = GetFallbackValue();
+
+                    SetTextInternal(fallbackValue.ToString());
+
+                    _updatingValue = true;
+                    Value = fallbackValue;
+                    _updatingValue = false;
+                }
+
+                return;
+            }
+
+            int value;
+
+            if (!int.TryParse(Text, out value))
+            {
+                if (Value.HasValue)
+                    SetTextInternal(Value.Value.ToString());
+                else if (!AllowEmpty)
+                    SetTextInternal(GetFallbackValue().ToString());
+
+                return;
+            }
+
+            if (value < Minimum)
                 value = Minimum;
 
             if (value > Maximum)
                 value = Maximum;
+
+            SetTextInternal(value.ToString());
 
             if (Value != value)
             {
@@ -375,10 +436,38 @@ namespace ZenTimings.Controls
             NumericTextBox control = (NumericTextBox)d;
 
             if (!control.AllowEmpty &&
-                string.IsNullOrEmpty(control.Text))
+                string.IsNullOrEmpty(control.Text) &&
+                !control.IsKeyboardFocusWithin)
             {
-                control.Value = control.Minimum;
+                control.Value = control.GetFallbackValue();
             }
+        }
+
+        private static void OnFallbackValueChanged(
+            DependencyObject d,
+            DependencyPropertyChangedEventArgs e)
+        {
+            NumericTextBox control = (NumericTextBox)d;
+
+            if (!control.AllowEmpty &&
+                string.IsNullOrEmpty(control.Text) &&
+                !control.IsKeyboardFocusWithin)
+            {
+                control.Value = control.GetFallbackValue();
+            }
+        }
+
+        private int GetFallbackValue()
+        {
+            int fallbackValue = FallbackValue;
+
+            if (fallbackValue < Minimum)
+                fallbackValue = Minimum;
+
+            if (fallbackValue > Maximum)
+                fallbackValue = Maximum;
+
+            return fallbackValue;
         }
 
         private void SetTextInternal(string text)
