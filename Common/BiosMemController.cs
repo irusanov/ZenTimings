@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace ZenTimings
+namespace ZenTimings.Common
 {
     public class BiosMemController : IDisposable
     {

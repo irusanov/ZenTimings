@@ -81,7 +81,7 @@ namespace ZenTimings.Plugin
         private void UpdateSensorValue(uint planeValue, int sensorIndex)
         {
             uint vid = (planeValue >> 16) & 0xFF;
-            Sensors[sensorIndex].Value = (float)Utils.VidToVoltage(vid);
+            Sensors[sensorIndex].Value = (float)ZenStates.Core.Utils.VidToVoltage(vid);
 
             Debug.WriteLine($"{Sensors[sensorIndex].Name}: {Sensors[sensorIndex].Min} {Sensors[sensorIndex].Max}");
         }

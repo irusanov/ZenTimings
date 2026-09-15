@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace ZenTimings
+namespace ZenTimings.Common
 {
     public class BiosACPIFunction : IEnumerable
     {

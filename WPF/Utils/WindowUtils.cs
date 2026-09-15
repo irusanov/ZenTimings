@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 
-namespace ZenTimings
+namespace ZenTimings.Utils
 {
     internal static class WindowUtils
     {

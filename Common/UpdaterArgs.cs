@@ -1,4 +1,4 @@
-namespace ZenTimings
+namespace ZenTimings.Common
 {
     [System.Serializable()]
     [System.ComponentModel.DesignerCategory("code")]

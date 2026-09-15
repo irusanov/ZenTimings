@@ -12,6 +12,9 @@ using ZenStates.Core.Hardware.DRAM;
 using ZenStates.Core.Hardware.DRAM.DDR5.Pmic;
 using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
 using ZenStates.Core.Hardware.DRAM.DDR5.Thermal;
+using ZenTimings.Common;
+using ZenTimings.Settings;
+using ZenTimings.Utils;
 using ZenTimings.ViewModels;
 
 namespace ZenTimings.Windows

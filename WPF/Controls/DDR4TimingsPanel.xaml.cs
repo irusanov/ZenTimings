@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Controls;
+using ZenTimings.Common;
 
 namespace ZenTimings.Controls
 {

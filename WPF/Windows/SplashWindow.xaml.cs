@@ -2,7 +2,10 @@
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Threading;
+using ZenTimings.Common;
 using ZenTimings.Helpers;
+using ZenTimings.Settings;
+using ZenTimings.Utils;
 
 namespace ZenTimings.Windows
 {
@@ -37,10 +40,10 @@ namespace ZenTimings.Windows
 
         public static void Start(bool deferUpdateCheck = false)
         {
-            DeferUpdateCheck = deferUpdateCheck;
-
-            splash.Show();
             ApplySettings();
+            DeferUpdateCheck = deferUpdateCheck;
+            splash.Show();
+
             if (appSettings.CheckForUpdates && !DeferUpdateCheck)
                 updater.CheckForUpdate();
         }

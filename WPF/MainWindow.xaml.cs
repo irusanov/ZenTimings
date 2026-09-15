@@ -20,9 +20,12 @@ using ZenStates.Core.Hardware.Aod;
 using ZenStates.Core.Hardware.DRAM;
 using ZenStates.Core.Hardware.Mock;
 using ZenStates.Core.OHWM;
+using ZenTimings.Common;
 using ZenTimings.Controls;
 using ZenTimings.Helpers;
 using ZenTimings.Plugin;
+using ZenTimings.Settings;
+using ZenTimings.Utils;
 using ZenTimings.ViewModels;
 using ZenTimings.Windows;
 using static ZenTimings.Helpers.DriverCleaner;
@@ -166,7 +169,7 @@ namespace ZenTimings
                 cpu.systemInfo.UpdateSensors();
 
                 SplashWindow.Loading("Memory modules");
-                ReadMemoryModulesInfo();
+                ReadMemoryModulesInfo(cpu.GetMemoryConfig()?.Modules);
 
                 SplashWindow.Loading("Timings");
 
@@ -390,9 +393,8 @@ namespace ZenTimings
             return biosFunctions.Find(x => x.IDString == name);
         }
 
-        private void ReadMemoryModulesInfo()
+        private void ReadMemoryModulesInfo(List<MemoryModule> modules)
         {
-            var modules = cpu.GetMemoryConfig()?.Modules;
             if (modules?.Count > 0)
             {
                 foreach (MemoryModule module in modules)
@@ -445,7 +447,7 @@ namespace ZenTimings
                 if (comboBoxPartNumber.Items.Count > 0)
                 {
                     comboBoxPartNumber.SelectedIndex = 0;
-                    comboBoxPartNumber.SelectionChanged += ComboBoxPartNumber_SelectionChanged;
+                    if (!isMockWindow) comboBoxPartNumber.SelectionChanged += ComboBoxPartNumber_SelectionChanged;
                 }
             }
         }
@@ -564,7 +566,7 @@ namespace ZenTimings
 
                 // When ProcODT is 0, then all other resistance values are 0
                 // Happens when one DIMM installed in A1 or A2 slot
-                if (BMC.Table == null || Utils.AllZero(BMC.Table) || BMC.Config.ProcODT < 1)
+                if (BMC.Table == null || ZenStates.Core.Utils.AllZero(BMC.Table) || BMC.Config.ProcODT < 1)
                     // throw new Exception("Failed to read AMD ACPI. Odt, Setup and Drive strength parameters will be empty.");
                     return;
 
@@ -1478,6 +1480,19 @@ namespace ZenTimings
                     Owner = this,
                     WindowStartupLocation = WindowStartupLocation.CenterScreen
                 };
+
+                mockWindow.ReadMemoryModulesInfo(mockData.Modules);
+
+                if (mockWindow.comboBoxPartNumber.Items.Count > 0)
+                {
+                    mockWindow.comboBoxPartNumber.SelectedIndex = 0;
+                    // Not supported yet
+                    //mockWindow.comboBoxPartNumber.SelectionChanged += new SelectionChangedEventHandler((_s, _e) =>
+                    //{
+                    //    var dctOffset = mockData.Modules[mockWindow.comboBoxPartNumber.SelectedIndex].DctOffset;
+                    //    mockWindow.mainViewModel.Timings = mockData.Timings[(int)(dctOffset >> 24)].Value;
+                    //});
+                }
 
                 mockWindow.Show();
             }

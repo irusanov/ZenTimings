@@ -11,8 +11,11 @@ using ZenStates.Core.Hardware.Apob;
 using ZenStates.Core.Hardware.DRAM;
 using ZenStates.Core.Hardware.DRAM.DDR5.Pmic;
 using ZenStates.Core.Hardware.Mock;
+using ZenTimings.Common;
 using ZenTimings.Helpers;
 using ZenTimings.Plugin;
+using ZenTimings.Settings;
+using ZenTimings.Utils;
 
 namespace ZenTimings.ViewModels
 {
@@ -33,12 +36,8 @@ namespace ZenTimings.ViewModels
             get => _timings;
             set
             {
-                // Not using SetProperty's equality short-circuit here: MemoryFrequency must be
-                // recomputed from the new timings object every time this is assigned, even if a
-                // future caller happened to pass back an equal instance.
-                _timings = value;
-                MemoryFrequency = value.Frequency;
-                OnPropertyChanged();
+                if (SetProperty(ref _timings, value) && value != null)
+                    MemoryFrequency = value.Frequency;
             }
         }
         public AppSettings Settings { get; }
@@ -289,6 +288,7 @@ namespace ZenTimings.ViewModels
                 TotalCapacity = mockData.TotalCapacity;
                 CodeName = mockData.CpuInfo.codeName;
                 PowerTable = mockData.PowerTable;
+                MemoryFrequencyString = $"{(PowerTable.MCLK * 2)} MT/s";
             }
             else
             {

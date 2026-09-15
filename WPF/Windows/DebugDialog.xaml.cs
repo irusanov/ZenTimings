@@ -10,6 +10,7 @@ using System.Windows;
 using ZenStates.Core;
 using ZenStates.Core.Hardware;
 using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
+using ZenTimings.Common;
 using ZenTimings.Helpers;
 using Application = System.Windows.Application;
 using DRAM = ZenStates.Core.Hardware.DRAM;
@@ -162,9 +163,9 @@ namespace ZenTimings.Windows
                     try
                     {
                         var offset = i << 20;
-                        var channel = Utils.GetBits(cpu.ReadDword(offset | 0x50DF0), 19, 1) == 0;
-                        var dimm1 = Utils.GetBits(cpu.ReadDword(offset | 0x50000), 0, 1) == 1;
-                        var dimm2 = Utils.GetBits(cpu.ReadDword(offset | 0x50008), 0, 1) == 1;
+                        var channel = ZenStates.Core.Utils.GetBits(cpu.ReadDword(offset | 0x50DF0), 19, 1) == 0;
+                        var dimm1 = ZenStates.Core.Utils.GetBits(cpu.ReadDword(offset | 0x50000), 0, 1) == 1;
+                        var dimm2 = ZenStates.Core.Utils.GetBits(cpu.ReadDword(offset | 0x50008), 0, 1) == 1;
                         var enabled = channel && (dimm1 || dimm2);
 
                         AddLine($"Channel{i / channelsPerDimm}: {enabled}");

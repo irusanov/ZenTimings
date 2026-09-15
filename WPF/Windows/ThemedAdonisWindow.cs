@@ -9,6 +9,8 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
 using ZenStates.Core.OHWM;
+using ZenTimings.Settings;
+using ZenTimings.Utils;
 
 namespace ZenTimings
 {

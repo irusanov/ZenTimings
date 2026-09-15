@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Markup;
 using ZenStates.Core.OHWM;
 using ZenTimings.Helpers;
+using ZenTimings.Settings;
 using ZenTimings.Windows;
 using static ZenTimings.Helpers.DriverCleaner;
 
