@@ -177,7 +177,11 @@ namespace ZenTimings.Settings
         public ScreenshotType ScreenshotMode { get; set; } = ScreenshotType.Window;
         public string ScreenshotSaveLocation { get; set; } = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Screenshots");
         public bool CheckForUpdates { get; set; } = true;
+#if BETA
+        public bool ParticipateInBetaUpdates { get; set; } = true;
+#else
         public bool ParticipateInBetaUpdates { get; set; } = false;
+#endif
         public string UpdaterSkippedVersion { get; set; } = "";
         public string DriverUpdateLastSkippedVersion { get; set; } = "";
         public string UpdaterRemindLaterAt { get; set; } = "";
