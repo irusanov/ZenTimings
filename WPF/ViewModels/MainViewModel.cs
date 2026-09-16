@@ -36,8 +36,9 @@ namespace ZenTimings.ViewModels
             get => _timings;
             set
             {
-                if (SetProperty(ref _timings, value) && value != null)
-                    MemoryFrequency = value.Frequency;
+                _timings = value;
+                MemoryFrequency = value.Frequency;
+                OnPropertyChanged();
             }
         }
         public AppSettings Settings { get; }
