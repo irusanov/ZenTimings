@@ -304,7 +304,7 @@ namespace ZenTimings.ViewModels
 
             // APOB - either the mock report's own instance, or the live one
             Apob apob = mockData != null ? mockData.Apob : CpuSingleton.Instance.info.apob;
-            if (apob != null && apob.IsAvailable)
+            if (apob != null && apob.IsValid)
             {
                 ApobMainData = apob.Data;
                 ApobExtendedData = apob.ExtendedData;

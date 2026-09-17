@@ -266,15 +266,15 @@ namespace ZenTimings
             InitializeComponent();
 
             DataContext = viewModel;
-            AddTimingsPanel(viewModel.MemoryType, mockData.CpuInfo.family, mockData.CpuInfo.smuType, mockData.Apob != null && mockData.Apob.IsAvailable);
+            AddTimingsPanel(viewModel.MemoryType, mockData.CpuInfo.family, mockData.CpuInfo.smuType, mockData.Apob != null && mockData.Apob.IsValid);
         }
 
         private void AddTimingsPanel(MemType memoryType)
         {
-            AddTimingsPanel(memoryType, cpu.info.family, cpu.smu.SMU_TYPE, cpu.info.apob.IsAvailable);
+            AddTimingsPanel(memoryType, cpu.info.family, cpu.smu.SMU_TYPE, cpu.info.apob.IsValid);
         }
 
-        private void AddTimingsPanel(MemType memoryType, Cpu.Family family, SMU.SmuType smuType, bool apobAvailable)
+        private void AddTimingsPanel(MemType memoryType, Cpu.Family family, SMU.SmuType smuType, bool apobValid)
         {
             // Add timings panel
             switch (memoryType)
@@ -290,7 +290,7 @@ namespace ZenTimings
 
                 case MemType.DDR5:
                     {
-                        if (!apobAvailable || settings.ImpedanceTableSrc == AppSettings.ImpedanceTableSource.AOD)
+                        if (!apobValid || settings.ImpedanceTableSrc == AppSettings.ImpedanceTableSource.AOD)
                         {
                             if (smuType == SMU.SmuType.TYPE_APU2)
                                 timingsPanel = new LegacyDDR5APUTimingsPanel();

@@ -158,7 +158,7 @@ namespace ZenTimings.Windows
                 }
             }
 
-            if (CpuSingleton.Instance.info.apob.IsAvailable)
+            if (CpuSingleton.Instance.info.apob.IsValid)
             {
                 try
                 {
