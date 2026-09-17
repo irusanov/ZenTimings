@@ -13,7 +13,7 @@
     mc:Ignorable="d"
     Title="About"
     Height="250"
-    Width="320"
+    Width="360"
     ResizeMode="NoResize"
     SizeToContent="Height"
     ShowInTaskbar="False"
@@ -68,7 +68,7 @@
                 BorderThickness="0,1"
                 ClipToBounds="True"
                 SnapsToDevicePixels="True"
-                MinWidth="320"
+                MinWidth="360"
                 MinHeight="160"
                 ScrollViewer.CanContentScroll="True"
                 BorderBrush="{DynamicResource SeparatorColor}"
@@ -99,6 +99,10 @@
                                 <TextBlock x:Name="labelVersion" Text="" Padding="0 2 5 2" />
                                 <TextBlock x:Name="labelCopyright" Text="" Padding="0 2 5 2" />
                                 <TextBlock x:Name="labelCompanyName" Text="" Padding="0 2 5 2" />
+                                <TextBlock x:Name="labelContributors"
+                                           Text="Contributors: Erruar, tsg2k2, deadfellow34"
+                                           TextWrapping="Wrap"
+                                           Padding="0 2 5 2" />
                                 <TextBlock Padding="0 2 5 2">
                                     <Hyperlink NavigateUri="https://zentimings.com"
                                                RequestNavigate="Hyperlink_RequestNavigate">

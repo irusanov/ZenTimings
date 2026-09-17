@@ -30,6 +30,7 @@ namespace ZenTimings.Windows
                 Assembly.GetExecutingAssembly(),
                 typeof(AssemblyFileVersionAttribute), false)).Version;
 
+            // Author
             var AssemblyDescription = ((AssemblyDescriptionAttribute)Attribute.GetCustomAttribute(
                 Assembly.GetExecutingAssembly(),
                 typeof(AssemblyDescriptionAttribute), false)).Description;
