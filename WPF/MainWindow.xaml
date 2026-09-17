@@ -97,7 +97,8 @@
                             <MenuItem Header="AM5 AGESA/UEFI/BIOS List by Reous" Click="MenuItem_Click_4" />
                         </MenuItem>
                     </Menu>
-                    <Button Grid.Column="1"
+                    <Button x:Name="buttonScreenshot"
+                            Grid.Column="1"
                             Width="20"
                             Height="16"
                             BorderThickness="0"
@@ -206,15 +207,27 @@
                             IsEnabled="False"
                             ToolTip="Error-Correcting Code memory detected"
                         />
-                        <TextBlock
-                            Text="{Binding MemoryType, FallbackValue=''}"
-                            Style="{DynamicResource ValueStyles}"
-                            TextAlignment="Right"
-                            HorizontalAlignment="Right"
-                            MinWidth="0"
-                            Margin="0"
+                        <!-- Opens the all-channels view. Enabled from code when there is more than one module;
+                             the label takes the button's state, so it shows the accent colour only while clickable. -->
+                        <Button
+                            x:Name="buttonAllDimms"
+                            BorderThickness="0"
+                            Padding="0"
+                            Style="{DynamicResource CameraButtonStyle}"
+                            ForceCursor="True"
+                            Cursor="Hand"
                             IsEnabled="False"
-                        />
+                            ToolTip="All channels side by side"
+                            Click="ButtonAllDimms_Click">
+                            <TextBlock
+                                Text="{Binding MemoryType, FallbackValue=''}"
+                                Style="{DynamicResource ValueStyles}"
+                                TextAlignment="Right"
+                                HorizontalAlignment="Right"
+                                MinWidth="0"
+                                Margin="0"
+                            />
+                        </Button>
                     </StackPanel>
 
                     <!-- Button Grid.Column="1"

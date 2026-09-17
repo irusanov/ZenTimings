@@ -37,7 +37,9 @@ namespace ZenTimings.ViewModels
             set
             {
                 _timings = value;
-                MemoryFrequency = value.Frequency;
+                // Frequency comes from the live power table; a debug report sets its own speed instead.
+                if (mockData == null)
+                    MemoryFrequency = value.Frequency;
                 OnPropertyChanged();
             }
         }
@@ -139,8 +141,10 @@ namespace ZenTimings.ViewModels
                     name = name.Substring(0, match.Index).Trim();
                 }
 
-                string cores = $"({CpuSingleton.Instance.info.topology.cores}C/{CpuSingleton.Instance.info.topology.logicalCores}T)";
-                return $"{name} {cores}";
+                // A debug report carries its own topology; one from an older build has none, and the live
+                // machine's would be wrong for it.
+                Cpu.CpuTopology topology = mockData != null ? mockData.CpuInfo.topology : CpuSingleton.Instance.info.topology;
+                return topology.cores > 0 ? $"{name} ({topology.cores}C/{topology.logicalCores}T)" : name;
             }
         }
 

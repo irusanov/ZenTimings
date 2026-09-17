@@ -61,6 +61,7 @@ namespace ZenTimings
         private readonly MainViewModel mainViewModel;
         private float lastMclk = 0;
         private readonly bool isMockWindow = false;
+        private readonly MockSystemData mockData;
 
         private readonly string AssemblyProduct = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(
             Assembly.GetExecutingAssembly(),
@@ -261,12 +262,27 @@ namespace ZenTimings
         {
             cpu = CpuSingleton.Instance;
             this.isMockWindow = true;
+            this.mockData = mockData;
+            mainViewModel = viewModel;
 
             IconSource = GetIcon("pack://application:,,,/ZenTimings;component/Resources/ZenTimings2022.ico", 16);
             InitializeComponent();
 
             DataContext = viewModel;
             AddTimingsPanel(viewModel.MemoryType, mockData.CpuInfo.family, mockData.CpuInfo.smuType, mockData.Apob != null && mockData.Apob.IsValid);
+
+            // The window already shows the report's CPU and board, so the title only marks it as a report and names
+            // the build that wrote it. The commit hash is left out: anything longer widens this SizeToContent
+            // window in simple mode, as its title bar does not trim.
+            string version = mockData.ReportVersion?.Split('+')[0];
+            Title = version != null ? $"Debug Report v{version}" : "Debug Report";
+
+            // A debug report is a read-only snapshot: the menu and the screenshot act on the live machine. Module
+            // selection needs every channel's timings, which only reports carrying the register dump provide.
+            MainMenu.IsEnabled = false;
+            buttonScreenshot.IsEnabled = false;
+            buttonScreenshot.Opacity = 0.7; // an image has no disabled look; this matches the disabled menu text
+            comboBoxPartNumber.IsEnabled = HasChannelTimings;
         }
 
         private void AddTimingsPanel(MemType memoryType)
@@ -447,8 +463,10 @@ namespace ZenTimings
                 if (comboBoxPartNumber.Items.Count > 0)
                 {
                     comboBoxPartNumber.SelectedIndex = 0;
-                    if (!isMockWindow) comboBoxPartNumber.SelectionChanged += ComboBoxPartNumber_SelectionChanged;
+                    comboBoxPartNumber.SelectionChanged += ComboBoxPartNumber_SelectionChanged;
                 }
+
+                buttonAllDimms.IsEnabled = modules.Count > 1 && HasChannelTimings;
             }
         }
 
@@ -610,6 +628,18 @@ namespace ZenTimings
             }
 
             BMC?.Dispose();
+        }
+
+        // The live machine's modules, or those of the debug report a mock window shows.
+        private List<MemoryModule> MemoryModules => mockData?.Modules ?? cpu.memoryConfig.Modules;
+
+        // Always true live; a debug report has every channel only when it carries the register dump.
+        private bool HasChannelTimings =>
+            mockData == null || MemoryModules.All(module => mockData.Timings.Any(channel => channel.Key == module.DctOffset));
+
+        private BaseDramTimings ChannelTimings(uint offset)
+        {
+            return mockData == null ? ReadTimings(offset) : mockData.Timings.FirstOrDefault(channel => channel.Key == offset).Value;
         }
 
         //TODO: Replace with a call to DLL
@@ -803,6 +833,34 @@ namespace ZenTimings
                 MessageBoxButton.OK,
                 MessageBoxImage.Error
             );
+        }
+
+        private AllDimmsWindow allDimmsWnd;
+
+        private void ButtonAllDimms_Click(object sender, RoutedEventArgs e)
+        {
+            if (allDimmsWnd != null)
+            {
+                if (allDimmsWnd.WindowState == WindowState.Minimized)
+                    allDimmsWnd.WindowState = WindowState.Normal;
+                allDimmsWnd.Activate();
+                return;
+            }
+
+            try
+            {
+                allDimmsWnd = new AllDimmsWindow(() => AllDimmsCapture.Run(timingsPanel, mainViewModel, MemoryModules,
+                    mockData == null ? cpu.memoryConfig.SpdInfo : null, ChannelTimings)) { Owner = this };
+                // Opened from a debug report, it carries the report's title so it is not mistaken for the live machine.
+                if (mockData != null)
+                    allDimmsWnd.Title = $"{Title} — All DIMMs";
+                allDimmsWnd.Closed += (s, args) => allDimmsWnd = null;
+                allDimmsWnd.Show();
+            }
+            catch (Exception ex)
+            {
+                HandleError(ex.Message);
+            }
         }
 
         private void Restart(bool save = true)
@@ -1079,8 +1137,8 @@ namespace ZenTimings
         {
             if (sender is ComboBox combo && combo.Items.Count > 0)
             {
-                var dctOffset = cpu.memoryConfig.Modules[combo.SelectedIndex].DctOffset;
-                mainViewModel.Timings = ReadTimings(dctOffset);
+                var dctOffset = MemoryModules[combo.SelectedIndex].DctOffset;
+                mainViewModel.Timings = ChannelTimings(dctOffset);
                 //mainViewModel.SelectedDctOffset = dctOffset;
             }
         }
@@ -1481,18 +1539,6 @@ namespace ZenTimings
                 };
 
                 mockWindow.ReadMemoryModulesInfo(mockData.Modules);
-
-                if (mockWindow.comboBoxPartNumber.Items.Count > 0)
-                {
-                    mockWindow.comboBoxPartNumber.SelectedIndex = 0;
-                    // Not supported yet
-                    //mockWindow.comboBoxPartNumber.SelectionChanged += new SelectionChangedEventHandler((_s, _e) =>
-                    //{
-                    //    var dctOffset = mockData.Modules[mockWindow.comboBoxPartNumber.SelectedIndex].DctOffset;
-                    //    mockWindow.mainViewModel.Timings = mockData.Timings[(int)(dctOffset >> 24)].Value;
-                    //});
-                }
-
                 mockWindow.Show();
             }
             catch (Exception ex)
