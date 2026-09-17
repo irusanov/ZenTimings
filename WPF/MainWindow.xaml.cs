@@ -712,11 +712,10 @@ namespace ZenTimings
                 PowerCfgTimer.Stop();
         }
 
-        private volatile bool isRefreshing = false;
+        private int isRefreshing = 0;
         private void PowerCfgTimer_Tick(object sender, EventArgs e)
         {
-            if (isRefreshing) return;
-            isRefreshing = true;
+            if (Interlocked.Exchange(ref isRefreshing, 1) == 1) return;
 
             // Run refresh operation in a new task
             Task.Run(() =>
@@ -779,7 +778,7 @@ namespace ZenTimings
                 }
                 finally
                 {
-                    isRefreshing = false;
+                    Interlocked.Exchange(ref isRefreshing, 0);
                 }
             });
         }

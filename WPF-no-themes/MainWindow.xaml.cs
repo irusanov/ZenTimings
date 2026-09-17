@@ -36,6 +36,7 @@ namespace ZenTimings
         internal readonly Forms.NotifyIcon _notifyIcon;
         private bool compatMode;
         private bool disposedValue;
+        private int isRefreshing;
 
         private readonly string AssemblyProduct = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(
             Assembly.GetExecutingAssembly(),
@@ -725,6 +726,9 @@ namespace ZenTimings
         private void PowerCfgTimer_Tick(object sender, EventArgs e)
         {
             // Run refresh operation in a new thread
+            if (Interlocked.Exchange(ref isRefreshing, 1) == 1)
+                return;
+
             try
             {
                 new Thread(() =>
@@ -760,6 +764,10 @@ namespace ZenTimings
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                Interlocked.Exchange(ref isRefreshing, 0);
             }
         }
 
