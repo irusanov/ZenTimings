@@ -19,7 +19,7 @@ using ZenTimings.Utils;
 
 namespace ZenTimings.ViewModels
 {
-    public class MainViewModel : ObservableObject
+    public partial class MainViewModel : ObservableObject
     {
         private static readonly string AGESA_SEARCHING = "Searching for AGESA version...";
 
@@ -675,8 +675,16 @@ namespace ZenTimings.ViewModels
             return html;
         }
 
+        // Implemented by the optional export module (WPF/Export), without it the call below is removed by the compiler
+        partial void ExportJson(ref string json);
+
         public string GetJSON()
         {
+            string json = null;
+            ExportJson(ref json);
+            if (json != null)
+                return json;
+
             var cpu = CpuSingleton.Instance;
             var systemInfo = cpu.systemInfo;
             string appVersion = $"{System.Windows.Forms.Application.ProductName} {System.Windows.Forms.Application.ProductVersion}";
