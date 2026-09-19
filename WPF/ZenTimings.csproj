@@ -126,6 +126,7 @@
     <Compile Include="Helpers\DriverCleanerNotification.cs" />
     <Compile Include="Helpers\StartupHelper.cs" />
     <Compile Include="Utils\VendorUtils.cs" />
+    <Compile Include="Utils\VisualCapture.cs" />
     <Compile Include="Settings\AppSettings.cs" />
     <Compile Include="Settings\SensorSettings.cs" />
     <Compile Include="Controls\DDR4TimingsPanel.xaml.cs">
@@ -166,6 +167,10 @@
     </Compile>
     <Compile Include="Windows\SensorsWindow.xaml.cs">
       <DependentUpon>SensorsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\AllDimmsCapture.cs" />
+    <Compile Include="Windows\AllDimmsWindow.xaml.cs">
+      <DependentUpon>AllDimmsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\AppIcon.xaml.cs">
       <DependentUpon>AppIcon.xaml</DependentUpon>
@@ -249,6 +254,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\SensorsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\AllDimmsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
