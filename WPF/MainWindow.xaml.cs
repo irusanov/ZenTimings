@@ -280,9 +280,6 @@ namespace ZenTimings
             // A debug report is a read-only snapshot: the menu and the screenshot act on the live machine. Module
             // selection needs every channel's timings, which only reports carrying the register dump provide.
             MainMenu.IsEnabled = false;
-            buttonScreenshot.IsEnabled = false;
-            buttonScreenshot.Opacity = 0.7; // an image has no disabled look; this matches the disabled menu text
-            comboBoxPartNumber.IsEnabled = HasChannelTimings;
         }
 
         private void AddTimingsPanel(MemType memoryType)
