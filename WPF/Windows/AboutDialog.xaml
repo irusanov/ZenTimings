@@ -100,10 +100,12 @@
                                 <TextBlock x:Name="labelCopyright" Text="" Padding="0 2 5 2" />
                                 <TextBlock x:Name="labelCompanyName" Text="" Padding="0 2 5 2" />
                                 <TextBlock x:Name="labelContributors"
-                                           Text="Contributors: Erruar, tsg2k2, deadfellow34"
+                                           Text="Code contributors: mann1x, Erruar, tsg2k2, deadfellow34, b1zya"
                                            TextWrapping="Wrap"
-                                           Padding="0 2 5 2" />
-                                <TextBlock Padding="0 2 5 2">
+                                           Padding="0 2 5 2"
+                                           Margin="0 10 0 0"/>
+                                
+                                <TextBlock Padding="0 2 5 2" Margin="0 20 0 0">
                                     <Hyperlink NavigateUri="https://zentimings.com"
                                                RequestNavigate="Hyperlink_RequestNavigate">
                                         <Run Text="https://zentimings.com" />
