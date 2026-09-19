@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Windows;
+using System.Windows.Controls;
 using ZenStates.Core.Hardware;
 using ZenStates.Core.Hardware.Aod;
 using ZenStates.Core.Hardware.DRAM;
 using ZenStates.Core.OHWM;
 using ZenTimings.Common;
 using ZenTimings.Settings;
+using ZenTimings.Utils;
 using static ZenTimings.Common.BiosMemController;
 
 namespace ZenTimings.Windows
@@ -198,6 +201,17 @@ namespace ZenTimings.Windows
                     return true;
 
             return false;
+        }
+
+        private void CopySection_Click(object sender, RoutedEventArgs e)
+        {
+            // The button comes from the header template, the group box that uses it names its grid in Tag
+            if (!(sender is Button button)
+                || !((button.TemplatedParent as FrameworkElement)?.TemplatedParent is GroupBox section)
+                || !(section.Tag is DataGrid grid))
+                return;
+
+            ClipboardUtils.Copy($"{section.Header}{Environment.NewLine}{ClipboardUtils.GridToText(grid)}", button);
         }
 
         private void AdonisWindow_Activated(object sender, EventArgs e)

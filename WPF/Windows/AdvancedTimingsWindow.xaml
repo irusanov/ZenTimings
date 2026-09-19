@@ -7,6 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+    xmlns:controls="clr-namespace:ZenTimings.Controls"
     adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
     mc:Ignorable="d"
     Title="Advanced Timings"
@@ -116,6 +117,12 @@
                               IsChecked="True"
                               Checked="ExtendedTimingsCheckBox_Changed"
                               Unchecked="ExtendedTimingsCheckBox_Changed" />
+                    <Button Style="{DynamicResource IconButtonStyle}"
+                            Margin="10,0,0,0"
+                            ToolTip="Copy the shown timings to clipboard"
+                            Click="CopyTimings_Click">
+                        <controls:AppIcon Kind="IconCopy" IconWidth="11" IconHeight="11" Fill="{DynamicResource TextColor}" />
+                    </Button>
                 </StackPanel>
             </Grid>
         </Border>

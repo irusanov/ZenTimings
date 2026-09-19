@@ -127,8 +127,15 @@
     <Compile Include="Helpers\StartupHelper.cs" />
     <Compile Include="Utils\VendorUtils.cs" />
     <Compile Include="Utils\VisualCapture.cs" />
+    <Compile Include="Utils\ClipboardUtils.cs" />
+    <Compile Include="Export\LiveSnapshot.cs" />
+    <Compile Include="Export\SnapshotBuilder.cs" />
+    <Compile Include="Export\SnapshotObject.cs" />
+    <Compile Include="Export\SnapshotOptions.cs" />
+    <Compile Include="Export\SnapshotWriter.cs" />
     <Compile Include="Settings\AppSettings.cs" />
     <Compile Include="Settings\SensorSettings.cs" />
+    <Compile Include="Settings\ExportSettings.cs" />
     <Compile Include="Controls\DDR4TimingsPanel.xaml.cs">
       <DependentUpon>DDR4TimingsPanel.xaml</DependentUpon>
     </Compile>
@@ -174,6 +181,9 @@
     </Compile>
     <Compile Include="Windows\SensorSettingsWindow.xaml.cs">
       <DependentUpon>SensorSettingsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\ExportDialog.xaml.cs">
+      <DependentUpon>ExportDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\ThemedAdonisWindow.cs" />
     <Compile Include="Utils\WindowUtils.cs" />
@@ -264,6 +274,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\SensorSettingsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\ExportDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
