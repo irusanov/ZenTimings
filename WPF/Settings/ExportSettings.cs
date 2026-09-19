@@ -1,9 +1,10 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using ZenTimings.Export;
 using ZenTimings.Utils;
 
-namespace ZenTimings.Export
+namespace ZenTimings.Settings
 {
     [Serializable]
     public sealed class ExportSettings

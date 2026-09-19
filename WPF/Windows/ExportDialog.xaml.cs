@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using ZenTimings.Export;
+using ZenTimings.Settings;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace ZenTimings.Windows

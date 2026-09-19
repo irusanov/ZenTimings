@@ -12,6 +12,7 @@ using ZenStates.Core.Hardware.DRAM;
 using ZenStates.Core.Hardware.DRAM.DDR5.Pmic;
 using ZenStates.Core.Hardware.Mock;
 using ZenTimings.Common;
+using ZenTimings.Export;
 using ZenTimings.Helpers;
 using ZenTimings.Plugin;
 using ZenTimings.Settings;
@@ -19,7 +20,7 @@ using ZenTimings.Utils;
 
 namespace ZenTimings.ViewModels
 {
-    public partial class MainViewModel : ObservableObject
+    public class MainViewModel : ObservableObject
     {
         private static readonly string AGESA_SEARCHING = "Searching for AGESA version...";
 
@@ -675,16 +676,13 @@ namespace ZenTimings.ViewModels
             return html;
         }
 
-        // Implemented by the optional export module (WPF/Export), without it the call below is removed by the compiler
-        partial void ExportJson(ref string json);
+        public string GetJSON(SnapshotSource source, SnapshotOptions options)
+        {
+            return SnapshotWriter.ToJson(SnapshotBuilder.Build(source, options));
+        }
 
         public string GetJSON()
         {
-            string json = null;
-            ExportJson(ref json);
-            if (json != null)
-                return json;
-
             var cpu = CpuSingleton.Instance;
             var systemInfo = cpu.systemInfo;
             string appVersion = $"{System.Windows.Forms.Application.ProductName} {System.Windows.Forms.Application.ProductVersion}";

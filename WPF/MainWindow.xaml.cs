@@ -22,6 +22,7 @@ using ZenStates.Core.Hardware.Mock;
 using ZenStates.Core.OHWM;
 using ZenTimings.Common;
 using ZenTimings.Controls;
+using ZenTimings.Export;
 using ZenTimings.Helpers;
 using ZenTimings.Plugin;
 using ZenTimings.Settings;
@@ -1478,6 +1479,145 @@ namespace ZenTimings
             {
                 MessageBox.Show($"An error occurred while exporting: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private const int RefreshWaitStepMs = 20;
+        private const int RefreshWaitLimitMs = 5000;
+
+        private DateTime? lastRefreshUtc;
+
+        // Called once the live window is loaded, a debug report window has no live data to export
+        private void InitLiveSnapshot()
+        {
+            // All values were read during startup, right before the window was shown
+            lastRefreshUtc = DateTime.UtcNow;
+
+            UpdateLiveSnapshotIndicator();
+
+            // The application's own auto refresh timer drives the live snapshot, with its interval and its start/stop rules
+            PowerCfgTimer.Tick += ExportTimer_Tick;
+            Application.Current.Exit += (s, e) =>
+            {
+                if (ExportSettings.Instance.LiveSnapshotEnabled)
+                    LiveSnapshot.Stop();
+            };
+
+            if (ExportSettings.Instance.LiveSnapshotEnabled)
+                UpdateLiveSnapshot();
+        }
+
+        // Runs right after the regular tick handler, which has just started the refresh task
+        private void ExportTimer_Tick(object sender, EventArgs e)
+        {
+            lastRefreshUtc = DateTime.UtcNow;
+            if (!ExportSettings.Instance.LiveSnapshotEnabled || !LiveSnapshot.IsDue)
+                return;
+
+            Task.Run(async () =>
+            {
+                // Wait for that refresh to finish so that the snapshot holds the new values
+                for (int waited = 0; Volatile.Read(ref isRefreshing) != 0 && waited < RefreshWaitLimitMs; waited += RefreshWaitStepMs)
+                    await Task.Delay(RefreshWaitStepMs);
+
+                lastRefreshUtc = DateTime.UtcNow;
+                LiveSnapshot.Update(GetSnapshotSource(true));
+            });
+        }
+
+        // The menu item is checked and the button next to the screenshot button is shown while the live snapshot is on
+        private void UpdateLiveSnapshotIndicator()
+        {
+            ExportSettings exportSettings = ExportSettings.Instance;
+            bool enabled = exportSettings.LiveSnapshotEnabled;
+
+            menuItemLiveSnapshot.IsChecked = enabled;
+            buttonLiveSnapshot.Visibility = enabled ? Visibility.Visible : Visibility.Collapsed;
+            if (!enabled)
+                return;
+
+            string path = LiveSnapshot.GetFilePath(exportSettings.LiveSnapshotDirectory, exportSettings.LiveSnapshotFileName, exportSettings.LiveSnapshotFormat);
+            double seconds = Math.Max(LiveSnapshot.MinIntervalMs, exportSettings.LiveSnapshotIntervalMs) / 1000.0;
+            buttonLiveSnapshot.ToolTip = $"Live snapshot is on, click to change\n{path}\nWritten with auto refresh, every {seconds:0.#} s at most";
+        }
+
+        private SnapshotSource GetSnapshotSource(bool? autoRefreshActive = null)
+        {
+            return new SnapshotSource
+            {
+                BiosMemConfig = BMC?.Config,
+                AsusSensors = AsusWmi?.sensors,
+                Plugins = plugins,
+                LastRefreshUtc = lastRefreshUtc,
+                AutoRefreshActive = autoRefreshActive ?? PowerCfgTimer.IsEnabled,
+            };
+        }
+
+        private void UpdateLiveSnapshot()
+        {
+            SnapshotSource source = GetSnapshotSource();
+            Task.Run(() =>
+            {
+                if (!LiveSnapshot.WriteNow(source))
+                    Dispatcher.Invoke(() => HandleError($"Could not write the live snapshot file.\n{LiveSnapshot.LastError}", "Live snapshot"));
+            });
+        }
+
+        private void ExportSnapshotMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            SnapshotFormat format = (sender as MenuItem)?.Tag is SnapshotFormat tag ? tag : SnapshotFormat.Json;
+            ExportDialog exportWnd = new ExportDialog(
+                (options, selectedFormat) =>
+                {
+                    if (selectedFormat == SnapshotFormat.Text)
+                        return SnapshotWriter.ToText(SnapshotBuilder.Build(GetSnapshotSource(), options));
+
+                    return mainViewModel.GetJSON(GetSnapshotSource(), options);
+                },
+                format,
+                false,
+                SnapshotBuilder.GetUnavailableSections(GetSnapshotSource()))
+            {
+                Owner = this
+            };
+            exportWnd.ShowDialog();
+        }
+
+        private void LiveSnapshotMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            bool wasEnabled = ExportSettings.Instance.LiveSnapshotEnabled;
+            ExportDialog exportWnd = new ExportDialog(null, ExportSettings.Instance.LiveSnapshotFormat, true,
+                SnapshotBuilder.GetUnavailableSections(GetSnapshotSource()))
+            {
+                Owner = this
+            };
+
+            if (exportWnd.ShowDialog() != true)
+                return;
+
+            UpdateLiveSnapshotIndicator();
+
+            // Turned off: the file is the user's to keep. A kept file is simply overwritten if the same
+            // folder and name are used again later.
+            string written = LiveSnapshot.LastWrittenPath;
+            if (wasEnabled && !ExportSettings.Instance.LiveSnapshotEnabled && written != null && System.IO.File.Exists(written))
+            {
+                MessageBoxResult answer = MessageBox.Show(
+                    $"The live snapshot is now off.\n\nDelete the file that was being written?\n{written}",
+                    "Live snapshot",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+
+                if (answer != MessageBoxResult.Yes)
+                {
+                    LiveSnapshot.Detach();
+                    return;
+                }
+            }
+
+            // Remove the previous file, the folder, the name or the format may have changed
+            LiveSnapshot.Remove();
+            if (ExportSettings.Instance.LiveSnapshotEnabled)
+                UpdateLiveSnapshot();
         }
 
         private void MenuItem_Click_5(object sender, RoutedEventArgs e)
