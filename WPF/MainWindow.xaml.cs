@@ -1085,6 +1085,7 @@ namespace ZenTimings
             //                    "Please report if something is not working as expected.", "Beta version", MessageBoxButton.OK);
             //#endif
             MinimizeFootprint();
+            InitLiveSnapshot();
 
             if (settings.AdvancedMode && settings.AutoOpenTelemetry)
                 OpenSensorsWindow(settings.StartMinimized);

@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,8 +13,7 @@ using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
 namespace ZenTimings
 {
     /// <summary>
-    /// Export module glue. Nothing outside of this folder refers to the module: the window is extended from here,
-    /// so the application builds and works the same when the folder is removed.
+    /// The main window's part of the snapshot export: the File > Export handlers and the live snapshot file.
     /// </summary>
     public partial class MainWindow
     {
@@ -23,42 +21,15 @@ namespace ZenTimings
         private const int RefreshWaitLimitMs = 5000;
 
         private DateTime? lastRefreshUtc;
-        private bool exportAttached;
-        private MenuItem liveSnapshotMenuItem;
 
-        static MainWindow()
+        // Called once the live window is loaded, a debug report window has no live data to export
+        private void InitLiveSnapshot()
         {
-            EventManager.RegisterClassHandler(typeof(MainWindow), LoadedEvent,
-                new RoutedEventHandler((s, e) => ((MainWindow)s).AttachExport()));
-        }
-
-        private void AttachExport()
-        {
-            // A debug report window has no live data to export
-            if (exportAttached || isMockWindow)
-                return;
-
-            exportAttached = true;
-
             // All values were read during startup, right before the window was shown
             lastRefreshUtc = DateTime.UtcNow;
 
-            MenuItem exportMenu = MainMenu.Items.OfType<MenuItem>()
-                .SelectMany(m => m.Items.OfType<MenuItem>())
-                .FirstOrDefault(m => m.Header as string == "Export");
-            if (exportMenu == null)
-                return;
-
-            exportMenu.Items.Add(CreateExportMenuItem("As JSON...", SnapshotFormat.Json, ExportSnapshotMenuItem_Click));
-            exportMenu.Items.Add(CreateExportMenuItem("As Text...", SnapshotFormat.Text, ExportSnapshotMenuItem_Click));
-
-            var separator = new Separator();
-            separator.SetResourceReference(ForegroundProperty, "PanelBackground");
-            exportMenu.Items.Add(separator);
             // Checked while the live snapshot is on
-            liveSnapshotMenuItem = CreateExportMenuItem("Live snapshot file...", null, LiveSnapshotMenuItem_Click);
-            liveSnapshotMenuItem.IsChecked = ExportSettings.Instance.LiveSnapshotEnabled;
-            exportMenu.Items.Add(liveSnapshotMenuItem);
+            menuItemLiveSnapshot.IsChecked = ExportSettings.Instance.LiveSnapshotEnabled;
 
             // The application's own auto refresh timer drives the live snapshot, with its interval and its start/stop rules
             PowerCfgTimer.Tick += ExportTimer_Tick;
@@ -88,13 +59,6 @@ namespace ZenTimings
                 lastRefreshUtc = DateTime.UtcNow;
                 LiveSnapshot.Update(GetSnapshotSource(true));
             });
-        }
-
-        private static MenuItem CreateExportMenuItem(string header, object tag, RoutedEventHandler handler)
-        {
-            var item = new MenuItem { Header = header, Tag = tag };
-            item.Click += handler;
-            return item;
         }
 
         private SnapshotSource GetSnapshotSource(bool? autoRefreshActive = null)
@@ -153,7 +117,7 @@ namespace ZenTimings
             if (exportWnd.ShowDialog() != true)
                 return;
 
-            liveSnapshotMenuItem.IsChecked = ExportSettings.Instance.LiveSnapshotEnabled;
+            menuItemLiveSnapshot.IsChecked = ExportSettings.Instance.LiveSnapshotEnabled;
 
             // Turned off: the file is the user's to keep. A kept file is simply overwritten if the same
             // folder and name are used again later.
