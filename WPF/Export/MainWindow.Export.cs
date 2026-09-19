@@ -28,8 +28,7 @@ namespace ZenTimings
             // All values were read during startup, right before the window was shown
             lastRefreshUtc = DateTime.UtcNow;
 
-            // Checked while the live snapshot is on
-            menuItemLiveSnapshot.IsChecked = ExportSettings.Instance.LiveSnapshotEnabled;
+            UpdateLiveSnapshotIndicator();
 
             // The application's own auto refresh timer drives the live snapshot, with its interval and its start/stop rules
             PowerCfgTimer.Tick += ExportTimer_Tick;
@@ -59,6 +58,22 @@ namespace ZenTimings
                 lastRefreshUtc = DateTime.UtcNow;
                 LiveSnapshot.Update(GetSnapshotSource(true));
             });
+        }
+
+        // The menu item is checked and the button next to the screenshot button is shown while the live snapshot is on
+        private void UpdateLiveSnapshotIndicator()
+        {
+            ExportSettings exportSettings = ExportSettings.Instance;
+            bool enabled = exportSettings.LiveSnapshotEnabled;
+
+            menuItemLiveSnapshot.IsChecked = enabled;
+            buttonLiveSnapshot.Visibility = enabled ? Visibility.Visible : Visibility.Collapsed;
+            if (!enabled)
+                return;
+
+            string path = LiveSnapshot.GetFilePath(exportSettings.LiveSnapshotDirectory, exportSettings.LiveSnapshotFileName, exportSettings.LiveSnapshotFormat);
+            double seconds = Math.Max(LiveSnapshot.MinIntervalMs, exportSettings.LiveSnapshotIntervalMs) / 1000.0;
+            buttonLiveSnapshot.ToolTip = $"Live snapshot is on, click to change\n{path}\nWritten with auto refresh, every {seconds:0.#} s at most";
         }
 
         private SnapshotSource GetSnapshotSource(bool? autoRefreshActive = null)
@@ -117,7 +132,7 @@ namespace ZenTimings
             if (exportWnd.ShowDialog() != true)
                 return;
 
-            menuItemLiveSnapshot.IsChecked = ExportSettings.Instance.LiveSnapshotEnabled;
+            UpdateLiveSnapshotIndicator();
 
             // Turned off: the file is the user's to keep. A kept file is simply overwritten if the same
             // folder and name are used again later.

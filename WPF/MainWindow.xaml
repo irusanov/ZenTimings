@@ -7,6 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
     xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
     xmlns:converters="clr-namespace:ZenTimings.Converters"
     xmlns:controls="clr-namespace:ZenTimings.Controls"
     xmlns:export="clr-namespace:ZenTimings.Export"
@@ -36,6 +37,7 @@
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <SolidColorBrush x:Key="LiveSnapshotBrush" Color="{DynamicResource {x:Static adonisUi:Colors.AlertColor}}" />
     </Window.Resources>
 
     <Border>
@@ -44,6 +46,7 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="20" />
                         <ColumnDefinition Width="3" />
                     </Grid.ColumnDefinitions>
@@ -102,8 +105,18 @@
                             <MenuItem Header="AM5 AGESA/UEFI/BIOS List by Reous" Click="MenuItem_Click_4" />
                         </MenuItem>
                     </Menu>
-                    <Button x:Name="buttonScreenshot"
+                    <!-- Shown while the live snapshot file is being written, so that it is not left on and forgotten -->
+                    <Button x:Name="buttonLiveSnapshot"
                             Grid.Column="1"
+                            Style="{DynamicResource IconButtonStyle}"
+                            Opacity="1"
+                            Margin="0,0,4,0"
+                            Visibility="Collapsed"
+                            Click="LiveSnapshotMenuItem_Click">
+                        <controls:AppIcon Kind="IconRecord" IconWidth="12" IconHeight="12" Fill="{StaticResource LiveSnapshotBrush}" />
+                    </Button>
+                    <Button x:Name="buttonScreenshot"
+                            Grid.Column="2"
                             Width="20"
                             Height="16"
                             BorderThickness="0"
