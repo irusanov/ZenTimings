@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+    xmlns:controls="clr-namespace:ZenTimings.Controls"
     adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
     mc:Ignorable="d"
     Title="Export"
@@ -100,7 +101,15 @@
             <StackPanel x:Name="LivePanel" Visibility="Collapsed">
                 <StackPanel Orientation="Horizontal" Margin="2,3">
                     <TextBlock Text="Write at most every" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center"/>
-                    <TextBox x:Name="TextInterval" Width="44" Margin="6,0" MaxLength="4"/>
+
+                    <controls:NumericTextBox
+                        x:Name="TextInterval"
+                        FallbackValue="5"
+                        Minimum="1"
+                        Maximum="3600"
+                        AllowEmpty="False"
+                        Margin="6 0"
+                        Width="44" />
                     <TextBlock Text="seconds" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <DockPanel Margin="2,3">

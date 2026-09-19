@@ -84,12 +84,14 @@ namespace ZenTimings.Windows
                 Entry(SnapshotSections.System, "System (CPU, board, BIOS, SMU)"),
                 Entry(SnapshotSections.Modules, "Memory modules"),
                 Entry(SnapshotSections.Spd, "SPD, XMP/EXPO profiles, PMIC setup (DDR5 / LPDDR5)"));
+
             AddGroup("Memory configuration", selected,
                 Entry(SnapshotSections.Timings, "Timings, all channels"),
                 Entry(SnapshotSections.Registers, "Memory controller registers (low level, DDR5 / LPDDR5)"),
                 Entry(SnapshotSections.Aod, "AOD table (DDR5 / LPDDR5)"),
                 Entry(SnapshotSections.Apob, "APOB table (DDR5 / LPDDR5)"),
                 Entry(SnapshotSections.BiosController, "BIOS memory controller (DDR4 / LPDDR4)"));
+
             AddGroup("Current readings", selected,
                 Entry(SnapshotSections.PowerTable, "Power table (clocks, SoC voltages)"),
                 Entry(SnapshotSections.DimmTelemetry, "DIMM voltages and temperatures (DDR5 / LPDDR5)"),
@@ -287,23 +289,23 @@ namespace ZenTimings.Windows
 
                 string filter;
                 string extension;
-                string fileName;
+
+                var unixTimestamp = Convert.ToString(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMinutes, CultureInfo.InvariantCulture);
+                string filename = $@"ZenTimings_snapshot_{unixTimestamp}";
+
                 switch (SelectedFormat)
                 {
                     case SnapshotFormat.Text:
                         filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
                         extension = "txt";
-                        fileName = "ZenTimings-snapshot.txt";
                         break;
                     case SnapshotFormat.Html:
                         filter = "HTML files (*.html)|*.html|All files (*.*)|*.*";
                         extension = "html";
-                        fileName = "ZenTimings-snapshot.html";
                         break;
                     default:
                         filter = "JSON files (*.json)|*.json|All files (*.*)|*.*";
                         extension = "json";
-                        fileName = "ZenTimings-snapshot.json";
                         break;
                 }
 
@@ -311,7 +313,7 @@ namespace ZenTimings.Windows
                 {
                     Filter = filter,
                     DefaultExt = extension,
-                    FileName = fileName,
+                    FileName = filename,
                     RestoreDirectory = true
                 };
 
@@ -338,10 +340,9 @@ namespace ZenTimings.Windows
                 return;
             }
 
-            if (!int.TryParse(TextInterval.Text, NumberStyles.Integer, CultureInfo.InvariantCulture, out int seconds)
-                || seconds < 1 || seconds > 3600)
+            if (!int.TryParse(TextInterval.Text, NumberStyles.Integer, CultureInfo.InvariantCulture, out int seconds))
             {
-                StatusText.Text = "The interval must be between 1 and 3600 seconds.";
+                StatusText.Text = $"The interval must be between {TextInterval.Minimum} and {TextInterval.Maximum} seconds.";
                 return;
             }
 
@@ -359,11 +360,13 @@ namespace ZenTimings.Windows
             settings.LiveSnapshotFormat = SelectedFormat;
             settings.LiveSnapshotIntervalMs = seconds * 1000;
             settings.LiveSnapshotDirectory = liveDirectory ?? "";
+
             if (sections != SnapshotSections.None)
                 settings.LiveSnapshotSections = sections;
+            
             settings.Save();
-
             DialogResult = true;
+            
             Close();
         }
 
