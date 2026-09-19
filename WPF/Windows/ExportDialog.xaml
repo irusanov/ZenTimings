@@ -112,6 +112,8 @@
                         Width="44" />
                     <TextBlock Text="seconds" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center"/>
                 </StackPanel>
+                <CheckBox x:Name="CheckDeleteOnExit" Content="Delete the file when ZenTimings exits" Margin="2,3"
+                          Foreground="{DynamicResource TextColor}"/>
                 <DockPanel Margin="2,3">
                     <TextBlock Text="File name" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Margin="0,0,8,0"/>
                     <TextBox x:Name="TextLiveFileName" MaxLength="100" TextChanged="TextLiveFileName_TextChanged"/>
@@ -124,7 +126,7 @@
                     <TextBox x:Name="TextLivePath" IsReadOnly="True"/>
                 </DockPanel>
                 <TextBlock TextWrapping="Wrap" Margin="2,3" Opacity="0.75" Foreground="{DynamicResource TextColor}"
-                           Text="Serial numbers are never written to the file. It is removed when the application exits. Anyone who can write to the chosen folder can replace the file, keep it in a folder you trust if other programs rely on it."/>
+                           Text="Serial numbers are never written to the file. Anyone who can write to the chosen folder can replace the file, keep it in a folder you trust if other programs rely on it."/>
             </StackPanel>
         </StackPanel>
 

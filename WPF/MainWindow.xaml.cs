@@ -1470,8 +1470,13 @@ namespace ZenTimings
             PowerCfgTimer.Tick += ExportTimer_Tick;
             Application.Current.Exit += (s, e) =>
             {
-                if (ExportSettings.Instance.LiveSnapshotEnabled)
+                if (!ExportSettings.Instance.LiveSnapshotEnabled)
+                    return;
+
+                if (ExportSettings.Instance.LiveSnapshotDeleteOnExit)
                     LiveSnapshot.Stop();
+                else
+                    LiveSnapshot.Detach();
             };
 
             if (ExportSettings.Instance.LiveSnapshotEnabled)
