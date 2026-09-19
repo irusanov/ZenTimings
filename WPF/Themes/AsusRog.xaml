@@ -70,6 +70,8 @@
     <SolidColorBrush x:Key="TimingMismatchBrush" Color="{StaticResource {x:Static adonisUi:Colors.AlertColor}}"/>
     <SolidColorBrush x:Key="TimingMismatchBackgroundBrush" Color="{StaticResource {x:Static adonisUi:Colors.AlertColor}}" Opacity="0.16"/>
 
+    <SolidColorBrush x:Key="LiveSnapshotBrush" Color="{StaticResource {x:Static adonisUi:Colors.AlertColor}}" />
+
     <!-- Base vertical background -->
     <LinearGradientBrush x:Key="BackgroundGradientBrush" StartPoint="0.5,1" EndPoint="0.5,0">
         <GradientStop Color="#220807" Offset="1.0" />

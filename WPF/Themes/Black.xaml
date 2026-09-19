@@ -84,6 +84,8 @@
     <SolidColorBrush x:Key="TimingMismatchBrush" Color="{StaticResource {x:Static adonisUi:Colors.AlertColor}}"/>
     <SolidColorBrush x:Key="TimingMismatchBackgroundBrush" Color="{StaticResource {x:Static adonisUi:Colors.AlertColor}}" Opacity="0.16"/>
 
+    <SolidColorBrush x:Key="LiveSnapshotBrush" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
+
     <Style x:Key="WindowStyles" TargetType="{x:Type Window}">
         <Setter Property="BorderThickness" Value="{StaticResource WindowBorderThickness}" />
         <Setter Property="BorderBrush" Value="{StaticResource WindowBorderColor}" />

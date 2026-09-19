@@ -12,6 +12,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using ZenStates.Core;
@@ -1504,7 +1505,18 @@ namespace ZenTimings
             menuItemLiveSnapshot.IsChecked = enabled;
             buttonLiveSnapshot.Visibility = enabled ? Visibility.Visible : Visibility.Collapsed;
             if (!enabled)
+            {
+                buttonLiveSnapshot.BeginAnimation(UIElement.OpacityProperty, null);
                 return;
+            }
+
+            buttonLiveSnapshot.BeginAnimation(
+                UIElement.OpacityProperty,
+                new DoubleAnimation(0.45, 1.0, TimeSpan.FromSeconds(2.0))
+                {
+                    AutoReverse = true,
+                    RepeatBehavior = RepeatBehavior.Forever
+                });
 
             string path = LiveSnapshot.GetFilePath(exportSettings.LiveSnapshotDirectory, exportSettings.LiveSnapshotFileName, exportSettings.LiveSnapshotFormat);
             double seconds = Math.Max(LiveSnapshot.MinIntervalMs, exportSettings.LiveSnapshotIntervalMs) / 1000.0;
