@@ -21,7 +21,7 @@ namespace ZenTimings.Windows
     {
         internal sealed class Channel
         {
-            public string Header;
+            //public string Header;
             public List<string> ModuleLines;
             public BaseDramTimings Timings;
             public Ddr5PmicData PmicData;
@@ -52,7 +52,7 @@ namespace ZenTimings.Windows
 
                 result.Channels.Add(new Channel
                 {
-                    Header = string.Join(" / ", channelModules.Select(m => m.Module.Slot)),
+                    //Header = string.Join(" / ", channelModules.Select(m => m.Module.Slot)),
                     ModuleLines = channelModules.Select(m => Describe(m.Module, m.Spd)).ToList(),
                     Timings = timings,
                     PmicData = channelPmic,
@@ -74,9 +74,9 @@ namespace ZenTimings.Windows
             {
                 float[] rails = RailsOf(pmic);
                 parts.Add($"PMIC {pmic.VendorName} rev {pmic.RevisionMajor}.{pmic.RevisionMinor}");
-                parts.Add($"VDD {VoltageText(rails[0])}");
-                parts.Add($"VDDQ {VoltageText(rails[1])}");
-                parts.Add($"VPP {VoltageText(rails[2])}");
+                //parts.Add($"VDD {VoltageText(rails[0])}");
+                //parts.Add($"VDDQ {VoltageText(rails[1])}");
+                //parts.Add($"VPP {VoltageText(rails[2])}");
             }
 
             // Non-breaking inside a part, so a wrapped line only breaks between parts.

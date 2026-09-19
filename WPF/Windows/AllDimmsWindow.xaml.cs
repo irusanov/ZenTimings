@@ -17,6 +17,7 @@ namespace ZenTimings.Windows
         private readonly Func<AllDimmsCapture.Result> describe;
         private readonly Type panelType;
         private readonly MainViewModel sourceViewModel;
+        private readonly Window centerOnWindow;
         private readonly List<ChannelFrame> frames = new List<ChannelFrame>();
 
         private sealed class ChannelFrame
@@ -26,23 +27,24 @@ namespace ZenTimings.Windows
             public BaseDramTimings Timings;
         }
 
-        internal AllDimmsWindow(Func<AllDimmsCapture.Result> describe, Type panelType, MainViewModel sourceViewModel)
+        internal AllDimmsWindow(Func<AllDimmsCapture.Result> describe, Type panelType, MainViewModel sourceViewModel, Window centerOnWindow)
         {
             InitializeComponent();
             this.describe = describe;
             this.panelType = panelType;
             this.sourceViewModel = sourceViewModel;
+            this.centerOnWindow = centerOnWindow;
 
             MaxWidth = SystemParameters.WorkArea.Width;
             MaxHeight = SystemParameters.WorkArea.Height;
 
             // SizeToContent settles only after the first layout pass, so the window would flash at its
-            // default size. Open it off-screen and move it over the owner once it has rendered.
+            // default size. Open it off-screen and move it over the reference window once it has rendered.
             Left = -32000;
             Top = -32000;
             ContentRendered += (sender, e) =>
             {
-                CenterOnOwner();
+                CenterOnReferenceWindow();
                 ApplyHighlights();
             };
 
@@ -86,13 +88,13 @@ namespace ZenTimings.Windows
             panel.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
 
             var texts = new StackPanel();
-            texts.Children.Add(new TextBlock
-            {
-                Text = channel.Header,
-                FontWeight = FontWeights.SemiBold,
-                TextAlignment = TextAlignment.Center,
-                Margin = new Thickness(0, 2, 0, 2),
-            });
+            //texts.Children.Add(new TextBlock
+            //{
+            //    Text = channel.Header,
+            //    FontWeight = FontWeights.SemiBold,
+            //    TextAlignment = TextAlignment.Center,
+            //    Margin = new Thickness(0, 2, 0, 2),
+            //});
 
             // Capped to the panel width, so a long line wraps instead of widening the column.
             foreach (string line in channel.ModuleLines)
@@ -105,7 +107,7 @@ namespace ZenTimings.Windows
                     TextAlignment = TextAlignment.Center,
                     TextWrapping = TextWrapping.Wrap,
                     MaxWidth = panel.DesiredSize.Width,
-                    Margin = new Thickness(0, 0, 0, 2),
+                    Margin = new Thickness(0, 2, 0, 2),
                 });
             }
 
@@ -134,7 +136,7 @@ namespace ZenTimings.Windows
             {
                 Child = column,
                 BorderThickness = new Thickness(1),
-                Padding = new Thickness(8, 6, 8, 8),
+                Padding = new Thickness(0),
                 Margin = new Thickness(4),
             };
             frame.SetResourceReference(Border.BorderBrushProperty, "SeparatorColor");
@@ -201,7 +203,7 @@ namespace ZenTimings.Windows
                 .Select(text =>
                 {
                     Rect bounds = text.TransformToAncestor(panel).TransformBounds(new Rect(text.RenderSize));
-                    double horizontalInset = Math.Min(6, Math.Max(0, bounds.Width * 0.25));
+                    double horizontalInset = Math.Min(4, Math.Max(0, bounds.Width * 0.25));
                     double verticalInset = Math.Min(2, Math.Max(0, bounds.Height * 0.20));
                     bounds.Inflate(-horizontalInset, -verticalInset);
                     return bounds;
@@ -253,14 +255,17 @@ namespace ZenTimings.Windows
             return (count + rows - 1) / rows;
         }
 
-        private void CenterOnOwner()
+        private void CenterOnReferenceWindow()
         {
-            Rect area = SystemParameters.WorkArea;
-            double left = Owner.Left + (Owner.ActualWidth - ActualWidth) / 2;
-            double top = Owner.Top + (Owner.ActualHeight - ActualHeight) / 2;
+            if (centerOnWindow == null)
+                return;
 
-            // WorkArea only describes the primary monitor, so clamp only when the owner is on it.
-            if (area.Contains(new Point(Owner.Left + Owner.ActualWidth / 2, Owner.Top + Owner.ActualHeight / 2)))
+            Rect area = SystemParameters.WorkArea;
+            double left = centerOnWindow.Left + (centerOnWindow.ActualWidth - ActualWidth) / 2;
+            double top = centerOnWindow.Top + (centerOnWindow.ActualHeight - ActualHeight) / 2;
+
+            // WorkArea only describes the primary monitor, so clamp only when the reference window is on it.
+            if (area.Contains(new Point(centerOnWindow.Left + centerOnWindow.ActualWidth / 2, centerOnWindow.Top + centerOnWindow.ActualHeight / 2)))
             {
                 left = Math.Max(area.Left, Math.Min(left, area.Right - ActualWidth));
                 top = Math.Max(area.Top, Math.Min(top, area.Bottom - ActualHeight));
