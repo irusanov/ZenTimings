@@ -12,6 +12,7 @@ using ZenStates.Core.Hardware.DRAM;
 using ZenStates.Core.Hardware.DRAM.DDR5.Pmic;
 using ZenStates.Core.Hardware.Mock;
 using ZenTimings.Common;
+using ZenTimings.Export;
 using ZenTimings.Helpers;
 using ZenTimings.Plugin;
 using ZenTimings.Settings;
@@ -673,6 +674,11 @@ namespace ZenTimings.ViewModels
             html += "</body></html>";
 
             return html;
+        }
+
+        public string GetJSON(SnapshotSource source, SnapshotOptions options)
+        {
+            return SnapshotWriter.ToJson(SnapshotBuilder.Build(source, options));
         }
 
         public string GetJSON()

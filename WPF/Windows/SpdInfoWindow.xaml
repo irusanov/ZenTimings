@@ -8,6 +8,7 @@
     xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
     adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+    xmlns:controls="clr-namespace:ZenTimings.Controls"
     mc:Ignorable="d"
     Title="SPD Information"
     Height="400"
@@ -63,6 +64,15 @@
                           DisplayMemberPath="Display"
                           SelectedValuePath="Index"
                           SelectionChanged="ComboSlots_SelectionChanged"/>
+
+                <Button Grid.Column="2"
+                        Style="{DynamicResource IconButtonStyle}"
+                        HorizontalAlignment="Right"
+                        Margin="0,0,10,0"
+                        ToolTip="Copy the selected tab to clipboard"
+                        Click="CopyTab_Click">
+                    <controls:AppIcon Kind="IconCopy" IconWidth="11" IconHeight="11" Fill="{DynamicResource TextColor}" />
+                </Button>
 
                 <Button x:Name="ButtonDumpSpd"
                         Grid.Column="3"
