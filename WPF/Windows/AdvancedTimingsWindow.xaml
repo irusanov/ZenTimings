@@ -101,9 +101,7 @@
                         </TextBlock.Style>
                     </TextBlock>
                 </Grid>
-                <StackPanel Grid.Row="1"
-                            Orientation="Horizontal"
-                            HorizontalAlignment="Left"
+                <DockPanel Grid.Row="1"
                             Margin="0,6,0,0">
                     <CheckBox x:Name="DifferencesOnlyCheckBox"
                               Content="Differences only"
@@ -120,10 +118,12 @@
                     <Button Style="{DynamicResource IconButtonStyle}"
                             Margin="10,0,0,0"
                             ToolTip="Copy the shown timings to clipboard"
-                            Click="CopyTimings_Click">
+                            Click="CopyTimings_Click"
+							HorizontalAlignment="Right"
+							DockPanel.Dock="Right">
                         <controls:AppIcon Kind="IconCopy" IconWidth="11" IconHeight="11" Fill="{DynamicResource TextColor}" />
                     </Button>
-                </StackPanel>
+                </DockPanel>
             </Grid>
         </Border>
 

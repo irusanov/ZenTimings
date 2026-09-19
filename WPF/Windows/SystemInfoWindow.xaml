@@ -15,7 +15,6 @@
     SnapIdentifier="SystemInfoWindow"
     Height="450"
     Width="800"
-    
     WindowStartupLocation="CenterOwner"
     BorderThickness="1"
     UseLayoutRounding="True"
@@ -27,15 +26,17 @@
     <Window.Resources>
         <!-- Section header with a button that copies the grid the section names in its Tag -->
         <DataTemplate x:Key="CopyHeaderTemplate">
-            <StackPanel Orientation="Horizontal">
+            <DockPanel>
                 <TextBlock Text="{Binding}" VerticalAlignment="Center" />
                 <Button Style="{DynamicResource IconButtonStyle}"
                         Margin="4,2,0,0"
                         ToolTip="Copy to clipboard"
-                        Click="CopySection_Click">
+                        Click="CopySection_Click"
+                        DockPanel.Dock="Right"
+                        HorizontalAlignment="Right">
                     <controls:AppIcon Kind="IconCopy" IconWidth="11" IconHeight="11" Fill="{DynamicResource TextColor}" />
                 </Button>
-            </StackPanel>
+            </DockPanel>
         </DataTemplate>
 
         <SolidColorBrush x:Key="TimingMismatchBrush" Color="{DynamicResource {x:Static adonisUi:Colors.AlertColor}}"/>

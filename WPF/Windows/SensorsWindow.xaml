@@ -32,7 +32,6 @@
         <SolidColorBrush x:Key="ThermalAlarmHighBrush"     Color="{DynamicResource {x:Static adonisUi:Colors.AlertColor}}"/>
         <SolidColorBrush x:Key="ThermalAlarmCriticalBrush" Color="{DynamicResource {x:Static adonisUi:Colors.ErrorColor}}"/>
         <SolidColorBrush x:Key="SubtleSelectionBrush" Color="{DynamicResource {x:Static adonisUi:Colors.AccentColor}}" Opacity="0.15"/>
-
         <!-- Sensor type icons are defined in Themes/AppIcons.xaml -->
 
         <Style x:Key="SensorIconStyle" TargetType="{x:Type Path}">

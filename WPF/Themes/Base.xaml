@@ -145,7 +145,7 @@
                 </Border.CornerRadius>
                 <ContentPresenter x:Name="PART_SelectedContentHost" ContentTemplate="{TemplateBinding SelectedContentTemplate}" Content="{TemplateBinding SelectedContent}" ContentStringFormat="{TemplateBinding SelectedContentStringFormat}" ContentSource="SelectedContent" Margin="0"/>
             </Border>
-            <Border x:Name="SelectedItemHighlight" Background="{DynamicResource {ComponentResourceKey ResourceId=Layer1HighlightBrush, TypeInTargetAssembly={x:Type adonisUi:Brushes}}}" Height="0" Margin="{TemplateBinding BorderThickness}" Grid.Row="1" VerticalAlignment="Top">
+            <Border x:Name="SelectedItemHighlight" Background="{DynamicResource {ComponentResourceKey ResourceId=Layer0HighlightBrush, TypeInTargetAssembly={x:Type adonisUi:Brushes}}}" Height="0" Margin="{TemplateBinding BorderThickness}" Grid.Row="1" VerticalAlignment="Top">
                 <Border.CornerRadius>
                     <MultiBinding UpdateSourceTrigger="Default">
                         <MultiBinding.Converter>
