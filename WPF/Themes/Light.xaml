@@ -36,6 +36,10 @@
     <SolidColorBrush x:Key="LogoColor" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
     <SolidColorBrush x:Key="LogoColorAlt" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
 
+    <!-- Mismatch colors -->
+    <SolidColorBrush x:Key="TimingMismatchBrush" Color="{DynamicResource {x:Static adonisUi:Colors.ErrorColor}}"/>
+    <SolidColorBrush x:Key="TimingMismatchBackgroundBrush" Color="{DynamicResource {x:Static adonisUi:Colors.ErrorColor}}" Opacity="0.16"/>
+
     <Style x:Key="WindowStyles" TargetType="{x:Type Window}">
         <Setter Property="BorderThickness" Value="{StaticResource WindowBorderThickness}" />
         <Setter Property="BorderBrush" Value="{StaticResource WindowBorderColor}" />

@@ -23,75 +23,46 @@ namespace ZenTimings.Windows
         {
             public string Header;
             public List<string> ModuleLines;
-            public ImageSource Image;
+            public BaseDramTimings Timings;
+            public Ddr5PmicData PmicData;
         }
 
         internal sealed class Result
         {
             public readonly List<Channel> Channels = new List<Channel>();
-            public List<Rect> Highlights;
         }
 
-        public static Result Run(FrameworkElement panel, MainViewModel viewModel, IList<MemoryModule> modules,
-            IDictionary<byte, Ddr5SpdInfo> spdInfo, Func<uint, BaseDramTimings> readTimings)
+        public static Result Run(IList<MemoryModule> modules, IDictionary<byte, Ddr5SpdInfo> spdInfo, Func<uint, BaseDramTimings> readTimings)
         {
             var result = new Result();
-            BaseDramTimings original = viewModel.Timings;
-            float[] savedRails = { viewModel.SwaAdcV, viewModel.SwbAdcV, viewModel.VppAdcV };
-            var channelTimings = new List<BaseDramTimings>();
 
             // SPD entries match the modules by index. Without a readable PMIC, or any SPD data as for a debug
             // report, the rails are not per module and are left as they are.
             List<Ddr5SpdInfo> spds = spdInfo?.Values.ToList();
-            bool perModuleRails = spds != null && spds.Any(spd => spd?.PmicData != null && spd.PmicData.IsValid);
 
-            // A SizeToContent window resizes on every layout pass, which would flicker the main window.
-            Window owner = Window.GetWindow(panel);
-            SizeToContent sizing = owner.SizeToContent;
-            owner.SizeToContent = SizeToContent.Manual;
+            var channels = modules
+                .Select((module, index) => new { Module = module, Spd = spds?.ElementAtOrDefault(index) })
+                .GroupBy(entry => entry.Module.DctOffset);
 
-            try
+            foreach (var channel in channels)
             {
-                var channels = modules
-                    .Select((module, index) => new { Module = module, Spd = spds?.ElementAtOrDefault(index) })
-                    .GroupBy(entry => entry.Module.DctOffset);
+                var channelModules = channel.ToList();
+                BaseDramTimings timings = readTimings(channel.Key);
+                Ddr5PmicData channelPmic = ChannelPmicData(channelModules.Select(m => m.Spd?.PmicData));
 
-                foreach (var channel in channels)
+                result.Channels.Add(new Channel
                 {
-                    var channelModules = channel.ToList();
-                    bool shared = channelModules.Count > 1;
-                    BaseDramTimings timings = readTimings(channel.Key);
-
-                    // Bindings update synchronously on the UI thread, so the render sees these values and
-                    // the screen never does. A shared channel has no single rail value; each module line
-                    // carries its own instead.
-                    viewModel.Timings = timings;
-                    if (perModuleRails)
-                        SetRails(viewModel, shared ? new float[3] : RailsOf(channelModules[0].Spd?.PmicData));
-                    panel.UpdateLayout();
-
-                    channelTimings.Add(timings);
-                    result.Channels.Add(new Channel
-                    {
-                        Header = string.Join(" / ", channelModules.Select(m => m.Module.Slot)),
-                        ModuleLines = channelModules.Select(m => Describe(m.Module, m.Spd, shared)).ToList(),
-                        Image = VisualCapture.Render(panel),
-                    });
-                }
-            }
-            finally
-            {
-                viewModel.Timings = original;
-                SetRails(viewModel, savedRails);
-                panel.UpdateLayout();
-                owner.SizeToContent = sizing;
+                    Header = string.Join(" / ", channelModules.Select(m => m.Module.Slot)),
+                    ModuleLines = channelModules.Select(m => Describe(m.Module, m.Spd)).ToList(),
+                    Timings = timings,
+                    PmicData = channelPmic,
+                });
             }
 
-            result.Highlights = FindDifferingCells(panel, channelTimings);
             return result;
         }
 
-        private static string Describe(MemoryModule module, Ddr5SpdInfo spd, bool withRails)
+        private static string Describe(MemoryModule module, Ddr5SpdInfo spd)
         {
             var parts = new List<string> { module.ToString() };
 
@@ -101,19 +72,35 @@ namespace ZenTimings.Windows
             Ddr5PmicData pmic = spd?.PmicData;
             if (pmic != null && pmic.IsValid)
             {
+                float[] rails = RailsOf(pmic);
                 parts.Add($"PMIC {pmic.VendorName} rev {pmic.RevisionMajor}.{pmic.RevisionMinor}");
-
-                if (withRails)
-                {
-                    float[] rails = RailsOf(pmic);
-                    parts.Add($"VDD {VoltageText(rails[0])}");
-                    parts.Add($"VDDQ {VoltageText(rails[1])}");
-                    parts.Add($"VPP {VoltageText(rails[2])}");
-                }
+                parts.Add($"VDD {VoltageText(rails[0])}");
+                parts.Add($"VDDQ {VoltageText(rails[1])}");
+                parts.Add($"VPP {VoltageText(rails[2])}");
             }
 
             // Non-breaking inside a part, so a wrapped line only breaks between parts.
             return string.Join("  ·  ", parts.Select(part => part.Replace(' ', '\u00A0')));
+        }
+
+        private static Ddr5PmicData ChannelPmicData(IEnumerable<Ddr5PmicData> pmics)
+        {
+            List<Ddr5PmicData> validPmics = pmics.Where(pmic => pmic != null && pmic.IsValid).ToList();
+            if (validPmics.Count == 0)
+                return null;
+
+            Ddr5PmicData first = validPmics[0];
+            if (validPmics.All(pmic => SameRails(first, pmic)))
+                return first;
+
+            return null;
+        }
+
+        private static bool SameRails(Ddr5PmicData left, Ddr5PmicData right)
+        {
+            return left.SwaAdcMv == right.SwaAdcMv &&
+                   left.SwbAdcMv == right.SwbAdcMv &&
+                   left.SwcAdcMv == right.SwcAdcMv;
         }
 
         private static float[] RailsOf(Ddr5PmicData pmic)

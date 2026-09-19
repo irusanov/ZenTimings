@@ -61,6 +61,10 @@
     <SolidColorBrush x:Key="LogoColor" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
     <SolidColorBrush x:Key="LogoColorAlt" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
 
+    <!-- Mismatch colors -->
+    <SolidColorBrush x:Key="TimingMismatchBrush" Color="{DynamicResource {x:Static adonisUi:Colors.AlertColor}}"/>
+    <SolidColorBrush x:Key="TimingMismatchBackgroundBrush" Color="{DynamicResource {x:Static adonisUi:Colors.AlertColor}}" Opacity="0.16"/>
+
     <LinearGradientBrush x:Key="BackgroundGradientBrush" StartPoint="0.5,1" EndPoint="0.5,0">
         <GradientStop Color="#092237" Offset="0.0" />
         <GradientStop Color="#161b37" Offset="1.0" />

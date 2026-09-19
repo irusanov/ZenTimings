@@ -19,8 +19,6 @@
     Style="{DynamicResource WindowStyles}">
 
     <Window.Resources>
-        <SolidColorBrush x:Key="TimingMismatchBrush" Color="{DynamicResource {x:Static adonisUi:Colors.AlertColor}}"/>
-        <SolidColorBrush x:Key="TimingMismatchBackgroundBrush" Color="{DynamicResource {x:Static adonisUi:Colors.AlertColor}}" Opacity="0.16"/>
         <SolidColorBrush x:Key="SubtleSelectionBrush" Color="{DynamicResource {x:Static adonisUi:Colors.AccentColor}}" Opacity="0.15"/>
 
         <Style x:Key="TimingRowStyle" TargetType="{x:Type DataGridRow}">

@@ -1,27 +1,37 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.Windows.Threading;
+using ZenStates.Core.Hardware.DRAM;
+using ZenTimings.ViewModels;
 
 namespace ZenTimings.Windows
 {
     public partial class AllDimmsWindow : ThemedAdonisWindow
     {
-        // Follows the theme. The panels are pictures of the main window, so a theme applied while this window is
-        // open has to take them again, or the old theme's colours stay on the new background.
-        private static readonly DependencyProperty ThemeAccentProperty = DependencyProperty.Register(
-            "ThemeAccent", typeof(object), typeof(AllDimmsWindow), new PropertyMetadata(null, OnThemeAccentChanged));
+        private readonly Func<AllDimmsCapture.Result> describe;
+        private readonly Type panelType;
+        private readonly MainViewModel sourceViewModel;
+        private readonly List<ChannelFrame> frames = new List<ChannelFrame>();
 
-        private readonly Func<AllDimmsCapture.Result> capture;
-        private bool rebuildQueued;
+        private sealed class ChannelFrame
+        {
+            public FrameworkElement Panel;
+            public Canvas Overlay;
+            public BaseDramTimings Timings;
+        }
 
-        internal AllDimmsWindow(Func<AllDimmsCapture.Result> capture)
+        internal AllDimmsWindow(Func<AllDimmsCapture.Result> describe, Type panelType, MainViewModel sourceViewModel)
         {
             InitializeComponent();
-            this.capture = capture;
+            this.describe = describe;
+            this.panelType = panelType;
+            this.sourceViewModel = sourceViewModel;
 
             MaxWidth = SystemParameters.WorkArea.Width;
             MaxHeight = SystemParameters.WorkArea.Height;
@@ -30,55 +40,51 @@ namespace ZenTimings.Windows
             // default size. Open it off-screen and move it over the owner once it has rendered.
             Left = -32000;
             Top = -32000;
-            ContentRendered += (sender, e) => CenterOnOwner();
+            ContentRendered += (sender, e) =>
+            {
+                CenterOnOwner();
+                ApplyHighlights();
+            };
 
             Build();
-            SetResourceReference(ThemeAccentProperty, "AccentTextColor");
-        }
-
-        private static void OnThemeAccentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var window = (AllDimmsWindow)d;
-            if (e.OldValue == null || window.rebuildQueued)
-                return;
-
-            // Once the theme swap has settled and the main window has restyled. A capture that fails then closes
-            // the window rather than leaving the old colours up.
-            window.rebuildQueued = true;
-            window.Dispatcher.BeginInvoke(new Action(() =>
-            {
-                window.rebuildQueued = false;
-                try
-                {
-                    window.Build();
-                }
-                catch
-                {
-                    window.Close();
-                }
-            }), DispatcherPriority.Background);
         }
 
         private void Build()
         {
-            AllDimmsCapture.Result result = capture();
-
-            // The theme accent, which every theme keeps readable against its own panels.
-            Color accent = ((SolidColorBrush)FindResource("AccentTextColor")).Color;
-            var fill = new SolidColorBrush(Color.FromArgb(0x33, accent.R, accent.G, accent.B));
-            var stroke = new SolidColorBrush(Color.FromArgb(0xCC, accent.R, accent.G, accent.B));
-            fill.Freeze();
-            stroke.Freeze();
+            AllDimmsCapture.Result result = describe();
 
             ChannelsPanel.Children.Clear();
+            frames.Clear();
             foreach (AllDimmsCapture.Channel channel in result.Channels)
-                ChannelsPanel.Children.Add(BuildFrame(channel, result.Highlights, fill, stroke));
+                ChannelsPanel.Children.Add(BuildFrame(channel));
 
             ChannelsPanel.Columns = BalancedColumns();
         }
 
-        private static Border BuildFrame(AllDimmsCapture.Channel channel, List<Rect> highlights, Brush fill, Brush stroke)
+        private void ApplyHighlights()
         {
+            if (frames.Count == 0)
+                return;
+
+            UpdateLayout();
+
+            List<BaseDramTimings> timings = frames.Select(frame => frame.Timings).ToList();
+            List<Rect> highlights = FindDifferingCells(frames[0].Panel, timings);
+            foreach (ChannelFrame frame in frames)
+            {
+                ApplyMismatchForeground(frame.Panel, timings);
+
+                frame.Overlay.Children.Clear();
+                foreach (Rect rect in highlights)
+                    AddHighlight(frame.Overlay, rect);
+            }
+        }
+
+        private Border BuildFrame(AllDimmsCapture.Channel channel)
+        {
+            FrameworkElement panel = CreatePanel(channel);
+            panel.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+
             var texts = new StackPanel();
             texts.Children.Add(new TextBlock
             {
@@ -98,41 +104,30 @@ namespace ZenTimings.Windows
                     Opacity = 0.7,
                     TextAlignment = TextAlignment.Center,
                     TextWrapping = TextWrapping.Wrap,
-                    MaxWidth = channel.Image.Width,
+                    MaxWidth = panel.DesiredSize.Width,
                     Margin = new Thickness(0, 0, 0, 2),
                 });
             }
 
-            var overlay = new Canvas();
-            foreach (Rect rect in highlights)
+            var overlay = new Canvas { IsHitTestVisible = false };
+            var panelHost = new Grid
             {
-                var marker = new Rectangle
-                {
-                    Width = rect.Width,
-                    Height = rect.Height,
-                    RadiusX = 2,
-                    RadiusY = 2,
-                    Fill = fill,
-                    Stroke = stroke,
-                };
-                Canvas.SetLeft(marker, rect.X);
-                Canvas.SetTop(marker, rect.Y);
-                overlay.Children.Add(marker);
-            }
-
-            var panel = new Grid
-            {
-                Width = channel.Image.Width,
-                Height = channel.Image.Height,
                 Margin = new Thickness(0, 2, 0, 0),
             };
-            panel.Children.Add(new Image { Source = channel.Image, Stretch = Stretch.None, SnapsToDevicePixels = true });
-            panel.Children.Add(overlay);
+            panelHost.Children.Add(panel);
+            panelHost.Children.Add(overlay);
+
+            frames.Add(new ChannelFrame
+            {
+                Panel = panel,
+                Overlay = overlay,
+                Timings = channel.Timings,
+            });
 
             // Docked to the bottom, so panels in one grid row line up however many module lines they carry.
             var column = new DockPanel();
-            DockPanel.SetDock(panel, Dock.Bottom);
-            column.Children.Add(panel);
+            DockPanel.SetDock(panelHost, Dock.Bottom);
+            column.Children.Add(panelHost);
             column.Children.Add(texts);
 
             var frame = new Border
@@ -146,10 +141,107 @@ namespace ZenTimings.Windows
             return frame;
         }
 
+        private FrameworkElement CreatePanel(AllDimmsCapture.Channel channel)
+        {
+            var panel = (FrameworkElement)Activator.CreateInstance(panelType);
+            panel.DataContext = sourceViewModel.CreateChannelViewModel(channel.Timings, channel.PmicData);
+            return panel;
+        }
+
+        private void AddHighlight(Canvas overlay, Rect rect)
+        {
+            var fillMarker = new Rectangle
+            {
+                Width = rect.Width,
+                Height = rect.Height,
+                RadiusX = 2,
+                RadiusY = 2,
+            };
+
+            fillMarker.SetResourceReference(Shape.FillProperty, "TimingMismatchBackgroundBrush");
+            Canvas.SetLeft(fillMarker, rect.X);
+            Canvas.SetTop(fillMarker, rect.Y);
+            overlay.Children.Add(fillMarker);
+
+            //var strokeMarker = new Rectangle
+            //{
+            //    Width = rect.Width,
+            //    Height = rect.Height,
+            //    RadiusX = 2,
+            //    RadiusY = 2,
+            //    Fill = Brushes.Transparent,
+            //};
+            //strokeMarker.Stroke = ResolveBrush("TimingMismatchBrush", "AccentTextColor");
+            //Canvas.SetLeft(strokeMarker, rect.X);
+            //Canvas.SetTop(strokeMarker, rect.Y);
+            //overlay.Children.Add(strokeMarker);
+        }
+
+        private void ApplyMismatchForeground(FrameworkElement panel, List<BaseDramTimings> channels)
+        {
+            foreach (TextBlock text in Descendants(panel).OfType<TextBlock>())
+            {
+                string path = BindingOperations.GetBinding(text, TextBlock.TextProperty)?.Path?.Path;
+                if (text.IsVisible && Differs(channels, path))
+                {
+                    text.SetResourceReference(TextBlock.ForegroundProperty, "TimingMismatchBrush");
+                }
+                else if (path != null && path.StartsWith("Timings.", StringComparison.Ordinal))
+                {
+                    text.ClearValue(TextBlock.ForegroundProperty);
+                }
+            }
+        }
+
+        private static List<Rect> FindDifferingCells(FrameworkElement panel, List<BaseDramTimings> channels)
+        {
+            return Descendants(panel)
+                .OfType<TextBlock>()
+                .Where(text => text.IsVisible && Differs(channels, BindingOperations.GetBinding(text, TextBlock.TextProperty)?.Path?.Path))
+                .Select(text =>
+                {
+                    Rect bounds = text.TransformToAncestor(panel).TransformBounds(new Rect(text.RenderSize));
+                    double horizontalInset = Math.Min(6, Math.Max(0, bounds.Width * 0.25));
+                    double verticalInset = Math.Min(2, Math.Max(0, bounds.Height * 0.20));
+                    bounds.Inflate(-horizontalInset, -verticalInset);
+                    return bounds;
+                })
+                .ToList();
+        }
+
+        private static bool Differs(List<BaseDramTimings> channels, string path)
+        {
+            const string prefix = "Timings.";
+            if (path == null || !path.StartsWith(prefix, StringComparison.Ordinal))
+                return false;
+
+            PropertyDescriptor property = TypeDescriptor.GetProperties(channels[0])[path.Substring(prefix.Length)];
+            if (property == null)
+                return false;
+
+            object first = property.GetValue(channels[0]);
+            return channels.Skip(1).Any(timings => !Equals(property.GetValue(timings), first));
+        }
+
+        private static IEnumerable<DependencyObject> Descendants(DependencyObject node)
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(node); i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(node, i);
+                yield return child;
+
+                foreach (DependencyObject descendant in Descendants(child))
+                    yield return descendant;
+            }
+        }
+
         // As many panels per row as fit the screen, spread evenly: four channels make 2x2 rather than 3 + 1.
         private int BalancedColumns()
         {
             int count = ChannelsPanel.Children.Count;
+            if (count == 0)
+                return 1;
+
             var frame = (FrameworkElement)ChannelsPanel.Children[0];
             frame.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
 

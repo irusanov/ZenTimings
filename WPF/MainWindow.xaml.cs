@@ -849,8 +849,11 @@ namespace ZenTimings
 
             try
             {
-                allDimmsWnd = new AllDimmsWindow(() => AllDimmsCapture.Run(timingsPanel, mainViewModel, MemoryModules,
-                    mockData == null ? cpu.memoryConfig.SpdInfo : null, ChannelTimings)) { Owner = this };
+                allDimmsWnd = new AllDimmsWindow(
+                    () => AllDimmsCapture.Run(MemoryModules, mockData == null ? cpu.memoryConfig.SpdInfo : null, ChannelTimings),
+                    timingsPanel.GetType(),
+                    mainViewModel)
+                { Owner = this };
                 // Opened from a debug report, it carries the report's title so it is not mistaken for the live machine.
                 if (mockData != null)
                     allDimmsWnd.Title = $"{Title} — All DIMMs";

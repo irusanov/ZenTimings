@@ -156,9 +156,6 @@
     <Compile Include="ViewModels\SensorGroupViewModel.cs" />
     <Compile Include="ViewModels\TelemetryItemViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
-    <Compile Include="Windows\AdvancedTimingsWindow.xaml.cs">
-      <DependentUpon>AdvancedTimingsWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Windows\DriverUpdateWindow.xaml.cs">
       <DependentUpon>DriverUpdateWindow.xaml</DependentUpon>
     </Compile>
@@ -240,7 +237,12 @@
     </Compile>
     <Page Include="Windows\AdvancedTimingsWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
+    <Compile Include="Windows\AdvancedTimingsWindow.xaml.cs">
+      <DependentUpon>AdvancedTimingsWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Page Include="Windows\OptionsDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

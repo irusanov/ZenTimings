@@ -268,6 +268,25 @@ namespace ZenTimings.ViewModels
             }
         }
 
+        public MainViewModel CreateChannelViewModel(BaseDramTimings timings)
+        {
+            return CreateChannelViewModel(timings, PmicData);
+        }
+
+        public MainViewModel CreateChannelViewModel(BaseDramTimings timings, Ddr5PmicData pmicData)
+        {
+            return new MainViewModel(
+                timings,
+                MemoryType,
+                false,
+                Settings,
+                Plugins,
+                null,
+                mockData != null ? mockData.AgesaVersion : null,
+                pmicData,
+                mockData);
+        }
+
         public MainViewModel(
             BaseDramTimings timings,
             MemType memoryType,
