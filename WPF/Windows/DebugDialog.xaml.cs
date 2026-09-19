@@ -503,6 +503,9 @@ namespace ZenTimings.Windows
                 AddLine("<FAILED>");
             }
 
+            AddHeading("MMIO");
+            AddLine(Mmio.Instance.GetReport());
+
             Application.Current.Dispatcher.Invoke(new Action(() =>
             {
                 textBoxDebugOutput.Text = result.ToString();
