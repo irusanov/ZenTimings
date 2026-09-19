@@ -168,6 +168,12 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Grid.Column="0" Text="{Binding HeaderDisplay}" VerticalAlignment="Center" FontSize="11"/>
+                                    <Button Grid.Column="1"
+                                            Style="{DynamicResource IconButtonStyle}"
+                                            ToolTip="Copy to clipboard"
+                                            Click="CopyGroup_Click">
+                                        <controls:AppIcon Kind="IconCopy" IconWidth="11" IconHeight="11" Fill="{DynamicResource TextColor}" />
+                                    </Button>
                                 </Grid>
                             </GroupBox.Header>
                             <StackPanel>
@@ -337,6 +343,12 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Grid.Column="0" Text="{Binding HeaderDisplay}" VerticalAlignment="Center" FontSize="11"/>
+                                    <Button Grid.Column="1"
+                                            Style="{DynamicResource IconButtonStyle}"
+                                            ToolTip="Copy to clipboard"
+                                            Click="CopyGroup_Click">
+                                        <controls:AppIcon Kind="IconCopy" IconWidth="11" IconHeight="11" Fill="{DynamicResource TextColor}" />
+                                    </Button>
                                 </Grid>
                             </GroupBox.Header>
                             <DataGrid ItemsSource="{Binding TelemetryItems}"

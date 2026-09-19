@@ -127,7 +127,7 @@
     <Compile Include="Helpers\StartupHelper.cs" />
     <Compile Include="Utils\VendorUtils.cs" />
     <Compile Include="Utils\VisualCapture.cs" />
-    <Compile Include="CopyButtons\**\*.cs" />
+    <Compile Include="Utils\ClipboardUtils.cs" />
     <Compile Include="Export\**\*.cs" />
     <Compile Include="Settings\AppSettings.cs" />
     <Compile Include="Settings\SensorSettings.cs" />

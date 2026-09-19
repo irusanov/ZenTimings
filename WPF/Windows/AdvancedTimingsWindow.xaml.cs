@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using ZenStates.Core.Hardware.DRAM;
 using ZenTimings.Common;
+using ZenTimings.Utils;
 
 namespace ZenTimings.Windows
 {
@@ -204,6 +205,20 @@ namespace ZenTimings.Windows
         private void ExtendedTimingsCheckBox_Changed(object sender, RoutedEventArgs e)
         {
             ApplyFilter();
+        }
+
+        private void CopyTimings_Click(object sender, RoutedEventArgs e)
+        {
+            var text = new System.Text.StringBuilder();
+            text.AppendLine(MemorySticksText.Text);
+            text.AppendLine();
+
+            if (BaseTimingsGrid.Visibility == Visibility.Visible)
+                text.AppendLine(ClipboardUtils.GridToText(BaseTimingsGrid));
+            if (ExtendedTimingsGrid.Visibility == Visibility.Visible)
+                text.Append(ClipboardUtils.GridToText(ExtendedTimingsGrid));
+
+            ClipboardUtils.Copy(text.ToString(), sender as Button);
         }
 
         private static int GetExtendedStartIndex(IReadOnlyList<TimingGridItem> rows)

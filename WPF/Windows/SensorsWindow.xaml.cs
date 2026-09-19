@@ -459,6 +459,41 @@ namespace ZenTimings.Windows
             RefreshSensorGroups();
         }
 
+        private void CopyGroup_Click(object sender, RoutedEventArgs e)
+        {
+            if (!(sender is System.Windows.Controls.Button button))
+                return;
+
+            var text = new System.Text.StringBuilder();
+            IEnumerable<TelemetryItemViewModel> items;
+
+            if (button.DataContext is ModuleViewModel module)
+            {
+                text.AppendLine(module.Header);
+                text.AppendLine($"{module.Manufacturer}\t{module.PartNumber}");
+                text.AppendLine($"Capacity\t{module.Capacity}\tRank\t{module.Rank}");
+                text.AppendLine($"DRAM\t{module.MemoryChip}");
+                if (module.HasPmic)
+                    text.AppendLine($"PMIC\t{module.PmicVendor} rev {module.PmicRevision}");
+                items = module.TelemetryItems;
+            }
+            else if (button.DataContext is SensorGroupViewModel group)
+            {
+                text.AppendLine(group.Header);
+                items = group.TelemetryItems;
+            }
+            else
+            {
+                return;
+            }
+
+            text.AppendLine("Sensor\tCurrent\tMin\tMax\tAverage");
+            foreach (TelemetryItemViewModel item in items)
+                text.AppendLine($"{item.Name}\t{item.Current}\t{item.Min}\t{item.Max}\t{item.Average}");
+
+            ClipboardUtils.Copy(text.ToString(), button);
+        }
+
         private void BtnResetStats_Click(object sender, RoutedEventArgs e)
         {
             foreach (var module in moduleViewModels)

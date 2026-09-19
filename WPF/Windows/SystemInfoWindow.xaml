@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+    xmlns:controls="clr-namespace:ZenTimings.Controls"
     adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
     mc:Ignorable="d"
     Title="System Info"
@@ -24,6 +25,19 @@
     Closing="AdonisWindow_Closing">
 
     <Window.Resources>
+        <!-- Section header with a button that copies the grid the section names in its Tag -->
+        <DataTemplate x:Key="CopyHeaderTemplate">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding}" VerticalAlignment="Center" />
+                <Button Style="{DynamicResource IconButtonStyle}"
+                        Margin="4,2,0,0"
+                        ToolTip="Copy to clipboard"
+                        Click="CopySection_Click">
+                    <controls:AppIcon Kind="IconCopy" IconWidth="11" IconHeight="11" Fill="{DynamicResource TextColor}" />
+                </Button>
+            </StackPanel>
+        </DataTemplate>
+
         <SolidColorBrush x:Key="TimingMismatchBrush" Color="{DynamicResource {x:Static adonisUi:Colors.AlertColor}}"/>
         <SolidColorBrush x:Key="TimingMismatchBackgroundBrush" Color="{DynamicResource {x:Static adonisUi:Colors.AlertColor}}" Opacity="0.16"/>
 
@@ -61,6 +75,8 @@
         <StackPanel CanVerticallyScroll="False">
             <GroupBox
                 Header="SystemInfo"
+                HeaderTemplate="{StaticResource CopyHeaderTemplate}"
+                Tag="{x:Reference TestGrid}"
                 adonisExtensions:LayerExtension.Layer="3"
                 Padding="10 5">
                 <DataGrid
@@ -95,6 +111,8 @@
 
             <GroupBox
                 Header="Memory Timings"
+                HeaderTemplate="{StaticResource CopyHeaderTemplate}"
+                Tag="{x:Reference MemCfgGrid}"
                 adonisExtensions:LayerExtension.Layer="3">
                 <DataGrid
                     Name="MemCfgGrid"
@@ -130,6 +148,8 @@
 
             <GroupBox
                 Header="AOD Table"
+                HeaderTemplate="{StaticResource CopyHeaderTemplate}"
+                Tag="{x:Reference MemControllerGrid}"
                 adonisExtensions:LayerExtension.Layer="3">
                 <DataGrid
                     Name="MemControllerGrid"
@@ -164,6 +184,8 @@
 
             <GroupBox
                 Header="APOB Table"
+                HeaderTemplate="{StaticResource CopyHeaderTemplate}"
+                Tag="{x:Reference ApobTableGrid}"
                 adonisExtensions:LayerExtension.Layer="3">
                 <DataGrid
                     Name="ApobTableGrid"
@@ -213,6 +235,8 @@
 
                 <GroupBox
                     Header="Asus WMI"
+                    HeaderTemplate="{StaticResource CopyHeaderTemplate}"
+                    Tag="{x:Reference AsusWmiGrid}"
                     adonisExtensions:LayerExtension.Layer="3">
 
                     <DataGrid
