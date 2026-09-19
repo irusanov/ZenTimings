@@ -464,9 +464,14 @@ namespace ZenTimings
                 {
                     comboBoxPartNumber.SelectedIndex = 0;
                     comboBoxPartNumber.SelectionChanged += ComboBoxPartNumber_SelectionChanged;
+                    
                 }
 
-                buttonAllDimms.IsEnabled = modules.Count > 1 && HasChannelTimings;
+                if (modules.Count > 1 && HasChannelTimings)
+                {
+                    buttonAllDimms.Visibility = Visibility.Visible;
+                    comboBoxPartNumber.IsReadOnly = true;
+                }
             }
         }
 

@@ -25,7 +25,7 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0">
-                    <TextBlock Text="Speed" TextAlignment="Right" />
+                    <TextBlock Text="{Binding MemoryType, FallbackValue='Speed'}" TextAlignment="Right" />
                     <TextBlock Text="BGS" TextAlignment="Right" />
                     <TextBlock Text="GDM" TextAlignment="Right" />
 

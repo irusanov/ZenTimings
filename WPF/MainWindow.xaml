@@ -179,7 +179,7 @@
                         <ColumnDefinition>
                             <ColumnDefinition.Style>
                                 <Style TargetType="ColumnDefinition">
-                                    <Setter Property="Width" Value="280" />
+                                    <Setter Property="Width" Value="312" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding Settings.AdvancedMode}" Value="False">
                                             <Setter Property="Width" Value="240" />
@@ -192,42 +192,34 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <ComboBox x:Name="comboBoxPartNumber" IsReadOnly="True" Grid.Column="0" />
+                    <DockPanel Grid.Column="0">
+                        <Button 
+                            x:Name="buttonAllDimms"
+                            DockPanel.Dock="Right"
+                            Content="All"
+                            Margin="4 0 0 0"
+                            ToolTip="All channels side by side"
+                            Visibility="Collapsed"
+                            Click="ButtonAllDimms_Click" />
+                        <ComboBox x:Name="comboBoxPartNumber" IsReadOnly="True" IsEnabled="False" />
+                    </DockPanel>
+
                     <StackPanel 
                         Grid.Column="2"
                         Orientation="Horizontal"
                         HorizontalAlignment="Right"
                         Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                        <!-- Opens the all-channels view. Enabled from code when there is more than one module;
+                        the label takes the button's state, so it shows the accent colour only while clickable. -->
                         <TextBlock
                             Text="ECC"
                             Style="{DynamicResource ValueStyles}"
                             Visibility="{Binding ECC, Mode=OneWay, Converter={StaticResource BoolToVis}}"
                             TextAlignment="Right"
                             Margin="0,0,5,0"
-                            IsEnabled="False"
+                            IsEnabled="True"
                             ToolTip="Error-Correcting Code memory detected"
                         />
-                        <!-- Opens the all-channels view. Enabled from code when there is more than one module;
-                             the label takes the button's state, so it shows the accent colour only while clickable. -->
-                        <Button
-                            x:Name="buttonAllDimms"
-                            BorderThickness="0"
-                            Padding="0"
-                            Style="{DynamicResource CameraButtonStyle}"
-                            ForceCursor="True"
-                            Cursor="Hand"
-                            IsEnabled="False"
-                            ToolTip="All channels side by side"
-                            Click="ButtonAllDimms_Click">
-                            <TextBlock
-                                Text="{Binding MemoryType, FallbackValue=''}"
-                                Style="{DynamicResource ValueStyles}"
-                                TextAlignment="Right"
-                                HorizontalAlignment="Right"
-                                MinWidth="0"
-                                Margin="0"
-                            />
-                        </Button>
                     </StackPanel>
 
                     <!-- Button Grid.Column="1"
