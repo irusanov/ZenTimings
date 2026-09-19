@@ -31,6 +31,15 @@
             <StackPanel Orientation="Vertical" Margin="15,15,5,15" Grid.ColumnSpan="6" Grid.Row="0" Width="424">
                 <!-- TextBlock Text="Changelog" FontSize="14" FontWeight="Bold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" /-->
                 <TextBlock Text="{Binding Version, Mode=OneWay}" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0" />
+                <TextBlock Text=" - Add All DIMMs view (feature by @deadfellow34)" />
+                <TextBlock Text=" - Add Export dialog with more options (feature by @b1zya)" />
+                <TextBlock Text=" - Add copy to clipboard buttons to grids and windows (feature by @b1zya)" />
+                <TextBlock Text=" - [WIP] Extend debug dialog parsing (thanks @deadfellow34 for the help)" />
+                <TextBlock Text=" - Update HTML export and move as an option in Export dialog" />
+                <TextBlock Text=" - Various bugfixes and performance improvements" />
+                <TextBlock Text="" />
+
+                <TextBlock Text="Version v140.587 - beta" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0" />
                 <TextBlock Text=" - Switch to total power mode reporting on PMIC init" />
                 <TextBlock Text=" - Read and display more values from saved debug reports (still WIP)" />
                 <TextBlock Text=" - Fixed CCD_L group reading on Zen4 APU (Phoenix)" />
