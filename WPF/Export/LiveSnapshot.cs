@@ -40,7 +40,21 @@ namespace ZenTimings.Export
             if (string.IsNullOrWhiteSpace(directory))
                 directory = DefaultDirectory;
 
-            return Path.Combine(directory, CleanFileName(fileName) + (format == SnapshotFormat.Json ? ".json" : ".txt"));
+            string extension;
+            switch (format)
+            {
+                case SnapshotFormat.Text:
+                    extension = ".txt";
+                    break;
+                case SnapshotFormat.Html:
+                    extension = ".html";
+                    break;
+                default:
+                    extension = ".json";
+                    break;
+            }
+
+            return Path.Combine(directory, CleanFileName(fileName) + extension);
         }
 
         /// <summary>
@@ -50,8 +64,12 @@ namespace ZenTimings.Export
         public static string CleanFileName(string fileName)
         {
             string name = (fileName ?? string.Empty).Trim();
-            if (name.EndsWith(".json", StringComparison.OrdinalIgnoreCase) || name.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+            if (name.EndsWith(".json", StringComparison.OrdinalIgnoreCase) ||
+                name.EndsWith(".txt", StringComparison.OrdinalIgnoreCase) ||
+                name.EndsWith(".html", StringComparison.OrdinalIgnoreCase))
+            {
                 name = name.Substring(0, name.LastIndexOf('.'));
+            }
 
             var sb = new StringBuilder(name.Length);
             char[] invalid = Path.GetInvalidFileNameChars();

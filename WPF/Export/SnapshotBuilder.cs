@@ -1022,6 +1022,10 @@ namespace ZenTimings.Export
             if (value is byte[])
                 return null;
 
+            Type type = value.GetType();
+            if (type.FullName == "ZenStates.Core.Hardware.DRAM.Ddr5Timings+NitroSettings")
+                return Text(value.ToString());
+
             if (value is IEnumerable enumerable)
             {
                 var list = new List<object>();

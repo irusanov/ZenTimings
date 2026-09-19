@@ -17,7 +17,15 @@ namespace ZenTimings.Export
 
         public static string Write(SnapshotObject root, SnapshotFormat format)
         {
-            return format == SnapshotFormat.Json ? ToJson(root) : ToText(root);
+            switch (format)
+            {
+                case SnapshotFormat.Text:
+                    return ToText(root);
+                case SnapshotFormat.Html:
+                    return ToHtml(root);
+                default:
+                    return ToJson(root);
+            }
         }
 
         public static string ToJson(SnapshotObject root)
@@ -164,6 +172,322 @@ namespace ZenTimings.Export
             }
 
             return sb.ToString();
+        }
+
+        public static string ToHtml(SnapshotObject root)
+        {
+            return SnapshotHtmlWriter.Write(root);
+        }
+
+        private static void WriteHtmlObject(StringBuilder sb, SnapshotObject obj, string path, ISet<string> timingMismatch)
+        {
+            var rows = new List<KeyValuePair<string, object>>();
+            foreach (var item in obj.Items)
+            {
+                string childPath = path.Length == 0 ? item.Key : path + "." + item.Key;
+                if (childPath == "config.timings" && item.Value is SnapshotObject timings)
+                {
+                    WriteTimingsTable(sb, timings);
+                    continue;
+                }
+
+                if (item.Value is SnapshotObject || item.Value is List<object>)
+                {
+                    if (IsCompactPath(path))
+                    {
+                        if (item.Value is SnapshotObject compactChild && !IsLeafValueObject(compactChild))
+                        {
+                            if (rows.Count > 0)
+                            {
+                                WriteHtmlRows(sb, rows, timingMismatch, path);
+                                rows.Clear();
+                            }
+
+                            sb.Append("<h2>").Append(EscapeHtml(ToSectionTitle(item.Key))).AppendLine("</h2>");
+                            WriteHtmlRows(sb, compactChild.Items, timingMismatch, childPath);
+                            continue;
+                        }
+
+                        if (item.Value is List<object>)
+                        {
+                            if (rows.Count > 0)
+                            {
+                                WriteHtmlRows(sb, rows, timingMismatch, path);
+                                rows.Clear();
+                            }
+
+                            sb.Append("<h2>").Append(EscapeHtml(ToSectionTitle(item.Key))).AppendLine("</h2>");
+                            WriteHtmlValue(sb, item.Value, childPath, timingMismatch);
+                            continue;
+                        }
+
+                        rows.Add(item);
+                        continue;
+                    }
+
+                    if (rows.Count > 0)
+                    {
+                        WriteHtmlRows(sb, rows, timingMismatch, path);
+                        rows.Clear();
+                    }
+
+                    sb.Append("<h2>").Append(EscapeHtml(ToSectionTitle(item.Key))).AppendLine("</h2>");
+                    WriteHtmlValue(sb, item.Value, childPath, timingMismatch);
+                    continue;
+                }
+
+                rows.Add(item);
+            }
+
+            if (rows.Count > 0)
+                WriteHtmlRows(sb, rows, timingMismatch, path);
+        }
+
+        private static void WriteHtmlRows(StringBuilder sb, List<KeyValuePair<string, object>> rows, ISet<string> timingMismatch, string path)
+        {
+            bool compact = IsCompactPath(path) && rows.Count > 2;
+            sb.AppendLine(compact ? "<table class=\"compact\">" : "<table>");
+
+            if (compact)
+                sb.AppendLine("<tr><th>Name</th><th>Value</th><th>Raw</th></tr>");
+
+            foreach (var row in rows)
+            {
+                bool mismatch = timingMismatch != null && timingMismatch.Contains(row.Key);
+                sb.Append(mismatch ? "<tr class=\"mismatch\">" : "<tr>");
+                sb.Append("<td class=\"key\">").Append(EscapeHtml(row.Key)).Append("</td>");
+
+                if (!compact)
+                {
+                    sb.Append("<td>").Append(EscapeHtml(FormatHtmlValue(row.Value))).AppendLine("</td></tr>");
+                    continue;
+                }
+
+                string valueText;
+                string rawText;
+                ExtractCompactColumns(row.Value, out valueText, out rawText);
+                sb.Append("<td>").Append(EscapeHtml(valueText)).Append("</td><td>").Append(EscapeHtml(rawText)).AppendLine("</td></tr>");
+            }
+
+            sb.AppendLine("</table>");
+        }
+
+        private static void ExtractCompactColumns(object value, out string display, out string raw)
+        {
+            display = Scalar(value);
+            raw = string.Empty;
+
+            var obj = value as SnapshotObject;
+            if (obj == null)
+                return;
+
+            if (obj.TryGet("raw", out object rawValue) && rawValue != null)
+                raw = Scalar(rawValue);
+
+            if (obj.TryGet("text", out object textValue) && textValue != null)
+            {
+                display = Scalar(textValue);
+                return;
+            }
+
+            if (obj.TryGet("value", out object valueValue) && valueValue != null)
+            {
+                display = Scalar(valueValue);
+                return;
+            }
+
+            if (obj.TryGet("mv", out object mvValue) && mvValue != null)
+            {
+                display = Scalar(mvValue);
+                return;
+            }
+
+            if (obj.TryGet("name", out object nameValue) && nameValue != null)
+            {
+                display = Scalar(nameValue);
+                return;
+            }
+
+            if (obj.Items.Count == 1)
+            {
+                display = Scalar(obj.Items[0].Value);
+                return;
+            }
+
+            display = ToInlineJson(obj);
+        }
+
+        private static bool IsCompactPath(string path)
+        {
+            return !string.IsNullOrEmpty(path) &&
+                (path.StartsWith("config.aod", StringComparison.Ordinal) ||
+                 path.StartsWith("config.apob", StringComparison.Ordinal));
+        }
+
+        private static bool IsLeafValueObject(SnapshotObject obj)
+        {
+            if (obj == null || obj.Count == 0)
+                return false;
+
+            if (obj.TryGet("raw", out object raw) || obj.TryGet("text", out object text) || obj.TryGet("value", out object value) || obj.TryGet("mv", out object mv))
+                return true;
+
+            if (obj.Count == 1)
+            {
+                object only = obj.Items[0].Value;
+                return IsScalar(only);
+            }
+
+            return obj.Items.All(i => IsScalar(i.Value));
+        }
+
+        private static void WriteHtmlValue(StringBuilder sb, object value, string path, ISet<string> timingMismatch)
+        {
+            if (value is SnapshotObject child)
+            {
+                WriteHtmlObject(sb, child, path, timingMismatch);
+                return;
+            }
+
+            if (value is List<object> list)
+            {
+                WriteHtmlList(sb, list, path, timingMismatch);
+                return;
+            }
+
+            sb.Append("<div>").Append(EscapeHtml(Scalar(value))).AppendLine("</div>");
+        }
+
+        private static void WriteHtmlList(StringBuilder sb, List<object> list, string path, ISet<string> timingMismatch)
+        {
+            if (list.Count == 0)
+            {
+                sb.AppendLine("<div>null</div>");
+                return;
+            }
+
+            if (list.All(item => item is SnapshotObject))
+            {
+                int index = 1;
+                foreach (SnapshotObject item in list)
+                {
+                    sb.Append("<h2>").Append(EscapeHtml(ToSectionTitle(PathLeaf(path)))).Append(' ').Append(index++).AppendLine("</h2>");
+                    WriteHtmlObject(sb, item, path, timingMismatch);
+                }
+                return;
+            }
+
+            sb.AppendLine("<table>");
+            foreach (object item in list)
+                sb.Append("<tr><td>").Append(EscapeHtml(Scalar(item))).AppendLine("</td></tr>");
+            sb.AppendLine("</table>");
+        }
+
+        private static void WriteTimingsTable(StringBuilder sb, SnapshotObject timings)
+        {
+            var mismatch = new HashSet<string>(StringComparer.Ordinal);
+            if (timings.TryGet("dct_mismatch", out object mismatchRaw) && mismatchRaw is List<object> mismatchList)
+            {
+                foreach (string name in mismatchList.OfType<string>())
+                    mismatch.Add(name);
+            }
+
+            if (!timings.TryGet("per_dct", out object dctRaw) || !(dctRaw is List<object> dctEntries))
+            {
+                sb.AppendLine("<h2>Timings</h2><div>null</div>");
+                return;
+            }
+
+            var channels = dctEntries.OfType<SnapshotObject>().ToList();
+            var timingSets = channels
+                .Select(c => c.TryGet("timings", out object t) ? t as SnapshotObject : null)
+                .Where(t => t != null)
+                .ToList();
+
+            var keys = new List<string>();
+            foreach (SnapshotObject set in timingSets)
+            {
+                foreach (var item in set.Items)
+                {
+                    if (!keys.Contains(item.Key))
+                        keys.Add(item.Key);
+                }
+            }
+
+            sb.AppendLine("<h2>Timings</h2>");
+            sb.AppendLine("<table>");
+            sb.Append("<tr><th>timing</th>");
+            foreach (SnapshotObject channel in channels)
+            {
+                channel.TryGet("dct", out object dct);
+                sb.Append("<th>DCT ").Append(EscapeHtml(Scalar(dct))).Append("</th>");
+            }
+            sb.AppendLine("</tr>");
+
+            foreach (string key in keys)
+            {
+                bool rowMismatch = mismatch.Contains(key);
+                sb.Append(rowMismatch ? "<tr class=\"mismatch\">" : "<tr>");
+                sb.Append("<td class=\"key\">").Append(EscapeHtml(key)).Append("</td>");
+                foreach (SnapshotObject channel in channels)
+                {
+                    var value = "null";
+                    if (channel.TryGet("timings", out object t) && t is SnapshotObject set && set.TryGet(key, out object scalar))
+                        value = Scalar(scalar);
+
+                    sb.Append("<td>").Append(EscapeHtml(value)).Append("</td>");
+                }
+                sb.AppendLine("</tr>");
+            }
+
+            sb.AppendLine("</table>");
+        }
+
+        private static string PathLeaf(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+                return "item";
+
+            int dot = path.LastIndexOf('.');
+            return dot >= 0 ? path.Substring(dot + 1) : path;
+        }
+
+        private static string FormatHtmlValue(object value)
+        {
+            if (value is SnapshotObject || value is List<object>)
+                return ToInlineJson(value);
+
+            return Scalar(value);
+        }
+
+        private static string ToInlineJson(object value)
+        {
+            var sb = new StringBuilder(128);
+            WriteJson(sb, value, 0);
+            return sb.ToString().Replace("\r", "").Replace("\n", " ").Trim();
+        }
+
+        private static string ToSectionTitle(string key)
+        {
+            if (string.IsNullOrEmpty(key))
+                return key;
+
+            var parts = key.Split(new[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < parts.Length; i++)
+            {
+                string part = parts[i];
+                parts[i] = part.Length <= 4 ? part.ToUpperInvariant() : char.ToUpperInvariant(part[0]) + part.Substring(1);
+            }
+
+            return string.Join(" ", parts);
+        }
+
+        private static string EscapeHtml(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return string.Empty;
+
+            return value.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;");
         }
 
         public static string ToText(SnapshotObject root)

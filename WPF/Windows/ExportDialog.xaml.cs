@@ -119,6 +119,7 @@ namespace ZenTimings.Windows
             CheckLegend.IsChecked = settings.IncludeLegend;
             RadioJson.IsChecked = format == SnapshotFormat.Json;
             RadioText.IsChecked = format == SnapshotFormat.Text;
+            RadioHtml.IsChecked = format == SnapshotFormat.Html;
 
             DataContext = this;
         }
@@ -143,7 +144,16 @@ namespace ZenTimings.Windows
             Groups.Add(group);
         }
 
-        private SnapshotFormat SelectedFormat => RadioText.IsChecked == true ? SnapshotFormat.Text : SnapshotFormat.Json;
+        private SnapshotFormat SelectedFormat
+        {
+            get
+            {
+                if (RadioHtml.IsChecked == true)
+                    return SnapshotFormat.Html;
+
+                return RadioText.IsChecked == true ? SnapshotFormat.Text : SnapshotFormat.Json;
+            }
+        }
 
         private SnapshotSections SelectedSections
         {
@@ -275,14 +285,33 @@ namespace ZenTimings.Windows
                 if (content == null)
                     return;
 
-                bool json = SelectedFormat == SnapshotFormat.Json;
+                string filter;
+                string extension;
+                string fileName;
+                switch (SelectedFormat)
+                {
+                    case SnapshotFormat.Text:
+                        filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
+                        extension = "txt";
+                        fileName = "ZenTimings-snapshot.txt";
+                        break;
+                    case SnapshotFormat.Html:
+                        filter = "HTML files (*.html)|*.html|All files (*.*)|*.*";
+                        extension = "html";
+                        fileName = "ZenTimings-snapshot.html";
+                        break;
+                    default:
+                        filter = "JSON files (*.json)|*.json|All files (*.*)|*.*";
+                        extension = "json";
+                        fileName = "ZenTimings-snapshot.json";
+                        break;
+                }
+
                 var saveFileDialog = new SaveFileDialog
                 {
-                    Filter = json
-                        ? "JSON files (*.json)|*.json|All files (*.*)|*.*"
-                        : "Text files (*.txt)|*.txt|All files (*.*)|*.*",
-                    DefaultExt = json ? "json" : "txt",
-                    FileName = json ? "ZenTimings-snapshot.json" : "ZenTimings-snapshot.txt",
+                    Filter = filter,
+                    DefaultExt = extension,
+                    FileName = fileName,
                     RestoreDirectory = true
                 };
 

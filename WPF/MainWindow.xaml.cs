@@ -1452,35 +1452,6 @@ namespace ZenTimings
             }
         }
 
-        private void ExportAsHtmlMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                // Generate HTML content
-                string htmlContent = mainViewModel.GetHTML();
-
-                // Open SaveFileDialog to save the HTML file
-                Forms.SaveFileDialog saveFileDialog = new Forms.SaveFileDialog
-                {
-                    Filter = "HTML files (*.html)|*.html|All files (*.*)|*.*",
-                    DefaultExt = "html",
-                    FileName = "ZenTimings-report.html",
-                    RestoreDirectory = true
-                };
-
-                if (saveFileDialog.ShowDialog() == Forms.DialogResult.OK)
-                {
-                    // Write the HTML content to the selected file
-                    File.WriteAllText(saveFileDialog.FileName, htmlContent);
-                    MessageBox.Show("HTML file exported successfully!", "Export as HTML", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An error occurred while exporting: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
         private const int RefreshWaitStepMs = 20;
         private const int RefreshWaitLimitMs = 5000;
 
@@ -1564,15 +1535,22 @@ namespace ZenTimings
 
         private void ExportSnapshotMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            SnapshotFormat format = (sender as MenuItem)?.Tag is SnapshotFormat tag ? tag : SnapshotFormat.Json;
+            object tagValue = (sender as MenuItem)?.Tag;
+            SnapshotFormat format;
+            if (tagValue is SnapshotFormat typed)
+            {
+                format = typed;
+            }
+            else if (tagValue is string text && text.Equals("Html", StringComparison.OrdinalIgnoreCase))
+            {
+                format = SnapshotFormat.Html;
+            }
+            else
+            {
+                format = SnapshotFormat.Json;
+            }
             ExportDialog exportWnd = new ExportDialog(
-                (options, selectedFormat) =>
-                {
-                    if (selectedFormat == SnapshotFormat.Text)
-                        return SnapshotWriter.ToText(SnapshotBuilder.Build(GetSnapshotSource(), options));
-
-                    return mainViewModel.GetJSON(GetSnapshotSource(), options);
-                },
+                (options, selectedFormat) => SnapshotWriter.Write(SnapshotBuilder.Build(GetSnapshotSource(), options), selectedFormat),
                 format,
                 false,
                 SnapshotBuilder.GetUnavailableSections(GetSnapshotSource()))

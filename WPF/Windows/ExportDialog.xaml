@@ -85,7 +85,9 @@
                 <TextBlock Text="Format:" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Margin="0,0,10,0"/>
                 <RadioButton x:Name="RadioJson" Content="JSON" GroupName="Format" Margin="0,0,12,0"
                              Foreground="{DynamicResource TextColor}" Checked="RadioFormat_Checked"/>
-                <RadioButton x:Name="RadioText" Content="Text (path = value)" GroupName="Format"
+                <RadioButton x:Name="RadioText" Content="Text (path = value)" GroupName="Format" Margin="0,0,12,0"
+                             Foreground="{DynamicResource TextColor}" Checked="RadioFormat_Checked"/>
+                <RadioButton x:Name="RadioHtml" Content="HTML" GroupName="Format"
                              Foreground="{DynamicResource TextColor}" Checked="RadioFormat_Checked"/>
             </StackPanel>
 

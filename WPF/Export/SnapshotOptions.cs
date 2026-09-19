@@ -31,6 +31,7 @@ namespace ZenTimings.Export
     {
         Json,
         Text,
+        Html,
     }
 
     public sealed class SnapshotOptions
