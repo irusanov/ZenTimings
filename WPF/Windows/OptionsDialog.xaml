@@ -518,15 +518,15 @@
 
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto" />
                 <ColumnDefinition />
+                <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
 
             <Button
                 x:Name="buttonSettingsRestart"
-                Grid.Column="0"
+                Grid.Column="1"
                 Content="Restart"
                 Visibility="Hidden"
                 Margin="6 6 0 6"

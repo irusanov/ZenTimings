@@ -374,10 +374,10 @@ namespace ZenTimings.Windows
 
             if (sections != SnapshotSections.None)
                 settings.LiveSnapshotSections = sections;
-            
+
             settings.Save();
             DialogResult = true;
-            
+
             Close();
         }
 

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using ZenStates.Core;
+using ZenStates.Core.Common;
 using ZenStates.Core.Hardware;
 using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
 using ZenTimings.Common;
@@ -127,14 +128,7 @@ namespace ZenTimings.Windows
 
         private void AddHeading(string heading)
         {
-            var h =
-                "######################################################" +
-                Environment.NewLine +
-                heading +
-                Environment.NewLine +
-                "######################################################" +
-                Environment.NewLine;
-            result.Append(h);
+            result.Append(ReportBuilder.Heading(heading));
         }
 
         private void AddLine(string row = "")

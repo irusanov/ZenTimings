@@ -603,7 +603,7 @@ namespace ZenTimings
                 bool hasMemVddio = ddr4BmcVddioValid;
 
                 if (!hasMemVddio && AsusWmi != null && AsusWmi.Status == 1)
-                    {
+                {
                     AsusSensorInfo sensor = AsusWmi.FindSensorByName("DRAM Voltage");
                     hasMemVddio = sensor != null && float.TryParse(sensor.Value, out memVddio) && memVddio > 0 && memVddio < 3;
                 }
