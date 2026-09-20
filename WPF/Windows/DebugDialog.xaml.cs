@@ -318,11 +318,9 @@ namespace ZenTimings.Windows
             }
 
             AddLine();
-
-            AddHeading("APOB");
             AddLine(cpu.info.apob.GetReport());
 
-            AddHeading("AOD");
+            AddLine();
             AddLine(cpu.info.aod.GetReport());
 
             // Configured DRAM memory controller settings from BIOS
@@ -338,56 +336,9 @@ namespace ZenTimings.Windows
                 AddLine(ex.Message);
             }
 
-            AddLine();
-
             // SMU power table
-            AddHeading("SMU: Power Table");
-            try
-            {
-                for (var i = 0; i < cpu.powerTable.Table.Length; i++)
-                {
-                    var temp = BitConverter.GetBytes(cpu.powerTable.Table[i]);
-                    AddLine($"Offset {i * 0x4:X3}: {BitConverter.ToSingle(temp, 0):F8}");
-                }
-            }
-            catch (Exception ex)
-            {
-                AddLine("<FAILED>");
-                AddLine(ex.Message);
-            }
-
             AddLine();
-
-            // SMU power table
-            AddHeading("SMU: Power Table Detected Values");
-            try
-            {
-                type = cpu.powerTable.GetType();
-                properties = type.GetProperties();
-
-                foreach (var property in properties)
-                {
-                    if (property.Name == "TableVersion")
-                        AddLine($"{property.Name + ":",-25}{property.GetValue(cpu.powerTable, null):X8}");
-                    else if (property.Name != "Table")
-                        AddLine($"{property.Name + ":",-25}{property.GetValue(cpu.powerTable, null)}");
-                }
-
-                /*AddLine($"MCLK: {PT.MCLK}");
-                AddLine($"FCLK: {PT.FCLK}");
-                AddLine($"UCLK: {PT.UCLK}");
-                AddLine($"VSOC_SMU: {PT.VDDCR_SOC}");
-                AddLine($"CLDO_VDDP: {PT.CLDO_VDDP}");
-                AddLine($"CLDO_VDDG: {PT.CLDO_VDDG_IOD}");
-                AddLine($"CLDO_VDDG: {PT.CLDO_VDDG_CCD}");*/
-            }
-            catch (Exception ex)
-            {
-                AddLine("<FAILED>");
-                AddLine(ex.Message);
-            }
-
-            AddLine();
+            AddLine(cpu.powerTable.GetReport());
 
             AddHeading("SuperIO");
             foreach (var hardware in cpu.systemInfo.Hardware)
@@ -399,10 +350,7 @@ namespace ZenTimings.Windows
                 }
             }
             AddLine();
-
-            AddHeading("SMBios");
             AddLine(SystemInfo.SMBios.GetReport());
-            AddLine();
 
             // All WMI classes in root namespace
             /*AddHeading("WMI: Root Classes");
@@ -505,7 +453,7 @@ namespace ZenTimings.Windows
                 AddLine("<FAILED>");
             }
 
-            AddHeading("MMIO");
+            AddLine();
             AddLine(Mmio.Instance.GetReport());
 
             Application.Current.Dispatcher.Invoke(new Action(() =>
@@ -563,6 +511,5 @@ namespace ZenTimings.Windows
         {
             SaveToFile(true);
         }
-
     }
 }
