@@ -1574,7 +1574,7 @@ namespace ZenTimings
             {
                 Owner = this
             };
-            exportWnd.ShowDialog();
+            exportWnd.Show();
         }
 
         private void LiveSnapshotMenuItem_Click(object sender, RoutedEventArgs e)

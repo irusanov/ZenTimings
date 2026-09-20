@@ -49,6 +49,7 @@
         </DockPanel>
 
         <ScrollViewer x:Name="SectionsViewer" Grid.Row="2" MinHeight="120"
+                      Padding="0"
                       VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <ItemsControl ItemsSource="{Binding Groups}">
                 <ItemsControl.ItemTemplate>
@@ -82,7 +83,7 @@
         </ScrollViewer>
 
         <StackPanel x:Name="OptionsPanel" Grid.Row="3" Margin="0,4,0,0">
-            <StackPanel Orientation="Horizontal" Margin="2,3">
+            <StackPanel Orientation="Horizontal" Margin="2,6">
                 <TextBlock Text="Format:" Foreground="{DynamicResource TextColor}" VerticalAlignment="Center" Margin="0,0,10,0"/>
                 <RadioButton x:Name="RadioJson" Content="JSON" GroupName="Format" Margin="0,0,12,0"
                              Foreground="{DynamicResource TextColor}" Checked="RadioFormat_Checked"/>
@@ -92,11 +93,9 @@
                              Foreground="{DynamicResource TextColor}" Checked="RadioFormat_Checked"/>
             </StackPanel>
 
-            <CheckBox x:Name="CheckLegend" Content="Include a short legend (helps AI assistants read the file)" Margin="2,3"
-                      Foreground="{DynamicResource TextColor}"/>
+            <CheckBox x:Name="CheckLegend" Content="Include a short legend (helps AI assistants read the file)" Margin="2,3"/>
 
-            <CheckBox x:Name="CheckSerials" Content="Include memory module serial numbers" Margin="2,3"
-                      Foreground="{DynamicResource TextColor}"/>
+            <CheckBox x:Name="CheckSerials" Content="Include memory module serial numbers" Margin="2,3" />
 
             <StackPanel x:Name="LivePanel" Visibility="Collapsed">
                 <StackPanel Orientation="Horizontal" Margin="2,3">
@@ -136,7 +135,7 @@
         <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
             <Button x:Name="ButtonCopy" Content="Copy" Width="70" Height="24" Click="BtnCopy_Click"/>
             <Button x:Name="ButtonSave" Content="Save..." Width="70" Height="24" Margin="6,0,0,0" IsDefault="True" Click="BtnSave_Click"/>
-            <Button x:Name="ButtonOk" Content="OK" Width="70" Height="24" Margin="6,0,0,0" Visibility="Collapsed" Click="BtnOk_Click"/>
+            <Button x:Name="ButtonOk" Content="Save" Width="70" Height="24" Margin="6,0,0,0" Visibility="Collapsed" Click="BtnOk_Click"/>
             <Button Content="Close" Width="70" Height="24" Margin="6,0,0,0" IsCancel="True" Click="BtnCancel_Click"/>
         </StackPanel>
     </Grid>

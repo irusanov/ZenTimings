@@ -940,7 +940,7 @@ namespace ZenTimings.Export
             sb.AppendLine("<div class=\"table-wrap\"><table><thead><tr><th class=\"sticky-col\">Name</th><th>Value</th></tr></thead><tbody>");
             foreach (var row in rows)
             {
-                sb.Append("<tr><td class=\"key\">").Append(EscapeHtml(row.Key)).Append("</td><td>")
+                sb.Append("<tr><td class=\"key\">").Append(EscapeHtml(ToTitle(row.Key))).Append("</td><td>")
                     .Append(FormatFieldValueHtml(row.Key, SnapshotWriter.Scalar(row.Value), true)).AppendLine("</td></tr>");
             }
             sb.AppendLine("</tbody></table></div>");
@@ -954,7 +954,7 @@ namespace ZenTimings.Export
                 string value;
                 string raw;
                 ExtractValueRaw(row.Value, out value, out raw);
-                sb.Append("<tr><td class=\"key\">").Append(EscapeHtml(row.Key)).Append("</td><td>")
+                sb.Append("<tr><td class=\"key\">").Append(EscapeHtml(ToTitle(row.Key))).Append("</td><td>")
                     .Append(FormatFieldValueHtml(row.Key, value, true)).Append("</td><td>")
                     .Append(FormatScalarHtml(string.IsNullOrEmpty(raw) ? "—" : raw, true)).AppendLine("</td></tr>");
             }
@@ -1028,7 +1028,7 @@ namespace ZenTimings.Export
             foreach (string key in keys)
             {
                 sb.Append(mismatch.Contains(key) ? "<tr class=\"mismatch\">" : "<tr>");
-                sb.Append("<td class=\"key\">" + EscapeHtml(key) + "</td>");
+                sb.Append("<td class=\"key\">" + EscapeHtml(ToTitle(key)) + "</td>");
                 foreach (var channel in channels)
                 {
                     string valueText = "null";
@@ -1120,7 +1120,50 @@ namespace ZenTimings.Export
             for (int i = 0; i < parts.Length; i++)
             {
                 string part = parts[i];
-                parts[i] = part.Length <= 4 ? part.ToUpperInvariant() : char.ToUpperInvariant(part[0]) + part.Substring(1);
+                switch (part.ToLowerInvariant())
+                {
+                    case "acpi":
+                    case "agesa":
+                    case "aod":
+                    case "apob":
+                    case "bios":
+                    case "ccd":
+                    case "ccx":
+                    case "cpu":
+                    case "dct":
+                    case "ddr":
+                    case "dimm":
+                    case "ecc":
+                    case "expo":
+                    case "gpu":
+                    case "i2c":
+                    case "mclk":
+                    case "pci":
+                    case "pmic":
+                    case "smu":
+                    case "spd":
+                    case "uclk":
+                    case "umc":
+                    case "wmi":
+                    case "xmp":
+                        parts[i] = part.ToUpperInvariant();
+                        break;
+                    case "mhz":
+                        parts[i] = "MHz";
+                        break;
+                    case "mtps":
+                        parts[i] = "MT/s";
+                        break;
+                    case "mv":
+                        parts[i] = "mV";
+                        break;
+                    case "ms":
+                        parts[i] = "ms";
+                        break;
+                    default:
+                        parts[i] = char.ToUpperInvariant(part[0]) + part.Substring(1);
+                        break;
+                }
             }
 
             return string.Join(" ", parts);
