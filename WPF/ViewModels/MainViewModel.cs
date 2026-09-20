@@ -17,12 +17,20 @@ using ZenTimings.Helpers;
 using ZenTimings.Plugin;
 using ZenTimings.Settings;
 using ZenTimings.Utils;
+using static ZenTimings.Settings.AppSettings;
 
 namespace ZenTimings.ViewModels
 {
     public class MainViewModel : ObservableObject
     {
         private static readonly string AGESA_SEARCHING = "Searching for AGESA version...";
+
+        public enum VoltageRail
+        {
+            Vsoc,
+            Vddio,
+            Vmisc
+        }
 
         // Non-null only when this view model is showing a debug report instead of live hardware
         // (see the MockSystemData-accepting constructor overload below). Every place that would
@@ -370,11 +378,6 @@ namespace ZenTimings.ViewModels
             // ECC: not captured by the debug report today, so left at its default (false) for mock data
             ECC = mockData == null && SystemInfo.SMBios.MemoryDevices.Any(d => d.HasEcc);
 
-            // VDDIO / VSOC: prefer live SuperIO sensor readings, fall back to the static AOD table
-            // values. Neither of those exists for a mock report, but its own power table has real
-            // VDDCR_SOC/VDD_MISC readings, so use those directly instead of leaving the fields blank.
-            // (ApuVddio has no such fallback in mock mode - it's only ever sourced from live SuperIO
-            // sensors or the AOD table, neither of which a debug report currently reconstructs.)
             if (mockData == null)
             {
                 RefreshSensors();
@@ -409,39 +412,103 @@ namespace ZenTimings.ViewModels
             _sensorsDetected = true;
         }
 
+        public IReadOnlyList<VoltageSensorSource> GetAvailableVoltageSources(VoltageRail rail)
+        {
+            if (mockData == null && !_sensorsDetected)
+                DetectSensors();
+
+            var sources = new List<VoltageSensorSource>();
+            if ((rail == VoltageRail.Vsoc && _vsocSensor != null) ||
+                (rail == VoltageRail.Vddio && _apuVddioSensor != null) ||
+                (rail == VoltageRail.Vmisc && _vmiscSensor != null))
+            {
+                sources.Add(VoltageSensorSource.SuperIo);
+            }
+
+            if ((rail == VoltageRail.Vsoc && PowerTable?.VDDCR_SOC > 0) ||
+                (rail == VoltageRail.Vmisc && PowerTable?.VDD_MISC > 0))
+            {
+                sources.Add(VoltageSensorSource.Smu);
+            }
+
+            if (rail == VoltageRail.Vddio && CpuSingleton.Instance != null &&
+                CpuSingleton.Instance.info.aod?.Table?.Data?.ApuVddio != null)
+                sources.Add(VoltageSensorSource.Aod);
+
+            return sources;
+        }
+
+        private VoltageSensorSource GetSelectedVoltageSource(VoltageRail rail)
+        {
+            var availableSources = GetAvailableVoltageSources(rail);
+            VoltageSensorSource selectedSource;
+            switch (rail)
+            {
+                case VoltageRail.Vsoc:
+                    selectedSource = Settings.VsocSensorSource;
+                    break;
+                case VoltageRail.Vddio:
+                    selectedSource = Settings.VddioSensorSource;
+                    break;
+                default:
+                    selectedSource = Settings.VmiscSensorSource;
+                    break;
+            }
+
+            return availableSources.Contains(selectedSource) ? selectedSource : availableSources.FirstOrDefault();
+        }
+
         // Call after CpuSingleton.Instance.systemInfo.UpdateSensors() to refresh the live sensor readings.
         public void RefreshSensors()
         {
+            if (mockData != null)
+            {
+                ApuVddio = 0;
+                Vsoc = PowerTable?.VDDCR_SOC ?? 0;
+                Vmisc = PowerTable?.VDD_MISC ?? 0;
+                return;
+            }
+
             if (!_sensorsDetected)
                 DetectSensors();
 
-            if (_apuVddioSensor?.Value != null)
+            switch (GetSelectedVoltageSource(VoltageRail.Vddio))
             {
-                ApuVddio = _apuVddioSensor.Value.Value;
-            }
-            else
-            {
-                var aodData = CpuSingleton.Instance.info.aod?.Table?.Data;
-                if (aodData?.ApuVddio != null)
-                    ApuVddio = aodData.ApuVddio.RawValue / 1000.0f;
-            }
-
-            if (_vsocSensor?.Value != null)
-            {
-                Vsoc = _vsocSensor.Value.Value;
-            }
-            else if (PowerTable != null)
-            {
-                Vsoc = PowerTable.VDDCR_SOC;
+                case VoltageSensorSource.SuperIo:
+                    ApuVddio = _apuVddioSensor?.Value ?? 0;
+                    break;
+                case VoltageSensorSource.Aod:
+                    ApuVddio = CpuSingleton.Instance.info.aod.Table.Data.ApuVddio.RawValue / 1000.0f;
+                    break;
+                default:
+                    ApuVddio = 0;
+                    break;
             }
 
-            if (_vmiscSensor?.Value != null)
+            switch (GetSelectedVoltageSource(VoltageRail.Vsoc))
             {
-                Vmisc = _vmiscSensor.Value.Value;
+                case VoltageSensorSource.SuperIo:
+                    Vsoc = _vsocSensor?.Value ?? 0;
+                    break;
+                case VoltageSensorSource.Smu:
+                    Vsoc = PowerTable.VDDCR_SOC;
+                    break;
+                default:
+                    Vsoc = 0;
+                    break;
             }
-            else if (PowerTable != null)
+
+            switch (GetSelectedVoltageSource(VoltageRail.Vmisc))
             {
-                Vmisc = PowerTable.VDD_MISC;
+                case VoltageSensorSource.SuperIo:
+                    Vmisc = _vmiscSensor?.Value ?? 0;
+                    break;
+                case VoltageSensorSource.Smu:
+                    Vmisc = PowerTable.VDD_MISC;
+                    break;
+                default:
+                    Vmisc = 0;
+                    break;
             }
         }
 

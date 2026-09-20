@@ -1102,7 +1102,7 @@ namespace ZenTimings
         {
             if (optionsWnd == null || !optionsWnd.IsLoaded)
             {
-                optionsWnd = new OptionsDialog(PowerCfgTimer);
+                optionsWnd = new OptionsDialog(PowerCfgTimer, mainViewModel);
                 optionsWnd.Show();
             }
             else

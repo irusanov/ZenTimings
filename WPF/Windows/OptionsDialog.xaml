@@ -270,6 +270,35 @@
         <!-- Startup & Window -->
         <StackPanel Style="{StaticResource SectionPanel}">
             <StackPanel Style="{StaticResource SectionHeaderPanel}">
+                <controls:AppIcon Kind="IconGeneral" Style="{StaticResource SectionIcon}" />
+                <TextBlock Text="Voltage sensors" Style="{StaticResource SectionHeader}" />
+            </StackPanel>
+            <Border Style="{DynamicResource Separator}" />
+            <Grid Style="{StaticResource SectionGrid}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="140" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Style="{StaticResource SettingLabel}" Text="VSOC source" />
+                <ComboBox x:Name="comboBoxVsocSensorSource" Grid.Column="1" Grid.Row="0" Style="{StaticResource SettingCombo}" />
+
+                <TextBlock Grid.Row="1" Style="{StaticResource SettingLabel}" Text="VDDIO source" />
+                <ComboBox x:Name="comboBoxVddioSensorSource" Grid.Column="1" Grid.Row="1" Style="{StaticResource SettingCombo}" />
+
+                <TextBlock Grid.Row="2" Style="{StaticResource SettingLabel}" Text="VDD MISC source" />
+                <ComboBox x:Name="comboBoxVmiscSensorSource" Grid.Column="1" Grid.Row="2" Style="{StaticResource SettingCombo}" />
+            </Grid>
+        </StackPanel>
+
+        <!-- Startup & Window -->
+        <StackPanel Style="{StaticResource SectionPanel}">
+            <StackPanel Style="{StaticResource SectionHeaderPanel}">
                 <controls:AppIcon Kind="IconStartup" Style="{StaticResource SectionIcon}" />
                 <TextBlock Text="Startup &amp; Window" Style="{StaticResource SectionHeader}" />
             </StackPanel>

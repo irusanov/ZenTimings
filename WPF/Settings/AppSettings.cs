@@ -65,6 +65,13 @@ namespace ZenTimings.Settings
             APOB
         }
 
+        public enum VoltageSensorSource : int
+        {
+            SuperIo,
+            Smu,
+            Aod
+        }
+
         public AppSettings Create(bool save = true)
         {
             if (save) Save();
@@ -210,6 +217,9 @@ namespace ZenTimings.Settings
         public bool FirstStart { get; set; } = true;
         public int CornerRadius { get; set; } = 0;
         public ImpedanceTableSource ImpedanceTableSrc { get; set; } = ImpedanceTableSource.APOB;
+        public VoltageSensorSource VsocSensorSource { get; set; } = VoltageSensorSource.SuperIo;
+        public VoltageSensorSource VddioSensorSource { get; set; } = VoltageSensorSource.SuperIo;
+        public VoltageSensorSource VmiscSensorSource { get; set; } = VoltageSensorSource.SuperIo;
 
         public string GetWindowSnapTarget(string windowId)
         {
