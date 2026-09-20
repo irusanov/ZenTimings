@@ -120,8 +120,11 @@ namespace ZenTimings.ViewModels
         public MemType MemoryType { get; }
         public bool IsDimmTelemetryAvailable => Settings.AdvancedMode && MemoryType == MemType.DDR5;
         public bool ECC { get; set; }
+        private bool IsVddioSupported => CpuFamily >= Cpu.Family.FAMILY_19H;
+        private bool IsVmiscSupported => CpuFamily >= Cpu.Family.FAMILY_19H;
         public PowerTable PowerTable { get; }
         public Cpu.CodeName CodeName { get; }
+        public Cpu.Family CpuFamily { get; }
         public bool WMIPresent { get; }
         public bool IsMotherboardLogoVisible { get; }
         public string MotherboardLogoTooltip { get; }
@@ -320,6 +323,7 @@ namespace ZenTimings.ViewModels
                 SmuVersion = mockData.SmuVersion ?? "Unknown";
                 TotalCapacity = mockData.TotalCapacity;
                 CodeName = mockData.CpuInfo.codeName;
+                CpuFamily = mockData.CpuInfo.family;
                 PowerTable = mockData.PowerTable;
                 MemoryFrequencyString = $"{(PowerTable.MCLK * 2)} MT/s";
             }
@@ -329,6 +333,7 @@ namespace ZenTimings.ViewModels
                 SmuVersion = CpuSingleton.Instance?.systemInfo?.SmuVersion.ToString() ?? "Unknown";
                 TotalCapacity = CpuSingleton.Instance.GetMemoryConfig().TotalCapacity;
                 CodeName = CpuSingleton.Instance.info.codeName;
+                CpuFamily = CpuSingleton.Instance.info.family;
                 PowerTable = CpuSingleton.Instance?.powerTable;
             }
 
@@ -385,7 +390,7 @@ namespace ZenTimings.ViewModels
             else if (mockData.PowerTable != null)
             {
                 Vsoc = mockData.PowerTable.VDDCR_SOC;
-                Vmisc = mockData.PowerTable.VDD_MISC;
+                Vmisc = IsVmiscSupported ? mockData.PowerTable.VDD_MISC : 0;
             }
         }
 
@@ -418,6 +423,10 @@ namespace ZenTimings.ViewModels
                 DetectSensors();
 
             var sources = new List<VoltageSensorSource>();
+
+            if (rail == VoltageRail.Vmisc && !IsVmiscSupported)
+                return sources;
+
             if ((rail == VoltageRail.Vsoc && _vsocSensor != null) ||
                 (rail == VoltageRail.Vddio && _apuVddioSensor != null) ||
                 (rail == VoltageRail.Vmisc && _vmiscSensor != null))
@@ -433,7 +442,9 @@ namespace ZenTimings.ViewModels
 
             if (rail == VoltageRail.Vddio && CpuSingleton.Instance != null &&
                 CpuSingleton.Instance.info.aod?.Table?.Data?.ApuVddio != null)
+            {
                 sources.Add(VoltageSensorSource.Aod);
+            }
 
             return sources;
         }
@@ -472,17 +483,25 @@ namespace ZenTimings.ViewModels
             if (!_sensorsDetected)
                 DetectSensors();
 
-            switch (GetSelectedVoltageSource(VoltageRail.Vddio))
+            var vddioSources = GetAvailableVoltageSources(VoltageRail.Vddio);
+            if (vddioSources.Count == 0)
             {
-                case VoltageSensorSource.SuperIo:
-                    ApuVddio = _apuVddioSensor?.Value ?? 0;
-                    break;
-                case VoltageSensorSource.Aod:
-                    ApuVddio = CpuSingleton.Instance.info.aod.Table.Data.ApuVddio.RawValue / 1000.0f;
-                    break;
-                default:
-                    ApuVddio = 0;
-                    break;
+                ApuVddio = 0;
+            }
+            else
+            {
+                switch (GetSelectedVoltageSource(VoltageRail.Vddio))
+                {
+                    case VoltageSensorSource.SuperIo:
+                        ApuVddio = _apuVddioSensor?.Value ?? 0;
+                        break;
+                    case VoltageSensorSource.Aod:
+                        ApuVddio = CpuSingleton.Instance.info.aod.Table.Data.ApuVddio.RawValue / 1000.0f;
+                        break;
+                    default:
+                        ApuVddio = 0;
+                        break;
+                }
             }
 
             switch (GetSelectedVoltageSource(VoltageRail.Vsoc))
@@ -498,17 +517,25 @@ namespace ZenTimings.ViewModels
                     break;
             }
 
-            switch (GetSelectedVoltageSource(VoltageRail.Vmisc))
+            var vmiscSources = GetAvailableVoltageSources(VoltageRail.Vmisc);
+            if (vmiscSources.Count == 0)
             {
-                case VoltageSensorSource.SuperIo:
-                    Vmisc = _vmiscSensor?.Value ?? 0;
-                    break;
-                case VoltageSensorSource.Smu:
-                    Vmisc = PowerTable.VDD_MISC;
-                    break;
-                default:
-                    Vmisc = 0;
-                    break;
+                Vmisc = 0;
+            }
+            else
+            {
+                switch (GetSelectedVoltageSource(VoltageRail.Vmisc))
+                {
+                    case VoltageSensorSource.SuperIo:
+                        Vmisc = _vmiscSensor?.Value ?? 0;
+                        break;
+                    case VoltageSensorSource.Smu:
+                        Vmisc = PowerTable.VDD_MISC;
+                        break;
+                    default:
+                        Vmisc = 0;
+                        break;
+                }
             }
         }
 

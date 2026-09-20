@@ -76,6 +76,10 @@ namespace ZenTimings.Windows
 
         private void LoadVoltageSensorSources()
         {
+            labelVddioSource.Text = _mainViewModel.CpuFamily >= ZenStates.Core.Cpu.Family.FAMILY_19H
+                ? "VDDIO source"
+                : "VDIMM source";
+
             LoadVoltageSensorSources(comboBoxVsocSensorSource, MainViewModel.VoltageRail.Vsoc, appSettings.VsocSensorSource);
             LoadVoltageSensorSources(comboBoxVddioSensorSource, MainViewModel.VoltageRail.Vddio, appSettings.VddioSensorSource);
             LoadVoltageSensorSources(comboBoxVmiscSensorSource, MainViewModel.VoltageRail.Vmisc, appSettings.VmiscSensorSource);

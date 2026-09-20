@@ -65,6 +65,16 @@ namespace ZenTimings
         private readonly bool isMockWindow = false;
         private readonly MockSystemData mockData;
 
+        // TODO: Refactor DDR4 to use view model only
+        private static readonly string[] Ddr4DramSensorNames =
+        {
+            "DRAM Voltage",
+            "CPU VDDIO",
+            "VDIMM",
+            "VDDIO",
+            "CPU VDDIO Memory"
+        };
+
         private readonly string AssemblyProduct = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(
             Assembly.GetExecutingAssembly(),
             typeof(AssemblyProductAttribute), false)).Product;
@@ -492,6 +502,23 @@ namespace ZenTimings
             }
         }
 
+        private bool TryReadDdr4SuperIoDramVoltage(out float voltage)
+        {
+            voltage = 0;
+
+            var sensors = cpu?.systemInfo?.SensorGroups?.SelectMany(g => g.Sensors);
+            var sensor = sensors?.FirstOrDefault(s =>
+                Ddr4DramSensorNames.Contains(s.Name, StringComparer.OrdinalIgnoreCase) &&
+                s.Value > 0 &&
+                s.Value < 3);
+
+            if (sensor == null)
+                return false;
+
+            voltage = sensor.Value ?? 0;
+            return true;
+        }
+
         // TODO: Handle in DLL or replace with read from memory
         private void ReadDDR4MemoryConfig()
         {
@@ -567,12 +594,27 @@ namespace ZenTimings
                 {
                     AsusSensorInfo sensor = AsusWmi.FindSensorByName("DRAM Voltage");
                     float temp = 0;
-                    bool valid = sensor != null && float.TryParse(sensor.Value, out temp);
+                    bool valid = sensor != null && float.TryParse(sensor.Value, out temp) && temp > 0 && temp < 3;
 
-                    if (valid && temp > 0 && temp < 3)
+                    if (valid)
+                    {
                         (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = sensor.Value;
+                        (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = true;
+                    }
+                    else if (TryReadDdr4SuperIoDramVoltage(out var superIoVdimm))
+                    {
+                        (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = $"{superIoVdimm:F4}V";
+                        (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = true;
+                    }
                     else
+                    {
                         (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = false;
+                    }
+                }
+                else if (TryReadDdr4SuperIoDramVoltage(out var superIoVdimm))
+                {
+                    (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = $"{superIoVdimm:F4}V";
+                    (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = true;
                 }
                 else
                 {
@@ -757,22 +799,19 @@ namespace ZenTimings
                 {
                     Thread.CurrentThread.IsBackground = true;
 
+                    var hasAsusDramVoltage = false;
+                    float asusDramVoltage = 0;
                     if (AsusWmi != null && AsusWmi.Status == 1)
                     {
                         AsusWmi.UpdateSensors();
                         AsusSensorInfo sensor = AsusWmi.FindSensorByName("DRAM Voltage");
-                        if (sensor != null)
-                            Dispatcher.Invoke(DispatcherPriority.ApplicationIdle,
-                                new Action(() =>
-                                {
-                                    (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = sensor.Value;
-                                    (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = true;
-                                }));
+                        hasAsusDramVoltage = sensor != null && float.TryParse(sensor.Value, out asusDramVoltage) && asusDramVoltage > 0 && asusDramVoltage < 3;
                     }
 
                     //ReadDDR4MemoryConfig();
                     cpu.RefreshPowerTable();
                     cpu.systemInfo.UpdateSensors();
+                    var hasSuperIoDramVoltage = TryReadDdr4SuperIoDramVoltage(out var superIoDramVoltage);
 
                     var voltagesUpdated = false;
                     if (cpu.memoryConfig?.SpdInfo?.Values != null)
@@ -795,6 +834,20 @@ namespace ZenTimings
 
                         if (voltagesUpdated)
                             mainViewModel.PmicData = cpu.memoryConfig.SpdInfo.Values.ElementAtOrDefault(comboBoxPartNumber?.SelectedIndex ?? 0)?.PmicData ?? null;
+
+                        if (cpu.memoryConfig.Type == MemType.DDR4 || cpu.memoryConfig.Type == MemType.LPDDR4)
+                        {
+                            if (hasAsusDramVoltage)
+                            {
+                                (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = $"{asusDramVoltage:F4}V";
+                                (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = true;
+                            }
+                            else if (hasSuperIoDramVoltage)
+                            {
+                                (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = $"{superIoDramVoltage:F4}V";
+                                (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = true;
+                            }
+                        }
 
                         mainViewModel.RefreshSensors();
 

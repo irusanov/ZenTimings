@@ -292,6 +292,7 @@
                     Style="{StaticResource SettingCombo}" />
 
                 <TextBlock
+                    x:Name="labelVddioSource"
                     Grid.Column="0"
                     Grid.Row="2"
                     Style="{StaticResource SettingLabel}"
