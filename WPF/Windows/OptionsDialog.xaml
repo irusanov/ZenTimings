@@ -493,14 +493,14 @@
                     <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2">
                         <TextBox
                             x:Name="textBoxScreenshotPath"
-                            Margin="3 0 0 0"
-                            Width="122"
+                            Margin="5 4 0 0"
+                            Width="120"
                             IsReadOnly="True"
                             VerticalAlignment="Top" />
 
                         <Button
                             x:Name="buttonBrowseScreenshotPath"
-                            Margin="5 0 0 0"
+                            Margin="5 4 0 0"
                             Width="26"
                             Height="24"
                             HorizontalAlignment="Left"
