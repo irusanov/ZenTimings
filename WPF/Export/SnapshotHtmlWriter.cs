@@ -34,6 +34,7 @@ namespace ZenTimings.Export
         {
             sb.AppendLine("<!doctype html>");
             sb.AppendLine("<html lang=\"en\"><head><meta charset=\"UTF-8\" />");
+            sb.AppendLine("<meta name=\"generator\" content=\"" + SnapshotBuilder.SchemaName + "\" />");
             sb.AppendLine("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />");
             sb.AppendLine("<title>" + Title + "</title>");
             sb.AppendLine("<meta name=\"description\" content=\"ZenTimings AMD Ryzen memory configuration snapshot\" />");

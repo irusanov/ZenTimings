@@ -99,17 +99,16 @@ namespace ZenTimings.Export
             return upper.Length == 4 && (upper.StartsWith("COM") || upper.StartsWith("LPT")) && char.IsDigit(upper[3]);
         }
 
-        // Both formats start with a line that names the application
+        // A file is only replaced or removed when it is a snapshot this application wrote
         private static bool IsSnapshotFile(string path)
         {
             try
             {
-                var buffer = new char[256];
+                var buffer = new char[SnapshotWriter.SignatureLength];
                 using (var reader = new StreamReader(path, Encoding.UTF8))
                 {
                     int read = reader.Read(buffer, 0, buffer.Length);
-                    string head = new string(buffer, 0, read);
-                    return head.Contains(SnapshotBuilder.SchemaName) || head.StartsWith(SnapshotWriter.TextHeader, StringComparison.Ordinal);
+                    return SnapshotWriter.HasSignature(new string(buffer, 0, read));
                 }
             }
             catch

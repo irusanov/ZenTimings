@@ -116,6 +116,7 @@ namespace ZenTimings.Windows
                 CheckLiveEnabled.IsChecked = settings.LiveSnapshotEnabled;
                 UpdateLiveEnabledState();
                 TextInterval.Text = Math.Max(1, settings.LiveSnapshotIntervalMs / 1000).ToString(CultureInfo.InvariantCulture);
+                CheckDeleteOnExit.IsChecked = settings.LiveSnapshotDeleteOnExit;
             }
 
             CheckLegend.IsChecked = settings.IncludeLegend;
@@ -359,6 +360,7 @@ namespace ZenTimings.Windows
             settings.LiveSnapshotEnabled = enabled;
             settings.LiveSnapshotFormat = SelectedFormat;
             settings.LiveSnapshotIntervalMs = seconds * 1000;
+            settings.LiveSnapshotDeleteOnExit = CheckDeleteOnExit.IsChecked == true;
             settings.LiveSnapshotDirectory = liveDirectory ?? "";
 
             if (sections != SnapshotSections.None)

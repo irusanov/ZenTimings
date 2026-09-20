@@ -13,6 +13,9 @@ namespace ZenTimings.Export
     {
         public const string TextHeader = "# ZenTimings snapshot";
 
+        // Every format names the schema near the start of the file, that is what marks the file as ours
+        public const int SignatureLength = 512;
+
         private const int InlineObjectLimit = 8;
 
         public static string Write(SnapshotObject root, SnapshotFormat format)
@@ -26,6 +29,11 @@ namespace ZenTimings.Export
                 default:
                     return ToJson(root);
             }
+        }
+
+        public static bool HasSignature(string head)
+        {
+            return head != null && head.IndexOf(SnapshotBuilder.SchemaName, StringComparison.Ordinal) >= 0;
         }
 
         public static string ToJson(SnapshotObject root)

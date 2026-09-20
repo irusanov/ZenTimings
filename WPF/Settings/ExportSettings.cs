@@ -30,6 +30,7 @@ namespace ZenTimings.Settings
         public SnapshotFormat LiveSnapshotFormat { get; set; } = SnapshotFormat.Json;
         public SnapshotSections LiveSnapshotSections { get; set; } = SnapshotSections.Default;
         public int LiveSnapshotIntervalMs { get; set; } = 5000;
+        public bool LiveSnapshotDeleteOnExit { get; set; } = false;
 
         // Empty means the application folder
         public string LiveSnapshotDirectory { get; set; } = "";
