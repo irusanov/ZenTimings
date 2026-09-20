@@ -1111,6 +1111,16 @@ namespace ZenTimings.Export
             return FormatScalarHtml(value, mono);
         }
 
+
+        private static readonly HashSet<string> TitleAcronyms = new HashSet<string>(StringComparer.Ordinal)
+        {
+            "acpi", "agesa", "aod", "apob", "bios", "cad", "ccd", "ccx", "cldo", "clk", "cpu", "cs", "dct",
+            "cpuid", "ddr", "dimm", "dram", "ecc", "expo", "fclk", "gpu", "i2c", "imc", "iod", "lpddr", "mclk", "nb",
+            "odt", "pci", "pmic", "pmu", "procodt", "ras", "rtt", "smu", "soc", "spd", "svi", "tccd", "uclk",
+            "umc", "vdd", "vddcr", "vddg", "vddio", "vddp", "vddq", "vdimm", "vin", "vpp", "vsoc", "vtt",
+            "wmi", "wr", "xmp"
+        };
+
         private static string ToTitle(string key)
         {
             if (string.IsNullOrEmpty(key))
@@ -1120,50 +1130,42 @@ namespace ZenTimings.Export
             for (int i = 0; i < parts.Length; i++)
             {
                 string part = parts[i];
-                switch (part.ToLowerInvariant())
+                string lower = part.ToLowerInvariant();
+
+                switch (lower)
                 {
-                    case "acpi":
-                    case "agesa":
-                    case "aod":
-                    case "apob":
-                    case "bios":
-                    case "ccd":
-                    case "ccx":
-                    case "cpu":
-                    case "dct":
-                    case "ddr":
-                    case "dimm":
-                    case "ecc":
-                    case "expo":
-                    case "gpu":
-                    case "i2c":
-                    case "mclk":
-                    case "pci":
-                    case "pmic":
-                    case "smu":
-                    case "spd":
-                    case "uclk":
-                    case "umc":
-                    case "wmi":
-                    case "xmp":
-                        parts[i] = part.ToUpperInvariant();
-                        break;
+                    case "ghz":
+                        parts[i] = "GHz";
+                        continue;
                     case "mhz":
                         parts[i] = "MHz";
-                        break;
+                        continue;
+                    case "mts":
                     case "mtps":
                         parts[i] = "MT/s";
-                        break;
+                        continue;
                     case "mv":
                         parts[i] = "mV";
-                        break;
+                        continue;
                     case "ms":
                         parts[i] = "ms";
-                        break;
-                    default:
-                        parts[i] = char.ToUpperInvariant(part[0]) + part.Substring(1);
-                        break;
+                        continue;
                 }
+
+                // Rail names that start with a digit, such as 1v0 / 1v8
+                if (!char.IsLetter(part[0]))
+                {
+                    parts[i] = part.ToUpperInvariant();
+                    continue;
+                }
+
+                int stemLength = lower.Length;
+                while (stemLength > 0 && char.IsDigit(lower[stemLength - 1]))
+                    stemLength--;
+
+                parts[i] = TitleAcronyms.Contains(lower.Substring(0, stemLength))
+                    ? part.ToUpperInvariant()
+                    : char.ToUpperInvariant(part[0]) + part.Substring(1);
             }
 
             return string.Join(" ", parts);

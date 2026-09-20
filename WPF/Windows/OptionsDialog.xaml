@@ -280,6 +280,7 @@
                 </ComboBox>
 
                 <TextBlock
+                    x:Name="labelVsocSource"
                     Grid.Column="0"
                     Grid.Row="1"
                     Style="{StaticResource SettingLabel}"
@@ -305,6 +306,7 @@
                     Style="{StaticResource SettingCombo}" />
 
                 <TextBlock
+                    x:Name="labelVmiscSource"
                     Grid.Column="0"
                     Grid.Row="3"
                     Style="{StaticResource SettingLabel}"

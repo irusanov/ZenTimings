@@ -147,6 +147,13 @@ namespace ZenTimings.Windows
             Groups.Add(group);
         }
 
+        public void SelectFormat(SnapshotFormat format)
+        {
+            RadioJson.IsChecked = format == SnapshotFormat.Json;
+            RadioText.IsChecked = format == SnapshotFormat.Text;
+            RadioHtml.IsChecked = format == SnapshotFormat.Html;
+        }
+
         private SnapshotFormat SelectedFormat
         {
             get

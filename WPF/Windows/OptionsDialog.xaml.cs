@@ -80,12 +80,13 @@ namespace ZenTimings.Windows
                 ? "VDDIO source"
                 : "VDIMM source";
 
-            LoadVoltageSensorSources(comboBoxVsocSensorSource, MainViewModel.VoltageRail.Vsoc, appSettings.VsocSensorSource);
-            LoadVoltageSensorSources(comboBoxVddioSensorSource, MainViewModel.VoltageRail.Vddio, appSettings.VddioSensorSource);
-            LoadVoltageSensorSources(comboBoxVmiscSensorSource, MainViewModel.VoltageRail.Vmisc, appSettings.VmiscSensorSource);
+            LoadVoltageSensorSources(comboBoxVsocSensorSource, labelVsocSource, MainViewModel.VoltageRail.Vsoc, appSettings.VsocSensorSource);
+            LoadVoltageSensorSources(comboBoxVddioSensorSource, labelVddioSource, MainViewModel.VoltageRail.Vddio, appSettings.VddioSensorSource);
+            LoadVoltageSensorSources(comboBoxVmiscSensorSource, labelVmiscSource, MainViewModel.VoltageRail.Vmisc, appSettings.VmiscSensorSource);
         }
 
-        private void LoadVoltageSensorSources(System.Windows.Controls.ComboBox comboBox, MainViewModel.VoltageRail rail, VoltageSensorSource selectedSource)
+        private void LoadVoltageSensorSources(System.Windows.Controls.ComboBox comboBox, System.Windows.Controls.TextBlock label,
+            MainViewModel.VoltageRail rail, VoltageSensorSource selectedSource)
         {
             foreach (var source in _mainViewModel.GetAvailableVoltageSources(rail))
             {
@@ -96,10 +97,17 @@ namespace ZenTimings.Windows
                 });
             }
 
+            // Nothing on this system can report the rail: hide the whole row instead of showing an empty combo
+            if (comboBox.Items.Count == 0)
+            {
+                label.Visibility = Visibility.Collapsed;
+                comboBox.Visibility = Visibility.Collapsed;
+                return;
+            }
+
             var selectedItem = comboBox.Items.Cast<System.Windows.Controls.ComboBoxItem>()
                 .FirstOrDefault(item => (VoltageSensorSource)item.Tag == selectedSource);
             comboBox.SelectedItem = selectedItem ?? comboBox.Items.Cast<System.Windows.Controls.ComboBoxItem>().FirstOrDefault();
-            comboBox.IsEnabled = comboBox.Items.Count > 0;
         }
 
         private void SaveSettingsFromUi()

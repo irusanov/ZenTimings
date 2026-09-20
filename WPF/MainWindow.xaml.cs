@@ -56,6 +56,7 @@ namespace ZenTimings
         private AdvancedTimingsWindow advancedTimingsWnd = null;
         private SensorsWindow sensorsWindw = null;
         private OptionsDialog optionsWnd = null;
+        private ExportDialog exportWnd = null;
         private AboutDialog aboutWnd = null;
         internal readonly Forms.NotifyIcon _notifyIcon;
         private bool compatMode;
@@ -389,6 +390,7 @@ namespace ZenTimings
 
             sensorsWindw?.Close();
             optionsWnd?.Close();
+            exportWnd?.Close();
 
             _notifyIcon?.Dispose();
             AsusWmi?.Dispose();
@@ -502,15 +504,24 @@ namespace ZenTimings
             }
         }
 
+        private bool ddr4BmcVddioValid;
+        private Sensor[] ddr4DramSensors;
+        private bool ddr4DramSensorsDetected;
+
         private bool TryReadDdr4SuperIoDramVoltage(out float voltage)
         {
             voltage = 0;
 
-            var sensors = cpu?.systemInfo?.SensorGroups?.SelectMany(g => g.Sensors);
-            var sensor = sensors?.FirstOrDefault(s =>
-                Ddr4DramSensorNames.Contains(s.Name, StringComparer.OrdinalIgnoreCase) &&
-                s.Value > 0 &&
-                s.Value < 3);
+            if (!ddr4DramSensorsDetected)
+            {
+                ddr4DramSensors = cpu?.systemInfo?.SensorGroups?
+                    .SelectMany(g => g.Sensors)
+                    .Where(s => Ddr4DramSensorNames.Contains(s.Name, StringComparer.OrdinalIgnoreCase))
+                    .ToArray();
+                ddr4DramSensorsDetected = ddr4DramSensors != null;
+            }
+
+            var sensor = ddr4DramSensors?.FirstOrDefault(s => s.Value > 0 && s.Value < 3);
 
             if (sensor == null)
                 return false;
@@ -586,34 +597,23 @@ namespace ZenTimings
                 }
 
                 float vdimm = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVddio) / 1000);
-                if (vdimm > 0 && vdimm < 3)
-                {
-                    (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = $"{vdimm:F4}V";
-                }
-                else if (AsusWmi != null && AsusWmi.Status == 1)
-                {
-                    AsusSensorInfo sensor = AsusWmi.FindSensorByName("DRAM Voltage");
-                    float temp = 0;
-                    bool valid = sensor != null && float.TryParse(sensor.Value, out temp) && temp > 0 && temp < 3;
+                ddr4BmcVddioValid = vdimm > 0 && vdimm < 3;
 
-                    if (valid)
+                float memVddio = vdimm;
+                bool hasMemVddio = ddr4BmcVddioValid;
+
+                if (!hasMemVddio && AsusWmi != null && AsusWmi.Status == 1)
                     {
-                        (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = sensor.Value;
-                        (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = true;
-                    }
-                    else if (TryReadDdr4SuperIoDramVoltage(out var superIoVdimm))
-                    {
-                        (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = $"{superIoVdimm:F4}V";
-                        (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = true;
-                    }
-                    else
-                    {
-                        (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = false;
-                    }
+                    AsusSensorInfo sensor = AsusWmi.FindSensorByName("DRAM Voltage");
+                    hasMemVddio = sensor != null && float.TryParse(sensor.Value, out memVddio) && memVddio > 0 && memVddio < 3;
                 }
-                else if (TryReadDdr4SuperIoDramVoltage(out var superIoVdimm))
+
+                if (!hasMemVddio)
+                    hasMemVddio = TryReadDdr4SuperIoDramVoltage(out memVddio);
+
+                if (hasMemVddio)
                 {
-                    (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = $"{superIoVdimm:F4}V";
+                    (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = $"{memVddio:F4}V";
                     (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = true;
                 }
                 else
@@ -846,6 +846,10 @@ namespace ZenTimings
                             {
                                 (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = $"{superIoDramVoltage:F4}V";
                                 (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = true;
+                            }
+                            else if (!ddr4BmcVddioValid)
+                            {
+                                (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = false;
                             }
                         }
 
@@ -1619,7 +1623,14 @@ namespace ZenTimings
             {
                 format = SnapshotFormat.Json;
             }
-            ExportDialog exportWnd = new ExportDialog(
+            if (exportWnd != null && exportWnd.IsLoaded)
+            {
+                exportWnd.SelectFormat(format);
+                exportWnd.Activate();
+                return;
+            }
+
+            exportWnd = new ExportDialog(
                 (options, selectedFormat) => SnapshotWriter.Write(SnapshotBuilder.Build(GetSnapshotSource(), options), selectedFormat),
                 format,
                 false,
@@ -1627,19 +1638,20 @@ namespace ZenTimings
             {
                 Owner = this
             };
+            exportWnd.Closed += (s, args) => exportWnd = null;
             exportWnd.Show();
         }
 
         private void LiveSnapshotMenuItem_Click(object sender, RoutedEventArgs e)
         {
             bool wasEnabled = ExportSettings.Instance.LiveSnapshotEnabled;
-            ExportDialog exportWnd = new ExportDialog(null, ExportSettings.Instance.LiveSnapshotFormat, true,
+            ExportDialog liveSnapshotWnd = new ExportDialog(null, ExportSettings.Instance.LiveSnapshotFormat, true,
                 SnapshotBuilder.GetUnavailableSections(GetSnapshotSource()))
             {
                 Owner = this
             };
 
-            if (exportWnd.ShowDialog() != true)
+            if (liveSnapshotWnd.ShowDialog() != true)
                 return;
 
             UpdateLiveSnapshotIndicator();

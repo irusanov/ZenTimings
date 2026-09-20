@@ -120,7 +120,6 @@ namespace ZenTimings.ViewModels
         public MemType MemoryType { get; }
         public bool IsDimmTelemetryAvailable => Settings.AdvancedMode && MemoryType == MemType.DDR5;
         public bool ECC { get; set; }
-        private bool IsVddioSupported => CpuFamily >= Cpu.Family.FAMILY_19H;
         private bool IsVmiscSupported => CpuFamily >= Cpu.Family.FAMILY_19H;
         public PowerTable PowerTable { get; }
         public Cpu.CodeName CodeName { get; }
@@ -469,74 +468,85 @@ namespace ZenTimings.ViewModels
             return availableSources.Contains(selectedSource) ? selectedSource : availableSources.FirstOrDefault();
         }
 
+        // Reads a single source for one rail. Returns 0 when that source has nothing to report right now.
+        private float ReadVoltageFrom(VoltageRail rail, VoltageSensorSource source)
+        {
+            switch (source)
+            {
+                case VoltageSensorSource.SuperIo:
+                    switch (rail)
+                    {
+                        case VoltageRail.Vsoc:
+                            return _vsocSensor?.Value ?? 0;
+                        case VoltageRail.Vddio:
+                            return _apuVddioSensor?.Value ?? 0;
+                        default:
+                            return _vmiscSensor?.Value ?? 0;
+                    }
+                case VoltageSensorSource.Smu:
+                    switch (rail)
+                    {
+                        case VoltageRail.Vsoc:
+                            return PowerTable?.VDDCR_SOC ?? 0;
+                        case VoltageRail.Vmisc:
+                            return PowerTable?.VDD_MISC ?? 0;
+                        default:
+                            return 0;
+                    }
+                case VoltageSensorSource.Aod:
+                    if (rail != VoltageRail.Vddio)
+                        return 0;
+
+                    var aodData = CpuSingleton.Instance?.info.aod?.Table?.Data;
+                    return aodData?.ApuVddio == null ? 0 : aodData.ApuVddio.RawValue / 1000.0f;
+                default:
+                    return 0;
+            }
+        }
+
+        private float ReadVoltage(VoltageRail rail)
+        {
+            var availableSources = GetAvailableVoltageSources(rail);
+            if (availableSources.Count == 0)
+                return 0;
+
+            var selectedSource = GetSelectedVoltageSource(rail);
+            float value = ReadVoltageFrom(rail, selectedSource);
+            if (value > 0)
+                return value;
+
+            foreach (var source in availableSources)
+            {
+                if (source == selectedSource)
+                    continue;
+
+                value = ReadVoltageFrom(rail, source);
+                if (value > 0)
+                    return value;
+            }
+
+            return 0;
+        }
+
         // Call after CpuSingleton.Instance.systemInfo.UpdateSensors() to refresh the live sensor readings.
         public void RefreshSensors()
         {
             if (mockData != null)
             {
+                // A debug report reconstructs neither SuperIO sensors nor the AOD table, so its own power table
+                // is the only source available. (ApuVddio therefore has no value to show in mock mode.)
                 ApuVddio = 0;
                 Vsoc = PowerTable?.VDDCR_SOC ?? 0;
-                Vmisc = PowerTable?.VDD_MISC ?? 0;
+                Vmisc = IsVmiscSupported ? PowerTable?.VDD_MISC ?? 0 : 0;
                 return;
             }
 
             if (!_sensorsDetected)
                 DetectSensors();
 
-            var vddioSources = GetAvailableVoltageSources(VoltageRail.Vddio);
-            if (vddioSources.Count == 0)
-            {
-                ApuVddio = 0;
-            }
-            else
-            {
-                switch (GetSelectedVoltageSource(VoltageRail.Vddio))
-                {
-                    case VoltageSensorSource.SuperIo:
-                        ApuVddio = _apuVddioSensor?.Value ?? 0;
-                        break;
-                    case VoltageSensorSource.Aod:
-                        ApuVddio = CpuSingleton.Instance.info.aod.Table.Data.ApuVddio.RawValue / 1000.0f;
-                        break;
-                    default:
-                        ApuVddio = 0;
-                        break;
-                }
-            }
-
-            switch (GetSelectedVoltageSource(VoltageRail.Vsoc))
-            {
-                case VoltageSensorSource.SuperIo:
-                    Vsoc = _vsocSensor?.Value ?? 0;
-                    break;
-                case VoltageSensorSource.Smu:
-                    Vsoc = PowerTable.VDDCR_SOC;
-                    break;
-                default:
-                    Vsoc = 0;
-                    break;
-            }
-
-            var vmiscSources = GetAvailableVoltageSources(VoltageRail.Vmisc);
-            if (vmiscSources.Count == 0)
-            {
-                Vmisc = 0;
-            }
-            else
-            {
-                switch (GetSelectedVoltageSource(VoltageRail.Vmisc))
-                {
-                    case VoltageSensorSource.SuperIo:
-                        Vmisc = _vmiscSensor?.Value ?? 0;
-                        break;
-                    case VoltageSensorSource.Smu:
-                        Vmisc = PowerTable.VDD_MISC;
-                        break;
-                    default:
-                        Vmisc = 0;
-                        break;
-                }
-            }
+            ApuVddio = ReadVoltage(VoltageRail.Vddio);
+            Vsoc = ReadVoltage(VoltageRail.Vsoc);
+            Vmisc = ReadVoltage(VoltageRail.Vmisc);
         }
 
         bool IsMismatch(
