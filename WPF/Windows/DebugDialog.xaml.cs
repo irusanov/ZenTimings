@@ -11,6 +11,7 @@ using ZenStates.Core;
 using ZenStates.Core.Hardware;
 using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
 using ZenTimings.Common;
+using ZenTimings.Export;
 using ZenTimings.Helpers;
 using Application = System.Windows.Application;
 using DRAM = ZenStates.Core.Hardware.DRAM;
@@ -54,6 +55,7 @@ namespace ZenTimings.Windows
             buttonDebugSaveAs.IsEnabled = enabled;
             buttonDebug.IsEnabled = enabled;
             textBoxDebugOutput.IsEnabled = enabled;
+            CheckPrintSerials.IsEnabled = enabled;
         }
 
         private string GetWmiInstanceName()
@@ -543,7 +545,8 @@ namespace ZenTimings.Windows
 
         private async void ButtonDebug_Click(object sender, RoutedEventArgs e)
         {
-            await Task.Run(Debug);
+            bool printSerialNumbers = CheckPrintSerials.IsChecked == true;
+            await Task.Run(() => CoreOptionsScope.Run(printSerialNumbers, Debug));
         }
 
         private void ButtonDebugCancel_Click(object sender, RoutedEventArgs e)
@@ -561,9 +564,5 @@ namespace ZenTimings.Windows
             SaveToFile(true);
         }
 
-        private async void ThemedAdonisWindow_Loaded(object sender, RoutedEventArgs e)
-        {
-            await Task.Run(Debug);
-        }
     }
 }

@@ -109,6 +109,7 @@
       <Link>Common\UpdaterPersistenceProvider.cs</Link>
     </Compile>
     <Compile Include="Converters\CountToVisibilityConverter.cs" />
+    <Compile Include="Export\CoreOptionsScope.cs" />
     <Compile Include="Export\SnapshotHtmlWriter.cs" />
     <Compile Include="Helpers\AgesaHelper.cs" />
     <Compile Include="Controls\LegacyDDR5APUTimingsPanel.xaml.cs">

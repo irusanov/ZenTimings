@@ -207,7 +207,8 @@ namespace ZenTimings.Export
             };
 
             target = GetFilePath(settings.LiveSnapshotDirectory, settings.LiveSnapshotFileName, settings.LiveSnapshotFormat);
-            return SnapshotWriter.Write(SnapshotBuilder.Build(source, options), settings.LiveSnapshotFormat);
+            return CoreOptionsScope.Run(false,
+                () => SnapshotWriter.Write(SnapshotBuilder.Build(source, options), settings.LiveSnapshotFormat));
         }
 
         // The application runs elevated and the folder can be writable by anyone, so nothing is written through

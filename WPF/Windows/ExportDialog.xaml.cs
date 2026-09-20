@@ -255,12 +255,14 @@ namespace ZenTimings.Windows
             settings.IncludeLegend = CheckLegend.IsChecked == true;
             settings.Save();
 
-            return generator(new SnapshotOptions
+            var options = new SnapshotOptions
             {
                 Sections = sections,
                 IncludeSerialNumbers = CheckSerials.IsChecked == true,
                 IncludeLegend = settings.IncludeLegend,
-            }, SelectedFormat);
+            };
+
+            return CoreOptionsScope.Run(options.IncludeSerialNumbers, () => generator(options, SelectedFormat));
         }
 
         private void BtnCopy_Click(object sender, RoutedEventArgs e)
