@@ -90,9 +90,23 @@ namespace ZenTimings.Windows
         {
             foreach (var source in _mainViewModel.GetAvailableVoltageSources(rail))
             {
+                string displayText;
+                if (source == VoltageSensorSource.Auto)
+                {
+                    displayText = "Auto";
+                }
+                else if (source == VoltageSensorSource.SuperIo)
+                {
+                    displayText = "Super I/O";
+                }
+                else
+                {
+                    displayText = source.ToString().ToUpperInvariant();
+                }
+
                 comboBox.Items.Add(new System.Windows.Controls.ComboBoxItem
                 {
-                    Content = source == VoltageSensorSource.SuperIo ? "Super I/O" : source.ToString().ToUpperInvariant(),
+                    Content = displayText,
                     Tag = source
                 });
             }

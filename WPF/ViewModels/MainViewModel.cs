@@ -438,10 +438,16 @@ namespace ZenTimings.ViewModels
             if (!_sensorsDetected)
                 DetectSensors();
 
-            var sources = new List<VoltageSensorSource>();
+            var sources = new List<VoltageSensorSource>() { VoltageSensorSource.Auto };
 
             if (rail == VoltageRail.Vmisc && !IsVmiscSupported)
                 return sources;
+
+            if ((rail == VoltageRail.Vsoc && PowerTable?.VDDCR_SOC > 0) ||
+                (rail == VoltageRail.Vmisc && PowerTable?.VDD_MISC > 0))
+            {
+                sources.Add(VoltageSensorSource.Svi3);
+            }
 
             if ((rail == VoltageRail.Vsoc && _vsocSensor != null) ||
                 (rail == VoltageRail.Vddio && _apuVddioSensor != null) ||
@@ -450,18 +456,31 @@ namespace ZenTimings.ViewModels
                 sources.Add(VoltageSensorSource.SuperIo);
             }
 
-            if ((rail == VoltageRail.Vsoc && PowerTable?.VDDCR_SOC > 0) ||
-                (rail == VoltageRail.Vmisc && PowerTable?.VDD_MISC > 0))
-            {
-                sources.Add(VoltageSensorSource.Smu);
-            }
-
             if (rail == VoltageRail.Vddio && AodData?.ApuVddio != null)
             {
                 sources.Add(VoltageSensorSource.Aod);
             }
 
             return sources;
+        }
+
+        /// <summary>
+        /// Gets the default sensor source for a specific voltage rail.
+        /// Returns the preferred source when the user has not explicitly selected one.
+        /// </summary>
+        private VoltageSensorSource GetDefaultSourceForRail(VoltageRail rail)
+        {
+            switch (rail)
+            {
+                case VoltageRail.Vsoc:
+                    return VoltageSensorSource.Svi3;
+                case VoltageRail.Vddio:
+                    return VoltageSensorSource.SuperIo;
+                case VoltageRail.Vmisc:
+                    return VoltageSensorSource.Svi3;
+                default:
+                    return VoltageSensorSource.Svi3;
+            }
         }
 
         private VoltageSensorSource GetSelectedVoltageSource(VoltageRail rail)
@@ -479,6 +498,12 @@ namespace ZenTimings.ViewModels
                 default:
                     selectedSource = Settings.VmiscSensorSource;
                     break;
+            }
+
+            // If the selected source is Default, resolve it to the rail-specific default
+            if (selectedSource == VoltageSensorSource.Auto)
+            {
+                selectedSource = GetDefaultSourceForRail(rail);
             }
 
             return availableSources.Contains(selectedSource) ? selectedSource : availableSources.FirstOrDefault();
@@ -499,7 +524,7 @@ namespace ZenTimings.ViewModels
                         default:
                             return _vmiscSensor?.Value ?? 0;
                     }
-                case VoltageSensorSource.Smu:
+                case VoltageSensorSource.Svi3:
                     switch (rail)
                     {
                         case VoltageRail.Vsoc:
@@ -562,7 +587,7 @@ namespace ZenTimings.ViewModels
             switch (source.Value)
             {
                 case VoltageSensorSource.SuperIo: return name + " (SIO)";
-                case VoltageSensorSource.Smu: return name + " (SMU)";
+                case VoltageSensorSource.Svi3: return name + " (SVI3)";
                 case VoltageSensorSource.Aod: return name + " (AOD)";
                 default: return plainLabel;
             }
