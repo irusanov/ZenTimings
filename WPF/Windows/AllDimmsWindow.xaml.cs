@@ -237,21 +237,27 @@ namespace ZenTimings.Windows
             }
         }
 
-        // As many panels per row as fit the screen, spread evenly: four channels make 2x2 rather than 3 + 1.
+        // A near-square grid: up to three channels share one row (1x1, 2x1, 3x1), four make 2x2, five to nine
+        // a grid three wide, ten to sixteen four wide, and so on. Fewer columns when the screen is too narrow,
+        // spread evenly so the last row isn't left with a single panel.
         private int BalancedColumns()
         {
             int count = ChannelsPanel.Children.Count;
             if (count == 0)
                 return 1;
 
+            int preferred = count <= 3 ? count : (int)Math.Ceiling(Math.Sqrt(count));
+
             var frame = (FrameworkElement)ChannelsPanel.Children[0];
             frame.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
 
             double available = MaxWidth - BorderThickness.Left - BorderThickness.Right
                 - ChannelsPanel.Margin.Left - ChannelsPanel.Margin.Right - SystemParameters.VerticalScrollBarWidth;
-            int perRow = Math.Max(1, (int)(available / frame.DesiredSize.Width));
-            int rows = (count + perRow - 1) / perRow;
+            int fits = Math.Max(1, (int)(available / frame.DesiredSize.Width));
+            if (preferred <= fits)
+                return preferred;
 
+            int rows = (count + fits - 1) / fits;
             return (count + rows - 1) / rows;
         }
 
