@@ -252,13 +252,13 @@
 
                     <TextBlock Text="" Style="{DynamicResource DividerTextBlock}" />
 
-                    <TextBlock Text="VSOC" TextAlignment="Right" />
+                    <TextBlock Text="{Binding VsocLabel, FallbackValue='VSOC', Mode=OneWay}" TextAlignment="Right" />
                     <TextBlock Text="CLDO VDDP" TextAlignment="Right" IsEnabled="{Binding PowerTable.CLDO_VDDP, Mode=OneWay, Converter={StaticResource FloatToBool}}" />
                     <TextBlock Text="MEM VDD" TextAlignment="Right" />
                     <TextBlock Text="MEM VDDQ" TextAlignment="Right" />
-                    <TextBlock x:Name="labelApuVddio" Text="CPU VDDIO" IsEnabled="{Binding ApuVddio}" TextAlignment="Right" />
+                    <TextBlock x:Name="labelApuVddio" Text="{Binding VddioLabel, FallbackValue='CPU VDDIO', Mode=OneWay}" IsEnabled="{Binding ApuVddio}" TextAlignment="Right" />
                     <TextBlock Text="MEM VPP" TextAlignment="Right" />
-                    <TextBlock x:Name="labelVddMisc" Text="VDD MISC" IsEnabled="{Binding Vmisc}" TextAlignment="Right" />
+                    <TextBlock x:Name="labelVddMisc" Text="{Binding VmiscLabel, FallbackValue='VDD MISC', Mode=OneWay}" IsEnabled="{Binding Vmisc}" TextAlignment="Right" />
 
                     <TextBlock Text="" TextAlignment="Right" />
 

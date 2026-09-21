@@ -259,6 +259,29 @@ namespace ZenTimings.ViewModels
             set => SetProperty(ref _vmisc, value);
         }
 
+        // Row labels naming the source each rail's value came from, e.g. "VSOC (SMU)" or "VDDIO (AOD)".
+        // They keep the plain name while a rail has no reading.
+        private string _vsocLabel = "VSOC";
+        public string VsocLabel
+        {
+            get => _vsocLabel;
+            set => SetProperty(ref _vsocLabel, value);
+        }
+
+        private string _vddioLabel = "CPU VDDIO";
+        public string VddioLabel
+        {
+            get => _vddioLabel;
+            set => SetProperty(ref _vddioLabel, value);
+        }
+
+        private string _vmiscLabel = "VDD MISC";
+        public string VmiscLabel
+        {
+            get => _vmiscLabel;
+            set => SetProperty(ref _vmiscLabel, value);
+        }
+
         // The decoded AOD table: rebuilt from the debug report's raw dump in a mock window, read from
         // the live machine otherwise. Everything below that needs AOD goes through here.
         private AodData AodData =>
@@ -506,8 +529,12 @@ namespace ZenTimings.ViewModels
             }
         }
 
-        private float ReadVoltage(VoltageRail rail)
+        // Reads the selected source, falling back to the other available ones. usedSource is the one
+        // that produced the value, or null when none had a reading.
+        private float ReadVoltage(VoltageRail rail, out VoltageSensorSource? usedSource)
         {
+            usedSource = null;
+
             var availableSources = GetAvailableVoltageSources(rail);
             if (availableSources.Count == 0)
                 return 0;
@@ -515,7 +542,10 @@ namespace ZenTimings.ViewModels
             var selectedSource = GetSelectedVoltageSource(rail);
             float value = ReadVoltageFrom(rail, selectedSource);
             if (value > 0)
+            {
+                usedSource = selectedSource;
                 return value;
+            }
 
             foreach (var source in availableSources)
             {
@@ -524,10 +554,27 @@ namespace ZenTimings.ViewModels
 
                 value = ReadVoltageFrom(rail, source);
                 if (value > 0)
+                {
+                    usedSource = source;
                     return value;
+                }
             }
 
             return 0;
+        }
+
+        private static string VoltageLabel(string name, string plainLabel, VoltageSensorSource? source)
+        {
+            if (!source.HasValue)
+                return plainLabel;
+
+            switch (source.Value)
+            {
+                case VoltageSensorSource.SuperIo: return name + " (SIO)";
+                case VoltageSensorSource.Smu: return name + " (SMU)";
+                case VoltageSensorSource.Aod: return name + " (AOD)";
+                default: return plainLabel;
+            }
         }
 
         // Call after CpuSingleton.Instance.systemInfo.UpdateSensors() to refresh the live sensor readings.
@@ -538,9 +585,16 @@ namespace ZenTimings.ViewModels
             if (!_sensorsDetected)
                 DetectSensors();
 
-            ApuVddio = ReadVoltage(VoltageRail.Vddio);
-            Vsoc = ReadVoltage(VoltageRail.Vsoc);
-            Vmisc = ReadVoltage(VoltageRail.Vmisc);
+            VoltageSensorSource? source;
+
+            ApuVddio = ReadVoltage(VoltageRail.Vddio, out source);
+            VddioLabel = VoltageLabel("VDDIO", "CPU VDDIO", source);
+
+            Vsoc = ReadVoltage(VoltageRail.Vsoc, out source);
+            VsocLabel = VoltageLabel("VSOC", "VSOC", source);
+
+            Vmisc = ReadVoltage(VoltageRail.Vmisc, out source);
+            VmiscLabel = VoltageLabel("MISC", "VDD MISC", source);
         }
 
         bool IsMismatch(
