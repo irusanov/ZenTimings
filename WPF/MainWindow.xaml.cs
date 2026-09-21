@@ -188,10 +188,8 @@ namespace ZenTimings
                 }
 
                 // TODO: Add crash-logger and dump any info available to a file for debugging.
-                if (cpu.memoryConfig == null)
-                {
-                    throw new ApplicationException("Could not read the memory controller configuration.");
-                }
+                var memoryConfig = cpu.GetMemoryConfig() ?? throw new ApplicationException("Could not read the memory controller configuration.");
+                var memoryType = memoryConfig.Type;
 
                 IconSource = GetIcon("pack://application:,,,/ZenTimings;component/Resources/ZenTimings2022.ico", 16);
                 _notifyIcon = GetTrayIcon();
@@ -199,15 +197,14 @@ namespace ZenTimings
                 InitializeComponent();
                 //SetResourceReference(NativeBorderBrushProperty, "WindowBorderColor");
 
-                SplashWindow.Loading("Sensors");
-                cpu.systemInfo?.UpdateSensors();
+                SplashWindow.Loading("Timings");
+                var timings = ReadTimings();
 
                 SplashWindow.Loading("Memory modules");
-                ReadMemoryModulesInfo(cpu.GetMemoryConfig()?.Modules);
+                ReadMemoryModulesInfo(memoryConfig?.Modules);
 
-                SplashWindow.Loading("Timings");
-
-                var memoryType = cpu.GetMemoryConfig().Type;
+                SplashWindow.Loading("Sensors");
+                cpu.systemInfo?.UpdateSensors();
 
                 // Motherboard logo
                 SplashWindow.Loading("Resources");
@@ -219,7 +216,6 @@ namespace ZenTimings
 
                 if (settings.AdvancedMode)
                 {
-
                     PowerCfgTimer.Interval = TimeSpan.FromMilliseconds(settings.AutoRefreshInterval);
                     PowerCfgTimer.Tick += PowerCfgTimer_Tick;
 
@@ -228,7 +224,7 @@ namespace ZenTimings
                     {
                         SplashWindow.Loading("Power table error!");
                     }
-
+                    // I/O driver currently used for APOB, AOD and Agesa version
                     SplashWindow.Loading("IO Driver");
                     if (!WaitForInpoutDriverLoad())
                     {
@@ -256,14 +252,14 @@ namespace ZenTimings
                 }
 
                 mainViewModel = new MainViewModel(
-                    ReadTimings(),
+                    timings,
                     memoryType,
                     compatMode,
                     settings,
                     plugins,
                     motherboardLogoName,
                     GetAgesaVersion(),
-                    cpu.GetMemoryConfig()?.SpdInfo?.Values.FirstOrDefault(d => d.IsValid)?.PmicData
+                    ModulePmicData(0)
                 );
 
                 DataContext = mainViewModel;
@@ -846,7 +842,9 @@ namespace ZenTimings
             if (mockData != null)
                 return mockData.GetPmicData(moduleIndex);
 
-            return ModuleSpdInfo?.Values.ElementAtOrDefault(moduleIndex)?.PmicData;
+            return ModuleSpdInfo?.Values
+                .Where(d => d.IsValid)
+                .ElementAtOrDefault(moduleIndex)?.PmicData;
         }
 
         // Always true live; a debug report has every channel only when it carries the register dump.
@@ -858,31 +856,9 @@ namespace ZenTimings
             return mockData == null ? ReadTimings(offset) : mockData.Timings.FirstOrDefault(channel => channel.Key == offset).Value;
         }
 
-        //TODO: Replace with a call to DLL
         private BaseDramTimings ReadTimings(uint offset = 0)
         {
-            cpu.memoryConfig.ReadTimings(offset);
-            var timings = cpu.memoryConfig.Timings;
-
-            if (timings.Count == 0)
-                return null;
-
-            var index = timings.FindIndex(m => m.Key.Equals(offset));
-            return timings[index < 0 ? 0 : index].Value;
-
-            //float configured = mainViewModel?.MemoryFrequency ?? 0;
-            //float ratio = result.Ratio;
-            //float freqFromRatio = ratio * 200;
-
-            //// Fallback to ratio when ConfiguredClockSpeed fails
-            //if ((configured == 0.0f || freqFromRatio > configured) && mainViewModel != null)
-            //{
-            //    mainViewModel.MemoryFrequency = freqFromRatio;
-            //}
-
-            //mainViewModel.MemoryFrequency = result.Frequency;
-
-            //return result;
+            return cpu.memoryConfig.ReadTimings(offset);
         }
 
         private bool WaitForInpoutDriverLoad()
