@@ -6,22 +6,27 @@ using System.IO;
 using System.Linq;
 using System.Management;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using ZenStates.Core;
 using ZenStates.Core.Hardware;
 using ZenStates.Core.Hardware.Aod;
 using ZenStates.Core.Hardware.DRAM;
+using ZenStates.Core.Hardware.DRAM.DDR5.Pmic;
+using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
 using ZenStates.Core.Hardware.Mock;
 using ZenStates.Core.OHWM;
 using ZenTimings.Common;
 using ZenTimings.Controls;
+using ZenTimings.Export;
 using ZenTimings.Helpers;
 using ZenTimings.Plugin;
 using ZenTimings.Settings;
@@ -54,6 +59,7 @@ namespace ZenTimings
         private AdvancedTimingsWindow advancedTimingsWnd = null;
         private SensorsWindow sensorsWindw = null;
         private OptionsDialog optionsWnd = null;
+        private ExportDialog exportWnd = null;
         private AboutDialog aboutWnd = null;
         internal readonly Forms.NotifyIcon _notifyIcon;
         private bool compatMode;
@@ -61,6 +67,17 @@ namespace ZenTimings
         private readonly MainViewModel mainViewModel;
         private float lastMclk = 0;
         private readonly bool isMockWindow = false;
+        private readonly MockSystemData mockData;
+
+        // TODO: Refactor DDR4 to use view model only
+        private static readonly string[] Ddr4DramSensorNames =
+        {
+            "DRAM Voltage",
+            "CPU VDDIO",
+            "VDIMM",
+            "VDDIO",
+            "CPU VDDIO Memory"
+        };
 
         private readonly string AssemblyProduct = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(
             Assembly.GetExecutingAssembly(),
@@ -229,7 +246,7 @@ namespace ZenTimings
                     plugins,
                     motherboardLogoName,
                     GetAgesaVersion(),
-                    cpu.GetMemoryConfig()?.SpdInfo?.Values.FirstOrDefault(d => d.IsValid)?.PmicData ?? null
+                    cpu.GetMemoryConfig()?.SpdInfo?.Values.FirstOrDefault(d => d.IsValid)?.PmicData
                 );
 
                 DataContext = mainViewModel;
@@ -261,20 +278,64 @@ namespace ZenTimings
         {
             cpu = CpuSingleton.Instance;
             this.isMockWindow = true;
+            this.mockData = mockData;
+            mainViewModel = viewModel;
 
             IconSource = GetIcon("pack://application:,,,/ZenTimings;component/Resources/ZenTimings2022.ico", 16);
             InitializeComponent();
 
             DataContext = viewModel;
-            AddTimingsPanel(viewModel.MemoryType, mockData.CpuInfo.family, mockData.CpuInfo.smuType, mockData.Apob != null && mockData.Apob.IsAvailable);
+            AddTimingsPanel(viewModel.MemoryType, mockData.CpuInfo.family, mockData.CpuInfo.smuType, mockData.Apob != null && mockData.Apob.IsValid);
+
+            // The live window reads VSOC from SVI2 telemetry through its plugin; a report stands in the
+            // power table's VDDCR_SOC, which the SMU reports from the same rail.
+            float reportVsoc = mockData.PowerTable?.VDDCR_SOC ?? 0;
+            if (reportVsoc > 0 && timingsPanel is DDR4TimingsPanel ddr4Panel)
+                ddr4Panel.textBoxVSOC_SVI2.Text = $"{reportVsoc:F4}V";
+
+            // DDR4 takes its ODT/RTT/drive strength fields from the BIOS memory controller config; a
+            // report carries it as a byte dump. Too short a dump would read past the Resistances layout.
+            if ((viewModel.MemoryType == MemType.DDR4 || viewModel.MemoryType == MemType.LPDDR4) &&
+                mockData.BiosMemControllerTable != null &&
+                mockData.BiosMemControllerTable.Length >= Marshal.SizeOf(typeof(BiosMemController.Resistances)))
+            {
+                BMC = new BiosMemController { Table = mockData.BiosMemControllerTable };
+
+                try
+                {
+                    ApplyDdr4MemoryConfig();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Debug report: could not apply the BIOS memory controller config: {ex.Message}");
+                }
+            }
+
+            // The window already shows the report's CPU and board, so the title only marks it as a report and names
+            // the build that wrote it. The commit hash is left out: anything longer widens this SizeToContent
+            // window in simple mode, as its title bar does not trim.
+            string version = mockData.ReportVersion?.Split('+')[0];
+            Title = version != null ? $"Debug Report v{version}" : "Debug Report";
+
+            // A debug report is a read-only snapshot: the menu and the screenshot act on the live machine. Module
+            // selection needs every channel's timings, which only reports carrying the register dump provide.
+            MainMenu.IsEnabled = false;
         }
 
         private void AddTimingsPanel(MemType memoryType)
         {
-            AddTimingsPanel(memoryType, cpu.info.family, cpu.smu.SMU_TYPE, cpu.info.apob.IsAvailable);
+            AddTimingsPanel(memoryType, cpu.info.family, cpu.smu.SMU_TYPE, cpu.info.apob.IsValid);
         }
 
-        private void AddTimingsPanel(MemType memoryType, Cpu.Family family, SMU.SmuType smuType, bool apobAvailable)
+        // The AOD-driven panels show the report's AOD fields in a mock window, never the live machine's.
+        private LegacyDDR5APUTimingsPanel CreateLegacyApuPanel()
+        {
+            return mockData != null
+                ? new LegacyDDR5APUTimingsPanel(mockData.AodData)
+                : new LegacyDDR5APUTimingsPanel();
+        }
+
+        private void AddTimingsPanel(MemType memoryType, Cpu.Family family, SMU.SmuType smuType, bool apobValid)
         {
             // Add timings panel
             switch (memoryType)
@@ -285,17 +346,19 @@ namespace ZenTimings
                     break;
 
                 case MemType.LPDDR5:
-                    timingsPanel = new LegacyDDR5APUTimingsPanel();
+                    timingsPanel = CreateLegacyApuPanel();
                     break;
 
                 case MemType.DDR5:
                     {
-                        if (!apobAvailable || settings.ImpedanceTableSrc == AppSettings.ImpedanceTableSource.AOD)
+                        if (!apobValid || settings.ImpedanceTableSrc == AppSettings.ImpedanceTableSource.AOD)
                         {
                             if (smuType == SMU.SmuType.TYPE_APU2)
-                                timingsPanel = new LegacyDDR5APUTimingsPanel();
+                                timingsPanel = CreateLegacyApuPanel();
                             else
-                                timingsPanel = new LegacyDDR5TimingsPanel();
+                                timingsPanel = mockData != null
+                                    ? new LegacyDDR5TimingsPanel(mockData.AodData, family)
+                                    : new LegacyDDR5TimingsPanel();
                             break;
                         }
 
@@ -364,6 +427,7 @@ namespace ZenTimings
 
             sensorsWindw?.Close();
             optionsWnd?.Close();
+            exportWnd?.Close();
 
             _notifyIcon?.Dispose();
             AsusWmi?.Dispose();
@@ -447,7 +511,13 @@ namespace ZenTimings
                 if (comboBoxPartNumber.Items.Count > 0)
                 {
                     comboBoxPartNumber.SelectedIndex = 0;
-                    if (!isMockWindow) comboBoxPartNumber.SelectionChanged += ComboBoxPartNumber_SelectionChanged;
+                    comboBoxPartNumber.SelectionChanged += ComboBoxPartNumber_SelectionChanged;
+                }
+
+                if (modules.Count > 1 && HasChannelTimings)
+                {
+                    buttonAllDimms.Visibility = Visibility.Visible;
+                    comboBoxPartNumber.IsEnabled = true;
                 }
             }
         }
@@ -471,7 +541,116 @@ namespace ZenTimings
             }
         }
 
+        private bool ddr4BmcVddioValid;
+        private Sensor[] ddr4DramSensors;
+        private bool ddr4DramSensorsDetected;
+
+        private bool TryReadDdr4SuperIoDramVoltage(out float voltage)
+        {
+            voltage = 0;
+
+            if (!ddr4DramSensorsDetected)
+            {
+                // A debug report's window reads the SuperIO sensors replayed from the report.
+                IEnumerable<SuperIoSensorGroup> groups = mockData != null ? mockData.SensorGroups : cpu?.systemInfo?.SensorGroups;
+                ddr4DramSensors = groups?
+                    .SelectMany(g => g.Sensors)
+                    .Where(s => Ddr4DramSensorNames.Contains(s.Name, StringComparer.OrdinalIgnoreCase))
+                    .ToArray();
+                ddr4DramSensorsDetected = ddr4DramSensors != null;
+            }
+
+            var sensor = ddr4DramSensors?.FirstOrDefault(s => s.Value > 0 && s.Value < 3);
+
+            if (sensor == null)
+                return false;
+
+            voltage = sensor.Value ?? 0;
+            return true;
+        }
+
         // TODO: Handle in DLL or replace with read from memory
+        /// <summary>
+        /// Fills the DDR4 panel's rails, ODT, RTT, drive strength and setup fields from
+        /// <see cref="BMC"/>. The live window loads BMC.Table over WMI first; a debug report's
+        /// window loads it from the report's "BIOS: Memory Controller Config" dump.
+        /// </summary>
+        private void ApplyDdr4MemoryConfig()
+        {
+            float vdimm = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVddio) / 1000);
+            ddr4BmcVddioValid = vdimm > 0 && vdimm < 3;
+
+            float memVddio = vdimm;
+            bool hasMemVddio = ddr4BmcVddioValid;
+
+            // ASUS WMI reads the machine this runs on, so it is live only; the SuperIO fallback reads
+            // the report's replayed sensors in a debug report's window.
+            if (!hasMemVddio && mockData == null && AsusWmi != null && AsusWmi.Status == 1)
+            {
+                AsusSensorInfo sensor = AsusWmi.FindSensorByName("DRAM Voltage");
+                hasMemVddio = sensor != null && float.TryParse(sensor.Value, out memVddio) && memVddio > 0 && memVddio < 3;
+            }
+
+            if (!hasMemVddio)
+                hasMemVddio = TryReadDdr4SuperIoDramVoltage(out memVddio);
+
+            if (hasMemVddio)
+            {
+                (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = $"{memVddio:F4}V";
+                (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = true;
+            }
+            else
+            {
+                (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = false;
+            }
+
+            // Enabled explicitly, like VDIMM above: the label's default binding is WMIPresent, which a
+            // debug report's window never has.
+            float vtt = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVtt) / 1000);
+            if (vtt > 0)
+            {
+                (timingsPanel as DDR4TimingsPanel).textBoxMemVtt.Text = $"{vtt:F4}V";
+                (timingsPanel as DDR4TimingsPanel).labelMemVtt.IsEnabled = true;
+            }
+            else
+            {
+                (timingsPanel as DDR4TimingsPanel).labelMemVtt.IsEnabled = false;
+            }
+
+            // When ProcODT is 0, then all other resistance values are 0
+            // Happens when one DIMM installed in A1 or A2 slot
+            if (BMC.Table == null || ZenStates.Core.Utils.AllZero(BMC.Table) || BMC.Config.ProcODT < 1)
+                // throw new Exception("Failed to read AMD ACPI. Odt, Setup and Drive strength parameters will be empty.");
+                return;
+
+            (timingsPanel as DDR4TimingsPanel).labelProcODT.IsEnabled = true;
+            (timingsPanel as DDR4TimingsPanel).labelClkDrvStren.IsEnabled = true;
+            (timingsPanel as DDR4TimingsPanel).labelAddrCmdDrvStren.IsEnabled = true;
+            (timingsPanel as DDR4TimingsPanel).labelCsOdtDrvStren.IsEnabled = true;
+            (timingsPanel as DDR4TimingsPanel).labelCkeDrvStren.IsEnabled = true;
+            (timingsPanel as DDR4TimingsPanel).labelRttNom.IsEnabled = true;
+            (timingsPanel as DDR4TimingsPanel).labelRttWr.IsEnabled = true;
+            (timingsPanel as DDR4TimingsPanel).labelRttPark.IsEnabled = true;
+            (timingsPanel as DDR4TimingsPanel).labelAddrCmdSetup.IsEnabled = true;
+            (timingsPanel as DDR4TimingsPanel).labelCsOdtSetup.IsEnabled = true;
+            (timingsPanel as DDR4TimingsPanel).labelCkeSetup.IsEnabled = true;
+
+            (timingsPanel as DDR4TimingsPanel).textBoxProcODT.Text = BMC.GetProcODTString(BMC.Config.ProcODT);
+
+            (timingsPanel as DDR4TimingsPanel).textBoxClkDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.ClkDrvStren);
+            (timingsPanel as DDR4TimingsPanel).textBoxAddrCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.AddrCmdDrvStren);
+            (timingsPanel as DDR4TimingsPanel).textBoxCsOdtCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CsOdtCmdDrvStren);
+            (timingsPanel as DDR4TimingsPanel).textBoxCkeDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CkeDrvStren);
+
+            (timingsPanel as DDR4TimingsPanel).textBoxRttNom.Text = BMC.GetRttString(BMC.Config.RttNom);
+            (timingsPanel as DDR4TimingsPanel).textBoxRttWr.Text = BMC.GetRttWrString(BMC.Config.RttWr);
+            (timingsPanel as DDR4TimingsPanel).textBoxRttPark.Text = BMC.GetRttString(BMC.Config.RttPark);
+
+            (timingsPanel as DDR4TimingsPanel).textBoxAddrCmdSetup.Text = $"{BMC.Config.AddrCmdSetup}";
+            (timingsPanel as DDR4TimingsPanel).textBoxCsOdtSetup.Text = $"{BMC.Config.CsOdtSetup}";
+            (timingsPanel as DDR4TimingsPanel).textBoxCkeSetup.Text = $"{BMC.Config.CkeSetup}";
+        }
+
         private void ReadDDR4MemoryConfig()
         {
             string scope = @"root\wmi";
@@ -537,65 +716,7 @@ namespace ZenTimings
                     }
                 }
 
-                float vdimm = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVddio) / 1000);
-                if (vdimm > 0 && vdimm < 3)
-                {
-                    (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = $"{vdimm:F4}V";
-                }
-                else if (AsusWmi != null && AsusWmi.Status == 1)
-                {
-                    AsusSensorInfo sensor = AsusWmi.FindSensorByName("DRAM Voltage");
-                    float temp = 0;
-                    bool valid = sensor != null && float.TryParse(sensor.Value, out temp);
-
-                    if (valid && temp > 0 && temp < 3)
-                        (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = sensor.Value;
-                    else
-                        (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = false;
-                }
-                else
-                {
-                    (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = false;
-                }
-
-                float vtt = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVtt) / 1000);
-                if (vtt > 0)
-                    (timingsPanel as DDR4TimingsPanel).textBoxMemVtt.Text = $"{vtt:F4}V";
-                else
-                    (timingsPanel as DDR4TimingsPanel).labelMemVtt.IsEnabled = false;
-
-                // When ProcODT is 0, then all other resistance values are 0
-                // Happens when one DIMM installed in A1 or A2 slot
-                if (BMC.Table == null || ZenStates.Core.Utils.AllZero(BMC.Table) || BMC.Config.ProcODT < 1)
-                    // throw new Exception("Failed to read AMD ACPI. Odt, Setup and Drive strength parameters will be empty.");
-                    return;
-
-                (timingsPanel as DDR4TimingsPanel).labelProcODT.IsEnabled = true;
-                (timingsPanel as DDR4TimingsPanel).labelClkDrvStren.IsEnabled = true;
-                (timingsPanel as DDR4TimingsPanel).labelAddrCmdDrvStren.IsEnabled = true;
-                (timingsPanel as DDR4TimingsPanel).labelCsOdtDrvStren.IsEnabled = true;
-                (timingsPanel as DDR4TimingsPanel).labelCkeDrvStren.IsEnabled = true;
-                (timingsPanel as DDR4TimingsPanel).labelRttNom.IsEnabled = true;
-                (timingsPanel as DDR4TimingsPanel).labelRttWr.IsEnabled = true;
-                (timingsPanel as DDR4TimingsPanel).labelRttPark.IsEnabled = true;
-                (timingsPanel as DDR4TimingsPanel).labelAddrCmdSetup.IsEnabled = true;
-                (timingsPanel as DDR4TimingsPanel).labelCsOdtSetup.IsEnabled = true;
-                (timingsPanel as DDR4TimingsPanel).labelCkeSetup.IsEnabled = true;
-
-                (timingsPanel as DDR4TimingsPanel).textBoxProcODT.Text = BMC.GetProcODTString(BMC.Config.ProcODT);
-
-                (timingsPanel as DDR4TimingsPanel).textBoxClkDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.ClkDrvStren);
-                (timingsPanel as DDR4TimingsPanel).textBoxAddrCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.AddrCmdDrvStren);
-                (timingsPanel as DDR4TimingsPanel).textBoxCsOdtCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CsOdtCmdDrvStren);
-                (timingsPanel as DDR4TimingsPanel).textBoxCkeDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CkeDrvStren);
-
-                (timingsPanel as DDR4TimingsPanel).textBoxRttNom.Text = BMC.GetRttString(BMC.Config.RttNom);
-                (timingsPanel as DDR4TimingsPanel).textBoxRttWr.Text = BMC.GetRttWrString(BMC.Config.RttWr);
-                (timingsPanel as DDR4TimingsPanel).textBoxRttPark.Text = BMC.GetRttString(BMC.Config.RttPark);
-
-                (timingsPanel as DDR4TimingsPanel).textBoxAddrCmdSetup.Text = $"{BMC.Config.AddrCmdSetup}";
-                (timingsPanel as DDR4TimingsPanel).textBoxCsOdtSetup.Text = $"{BMC.Config.CsOdtSetup}";
-                (timingsPanel as DDR4TimingsPanel).textBoxCkeSetup.Text = $"{BMC.Config.CkeSetup}";
+                ApplyDdr4MemoryConfig();
             }
             catch (Exception ex)
             {
@@ -610,6 +731,32 @@ namespace ZenTimings
             }
 
             BMC?.Dispose();
+        }
+
+        // The live machine's modules, or those of the debug report a mock window shows.
+        private List<MemoryModule> MemoryModules => mockData?.Modules ?? cpu.memoryConfig.Modules;
+
+        // Decoded SPD per DIMM - read from SMBus live, parsed out of the report in a mock window.
+        // Both carry the PMIC block, so anything reading rails from here works either way.
+        private IDictionary<byte, Ddr5SpdInfo> ModuleSpdInfo =>
+            mockData != null ? mockData.SpdInfo : cpu?.memoryConfig?.SpdInfo;
+
+        // PMIC of the module at the given index in MemoryModules; SPD entries line up with modules by index.
+        private Ddr5PmicData ModulePmicData(int moduleIndex)
+        {
+            if (mockData != null)
+                return mockData.GetPmicData(moduleIndex);
+
+            return ModuleSpdInfo?.Values.ElementAtOrDefault(moduleIndex)?.PmicData;
+        }
+
+        // Always true live; a debug report has every channel only when it carries the register dump.
+        private bool HasChannelTimings =>
+            mockData == null || MemoryModules.All(module => mockData.Timings.Any(channel => channel.Key == module.DctOffset));
+
+        private BaseDramTimings ChannelTimings(uint offset)
+        {
+            return mockData == null ? ReadTimings(offset) : mockData.Timings.FirstOrDefault(channel => channel.Key == offset).Value;
         }
 
         //TODO: Replace with a call to DLL
@@ -712,11 +859,10 @@ namespace ZenTimings
                 PowerCfgTimer.Stop();
         }
 
-        private volatile bool isRefreshing = false;
+        private int isRefreshing = 0;
         private void PowerCfgTimer_Tick(object sender, EventArgs e)
         {
-            if (isRefreshing) return;
-            isRefreshing = true;
+            if (Interlocked.Exchange(ref isRefreshing, 1) == 1) return;
 
             // Run refresh operation in a new task
             Task.Run(() =>
@@ -725,22 +871,19 @@ namespace ZenTimings
                 {
                     Thread.CurrentThread.IsBackground = true;
 
+                    var hasAsusDramVoltage = false;
+                    float asusDramVoltage = 0;
                     if (AsusWmi != null && AsusWmi.Status == 1)
                     {
                         AsusWmi.UpdateSensors();
                         AsusSensorInfo sensor = AsusWmi.FindSensorByName("DRAM Voltage");
-                        if (sensor != null)
-                            Dispatcher.Invoke(DispatcherPriority.ApplicationIdle,
-                                new Action(() =>
-                                {
-                                    (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = sensor.Value;
-                                    (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = true;
-                                }));
+                        hasAsusDramVoltage = sensor != null && float.TryParse(sensor.Value, out asusDramVoltage) && asusDramVoltage > 0 && asusDramVoltage < 3;
                     }
 
                     //ReadDDR4MemoryConfig();
                     cpu.RefreshPowerTable();
                     cpu.systemInfo.UpdateSensors();
+                    var hasSuperIoDramVoltage = TryReadDdr4SuperIoDramVoltage(out var superIoDramVoltage);
 
                     var voltagesUpdated = false;
                     if (cpu.memoryConfig?.SpdInfo?.Values != null)
@@ -762,7 +905,25 @@ namespace ZenTimings
                         }
 
                         if (voltagesUpdated)
-                            mainViewModel.PmicData = cpu.memoryConfig.SpdInfo.Values.ElementAtOrDefault(comboBoxPartNumber?.SelectedIndex ?? 0)?.PmicData ?? null;
+                            mainViewModel.PmicData = ModulePmicData(comboBoxPartNumber?.SelectedIndex ?? 0);
+
+                        if (cpu.memoryConfig.Type == MemType.DDR4 || cpu.memoryConfig.Type == MemType.LPDDR4)
+                        {
+                            if (hasAsusDramVoltage)
+                            {
+                                (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = $"{asusDramVoltage:F4}V";
+                                (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = true;
+                            }
+                            else if (hasSuperIoDramVoltage)
+                            {
+                                (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = $"{superIoDramVoltage:F4}V";
+                                (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = true;
+                            }
+                            else if (!ddr4BmcVddioValid)
+                            {
+                                (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = false;
+                            }
+                        }
 
                         mainViewModel.RefreshSensors();
 
@@ -779,7 +940,7 @@ namespace ZenTimings
                 }
                 finally
                 {
-                    isRefreshing = false;
+                    Interlocked.Exchange(ref isRefreshing, 0);
                 }
             });
         }
@@ -804,6 +965,39 @@ namespace ZenTimings
                 MessageBoxButton.OK,
                 MessageBoxImage.Error
             );
+        }
+
+        private AllDimmsWindow allDimmsWnd;
+
+        private void ButtonAllDimms_Click(object sender, RoutedEventArgs e)
+        {
+            if (allDimmsWnd != null)
+            {
+                if (allDimmsWnd.WindowState == WindowState.Minimized)
+                    allDimmsWnd.WindowState = WindowState.Normal;
+                allDimmsWnd.Activate();
+                return;
+            }
+
+            try
+            {
+                allDimmsWnd = new AllDimmsWindow(
+                    () => AllDimmsCapture.Run(MemoryModules, ModuleSpdInfo, ChannelTimings),
+                    timingsPanel.GetType(),
+                    mainViewModel,
+                    this);
+
+                // Opened from a debug report, it carries the report's title so it is not mistaken for the live machine.
+                if (mockData != null)
+                    allDimmsWnd.Title = $"{Title} - All DIMMs";
+
+                allDimmsWnd.Closed += (s, args) => allDimmsWnd = null;
+                allDimmsWnd.Show();
+            }
+            catch (Exception ex)
+            {
+                HandleError(ex.Message);
+            }
         }
 
         private void Restart(bool save = true)
@@ -1022,6 +1216,7 @@ namespace ZenTimings
             //                    "Please report if something is not working as expected.", "Beta version", MessageBoxButton.OK);
             //#endif
             MinimizeFootprint();
+            InitLiveSnapshot();
 
             if (settings.AdvancedMode && settings.AutoOpenTelemetry)
                 OpenSensorsWindow(settings.StartMinimized);
@@ -1036,7 +1231,7 @@ namespace ZenTimings
         {
             if (optionsWnd == null || !optionsWnd.IsLoaded)
             {
-                optionsWnd = new OptionsDialog(PowerCfgTimer);
+                optionsWnd = new OptionsDialog(PowerCfgTimer, mainViewModel);
                 optionsWnd.Show();
             }
             else
@@ -1080,9 +1275,12 @@ namespace ZenTimings
         {
             if (sender is ComboBox combo && combo.Items.Count > 0)
             {
-                var dctOffset = cpu.memoryConfig.Modules[combo.SelectedIndex].DctOffset;
-                mainViewModel.Timings = ReadTimings(dctOffset);
+                var dctOffset = MemoryModules[combo.SelectedIndex].DctOffset;
+                mainViewModel.Timings = ChannelTimings(dctOffset);
                 //mainViewModel.SelectedDctOffset = dctOffset;
+
+                // The rails are per DIMM, so they follow the selection - live and from a report alike.
+                mainViewModel.PmicData = ModulePmicData(combo.SelectedIndex);
             }
         }
 
@@ -1387,33 +1585,174 @@ namespace ZenTimings
             }
         }
 
-        private void ExportAsHtmlMenuItem_Click(object sender, RoutedEventArgs e)
+        private const int RefreshWaitStepMs = 20;
+        private const int RefreshWaitLimitMs = 5000;
+
+        private DateTime? lastRefreshUtc;
+
+        // Called once the live window is loaded, a debug report window has no live data to export
+        private void InitLiveSnapshot()
         {
-            try
+            // All values were read during startup, right before the window was shown
+            lastRefreshUtc = DateTime.UtcNow;
+
+            UpdateLiveSnapshotIndicator();
+
+            // The application's own auto refresh timer drives the live snapshot, with its interval and its start/stop rules
+            PowerCfgTimer.Tick += ExportTimer_Tick;
+            Application.Current.Exit += (s, e) =>
             {
-                // Generate HTML content
-                string htmlContent = mainViewModel.GetHTML();
+                if (!ExportSettings.Instance.LiveSnapshotEnabled)
+                    return;
 
-                // Open SaveFileDialog to save the HTML file
-                Forms.SaveFileDialog saveFileDialog = new Forms.SaveFileDialog
-                {
-                    Filter = "HTML files (*.html)|*.html|All files (*.*)|*.*",
-                    DefaultExt = "html",
-                    FileName = "ZenTimings-report.html",
-                    RestoreDirectory = true
-                };
+                if (ExportSettings.Instance.LiveSnapshotDeleteOnExit)
+                    LiveSnapshot.Stop();
+                else
+                    LiveSnapshot.Detach();
+            };
 
-                if (saveFileDialog.ShowDialog() == Forms.DialogResult.OK)
+            if (ExportSettings.Instance.LiveSnapshotEnabled)
+                UpdateLiveSnapshot();
+        }
+
+        // Runs right after the regular tick handler, which has just started the refresh task
+        private void ExportTimer_Tick(object sender, EventArgs e)
+        {
+            lastRefreshUtc = DateTime.UtcNow;
+            if (!ExportSettings.Instance.LiveSnapshotEnabled || !LiveSnapshot.IsDue)
+                return;
+
+            Task.Run(async () =>
+            {
+                // Wait for that refresh to finish so that the snapshot holds the new values
+                for (int waited = 0; Volatile.Read(ref isRefreshing) != 0 && waited < RefreshWaitLimitMs; waited += RefreshWaitStepMs)
+                    await Task.Delay(RefreshWaitStepMs);
+
+                lastRefreshUtc = DateTime.UtcNow;
+                LiveSnapshot.Update(GetSnapshotSource(true));
+            });
+        }
+
+        // The menu item is checked and the button next to the screenshot button is shown while the live snapshot is on
+        private void UpdateLiveSnapshotIndicator()
+        {
+            ExportSettings exportSettings = ExportSettings.Instance;
+            bool enabled = exportSettings.LiveSnapshotEnabled;
+
+            menuItemLiveSnapshot.IsChecked = enabled;
+            buttonLiveSnapshot.Visibility = enabled ? Visibility.Visible : Visibility.Collapsed;
+            if (!enabled)
+            {
+                buttonLiveSnapshot.BeginAnimation(UIElement.OpacityProperty, null);
+                return;
+            }
+
+            buttonLiveSnapshot.BeginAnimation(
+                UIElement.OpacityProperty,
+                new DoubleAnimation(0.45, 1.0, TimeSpan.FromSeconds(2.0))
                 {
-                    // Write the HTML content to the selected file
-                    File.WriteAllText(saveFileDialog.FileName, htmlContent);
-                    MessageBox.Show("HTML file exported successfully!", "Export as HTML", MessageBoxButton.OK, MessageBoxImage.Information);
+                    AutoReverse = true,
+                    RepeatBehavior = RepeatBehavior.Forever
+                });
+
+            string path = LiveSnapshot.GetFilePath(exportSettings.LiveSnapshotDirectory, exportSettings.LiveSnapshotFileName, exportSettings.LiveSnapshotFormat);
+            double seconds = Math.Max(LiveSnapshot.MinIntervalMs, exportSettings.LiveSnapshotIntervalMs) / 1000.0;
+            buttonLiveSnapshot.ToolTip = $"Live snapshot is on, click to change\n{path}\nWritten with auto refresh, every {seconds:0.#} s at most";
+        }
+
+        private SnapshotSource GetSnapshotSource(bool? autoRefreshActive = null)
+        {
+            return new SnapshotSource
+            {
+                BiosMemConfig = BMC?.Config,
+                AsusSensors = AsusWmi?.sensors,
+                Plugins = plugins,
+                LastRefreshUtc = lastRefreshUtc,
+                AutoRefreshActive = autoRefreshActive ?? PowerCfgTimer.IsEnabled,
+            };
+        }
+
+        private void UpdateLiveSnapshot()
+        {
+            SnapshotSource source = GetSnapshotSource();
+            Task.Run(() =>
+            {
+                if (!LiveSnapshot.WriteNow(source))
+                    Dispatcher.Invoke(() => HandleError($"Could not write the live snapshot file.\n{LiveSnapshot.LastError}", "Live snapshot"));
+            });
+        }
+
+        private void ExportSnapshotMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            object tagValue = (sender as MenuItem)?.Tag;
+            SnapshotFormat format;
+            if (tagValue is SnapshotFormat typed)
+            {
+                format = typed;
+            }
+            else if (tagValue is string text && text.Equals("Html", StringComparison.OrdinalIgnoreCase))
+            {
+                format = SnapshotFormat.Html;
+            }
+            else
+            {
+                format = SnapshotFormat.Json;
+            }
+            if (exportWnd != null && exportWnd.IsLoaded)
+            {
+                exportWnd.SelectFormat(format);
+                exportWnd.Activate();
+                return;
+            }
+
+            exportWnd = new ExportDialog(
+                (options, selectedFormat) => SnapshotWriter.Write(SnapshotBuilder.Build(GetSnapshotSource(), options), selectedFormat),
+                format,
+                false,
+                SnapshotBuilder.GetUnavailableSections(GetSnapshotSource()))
+            {
+                Owner = this
+            };
+            exportWnd.Closed += (s, args) => exportWnd = null;
+            exportWnd.Show();
+        }
+
+        private void LiveSnapshotMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            bool wasEnabled = ExportSettings.Instance.LiveSnapshotEnabled;
+            ExportDialog liveSnapshotWnd = new ExportDialog(null, ExportSettings.Instance.LiveSnapshotFormat, true,
+                SnapshotBuilder.GetUnavailableSections(GetSnapshotSource()))
+            {
+                Owner = this
+            };
+
+            if (liveSnapshotWnd.ShowDialog() != true)
+                return;
+
+            UpdateLiveSnapshotIndicator();
+
+            // Turned off: the file is the user's to keep. A kept file is simply overwritten if the same
+            // folder and name are used again later.
+            string written = LiveSnapshot.LastWrittenPath;
+            if (wasEnabled && !ExportSettings.Instance.LiveSnapshotEnabled && written != null && System.IO.File.Exists(written))
+            {
+                MessageBoxResult answer = MessageBox.Show(
+                    $"The live snapshot is now off.\n\nDelete the file that was being written?\n{written}",
+                    "Live snapshot",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+
+                if (answer != MessageBoxResult.Yes)
+                {
+                    LiveSnapshot.Detach();
+                    return;
                 }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An error occurred while exporting: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+
+            // Remove the previous file, the folder, the name or the format may have changed
+            LiveSnapshot.Remove();
+            if (ExportSettings.Instance.LiveSnapshotEnabled)
+                UpdateLiveSnapshot();
         }
 
         private void MenuItem_Click_5(object sender, RoutedEventArgs e)
@@ -1471,7 +1810,7 @@ namespace ZenTimings
                     new List<IPlugin>(),
                     null,
                     mockData.AgesaVersion,
-                    null,
+                    mockData.PmicData,
                     mockData
                 );
 
@@ -1482,18 +1821,6 @@ namespace ZenTimings
                 };
 
                 mockWindow.ReadMemoryModulesInfo(mockData.Modules);
-
-                if (mockWindow.comboBoxPartNumber.Items.Count > 0)
-                {
-                    mockWindow.comboBoxPartNumber.SelectedIndex = 0;
-                    // Not supported yet
-                    //mockWindow.comboBoxPartNumber.SelectionChanged += new SelectionChangedEventHandler((_s, _e) =>
-                    //{
-                    //    var dctOffset = mockData.Modules[mockWindow.comboBoxPartNumber.SelectedIndex].DctOffset;
-                    //    mockWindow.mainViewModel.Timings = mockData.Timings[(int)(dctOffset >> 24)].Value;
-                    //});
-                }
-
                 mockWindow.Show();
             }
             catch (Exception ex)

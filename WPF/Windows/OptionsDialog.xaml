@@ -14,7 +14,7 @@
     x:Name="OptionsWindow"
     Title="Options"
     Height="560"
-    Width="450"
+    Width="702"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterOwner"
     Icon="/ZenTimings;component/Resources/new-icon/16.png"
@@ -85,8 +85,19 @@
             </TextBlock>
         </Popup>
 
+        <Grid Margin="0 0 0 4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
         <!-- General -->
-        <StackPanel Style="{StaticResource SectionPanel}">
+        <StackPanel Grid.Column="0" Grid.Row="0" Style="{StaticResource SectionPanel}">
             <StackPanel Style="{StaticResource SectionHeaderPanel}">
                 <controls:AppIcon Kind="IconGeneral" Style="{StaticResource SectionIcon}" />
                 <TextBlock Text="General" Style="{StaticResource SectionHeader}" />
@@ -170,7 +181,7 @@
         </StackPanel>
 
         <!-- Appearance -->
-        <StackPanel Style="{StaticResource SectionPanel}">
+        <StackPanel Grid.Column="0" Grid.Row="1" Style="{StaticResource SectionPanel}">
             <StackPanel Style="{StaticResource SectionHeaderPanel}">
                 <controls:AppIcon Kind="IconAppearance" Style="{StaticResource SectionIcon}" />
                 <TextBlock Text="Appearance" Style="{StaticResource SectionHeader}" />
@@ -232,7 +243,7 @@
         </StackPanel>
 
         <!-- Sensors -->
-        <StackPanel Style="{StaticResource SectionPanel}">
+        <StackPanel Grid.Column="1" Grid.Row="0" Style="{StaticResource SectionPanel}">
             <StackPanel Style="{StaticResource SectionHeaderPanel}">
                 <controls:AppIcon Kind="IconTemperature" Style="{StaticResource SectionIcon}" />
                 <TextBlock Text="Sensors" Style="{StaticResource SectionHeader}" />
@@ -247,6 +258,9 @@
                 </Grid.ColumnDefinitions>
 
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
 
@@ -264,11 +278,50 @@
                     <ComboBoxItem Content="Legacy" />
                     <ComboBoxItem Content="Extended" />
                 </ComboBox>
+
+                <TextBlock
+                    x:Name="labelVsocSource"
+                    Grid.Column="0"
+                    Grid.Row="1"
+                    Style="{StaticResource SettingLabel}"
+                    Text="VSOC source" />
+                <ComboBox
+                    x:Name="comboBoxVsocSensorSource"
+                    Grid.Column="1"
+                    Grid.ColumnSpan="2"
+                    Grid.Row="1"
+                    Style="{StaticResource SettingCombo}" />
+
+                <TextBlock
+                    x:Name="labelVddioSource"
+                    Grid.Column="0"
+                    Grid.Row="2"
+                    Style="{StaticResource SettingLabel}"
+                    Text="VDDIO source" />
+                <ComboBox
+                    x:Name="comboBoxVddioSensorSource"
+                    Grid.Column="1"
+                    Grid.ColumnSpan="2"
+                    Grid.Row="2"
+                    Style="{StaticResource SettingCombo}" />
+
+                <TextBlock
+                    x:Name="labelVmiscSource"
+                    Grid.Column="0"
+                    Grid.Row="3"
+                    Style="{StaticResource SettingLabel}"
+                    Text="VDD MISC source" />
+                <ComboBox
+                    x:Name="comboBoxVmiscSensorSource"
+                    Grid.Column="1"
+                    Grid.ColumnSpan="2"
+                    Grid.Row="3"
+                    Style="{StaticResource SettingCombo}" />
             </Grid>
         </StackPanel>
 
         <!-- Startup & Window -->
-        <StackPanel Style="{StaticResource SectionPanel}">
+        <StackPanel Grid.Column="0" Grid.Row="2" Style="{StaticResource SectionPanel}">
             <StackPanel Style="{StaticResource SectionHeaderPanel}">
                 <controls:AppIcon Kind="IconStartup" Style="{StaticResource SectionIcon}" />
                 <TextBlock Text="Startup &amp; Window" Style="{StaticResource SectionHeader}" />
@@ -349,7 +402,7 @@
         </StackPanel>
 
         <!-- Driver -->
-        <StackPanel Style="{StaticResource SectionPanel}">
+        <StackPanel Grid.Column="1" Grid.Row="2" Style="{StaticResource SectionPanel}">
             <StackPanel Style="{StaticResource SectionHeaderPanel}">
                 <controls:AppIcon Kind="IconDriver" Style="{StaticResource SectionIcon}" />
                 <TextBlock Text="Driver" Style="{StaticResource SectionHeader}" />
@@ -398,7 +451,7 @@
         </StackPanel>
 
         <!-- Screenshot -->
-        <StackPanel Style="{StaticResource SectionPanel}">
+        <StackPanel Grid.Column="1" Grid.Row="1" Style="{StaticResource SectionPanel}">
             <StackPanel Style="{StaticResource SectionHeaderPanel}">
                 <controls:AppIcon Kind="IconScreenshot" Style="{StaticResource SectionIcon}" />
                 <TextBlock Text="Screenshot" Style="{StaticResource SectionHeader}" />
@@ -439,39 +492,41 @@
                     Style="{StaticResource SettingLabel}"
                     Text="Location" />
 
-                <TextBox
-                    x:Name="textBoxScreenshotPath"
-                    Grid.Column="1"
-                    Grid.Row="1"
-                    Grid.ColumnSpan="2"
-                    Margin="3 0 0 0"
-                    Width="151"
-                    IsReadOnly="True"
-                    VerticalAlignment="Top" />
+                    <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2">
+                        <TextBox
+                            x:Name="textBoxScreenshotPath"
+                            Margin="5 4 0 0"
+                            Width="120"
+                            IsReadOnly="True"
+                            VerticalAlignment="Top" />
 
-                <Button
-                    x:Name="buttonBrowseScreenshotPath"
-                    Grid.Column="3"
-                    Grid.Row="1"
-                    Content="Browse..."
-                    Margin="5 0 0 0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Click="ButtonBrowseScreenshotPath_Click" />
-            </Grid>
+                        <Button
+                            x:Name="buttonBrowseScreenshotPath"
+                            Margin="5 4 0 0"
+                            Width="26"
+                            Height="24"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            ToolTip="Browse"
+                            Click="ButtonBrowseScreenshotPath_Click">
+                            <controls:AppIcon Kind="IconFolder" IconWidth="13" IconHeight="13" Fill="{DynamicResource TextColor}" />
+                        </Button>
+                    </StackPanel>
+                </Grid>
         </StackPanel>
+        </Grid>
 
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto" />
                 <ColumnDefinition />
+                <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
 
             <Button
                 x:Name="buttonSettingsRestart"
-                Grid.Column="0"
+                Grid.Column="1"
                 Content="Restart"
                 Visibility="Hidden"
                 Margin="6 6 0 6"

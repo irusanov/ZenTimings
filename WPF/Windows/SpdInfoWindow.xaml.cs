@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using ZenStates.Core.Hardware.DRAM;
 using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
 using ZenTimings.Common;
+using ZenTimings.Utils;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
@@ -45,6 +46,21 @@ namespace ZenTimings.Windows
         {
             _memoryConfig = CpuSingleton.Instance.memoryConfig;
             await LoadSlotsAsync();
+        }
+
+        private void CopyTab_Click(object sender, RoutedEventArgs e)
+        {
+            var tab = ProfilesTabControl.SelectedItem as TabItem;
+            if (!(tab?.Content is DataGrid grid))
+                return;
+
+            // The serial number identifies the exact module, keep it out of text that is meant to be pasted elsewhere
+            var lines = ClipboardUtils.GridToText(grid)
+                .Split(new[] { Environment.NewLine }, StringSplitOptions.None)
+                .Select(l => l.StartsWith("ModuleSerialNumber\t") ? "ModuleSerialNumber\t(hidden)" : l);
+
+            string title = $"SPD {(ComboSlots.SelectedItem as SlotItem)?.Display} - {tab.Header}";
+            ClipboardUtils.Copy($"{title}{Environment.NewLine}{string.Join(Environment.NewLine, lines)}", sender as Button);
         }
 
         private void ComboSlots_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -364,6 +380,8 @@ namespace ZenTimings.Windows
                 ItemsSource = rows
             };
 
+            grid.SetResourceReference(DataGrid.RowStyleProperty, "SpdDataGridRowStyle");
+
             grid.Columns.Add(new DataGridTextColumn
             {
                 Width = new DataGridLength(240),
@@ -377,11 +395,13 @@ namespace ZenTimings.Windows
                 ElementStyle = valueStyle
             });
 
-            return new TabItem
+            var tab = new TabItem
             {
                 Header = header,
                 Content = grid
             };
+
+            return tab;
         }
 
         private static string FormatValue(object value)

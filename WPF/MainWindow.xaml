@@ -7,8 +7,10 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
     xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
     xmlns:converters="clr-namespace:ZenTimings.Converters"
     xmlns:controls="clr-namespace:ZenTimings.Controls"
+    xmlns:export="clr-namespace:ZenTimings.Export"
     adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
     mc:Ignorable="d"
     Title="ZenTimings"
@@ -43,16 +45,16 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="20" />
                         <ColumnDefinition Width="3" />
                     </Grid.ColumnDefinitions>
                     <Menu x:Name="MainMenu" Grid.Column="0" Style="{DynamicResource MenuStyles}">
                         <MenuItem Header="_File">
-                            <MenuItem Header="Export">
-                                <MenuItem Header="As HTML" Click="ExportAsHtmlMenuItem_Click" />
-                            </MenuItem>
+                            <MenuItem Header="Export..." Click="ExportSnapshotMenuItem_Click" />
+                            <MenuItem x:Name="menuItemLiveSnapshot" Header="Live snapshot file..." Click="LiveSnapshotMenuItem_Click" />
+                            <Separator Foreground="{DynamicResource PanelBackground}" />
                             <MenuItem Header="E_xit" Click="ExitToolStripMenuItem_Click" />
-                            <!-- MenuItem Header="Export..." HorizontalAlignment="Left" Click="ExportToolStripMenuItem_Click" /-->
                         </MenuItem>
                         <MenuItem Header="_Tools">
                             <MenuItem Header="_Options" Click="OptionsToolStripMenuItem_Click" />
@@ -97,7 +99,22 @@
                             <MenuItem Header="AM5 AGESA/UEFI/BIOS List by Reous" Click="MenuItem_Click_4" />
                         </MenuItem>
                     </Menu>
-                    <Button Grid.Column="1"
+                    <!-- Shown while the live snapshot file is being written, so that it is not left on and forgotten -->
+                    <Button x:Name="buttonLiveSnapshot"
+                            Grid.Column="1"
+                            Style="{DynamicResource IconButtonStyle}"
+                            Opacity="1"
+                            Margin="0,2,4,0"
+                            Visibility="Collapsed"
+                            Click="LiveSnapshotMenuItem_Click">
+                        <controls:AppIcon
+                            Kind="IconRecord"
+                            IconWidth="12"
+                            IconHeight="12"
+                            Fill="{DynamicResource LiveSnapshotBrush}" />
+                    </Button>
+                    <Button x:Name="buttonScreenshot"
+                            Grid.Column="2"
                             Width="20"
                             Height="16"
                             BorderThickness="0"
@@ -178,7 +195,7 @@
                         <ColumnDefinition>
                             <ColumnDefinition.Style>
                                 <Style TargetType="ColumnDefinition">
-                                    <Setter Property="Width" Value="280" />
+                                    <Setter Property="Width" Value="312" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding Settings.AdvancedMode}" Value="False">
                                             <Setter Property="Width" Value="240" />
@@ -191,29 +208,33 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <ComboBox x:Name="comboBoxPartNumber" IsReadOnly="True" Grid.Column="0" />
+                    <DockPanel Grid.Column="0">
+                        <Button 
+                            x:Name="buttonAllDimms"
+                            DockPanel.Dock="Right"
+                            Content="All"
+                            Margin="4 0 0 0"
+                            ToolTip="All channels side by side"
+                            Visibility="Collapsed"
+                            Click="ButtonAllDimms_Click" />
+                        <ComboBox x:Name="comboBoxPartNumber" IsReadOnly="True" IsEnabled="False" />
+                    </DockPanel>
+
                     <StackPanel 
                         Grid.Column="2"
                         Orientation="Horizontal"
                         HorizontalAlignment="Right"
                         Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                        <!-- Opens the all-channels view. Enabled from code when there is more than one module;
+                        the label takes the button's state, so it shows the accent colour only while clickable. -->
                         <TextBlock
                             Text="ECC"
                             Style="{DynamicResource ValueStyles}"
                             Visibility="{Binding ECC, Mode=OneWay, Converter={StaticResource BoolToVis}}"
                             TextAlignment="Right"
                             Margin="0,0,5,0"
-                            IsEnabled="False"
+                            IsEnabled="True"
                             ToolTip="Error-Correcting Code memory detected"
-                        />
-                        <TextBlock
-                            Text="{Binding MemoryType, FallbackValue=''}"
-                            Style="{DynamicResource ValueStyles}"
-                            TextAlignment="Right"
-                            HorizontalAlignment="Right"
-                            MinWidth="0"
-                            Margin="0"
-                            IsEnabled="False"
                         />
                     </StackPanel>
 

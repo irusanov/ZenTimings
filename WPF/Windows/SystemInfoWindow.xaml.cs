@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Windows;
+using System.Windows.Controls;
 using ZenStates.Core.Hardware;
 using ZenStates.Core.Hardware.Aod;
 using ZenStates.Core.Hardware.DRAM;
 using ZenStates.Core.OHWM;
 using ZenTimings.Common;
 using ZenTimings.Settings;
+using ZenTimings.Utils;
 using static ZenTimings.Common.BiosMemController;
 
 namespace ZenTimings.Windows
@@ -46,14 +49,15 @@ namespace ZenTimings.Windows
                     new GridItem() {Name = "OS", Value = new Microsoft.VisualBasic.Devices.ComputerInfo().OSFullName}
                 };
 
+                var itemsToSkip = new HashSet<string> { "SMBios", "Hardware", "SensorGroups" };
+
                 foreach (PropertyInfo property in properties)
                     if (property.Name == "CpuId" || property.Name == "PatchLevel" || property.Name == "SmuTableVersion")
                         items.Add(new GridItem() { Name = property.Name, Value = $"{property.GetValue(si, null):X8}" });
                     else if (property.Name == "SmuVersion")
                         items.Add(new GridItem() { Name = property.Name, Value = si.SmuVersion.ToString() });
-                    else if (property.Name != "SMBios")
-                        items.Add(new GridItem()
-                        { Name = property.Name, Value = property.GetValue(si, null).ToString() });
+                    else if (!itemsToSkip.Contains(property.Name))
+                        items.Add(new GridItem() { Name = property.Name, Value = property.GetValue(si, null).ToString() });
 
                 TestGrid.ItemsSource = items;
             }
@@ -121,62 +125,25 @@ namespace ZenTimings.Windows
                 // ignored
             }
 
-            if (mcConfig != null && mc.Type == MemType.DDR4 || mc.Type == MemType.LPDDR4)
+            try
             {
-                try
+                if (mcConfig != null && mc.Type == MemType.DDR4 || mc.Type == MemType.LPDDR4)
                 {
-                    type = mcConfig.GetType();
-                    FieldInfo[] fields = type.GetFields();
-                    items = new List<GridItem>();
-                    foreach (FieldInfo property in fields)
-                        items.Add(new GridItem() { Name = property.Name, Value = property.GetValue(mcConfig).ToString() });
-
-                    MemControllerGrid.ItemsSource = items;
+                    MemControllerGrid.ItemsSource = GetItemsFromObject(mcConfig);
                 }
-                catch
+                else
                 {
-                    // ignored
+                    MemControllerGrid.ItemsSource = GetItemsFromObject(aodData);
+                }
+
+                if (CpuSingleton.Instance.info.apob.IsValid)
+                {
+                    ApobTableGrid.ItemsSource = GetItemsFromObject(CpuSingleton.Instance.info.apob.Data);
                 }
             }
-            else
+            catch
             {
-                try
-                {
-                    properties = aodData.GetType().GetProperties();
-                    items = new List<GridItem>();
-                    foreach (PropertyInfo property in properties)
-                    {
-                        object value = property.GetValue(aodData);
-                        items.Add(new GridItem() { Name = property.Name, Value = $"{value}" });
-                    }
-
-                    MemControllerGrid.ItemsSource = items;
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
-
-            if (CpuSingleton.Instance.info.apob.IsAvailable)
-            {
-                try
-                {
-                    var apobData = CpuSingleton.Instance.info.apob.Data;
-                    type = apobData.GetType();
-                    properties = type.GetProperties();
-                    items = new List<GridItem>();
-                    foreach (PropertyInfo property in properties)
-                    {
-                        object value = property.GetValue(apobData);
-                        items.Add(new GridItem() { Name = property.Name, Value = $"{value}" });
-                    }
-                    ApobTableGrid.ItemsSource = items;
-                }
-                catch
-                {
-                    // ignored
-                }
+                // ignored
             }
 
             //AsusWmiGrid.ItemsSource = asusSensors;
@@ -185,6 +152,24 @@ namespace ZenTimings.Windows
             {
                 asusSensors
             };
+        }
+
+        private static List<GridItem> GetItemsFromObject(object obj)
+        {
+            var items = new List<GridItem>();
+            if (obj == null)
+                return items;
+
+            var type = obj.GetType();
+            var properties = type.GetProperties();
+
+            foreach (var property in properties)
+            {
+                object value = property.GetValue(obj);
+                items.Add(new GridItem() { Name = property.Name, Value = $"{value ?? "-"}" });
+            }
+
+            return items;
         }
 
         private static bool HasMismatch(IReadOnlyList<string> values)
@@ -198,6 +183,17 @@ namespace ZenTimings.Windows
                     return true;
 
             return false;
+        }
+
+        private void CopySection_Click(object sender, RoutedEventArgs e)
+        {
+            // The button comes from the header template, the group box that uses it names its grid in Tag
+            if (!(sender is Button button)
+                || !((button.TemplatedParent as FrameworkElement)?.TemplatedParent is GroupBox section)
+                || !(section.Tag is DataGrid grid))
+                return;
+
+            ClipboardUtils.Copy($"{section.Header}{Environment.NewLine}{ClipboardUtils.GridToText(grid)}", button);
         }
 
         private void AdonisWindow_Activated(object sender, EventArgs e)

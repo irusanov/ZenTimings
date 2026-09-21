@@ -25,7 +25,7 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0">
-                    <TextBlock Text="Speed" TextAlignment="Right" />
+                    <TextBlock Text="{Binding MemoryType, FallbackValue='Speed'}" TextAlignment="Right" />
                     <TextBlock Text="BGS" TextAlignment="Right" />
                     <TextBlock Text="GDM" TextAlignment="Right" />
 
@@ -55,7 +55,7 @@
                     <StackPanel Orientation="Vertical" Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
                         <TextBlock Text="CA ODT A" TextAlignment="Right" />
                         <TextBlock Text="CA ODT B" TextAlignment="Right" />
-                        <TextBlock Text="tCCD_L" TextAlignment="Right" />
+                        <TextBlock Text="tCCDL" TextAlignment="Right" />
                     </StackPanel>
                 </StackPanel>
 
@@ -162,7 +162,7 @@
                     <StackPanel Orientation="Vertical" Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
                         <TextBlock Text="CK ODT A" TextAlignment="Right" />
                         <TextBlock Text="CK ODT B" TextAlignment="Right" />
-                        <TextBlock Text="tCCD_L_WR" TextAlignment="Right" />
+                        <TextBlock Text="tCCDL WR" TextAlignment="Right" />
                     </StackPanel>
 
                 </StackPanel>
@@ -283,7 +283,7 @@
                     
                     <TextBlock Text="CS ODT A" TextAlignment="Right" />
                     <TextBlock Text="CS ODT B" TextAlignment="Right" />
-                    <TextBlock Text="tCCD_L_WR2" TextAlignment="Right" />
+                    <TextBlock Text="tCCDL WR2" TextAlignment="Right" />
                 </StackPanel>
 
                 <StackPanel Grid.Column="1">

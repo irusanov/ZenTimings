@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:Converters="clr-namespace:AdonisUI.Converters;assembly=AdonisUI"
                     xmlns:Extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-                    xmlns:AdonisUI="clr-namespace:AdonisUI;assembly=AdonisUI">
+                    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI">
 
     <Style x:Key="WindowStyles" TargetType="{x:Type Window}">
         <Setter Property="BorderThickness" Value="1" />
@@ -108,6 +108,22 @@
         </Setter>
     </Style>
 
+    <Style x:Key="IconButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource CameraButtonStyle}">
+        <Setter Property="Width" Value="20" />
+        <Setter Property="Height" Value="16" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Opacity" Value="0.6" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Opacity" Value="1" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <ControlTemplate x:Key="TabControlControlTemplate" TargetType="{x:Type TabControl}">
         <Grid KeyboardNavigation.TabNavigation="Local">
             <Grid.RowDefinitions>
@@ -129,7 +145,7 @@
                 </Border.CornerRadius>
                 <ContentPresenter x:Name="PART_SelectedContentHost" ContentTemplate="{TemplateBinding SelectedContentTemplate}" Content="{TemplateBinding SelectedContent}" ContentStringFormat="{TemplateBinding SelectedContentStringFormat}" ContentSource="SelectedContent" Margin="0"/>
             </Border>
-            <Border x:Name="SelectedItemHighlight" Background="{DynamicResource {ComponentResourceKey ResourceId=Layer1HighlightBrush, TypeInTargetAssembly={x:Type AdonisUI:Brushes}}}" Height="0" Margin="{TemplateBinding BorderThickness}" Grid.Row="1" VerticalAlignment="Top">
+            <Border x:Name="SelectedItemHighlight" Background="{DynamicResource {ComponentResourceKey ResourceId=Layer0HighlightBrush, TypeInTargetAssembly={x:Type adonisUi:Brushes}}}" Height="0" Margin="{TemplateBinding BorderThickness}" Grid.Row="1" VerticalAlignment="Top">
                 <Border.CornerRadius>
                     <MultiBinding UpdateSourceTrigger="Default">
                         <MultiBinding.Converter>
@@ -145,13 +161,13 @@
         </Grid>
         <ControlTemplate.Triggers>
             <DataTrigger Binding="{Binding (Extensions:LayerExtension.ComputedLayer), RelativeSource={RelativeSource Self}}" Value="2">
-                <Setter Property="Background" TargetName="SelectedItemHighlight" Value="{DynamicResource {ComponentResourceKey ResourceId=Layer2HighlightBrush, TypeInTargetAssembly={x:Type AdonisUI:Brushes}}}"/>
+                <Setter Property="Background" TargetName="SelectedItemHighlight" Value="{DynamicResource {ComponentResourceKey ResourceId=Layer2HighlightBrush, TypeInTargetAssembly={x:Type adonisUi:Brushes}}}"/>
             </DataTrigger>
             <DataTrigger Binding="{Binding (Extensions:LayerExtension.ComputedLayer), RelativeSource={RelativeSource Self}}" Value="3">
-                <Setter Property="Background" TargetName="SelectedItemHighlight" Value="{DynamicResource {ComponentResourceKey ResourceId=Layer3HighlightBrush, TypeInTargetAssembly={x:Type AdonisUI:Brushes}}}"/>
+                <Setter Property="Background" TargetName="SelectedItemHighlight" Value="{DynamicResource {ComponentResourceKey ResourceId=Layer3HighlightBrush, TypeInTargetAssembly={x:Type adonisUi:Brushes}}}"/>
             </DataTrigger>
             <DataTrigger Binding="{Binding (Extensions:LayerExtension.ComputedLayer), RelativeSource={RelativeSource Self}}" Value="4">
-                <Setter Property="Background" TargetName="SelectedItemHighlight" Value="{DynamicResource {ComponentResourceKey ResourceId=Layer4HighlightBrush, TypeInTargetAssembly={x:Type AdonisUI:Brushes}}}"/>
+                <Setter Property="Background" TargetName="SelectedItemHighlight" Value="{DynamicResource {ComponentResourceKey ResourceId=Layer4HighlightBrush, TypeInTargetAssembly={x:Type adonisUi:Brushes}}}"/>
             </DataTrigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>

@@ -10,17 +10,15 @@ namespace ZenTimings.Controls
     /// </summary>
     public partial class LegacyDDR5APUTimingsPanel : UserControl
     {
-        public LegacyDDR5APUTimingsPanel()
+        public LegacyDDR5APUTimingsPanel() : this(LegacyDDR5TimingsPanel.LiveAodData())
+        {
+        }
+
+        /// <param name="Data">AOD fields to show - a debug report's in a mock window. Null leaves them N/A.</param>
+        public LegacyDDR5APUTimingsPanel(AodData Data)
         {
             InitializeComponent();
 
-            Cpu cpu = CpuSingleton.Instance;
-            AOD aod = cpu.info.aod;
-
-            if (aod == null || ZenStates.Core.Utils.AllZero(aod.Table.RawAodTable))
-                return;
-
-            AodData Data = aod.Table.Data;
             if (Data != null)
             {
                 //labelMemVdd.IsEnabled = true;

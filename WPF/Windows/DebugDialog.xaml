@@ -17,7 +17,7 @@
     WindowStartupLocation="CenterOwner"
     BorderThickness="1"
     UseLayoutRounding="True"
-    Style="{DynamicResource WindowStyles}" Loaded="ThemedAdonisWindow_Loaded">
+    Style="{DynamicResource WindowStyles}">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="147*"/>
@@ -25,6 +25,7 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
 
@@ -42,7 +43,15 @@
             Click on Debug button to generate a report.
         </TextBox>
 
-        <Border Padding="5" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
+        <CheckBox x:Name="CheckPrintSerials"
+                  Grid.Row="1"
+                  Grid.ColumnSpan="2"
+                  Content="Print serial numbers"
+                  IsChecked="False"
+                  Margin="7,0,5,2"
+                  Foreground="{DynamicResource TextColor}" />
+
+        <Border Padding="5" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto" />

@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
@@ -8,6 +9,7 @@ using ZenStates.Core.Hardware;
 using ZenTimings.Common;
 using ZenTimings.Helpers;
 using ZenTimings.Settings;
+using ZenTimings.ViewModels;
 using static ZenTimings.Settings.AppSettings;
 
 namespace ZenTimings.Windows
@@ -25,10 +27,12 @@ namespace ZenTimings.Windows
         private readonly bool _AdvancedMode;
         private readonly ImpedanceTableSource _ImpedanceTableSource;
         private readonly int _CornerRadius;
+        private readonly MainViewModel _mainViewModel;
 
-        public OptionsDialog(DispatcherTimer timer)
+        public OptionsDialog(DispatcherTimer timer, MainViewModel mainViewModel)
         {
             timerInstance = timer;
+            _mainViewModel = mainViewModel;
             _Theme = appSettings.AppTheme;
             _AdvancedMode = appSettings.AdvancedMode;
             _ImpedanceTableSource = appSettings.ImpedanceTableSrc;
@@ -67,6 +71,43 @@ namespace ZenTimings.Windows
             if (notificationLevelIndex > comboBoxDriverNotification.Items.Count - 1)
                 notificationLevelIndex = comboBoxDriverNotification.Items.Count - 1;
             comboBoxDriverNotification.SelectedIndex = notificationLevelIndex;
+            LoadVoltageSensorSources();
+        }
+
+        private void LoadVoltageSensorSources()
+        {
+            labelVddioSource.Text = _mainViewModel.CpuFamily >= ZenStates.Core.Cpu.Family.FAMILY_19H
+                ? "VDDIO source"
+                : "VDIMM source";
+
+            LoadVoltageSensorSources(comboBoxVsocSensorSource, labelVsocSource, MainViewModel.VoltageRail.Vsoc, appSettings.VsocSensorSource);
+            LoadVoltageSensorSources(comboBoxVddioSensorSource, labelVddioSource, MainViewModel.VoltageRail.Vddio, appSettings.VddioSensorSource);
+            LoadVoltageSensorSources(comboBoxVmiscSensorSource, labelVmiscSource, MainViewModel.VoltageRail.Vmisc, appSettings.VmiscSensorSource);
+        }
+
+        private void LoadVoltageSensorSources(System.Windows.Controls.ComboBox comboBox, System.Windows.Controls.TextBlock label,
+            MainViewModel.VoltageRail rail, VoltageSensorSource selectedSource)
+        {
+            foreach (var source in _mainViewModel.GetAvailableVoltageSources(rail))
+            {
+                comboBox.Items.Add(new System.Windows.Controls.ComboBoxItem
+                {
+                    Content = source == VoltageSensorSource.SuperIo ? "Super I/O" : source.ToString().ToUpperInvariant(),
+                    Tag = source
+                });
+            }
+
+            // Nothing on this system can report the rail: hide the whole row instead of showing an empty combo
+            if (comboBox.Items.Count == 0)
+            {
+                label.Visibility = Visibility.Collapsed;
+                comboBox.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            var selectedItem = comboBox.Items.Cast<System.Windows.Controls.ComboBoxItem>()
+                .FirstOrDefault(item => (VoltageSensorSource)item.Tag == selectedSource);
+            comboBox.SelectedItem = selectedItem ?? comboBox.Items.Cast<System.Windows.Controls.ComboBoxItem>().FirstOrDefault();
         }
 
         private void SaveSettingsFromUi()
@@ -90,6 +131,16 @@ namespace ZenTimings.Windows
             appSettings.ImpedanceTableSrc = (ImpedanceTableSource)comboBoxImpedanceSource.SelectedIndex;
             appSettings.AutoUninstallDriver = (bool)checkBoxAutoUninstallDriver.IsChecked;
             appSettings.AutoUninstallDriverNotificationLevel = comboBoxDriverNotification.SelectedIndex - 1;
+            appSettings.VsocSensorSource = GetSelectedVoltageSensorSource(comboBoxVsocSensorSource, appSettings.VsocSensorSource);
+            appSettings.VddioSensorSource = GetSelectedVoltageSensorSource(comboBoxVddioSensorSource, appSettings.VddioSensorSource);
+            appSettings.VmiscSensorSource = GetSelectedVoltageSensorSource(comboBoxVmiscSensorSource, appSettings.VmiscSensorSource);
+        }
+
+        private static VoltageSensorSource GetSelectedVoltageSensorSource(System.Windows.Controls.ComboBox comboBox, VoltageSensorSource fallback)
+        {
+            return (comboBox.SelectedItem as System.Windows.Controls.ComboBoxItem)?.Tag is VoltageSensorSource source
+                ? source
+                : fallback;
         }
 
         private void CheckBoxAutoRefresh_Click(object sender, RoutedEventArgs e)
@@ -115,6 +166,7 @@ namespace ZenTimings.Windows
         {
             SaveSettingsFromUi();
             appSettings.Save();
+            _mainViewModel.RefreshSensors();
 
             timerInstance.Interval = TimeSpan.FromMilliseconds(appSettings.AutoRefreshInterval);
             _Theme = appSettings.AppTheme;

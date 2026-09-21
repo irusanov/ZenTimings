@@ -109,6 +109,8 @@
       <Link>Common\UpdaterPersistenceProvider.cs</Link>
     </Compile>
     <Compile Include="Converters\CountToVisibilityConverter.cs" />
+    <Compile Include="Export\CoreOptionsScope.cs" />
+    <Compile Include="Export\SnapshotHtmlWriter.cs" />
     <Compile Include="Helpers\AgesaHelper.cs" />
     <Compile Include="Controls\LegacyDDR5APUTimingsPanel.xaml.cs">
       <DependentUpon>LegacyDDR5APUTimingsPanel.xaml</DependentUpon>
@@ -126,8 +128,16 @@
     <Compile Include="Helpers\DriverCleanerNotification.cs" />
     <Compile Include="Helpers\StartupHelper.cs" />
     <Compile Include="Utils\VendorUtils.cs" />
+    <Compile Include="Utils\VisualCapture.cs" />
+    <Compile Include="Utils\ClipboardUtils.cs" />
+    <Compile Include="Export\LiveSnapshot.cs" />
+    <Compile Include="Export\SnapshotBuilder.cs" />
+    <Compile Include="Export\SnapshotObject.cs" />
+    <Compile Include="Export\SnapshotOptions.cs" />
+    <Compile Include="Export\SnapshotWriter.cs" />
     <Compile Include="Settings\AppSettings.cs" />
     <Compile Include="Settings\SensorSettings.cs" />
+    <Compile Include="Settings\ExportSettings.cs" />
     <Compile Include="Controls\DDR4TimingsPanel.xaml.cs">
       <DependentUpon>DDR4TimingsPanel.xaml</DependentUpon>
     </Compile>
@@ -155,9 +165,6 @@
     <Compile Include="ViewModels\SensorGroupViewModel.cs" />
     <Compile Include="ViewModels\TelemetryItemViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
-    <Compile Include="Windows\AdvancedTimingsWindow.xaml.cs">
-      <DependentUpon>AdvancedTimingsWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Windows\DriverUpdateWindow.xaml.cs">
       <DependentUpon>DriverUpdateWindow.xaml</DependentUpon>
     </Compile>
@@ -167,11 +174,18 @@
     <Compile Include="Windows\SensorsWindow.xaml.cs">
       <DependentUpon>SensorsWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\AllDimmsCapture.cs" />
+    <Compile Include="Windows\AllDimmsWindow.xaml.cs">
+      <DependentUpon>AllDimmsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\AppIcon.xaml.cs">
       <DependentUpon>AppIcon.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\SensorSettingsWindow.xaml.cs">
       <DependentUpon>SensorSettingsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\ExportDialog.xaml.cs">
+      <DependentUpon>ExportDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\ThemedAdonisWindow.cs" />
     <Compile Include="Utils\WindowUtils.cs" />
@@ -235,7 +249,12 @@
     </Compile>
     <Page Include="Windows\AdvancedTimingsWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
+    <Compile Include="Windows\AdvancedTimingsWindow.xaml.cs">
+      <DependentUpon>AdvancedTimingsWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Page Include="Windows\OptionsDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -252,7 +271,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Windows\AllDimmsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\SensorSettingsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\ExportDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
