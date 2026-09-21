@@ -116,8 +116,11 @@ namespace ZenTimings
                     if (result == true)
                     {
                         SplashWindow.Stop();
+                        // Restart even if the update failed: the previous driver may still be usable,
+                        // and if it was removed the new instance offers to install it again.
                         DriverHelper.InstallPawnIO();
                         Restart(false);
+                        TerminateStartup();
                     }
                 }
             }
@@ -134,13 +137,20 @@ namespace ZenTimings
                     if (result == AdonisUI.Controls.MessageBoxResult.OK)
                     {
                         SplashWindow.Stop();
-                        DriverHelper.InstallPawnIO();
+                        if (!DriverHelper.InstallPawnIO())
+                        {
+                            // InstallPawnIO has already shown the error; restarting would only ask again
+                            Application.Current.Shutdown();
+                            TerminateStartup();
+                        }
                         Restart(false);
+                        TerminateStartup();
                     }
-
-                    if (result == AdonisUI.Controls.MessageBoxResult.Cancel)
+                    else
                     {
+                        // Cancel, or the dialog closed without an answer: there is no driver to run with
                         Application.Current.Shutdown();
+                        TerminateStartup();
                     }
                 }
             }
@@ -174,7 +184,12 @@ namespace ZenTimings
                 {
                     HandleError("Ryzen SMU module is not loaded.\nMake sure that the PawnIO driver is installed correctly.", "Driver Error");
                     ExitApplication();
+                    TerminateStartup();
                 }
+
+                // TODO: Add crash-logger and dump any info available to a file for debugging.
+                var memoryConfig = cpu.GetMemoryConfig() ?? throw new ApplicationException("Could not read the memory controller configuration.");
+                var memoryType = memoryConfig.Type;
 
                 IconSource = GetIcon("pack://application:,,,/ZenTimings;component/Resources/ZenTimings2022.ico", 16);
                 _notifyIcon = GetTrayIcon();
@@ -182,15 +197,14 @@ namespace ZenTimings
                 InitializeComponent();
                 //SetResourceReference(NativeBorderBrushProperty, "WindowBorderColor");
 
-                SplashWindow.Loading("Sensors");
-                cpu.systemInfo.UpdateSensors();
+                SplashWindow.Loading("Timings");
+                var timings = ReadTimings();
 
                 SplashWindow.Loading("Memory modules");
-                ReadMemoryModulesInfo(cpu.GetMemoryConfig()?.Modules);
+                ReadMemoryModulesInfo(memoryConfig?.Modules);
 
-                SplashWindow.Loading("Timings");
-
-                var memoryType = cpu.GetMemoryConfig().Type;
+                SplashWindow.Loading("Sensors");
+                cpu.systemInfo?.UpdateSensors();
 
                 // Motherboard logo
                 SplashWindow.Loading("Resources");
@@ -202,7 +216,6 @@ namespace ZenTimings
 
                 if (settings.AdvancedMode)
                 {
-
                     PowerCfgTimer.Interval = TimeSpan.FromMilliseconds(settings.AutoRefreshInterval);
                     PowerCfgTimer.Tick += PowerCfgTimer_Tick;
 
@@ -211,7 +224,7 @@ namespace ZenTimings
                     {
                         SplashWindow.Loading("Power table error!");
                     }
-
+                    // I/O driver currently used for APOB, AOD and Agesa version
                     SplashWindow.Loading("IO Driver");
                     if (!WaitForInpoutDriverLoad())
                     {
@@ -239,14 +252,14 @@ namespace ZenTimings
                 }
 
                 mainViewModel = new MainViewModel(
-                    ReadTimings(),
+                    timings,
                     memoryType,
                     compatMode,
                     settings,
                     plugins,
                     motherboardLogoName,
                     GetAgesaVersion(),
-                    cpu.GetMemoryConfig()?.SpdInfo?.Values.FirstOrDefault(d => d.IsValid)?.PmicData
+                    ModulePmicData(0)
                 );
 
                 DataContext = mainViewModel;
@@ -271,7 +284,13 @@ namespace ZenTimings
             {
                 HandleError(ex.Message);
                 ExitApplication();
+                TerminateStartup();
             }
+        }
+
+        private static void TerminateStartup()
+        {
+            Environment.Exit(0);
         }
 
         private MainWindow(MainViewModel viewModel, MockSystemData mockData)
@@ -287,11 +306,8 @@ namespace ZenTimings
             DataContext = viewModel;
             AddTimingsPanel(viewModel.MemoryType, mockData.CpuInfo.family, mockData.CpuInfo.smuType, mockData.Apob != null && mockData.Apob.IsValid);
 
-            // The live window reads VSOC from SVI2 telemetry through its plugin; a report stands in the
-            // power table's VDDCR_SOC, which the SMU reports from the same rail.
-            float reportVsoc = mockData.PowerTable?.VDDCR_SOC ?? 0;
-            if (reportVsoc > 0 && timingsPanel is DDR4TimingsPanel ddr4Panel)
-                ddr4Panel.textBoxVSOC_SVI2.Text = $"{reportVsoc:F4}V";
+            if (timingsPanel is DDR4TimingsPanel ddr4Panel)
+                ApplyDdr4Vsoc(ddr4Panel, false);
 
             // DDR4 takes its ODT/RTT/drive strength fields from the BIOS memory controller config; a
             // report carries it as a byte dump. Too short a dump would read past the Resistances layout.
@@ -303,7 +319,8 @@ namespace ZenTimings
 
                 try
                 {
-                    ApplyDdr4MemoryConfig();
+                    ApplyDdr4MemoryConfig(timingsPanel as DDR4TimingsPanel);
+                    ddr4MemoryConfigApplied = true;
                 }
                 catch (Exception ex)
                 {
@@ -324,7 +341,8 @@ namespace ZenTimings
 
         private void AddTimingsPanel(MemType memoryType)
         {
-            AddTimingsPanel(memoryType, cpu.info.family, cpu.smu.SMU_TYPE, cpu.info.apob.IsValid);
+            var apob = cpu.info.apob;
+            AddTimingsPanel(memoryType, cpu.info.family, cpu.smu.SMU_TYPE, apob != null && apob.IsValid);
         }
 
         // The AOD-driven panels show the report's AOD fields in a mock window, never the live machine's.
@@ -335,57 +353,86 @@ namespace ZenTimings
                 : new LegacyDDR5APUTimingsPanel();
         }
 
+        // Creates the timings panel the main window shows. The All DIMMs window creates its per-channel panels
+        // through the same factory, so they match the main one (AOD source, report data in a mock window).
+        private Func<Control> timingsPanelFactory;
+
         private void AddTimingsPanel(MemType memoryType, Cpu.Family family, SMU.SmuType smuType, bool apobValid)
         {
+            // Decided once, so panels created later match this one even if the setting changes meanwhile.
+            bool useAodPanel = !apobValid || settings.ImpedanceTableSrc == AppSettings.ImpedanceTableSource.AOD;
+            timingsPanelFactory = () => CreateTimingsPanel(memoryType, family, smuType, useAodPanel);
+
             // Add timings panel
-            switch (memoryType)
-            {
-                case MemType.DDR4:
-                case MemType.LPDDR4:
-                    timingsPanel = new DDR4TimingsPanel();
-                    break;
-
-                case MemType.LPDDR5:
-                    timingsPanel = CreateLegacyApuPanel();
-                    break;
-
-                case MemType.DDR5:
-                    {
-                        if (!apobValid || settings.ImpedanceTableSrc == AppSettings.ImpedanceTableSource.AOD)
-                        {
-                            if (smuType == SMU.SmuType.TYPE_APU2)
-                                timingsPanel = CreateLegacyApuPanel();
-                            else
-                                timingsPanel = mockData != null
-                                    ? new LegacyDDR5TimingsPanel(mockData.AodData, family)
-                                    : new LegacyDDR5TimingsPanel();
-                            break;
-                        }
-
-                        if (smuType == SMU.SmuType.TYPE_APU2)
-                        {
-                            timingsPanel = new DDR5APUTimingsPanel();
-                        }
-                        else if (family == Cpu.Family.FAMILY_1AH)
-                        {
-                            timingsPanel = new DDR5TimingsPanel1Ah();
-                        }
-                        else
-                        {
-                            timingsPanel = new DDR5TimingsPanel19h();
-                        }
-                        break;
-                    }
-
-                default:
-                    timingsPanel = null;
-                    break;
-            }
+            timingsPanel = timingsPanelFactory();
 
             if (timingsPanel != null)
             {
                 timingsPanelSlot.Children.Add(timingsPanel);
             }
+        }
+
+        private Control CreateTimingsPanel(MemType memoryType, Cpu.Family family, SMU.SmuType smuType, bool useAodPanel)
+        {
+            switch (memoryType)
+            {
+                case MemType.DDR4:
+                case MemType.LPDDR4:
+                    return new DDR4TimingsPanel();
+
+                case MemType.LPDDR5:
+                    return CreateLegacyApuPanel();
+
+                case MemType.DDR5:
+                    {
+                        if (useAodPanel)
+                        {
+                            if (smuType == SMU.SmuType.TYPE_APU2)
+                                return CreateLegacyApuPanel();
+
+                            return mockData != null
+                                ? new LegacyDDR5TimingsPanel(mockData.AodData, family)
+                                : new LegacyDDR5TimingsPanel();
+                        }
+
+                        if (smuType == SMU.SmuType.TYPE_APU2)
+                            return new DDR5APUTimingsPanel();
+
+                        if (family == Cpu.Family.FAMILY_1AH)
+                            return new DDR5TimingsPanel1Ah();
+
+                        return new DDR5TimingsPanel19h();
+                    }
+
+                default:
+                    return null;
+            }
+        }
+
+        // A panel for the All DIMMs window: created like the main one, with the DDR4 rows the code-behind fills
+        // (VSOC, VDIMM, VTT, ODT, RTT, drive strengths, setups) filled the same way.
+        private FrameworkElement CreateChannelTimingsPanel()
+        {
+            Control panel = timingsPanelFactory?.Invoke();
+
+            if (panel is DDR4TimingsPanel ddr4Panel)
+            {
+                ApplyDdr4Vsoc(ddr4Panel, false);
+
+                if (ddr4MemoryConfigApplied && BMC != null)
+                {
+                    try
+                    {
+                        ApplyDdr4MemoryConfig(ddr4Panel);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"All DIMMs: could not apply the BIOS memory controller config: {ex.Message}");
+                    }
+                }
+            }
+
+            return panel;
         }
 
         private Forms.NotifyIcon GetTrayIcon()
@@ -420,8 +467,18 @@ namespace ZenTimings
             // else, default = show context menu
         }
 
+        private bool cleanedUp;
+
         private void Cleanup()
         {
+            // Restart cleans up before shutting down, and the shutdown closes the window, which exits again.
+            if (cleanedUp)
+                return;
+            cleanedUp = true;
+
+            // Nothing may tick into the core once it is disposed.
+            StopAutoRefresh();
+
             foreach (IPlugin plugin in plugins)
                 plugin?.Close();
 
@@ -535,13 +592,41 @@ namespace ZenTimings
 
         private void ReadSVI()
         {
-            if ((cpu.memoryConfig.Type == MemType.DDR4 || cpu.memoryConfig.Type == MemType.LPDDR4) && plugins.Count > 0 && plugins[0].Update())
+            if ((cpu.memoryConfig.Type == MemType.DDR4 || cpu.memoryConfig.Type == MemType.LPDDR4) && timingsPanel is DDR4TimingsPanel ddr4Panel)
             {
-                (timingsPanel as DDR4TimingsPanel).textBoxVSOC_SVI2.Text = $"{plugins[0].Sensors[0].Value:F4}V";
+                ApplyDdr4Vsoc(ddr4Panel, true);
             }
         }
 
+        /// <summary>
+        /// Fills a DDR4 panel's VSOC row. The live window reads VSOC from SVI2 telemetry through its plugin,
+        /// reading it anew when <paramref name="update"/> is set and taking the last reading otherwise; a debug
+        /// report stands in the power table's VDDCR_SOC, which the SMU reports from the same rail.
+        /// </summary>
+        private void ApplyDdr4Vsoc(DDR4TimingsPanel panel, bool update)
+        {
+            if (mockData != null)
+            {
+                float reportVsoc = mockData.PowerTable?.VDDCR_SOC ?? 0;
+                if (reportVsoc > 0)
+                    panel.rowVSOC_SVI2.Value = $"{reportVsoc:F4}V";
+                return;
+            }
+
+            if (plugins.Count == 0)
+                return;
+
+            IPlugin svi2 = plugins[0];
+            bool hasValue = update
+                ? svi2.Update()
+                : svi2.Sensors?.Count > 0 && svi2.Sensors[0].Value > 0;
+
+            if (hasValue)
+                panel.rowVSOC_SVI2.Value = $"{svi2.Sensors[0].Value:F4}V";
+        }
+
         private bool ddr4BmcVddioValid;
+        private bool ddr4MemoryConfigApplied;
         private Sensor[] ddr4DramSensors;
         private bool ddr4DramSensorsDetected;
 
@@ -552,8 +637,9 @@ namespace ZenTimings
             if (!ddr4DramSensorsDetected)
             {
                 // A debug report's window reads the SuperIO sensors replayed from the report.
-                IEnumerable<SuperIoSensorGroup> groups = mockData != null ? mockData.SensorGroups : cpu?.systemInfo?.SensorGroups;
+                IEnumerable<SensorGroup> groups = mockData != null ? mockData.SensorGroups : cpu?.systemInfo?.SensorGroups;
                 ddr4DramSensors = groups?
+                    .Where(g => g.HardwareType == HardwareType.SuperIO)
                     .SelectMany(g => g.Sensors)
                     .Where(s => Ddr4DramSensorNames.Contains(s.Name, StringComparer.OrdinalIgnoreCase))
                     .ToArray();
@@ -575,8 +661,11 @@ namespace ZenTimings
         /// <see cref="BMC"/>. The live window loads BMC.Table over WMI first; a debug report's
         /// window loads it from the report's "BIOS: Memory Controller Config" dump.
         /// </summary>
-        private void ApplyDdr4MemoryConfig()
+        private void ApplyDdr4MemoryConfig(DDR4TimingsPanel panel)
         {
+            if (panel == null)
+                return;
+
             float vdimm = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVddio) / 1000);
             ddr4BmcVddioValid = vdimm > 0 && vdimm < 3;
 
@@ -588,7 +677,7 @@ namespace ZenTimings
             if (!hasMemVddio && mockData == null && AsusWmi != null && AsusWmi.Status == 1)
             {
                 AsusSensorInfo sensor = AsusWmi.FindSensorByName("DRAM Voltage");
-                hasMemVddio = sensor != null && float.TryParse(sensor.Value, out memVddio) && memVddio > 0 && memVddio < 3;
+                hasMemVddio = sensor != null && AsusWMI.TryParseSensorValue(sensor.Value, out memVddio) && memVddio > 0 && memVddio < 3;
             }
 
             if (!hasMemVddio)
@@ -596,12 +685,12 @@ namespace ZenTimings
 
             if (hasMemVddio)
             {
-                (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = $"{memVddio:F4}V";
-                (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = true;
+                panel.rowMemVddio.Value = $"{memVddio:F4}V";
+                panel.rowMemVddio.IsEnabled = true;
             }
             else
             {
-                (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = false;
+                panel.rowMemVddio.IsEnabled = false;
             }
 
             // Enabled explicitly, like VDIMM above: the label's default binding is WMIPresent, which a
@@ -609,12 +698,12 @@ namespace ZenTimings
             float vtt = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVtt) / 1000);
             if (vtt > 0)
             {
-                (timingsPanel as DDR4TimingsPanel).textBoxMemVtt.Text = $"{vtt:F4}V";
-                (timingsPanel as DDR4TimingsPanel).labelMemVtt.IsEnabled = true;
+                panel.rowMemVtt.Value = $"{vtt:F4}V";
+                panel.rowMemVtt.IsEnabled = true;
             }
             else
             {
-                (timingsPanel as DDR4TimingsPanel).labelMemVtt.IsEnabled = false;
+                panel.rowMemVtt.IsEnabled = false;
             }
 
             // When ProcODT is 0, then all other resistance values are 0
@@ -623,32 +712,32 @@ namespace ZenTimings
                 // throw new Exception("Failed to read AMD ACPI. Odt, Setup and Drive strength parameters will be empty.");
                 return;
 
-            (timingsPanel as DDR4TimingsPanel).labelProcODT.IsEnabled = true;
-            (timingsPanel as DDR4TimingsPanel).labelClkDrvStren.IsEnabled = true;
-            (timingsPanel as DDR4TimingsPanel).labelAddrCmdDrvStren.IsEnabled = true;
-            (timingsPanel as DDR4TimingsPanel).labelCsOdtDrvStren.IsEnabled = true;
-            (timingsPanel as DDR4TimingsPanel).labelCkeDrvStren.IsEnabled = true;
-            (timingsPanel as DDR4TimingsPanel).labelRttNom.IsEnabled = true;
-            (timingsPanel as DDR4TimingsPanel).labelRttWr.IsEnabled = true;
-            (timingsPanel as DDR4TimingsPanel).labelRttPark.IsEnabled = true;
-            (timingsPanel as DDR4TimingsPanel).labelAddrCmdSetup.IsEnabled = true;
-            (timingsPanel as DDR4TimingsPanel).labelCsOdtSetup.IsEnabled = true;
-            (timingsPanel as DDR4TimingsPanel).labelCkeSetup.IsEnabled = true;
+            panel.rowProcODT.IsEnabled = true;
+            panel.rowClkDrvStren.IsEnabled = true;
+            panel.rowAddrCmdDrvStren.IsEnabled = true;
+            panel.rowCsOdtDrvStren.IsEnabled = true;
+            panel.rowCkeDrvStren.IsEnabled = true;
+            panel.rowRttNom.IsEnabled = true;
+            panel.rowRttWr.IsEnabled = true;
+            panel.rowRttPark.IsEnabled = true;
+            panel.rowAddrCmdSetup.IsEnabled = true;
+            panel.rowCsOdtSetup.IsEnabled = true;
+            panel.rowCkeSetup.IsEnabled = true;
 
-            (timingsPanel as DDR4TimingsPanel).textBoxProcODT.Text = BMC.GetProcODTString(BMC.Config.ProcODT);
+            panel.rowProcODT.Value = BMC.GetProcODTString(BMC.Config.ProcODT);
 
-            (timingsPanel as DDR4TimingsPanel).textBoxClkDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.ClkDrvStren);
-            (timingsPanel as DDR4TimingsPanel).textBoxAddrCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.AddrCmdDrvStren);
-            (timingsPanel as DDR4TimingsPanel).textBoxCsOdtCmdDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CsOdtCmdDrvStren);
-            (timingsPanel as DDR4TimingsPanel).textBoxCkeDrvStren.Text = BMC.GetDrvStrenString(BMC.Config.CkeDrvStren);
+            panel.rowClkDrvStren.Value = BMC.GetDrvStrenString(BMC.Config.ClkDrvStren);
+            panel.rowAddrCmdDrvStren.Value = BMC.GetDrvStrenString(BMC.Config.AddrCmdDrvStren);
+            panel.rowCsOdtDrvStren.Value = BMC.GetDrvStrenString(BMC.Config.CsOdtCmdDrvStren);
+            panel.rowCkeDrvStren.Value = BMC.GetDrvStrenString(BMC.Config.CkeDrvStren);
 
-            (timingsPanel as DDR4TimingsPanel).textBoxRttNom.Text = BMC.GetRttString(BMC.Config.RttNom);
-            (timingsPanel as DDR4TimingsPanel).textBoxRttWr.Text = BMC.GetRttWrString(BMC.Config.RttWr);
-            (timingsPanel as DDR4TimingsPanel).textBoxRttPark.Text = BMC.GetRttString(BMC.Config.RttPark);
+            panel.rowRttNom.Value = BMC.GetRttString(BMC.Config.RttNom);
+            panel.rowRttWr.Value = BMC.GetRttWrString(BMC.Config.RttWr);
+            panel.rowRttPark.Value = BMC.GetRttString(BMC.Config.RttPark);
 
-            (timingsPanel as DDR4TimingsPanel).textBoxAddrCmdSetup.Text = $"{BMC.Config.AddrCmdSetup}";
-            (timingsPanel as DDR4TimingsPanel).textBoxCsOdtSetup.Text = $"{BMC.Config.CsOdtSetup}";
-            (timingsPanel as DDR4TimingsPanel).textBoxCkeSetup.Text = $"{BMC.Config.CkeSetup}";
+            panel.rowAddrCmdSetup.Value = $"{BMC.Config.AddrCmdSetup}";
+            panel.rowCsOdtSetup.Value = $"{BMC.Config.CsOdtSetup}";
+            panel.rowCkeSetup.Value = $"{BMC.Config.CkeSetup}";
         }
 
         private void ReadDDR4MemoryConfig()
@@ -686,25 +775,30 @@ namespace ZenTimings
                     }
 
                     // Get APCB config from BIOS. Holds memory parameters.
+                    // A table shorter than the Resistances layout would be read past its end, so it is skipped
+                    // and the ODT, RTT, drive strength and setup rows stay empty, as in a debug report.
+                    int minTableLength = Marshal.SizeOf(typeof(BiosMemController.Resistances));
                     BiosACPIFunction cmd = GetFunctionByIdString("Get APCB Config");
                     if (cmd == null)
                     {
                         // throw new Exception("Could not get memory controller config");
                         // Use AOD table as an alternative path for now
-                        BMC.Table = cpu.info.aod.Table.RawAodTable;
+                        byte[] aodTable = cpu.info.aod?.Table?.RawAodTable;
+                        if (aodTable != null && aodTable.Length >= minTableLength)
+                            BMC.Table = aodTable;
                     }
                     else
                     {
                         byte[] apcbConfig = WMI.RunCommand(classInstance, cmd.ID);
                         // BiosACPIFunction cmd = new BiosACPIFunction("Get APCB Config", 0x00010001);
                         cmd = GetFunctionByIdString("Get memory voltages");
-                        if (cmd != null)
+                        if (cmd != null && apcbConfig != null && apcbConfig.Length > 30)
                         {
                             byte[] voltages = WMI.RunCommand(classInstance, cmd.ID);
 
                             // MEM_VDDIO is ushort, offset 27
                             // MEM_VTT is ushort, offset 29
-                            for (int i = 27; i <= 30; i++)
+                            for (int i = 27; voltages != null && i <= 30 && i < voltages.Length; i++)
                             {
                                 byte value = voltages[i];
                                 if (value > 0)
@@ -712,11 +806,13 @@ namespace ZenTimings
                             }
                         }
 
-                        BMC.Table = apcbConfig ?? new byte[] { };
+                        if (apcbConfig != null && apcbConfig.Length >= minTableLength)
+                            BMC.Table = apcbConfig;
                     }
                 }
 
-                ApplyDdr4MemoryConfig();
+                ApplyDdr4MemoryConfig(timingsPanel as DDR4TimingsPanel);
+                ddr4MemoryConfigApplied = true;
             }
             catch (Exception ex)
             {
@@ -747,7 +843,9 @@ namespace ZenTimings
             if (mockData != null)
                 return mockData.GetPmicData(moduleIndex);
 
-            return ModuleSpdInfo?.Values.ElementAtOrDefault(moduleIndex)?.PmicData;
+            return ModuleSpdInfo?.Values
+                .Where(d => d.IsValid)
+                .ElementAtOrDefault(moduleIndex)?.PmicData;
         }
 
         // Always true live; a debug report has every channel only when it carries the register dump.
@@ -759,37 +857,18 @@ namespace ZenTimings
             return mockData == null ? ReadTimings(offset) : mockData.Timings.FirstOrDefault(channel => channel.Key == offset).Value;
         }
 
-        //TODO: Replace with a call to DLL
         private BaseDramTimings ReadTimings(uint offset = 0)
         {
-            cpu.memoryConfig.ReadTimings(offset);
-            var timings = cpu.memoryConfig.Timings;
-
-            if (timings.Count == 0)
-                return null;
-
-            var index = timings.FindIndex(m => m.Key.Equals(offset));
-            return timings[index < 0 ? 0 : index].Value;
-
-            //float configured = mainViewModel?.MemoryFrequency ?? 0;
-            //float ratio = result.Ratio;
-            //float freqFromRatio = ratio * 200;
-
-            //// Fallback to ratio when ConfiguredClockSpeed fails
-            //if ((configured == 0.0f || freqFromRatio > configured) && mainViewModel != null)
-            //{
-            //    mainViewModel.MemoryFrequency = freqFromRatio;
-            //}
-
-            //mainViewModel.MemoryFrequency = result.Frequency;
-
-            //return result;
+            return cpu.memoryConfig.ReadTimings(offset);
         }
 
         private bool WaitForInpoutDriverLoad()
         {
             Stopwatch timer = new Stopwatch();
             timer.Start();
+
+            if (cpu.io == null)
+                return false;
 
             bool temp;
             // Refresh until driver is opened
@@ -805,6 +884,10 @@ namespace ZenTimings
 
         private bool WaitForPowerTable()
         {
+            // A PM table setup delayed by a PCI bus lock timeout is retried on refresh; give it one chance here.
+            if (cpu.powerTable != null && cpu.powerTable.DramBaseAddress == 0)
+                cpu.RefreshPowerTable();
+
             if (cpu.powerTable == null || cpu.powerTable.DramBaseAddress == 0)
             {
                 HandleError("Could not initialize power table.\n\nClose the application and try again. If the issue persists, you might want to try a system restart.");
@@ -877,12 +960,12 @@ namespace ZenTimings
                     {
                         AsusWmi.UpdateSensors();
                         AsusSensorInfo sensor = AsusWmi.FindSensorByName("DRAM Voltage");
-                        hasAsusDramVoltage = sensor != null && float.TryParse(sensor.Value, out asusDramVoltage) && asusDramVoltage > 0 && asusDramVoltage < 3;
+                        hasAsusDramVoltage = sensor != null && AsusWMI.TryParseSensorValue(sensor.Value, out asusDramVoltage) && asusDramVoltage > 0 && asusDramVoltage < 3;
                     }
 
                     //ReadDDR4MemoryConfig();
                     cpu.RefreshPowerTable();
-                    cpu.systemInfo.UpdateSensors();
+                    cpu.systemInfo?.UpdateSensors();
                     var hasSuperIoDramVoltage = TryReadDdr4SuperIoDramVoltage(out var superIoDramVoltage);
 
                     var voltagesUpdated = false;
@@ -911,17 +994,16 @@ namespace ZenTimings
                         {
                             if (hasAsusDramVoltage)
                             {
-                                (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = $"{asusDramVoltage:F4}V";
-                                (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = true;
+                                (timingsPanel as DDR4TimingsPanel).rowMemVddio.Value = $"{asusDramVoltage:F4}V";
+                                (timingsPanel as DDR4TimingsPanel).rowMemVddio.IsEnabled = true;
                             }
                             else if (hasSuperIoDramVoltage)
                             {
-                                (timingsPanel as DDR4TimingsPanel).textBoxMemVddio.Text = $"{superIoDramVoltage:F4}V";
-                                (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = true;
+                                (timingsPanel as DDR4TimingsPanel).rowMemVddio.Value = $"{superIoDramVoltage:F4}V";
                             }
                             else if (!ddr4BmcVddioValid)
                             {
-                                (timingsPanel as DDR4TimingsPanel).labelMemVddio.IsEnabled = false;
+                                (timingsPanel as DDR4TimingsPanel).rowMemVddio.IsEnabled = false;
                             }
                         }
 
@@ -979,11 +1061,14 @@ namespace ZenTimings
                 return;
             }
 
+            if (timingsPanel == null)
+                return;
+
             try
             {
                 allDimmsWnd = new AllDimmsWindow(
                     () => AllDimmsCapture.Run(MemoryModules, ModuleSpdInfo, ChannelTimings),
-                    timingsPanel.GetType(),
+                    CreateChannelTimingsPanel,
                     mainViewModel,
                     this);
 
@@ -1013,8 +1098,45 @@ namespace ZenTimings
             };
 
             Cleanup();
-            Process.Start(startInfo);
+
+            // The new instance must not find this one's single-instance mutex, or it takes itself for a second
+            // copy and exits.
+            ReleaseInstanceMutex();
+
+            try
+            {
+                Process.Start(startInfo);
+            }
+            catch (Exception ex)
+            {
+                HandleError($"Could not restart {nameof(ZenTimings)}.\n{ex.Message}");
+            }
+
             Application.Current.Shutdown();
+        }
+
+        private static void ReleaseInstanceMutex()
+        {
+            Mutex mutex = App.instanceMutex;
+            if (mutex == null)
+                return;
+
+            App.instanceMutex = null;
+
+            try
+            {
+                // Owned only when this instance created it; the app starts it on the UI thread, where this runs.
+                if ((Application.Current as App)?.createdNew == true)
+                    mutex.ReleaseMutex();
+            }
+            catch (ApplicationException)
+            {
+                // Not owned by this thread
+            }
+            finally
+            {
+                mutex.Dispose();
+            }
         }
 
         private void ShowWindow()
@@ -1129,6 +1251,13 @@ namespace ZenTimings
 
         private void AdonisWindow_StateChanged(object sender, EventArgs e)
         {
+            // A debug report's window has no tray icon and nothing to refresh.
+            if (isMockWindow || _notifyIcon == null)
+            {
+                MinimizeFootprint();
+                return;
+            }
+
             // Do not refresh if app is minimized and sensors window is not open, to save CPU usage
             if (WindowState == WindowState.Minimized && (sensorsWindw == null || !sensorsWindw.IsLoaded))
             {

@@ -13,7 +13,7 @@ namespace ZenTimings.Helpers
 
         private const string RegistryKeyPath = @"SYSTEM\CurrentControlSet\Services\" + ServiceName;
 
-        private static readonly string DriverFilePath = @"C:\Windows\System32\drivers\" + ServiceName + ".sys";
+        private static readonly string DriverFilePath = Path.Combine(Environment.SystemDirectory, "drivers", ServiceName + ".sys");
 
         /*
             * Maximum time we wait for the driver to stop.
@@ -146,6 +146,13 @@ namespace ZenTimings.Helpers
                         */
                     if (error == ERROR_SERVICE_DOES_NOT_EXIST)
                     {
+                        /*
+                            * Neither the service nor the driver file exist:
+                            * nothing was installed, so there is nothing to report.
+                            */
+                        if (!DriverFileExists())
+                            return;
+
                         if (TryDeleteDriverFile())
                         {
                             if (notificationLevel > NotificationLevel.Error)
@@ -471,6 +478,18 @@ namespace ZenTimings.Helpers
             }
             catch
             {
+            }
+        }
+
+        private static bool DriverFileExists()
+        {
+            try
+            {
+                return File.Exists(DriverFilePath);
+            }
+            catch
+            {
+                return false;
             }
         }
 

@@ -4,10 +4,10 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using ZenStates.Core.Hardware.DRAM;
+using ZenTimings.Controls;
 using ZenTimings.ViewModels;
 
 namespace ZenTimings.Windows
@@ -15,7 +15,7 @@ namespace ZenTimings.Windows
     public partial class AllDimmsWindow : ThemedAdonisWindow
     {
         private readonly Func<AllDimmsCapture.Result> describe;
-        private readonly Type panelType;
+        private readonly Func<FrameworkElement> createPanel;
         private readonly MainViewModel sourceViewModel;
         private readonly Window centerOnWindow;
         private readonly List<ChannelFrame> frames = new List<ChannelFrame>();
@@ -27,11 +27,12 @@ namespace ZenTimings.Windows
             public BaseDramTimings Timings;
         }
 
-        internal AllDimmsWindow(Func<AllDimmsCapture.Result> describe, Type panelType, MainViewModel sourceViewModel, Window centerOnWindow)
+        // createPanel builds a panel the way the main window builds its own, including the rows its code-behind fills.
+        internal AllDimmsWindow(Func<AllDimmsCapture.Result> describe, Func<FrameworkElement> createPanel, MainViewModel sourceViewModel, Window centerOnWindow)
         {
             InitializeComponent();
             this.describe = describe;
-            this.panelType = panelType;
+            this.createPanel = createPanel ?? throw new ArgumentNullException(nameof(createPanel));
             this.sourceViewModel = sourceViewModel;
             this.centerOnWindow = centerOnWindow;
 
@@ -145,7 +146,7 @@ namespace ZenTimings.Windows
 
         private FrameworkElement CreatePanel(AllDimmsCapture.Channel channel)
         {
-            var panel = (FrameworkElement)Activator.CreateInstance(panelType);
+            FrameworkElement panel = createPanel() ?? throw new InvalidOperationException("No timings panel for this memory type.");
             panel.DataContext = sourceViewModel.CreateChannelViewModel(channel.Timings, channel.PmicData);
             return panel;
         }
@@ -183,7 +184,7 @@ namespace ZenTimings.Windows
         {
             foreach (TextBlock text in Descendants(panel).OfType<TextBlock>())
             {
-                string path = BindingOperations.GetBinding(text, TextBlock.TextProperty)?.Path?.Path;
+                string path = TimingRow.GetDisplayedBindingPath(text);
                 if (text.IsVisible && Differs(channels, path))
                 {
                     text.SetResourceReference(TextBlock.ForegroundProperty, "TimingMismatchBrush");
@@ -199,7 +200,7 @@ namespace ZenTimings.Windows
         {
             return Descendants(panel)
                 .OfType<TextBlock>()
-                .Where(text => text.IsVisible && Differs(channels, BindingOperations.GetBinding(text, TextBlock.TextProperty)?.Path?.Path))
+                .Where(text => text.IsVisible && Differs(channels, TimingRow.GetDisplayedBindingPath(text)))
                 .Select(text =>
                 {
                     Rect bounds = text.TransformToAncestor(panel).TransformBounds(new Rect(text.RenderSize));
@@ -237,21 +238,27 @@ namespace ZenTimings.Windows
             }
         }
 
-        // As many panels per row as fit the screen, spread evenly: four channels make 2x2 rather than 3 + 1.
+        // A near-square grid: up to three channels share one row (1x1, 2x1, 3x1), four make 2x2, five to nine
+        // a grid three wide, ten to sixteen four wide, and so on. Fewer columns when the screen is too narrow,
+        // spread evenly so the last row isn't left with a single panel.
         private int BalancedColumns()
         {
             int count = ChannelsPanel.Children.Count;
             if (count == 0)
                 return 1;
 
+            int preferred = count <= 3 ? count : (int)Math.Ceiling(Math.Sqrt(count));
+
             var frame = (FrameworkElement)ChannelsPanel.Children[0];
             frame.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
 
             double available = MaxWidth - BorderThickness.Left - BorderThickness.Right
                 - ChannelsPanel.Margin.Left - ChannelsPanel.Margin.Right - SystemParameters.VerticalScrollBarWidth;
-            int perRow = Math.Max(1, (int)(available / frame.DesiredSize.Width));
-            int rows = (count + perRow - 1) / perRow;
+            int fits = Math.Max(1, (int)(available / frame.DesiredSize.Width));
+            if (preferred <= fits)
+                return preferred;
 
+            int rows = (count + fits - 1) / fits;
             return (count + rows - 1) / rows;
         }
 

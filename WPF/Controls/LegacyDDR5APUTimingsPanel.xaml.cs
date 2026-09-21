@@ -1,7 +1,5 @@
 ﻿using System.Windows.Controls;
-using ZenStates.Core;
 using ZenStates.Core.Hardware.Aod;
-using ZenTimings.Common;
 
 namespace ZenTimings.Controls
 {
@@ -24,45 +22,45 @@ namespace ZenTimings.Controls
                 //labelMemVdd.IsEnabled = true;
                 //labelMemVddq.IsEnabled = true;
                 //labelMemVpp.IsEnabled = true;
-                //labelApuVddio.IsEnabled = true;
+                //rowApuVddio.IsEnabled = true;
 
-                labelProcCaDs.IsEnabled = Data?.CadBusDrvStren != null && !string.Equals(Data?.CadBusDrvStren?.ToString(), "N/A");
-                labelProcDqDs.IsEnabled = Data?.ProcDataDrvStrenApu != null && !string.Equals(Data?.ProcDataDrvStrenApu?.ToString(), "N/A");
-                labelDramDqDs.IsEnabled = Data?.DramDataDrvStren != null && !string.Equals(Data?.DramDataDrvStren?.ToString(), "N/A");
+                rowProcCaDs.IsEnabled = Data?.CadBusDrvStren != null && !string.Equals(Data?.CadBusDrvStren?.ToString(), "N/A");
+                rowProcDqDs.IsEnabled = Data?.ProcDataDrvStrenApu != null && !string.Equals(Data?.ProcDataDrvStrenApu?.ToString(), "N/A");
+                rowDramDqDs.IsEnabled = Data?.DramDataDrvStren != null && !string.Equals(Data?.DramDataDrvStren?.ToString(), "N/A");
 
-                labelRttWrD5.IsEnabled = Data?.RttWr != null && !string.Equals(Data?.RttWr?.ToString(), "N/A");
-                labelRttNomWr.IsEnabled = Data?.RttNomWr != null && !string.Equals(Data?.RttNomWr?.ToString(), "N/A");
-                labelRttNomRd.IsEnabled = Data?.RttNomRd != null && !string.Equals(Data?.RttNomRd?.ToString(), "N/A");
-                labelRttParkD5.IsEnabled = Data?.RttPark != null && !string.Equals(Data?.RttPark?.ToString(), "N/A");
-                labelRttParkDqs.IsEnabled = Data?.RttParkDqs != null && !string.Equals(Data?.RttParkDqs?.ToString(), "N/A");
+                rowRttWrD5.IsEnabled = Data?.RttWr != null && !string.Equals(Data?.RttWr?.ToString(), "N/A");
+                rowRttNomWr.IsEnabled = Data?.RttNomWr != null && !string.Equals(Data?.RttNomWr?.ToString(), "N/A");
+                rowRttNomRd.IsEnabled = Data?.RttNomRd != null && !string.Equals(Data?.RttNomRd?.ToString(), "N/A");
+                rowRttParkD5.IsEnabled = Data?.RttPark != null && !string.Equals(Data?.RttPark?.ToString(), "N/A");
+                rowRttParkDqs.IsEnabled = Data?.RttParkDqs != null && !string.Equals(Data?.RttParkDqs?.ToString(), "N/A");
 
                 //textBoxMemVddio.Text = Data.MemVddio.ToString();
                 //textBoxMemVddq.Text = Data.MemVddq.ToString();
                 //textBoxMemVpp.Text = Data.MemVpp.ToString();
-                //textBoxApuVddio.Text = Data.ApuVddio.ToString();
+                //rowApuVddio.Value = Data.ApuVddio.ToString();
 
                 try
                 {
-                    labelProcCaOdt.IsEnabled = Data?.ProcCaOdt != null && !string.Equals(Data?.ProcCaOdt?.ToString(), "N/A");
-                    labelProcCkOdt.IsEnabled = Data?.ProcCkOdt != null && !string.Equals(Data?.ProcCkOdt?.ToString(), "N/A");
-                    labelProcDqOdt.IsEnabled = Data?.ProcDqOdt != null && !string.Equals(Data?.ProcDqOdt?.ToString(), "N/A");
-                    labelProcDqsOdt.IsEnabled = Data?.ProcDqsOdt != null && !string.Equals(Data?.ProcDqsOdt?.ToString(), "N/A");
-                    textBoxProcCaOdt.Text = Data?.ProcCaOdt?.ToString() ?? "N/A";
-                    textBoxProcCkOdt.Text = Data?.ProcCkOdt?.ToString() ?? "N/A";
-                    textBoxProcDqOdt.Text = Data?.ProcDqOdt?.ToString() ?? "N/A";
-                    textBoxProcDqsOdt.Text = Data?.ProcDqsOdt?.ToString() ?? "N/A";
+                    rowProcCaOdt.IsEnabled = Data?.ProcCaOdt != null && !string.Equals(Data?.ProcCaOdt?.ToString(), "N/A");
+                    rowProcCkOdt.IsEnabled = Data?.ProcCkOdt != null && !string.Equals(Data?.ProcCkOdt?.ToString(), "N/A");
+                    rowProcDqOdt.IsEnabled = Data?.ProcDqOdt != null && !string.Equals(Data?.ProcDqOdt?.ToString(), "N/A");
+                    rowProcDqsOdt.IsEnabled = Data?.ProcDqsOdt != null && !string.Equals(Data?.ProcDqsOdt?.ToString(), "N/A");
+                    rowProcCaOdt.Value = Data?.ProcCaOdt?.ToString() ?? "N/A";
+                    rowProcCkOdt.Value = Data?.ProcCkOdt?.ToString() ?? "N/A";
+                    rowProcDqOdt.Value = Data?.ProcDqOdt?.ToString() ?? "N/A";
+                    rowProcDqsOdt.Value = Data?.ProcDqsOdt?.ToString() ?? "N/A";
                 }
                 catch { }
 
-                textBoxCadBusDrvStren.Text = Data?.CadBusDrvStren?.ToString() ?? "N/A";
-                textBoxDramDataDrvStren.Text = Data?.DramDataDrvStren?.ToString() ?? "N/A";
-                textBoxProcDataDrvStren.Text = Data?.ProcDataDrvStrenApu?.ToString() ?? "N/A";
+                rowProcCaDs.Value = Data?.CadBusDrvStren?.ToString() ?? "N/A";
+                rowDramDqDs.Value = Data?.DramDataDrvStren?.ToString() ?? "N/A";
+                rowProcDqDs.Value = Data?.ProcDataDrvStrenApu?.ToString() ?? "N/A";
 
-                textBoxRttWrD5.Text = Data?.RttWr?.ToString() ?? "N/A";
-                textBoxRttNomWr.Text = Data?.RttNomWr?.ToString() ?? "N/A";
-                textBoxRttNomRd.Text = Data?.RttNomRd?.ToString() ?? "N/A";
-                textBoxRttParkD5.Text = Data?.RttPark?.ToString() ?? "N/A";
-                textBoxRttParkDqs.Text = Data?.RttParkDqs?.ToString() ?? "N/A";
+                rowRttWrD5.Value = Data?.RttWr?.ToString() ?? "N/A";
+                rowRttNomWr.Value = Data?.RttNomWr?.ToString() ?? "N/A";
+                rowRttNomRd.Value = Data?.RttNomRd?.ToString() ?? "N/A";
+                rowRttParkD5.Value = Data?.RttPark?.ToString() ?? "N/A";
+                rowRttParkDqs.Value = Data?.RttParkDqs?.ToString() ?? "N/A";
             }
         }
     }

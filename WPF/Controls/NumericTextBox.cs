@@ -149,22 +149,10 @@ namespace ZenTimings.Controls
 
         protected override void OnPreviewKeyDown(KeyEventArgs e)
         {
-            switch (e.Key)
-            {
-                case Key.Back:
-                case Key.Delete:
-                case Key.Left:
-                case Key.Right:
-                case Key.Up:
-                case Key.Down:
-                case Key.Home:
-                case Key.End:
-                case Key.Tab:
-                case Key.Enter:
-                case Key.Escape:
-                    base.OnPreviewKeyDown(e);
-                    return;
-            }
+            // Enter can trigger a default button without the box losing focus first,
+            // so commit (and clamp to Minimum/Maximum) the typed value now.
+            if (e.Key == Key.Enter)
+                CommitText();
 
             base.OnPreviewKeyDown(e);
         }

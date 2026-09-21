@@ -12,6 +12,7 @@ using System.Windows;
 using System.Xml.Serialization;
 using ZenTimings.Common;
 using ZenTimings.Encryption;
+using ZenTimings.Helpers;
 using ZenTimings.Settings;
 using ZenTimings.Windows;
 using MessageBox = AdonisUI.Controls.MessageBox;
@@ -151,7 +152,7 @@ namespace ZenTimings
         {
             // After upgrading to .NET 4.7.2, the best supported TLS version is automatically negotiated, so we don't need to force TLS 1.2 anymore.
             //ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
-            using (var client = new WebClient())
+            using (var client = new TimeoutWebClient())
             {
                 byte[] xmlData = client.DownloadData(GetUpdateUrl());
                 byte[] signature = client.DownloadData(GetSignatureUrl());
@@ -221,7 +222,7 @@ namespace ZenTimings
 
                 MessageBox.Show(messageBox);
 
-                if (!manual) SplashWindow.splash.Hide();
+                if (!manual) SplashWindow.HideIfOpen();
 
                 if (messageBox.Result.Equals(MessageBoxResult.Yes))
                 {
@@ -251,7 +252,7 @@ namespace ZenTimings
                     {
                         persistence.SetSkippedVersion(remoteVersion);
                     }
-                    SplashWindow.splash.Show();
+                    SplashWindow.ShowIfOpen();
                 }
             }
             else if (manual)
@@ -271,34 +272,33 @@ namespace ZenTimings
             }
             catch
             {
-                if (!progressWindow.IsCancelled)
-                {
-                    try { progressWindow.Close(); }
-                    catch { }
-                }
+                progressWindow.CloseFromUpdater();
                 throw;
             }
+        }
+
+        private static void ShowUpdateFailed(UpdateProgressWindow progressWindow, string message)
+        {
+            progressWindow.CloseFromUpdater();
+            MessageBox.Show(
+                message,
+                "Update Failed",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
         }
 
         private bool DownloadAndApplyUpdateCore(string downloadUrl, string checksumUrl, string zipSignatureUrl,
             Version installedVersion, UpdateProgressWindow progressWindow)
         {
-            string tempDir = Path.Combine(Path.GetTempPath(), "ZenTimings_Update");
-            string zipPath = Path.Combine(tempDir, "update.zip");
-            string extractDir = Path.Combine(tempDir, "extracted");
+            string expectedHash;
+            byte[] zipSignature;
+            byte[] zipData;
 
-            // Clean up any previous update attempt
-            if (Directory.Exists(tempDir))
-                Directory.Delete(tempDir, true);
-
-            Directory.CreateDirectory(tempDir);
-
-            using (var client = new WebClient())
+            using (var client = new TimeoutWebClient())
             {
                 // Download checksum and signature first (small files, fail early)
                 progressWindow.SetIndeterminate("Downloading verification files...");
 
-                string expectedHash;
                 try
                 {
                     // Checksum file format: "<hex_hash>" or "<hex_hash>  <filename>"
@@ -306,53 +306,40 @@ namespace ZenTimings
                 }
                 catch (WebException)
                 {
-                    CleanupTempDir(tempDir);
-                    progressWindow.Close();
-                    MessageBox.Show(
+                    ShowUpdateFailed(progressWindow,
                         "Could not download the checksum file.\n" +
-                        "The update has been cancelled for security reasons.",
-                        "Update Failed",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Error);
+                        "The update has been cancelled for security reasons.");
                     return false;
                 }
 
                 if (progressWindow.IsCancelled)
-                {
-                    CleanupTempDir(tempDir);
                     return false;
-                }
 
-                byte[] zipSignature;
                 try
                 {
                     zipSignature = client.DownloadData(zipSignatureUrl);
                 }
                 catch (WebException)
                 {
-                    CleanupTempDir(tempDir);
-                    progressWindow.Close();
-                    MessageBox.Show(
+                    ShowUpdateFailed(progressWindow,
                         "Could not download the signature file.\n" +
-                        "The update has been cancelled for security reasons.",
-                        "Update Failed",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Error);
+                        "The update has been cancelled for security reasons.");
                     return false;
                 }
 
                 if (progressWindow.IsCancelled)
-                {
-                    CleanupTempDir(tempDir);
                     return false;
-                }
 
-                // Download the update zip with progress reporting
+                // Download the update zip into memory with progress reporting.
+                // The same bytes are verified and extracted, so nothing can be
+                // swapped on disk between verification and use.
                 progressWindow.SetStatus("Downloading update...");
                 progressWindow.SetProgress(0, "Connecting...");
 
                 var downloadComplete = new ManualResetEvent(false);
                 Exception downloadError = null;
+                bool downloadCancelled = false;
+                byte[] downloadedData = null;
 
                 client.DownloadProgressChanged += (sender, e) =>
                 {
@@ -369,81 +356,90 @@ namespace ZenTimings
                     progressWindow.SetProgress(e.ProgressPercentage, detail);
                 };
 
-                client.DownloadFileCompleted += (sender, e) =>
+                client.DownloadDataCompleted += (sender, e) =>
                 {
-                    if (e.Error != null)
+                    if (e.Cancelled)
+                        downloadCancelled = true;
+                    else if (e.Error != null)
                         downloadError = e.Error;
+                    else
+                        downloadedData = e.Result;
                     downloadComplete.Set();
                 };
 
-                client.DownloadFileAsync(new Uri(downloadUrl), zipPath);
+                client.DownloadDataAsync(new Uri(downloadUrl));
 
                 // Pump WPF messages while waiting for download to complete
+                bool cancelRequested = false;
                 while (!downloadComplete.WaitOne(50))
                 {
+                    if (progressWindow.IsCancelled && !cancelRequested)
+                    {
+                        cancelRequested = true;
+                        client.CancelAsync();
+                    }
+
                     Application.Current.Dispatcher.Invoke(
                         System.Windows.Threading.DispatcherPriority.Background,
                         new Action(delegate { }));
                 }
 
-                if (progressWindow.IsCancelled)
+                if (progressWindow.IsCancelled || downloadCancelled)
                 {
-                    CleanupTempDir(tempDir);
+                    progressWindow.CloseFromUpdater();
                     return false;
                 }
 
-                if (downloadError != null)
+                if (downloadError != null || downloadedData == null)
                 {
-                    CleanupTempDir(tempDir);
-                    progressWindow.Close();
-                    MessageBox.Show(
-                        $"Failed to download the update:\n{downloadError.Message}",
-                        "Update Failed",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Error);
+                    ShowUpdateFailed(progressWindow,
+                        $"Failed to download the update:\n{downloadError?.Message ?? "No data received."}");
                     return false;
                 }
 
-                // Verify checksum
-                progressWindow.SetIndeterminate("Verifying checksum...");
-
-                string actualHash = ComputeFileHash(zipPath, "SHA256");
-                if (!string.Equals(actualHash, expectedHash, StringComparison.OrdinalIgnoreCase))
-                {
-                    CleanupTempDir(tempDir);
-                    progressWindow.Close();
-                    MessageBox.Show(
-                        "Update verification failed. The downloaded file checksum does not match the expected value.\n" +
-                        "The update has been cancelled for security reasons.",
-                        "Update Failed",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Error);
-                    return false;
-                }
-
-                // Verify RSA signature
-                progressWindow.SetIndeterminate("Verifying digital signature...");
-
-                byte[] zipData = File.ReadAllBytes(zipPath);
-                if (!UpdaterSignature.Verify(zipData, zipSignature))
-                {
-                    CleanupTempDir(tempDir);
-                    progressWindow.Close();
-                    MessageBox.Show(
-                        "Update signature verification failed. The downloaded file may have been tampered with.\n" +
-                        "The update has been cancelled for security reasons.",
-                        "Update Failed",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Error);
-                    return false;
-                }
+                zipData = downloadedData;
             }
 
-            // Extract zip
+            // Verify checksum
+            progressWindow.SetIndeterminate("Verifying checksum...");
+
+            string actualHash = ComputeHash(zipData, "SHA256");
+            if (!string.Equals(actualHash, expectedHash, StringComparison.OrdinalIgnoreCase))
+            {
+                ShowUpdateFailed(progressWindow,
+                    "Update verification failed. The downloaded file checksum does not match the expected value.\n" +
+                    "The update has been cancelled for security reasons.");
+                return false;
+            }
+
+            // Verify RSA signature
+            progressWindow.SetIndeterminate("Verifying digital signature...");
+
+            if (!UpdaterSignature.Verify(zipData, zipSignature))
+            {
+                ShowUpdateFailed(progressWindow,
+                    "Update signature verification failed. The downloaded file may have been tampered with.\n" +
+                    "The update has been cancelled for security reasons.");
+                return false;
+            }
+
+            // Extract the verified bytes into a fresh directory that only
+            // Administrators/SYSTEM can modify (the update script runs elevated).
             progressWindow.SetIndeterminate("Extracting update...");
 
-            Directory.CreateDirectory(extractDir);
-            ZipFile.ExtractToDirectory(zipPath, extractDir);
+            string workDir = SecureDirectoryHelper.CreateAdminOnlyDirectory("Update");
+            string extractDir = Path.Combine(workDir, "extracted");
+
+            try
+            {
+                Directory.CreateDirectory(extractDir);
+                SecureDirectoryHelper.ExtractZip(zipData, extractDir);
+            }
+            catch
+            {
+                CleanupTempDir(workDir);
+                throw;
+            }
 
             // Find the actual content directory (zip may contain a single root folder)
             string sourceDir = extractDir;
@@ -459,37 +455,31 @@ namespace ZenTimings
             string extractedExe = Path.Combine(sourceDir, "ZenTimings.exe");
             if (!File.Exists(extractedExe))
             {
-                CleanupTempDir(tempDir);
-                progressWindow.Close();
-                MessageBox.Show(
+                CleanupTempDir(workDir);
+                ShowUpdateFailed(progressWindow,
                     "The downloaded update does not contain ZenTimings.exe.\n" +
-                    "The update has been cancelled.",
-                    "Update Failed",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+                    "The update has been cancelled.");
                 return false;
             }
 
-            var extractedVersion = new Version(FileVersionInfo.GetVersionInfo(extractedExe).FileVersion);
-            if (extractedVersion <= installedVersion)
+            // An unreadable version counts as not newer (and must not leak the work directory via an exception).
+            Version extractedVersion;
+            if (!Version.TryParse(FileVersionInfo.GetVersionInfo(extractedExe).FileVersion, out extractedVersion) ||
+                extractedVersion <= installedVersion)
             {
-                CleanupTempDir(tempDir);
-                progressWindow.Close();
-                MessageBox.Show(
+                CleanupTempDir(workDir);
+                ShowUpdateFailed(progressWindow,
                     $"The downloaded version ({extractedVersion}) is not newer than the installed version ({installedVersion}).\n" +
-                    "The update has been cancelled for security reasons.",
-                    "Update Failed",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+                    "The update has been cancelled for security reasons.");
                 return false;
             }
 
-            // Create and run update batch script
+            // Create and run update batch script (in the same protected directory)
             progressWindow.SetIndeterminate("Applying update...");
 
             string appDir = AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\');
             int pid = Process.GetCurrentProcess().Id;
-            string batchPath = Path.Combine(tempDir, "update.cmd");
+            string batchPath = Path.Combine(workDir, "update.cmd");
 
             var sb = new StringBuilder();
             sb.AppendLine("@echo off");
@@ -501,48 +491,69 @@ namespace ZenTimings
             sb.AppendLine(")");
             sb.AppendLine($"xcopy /s /y /q \"{sourceDir}\\*\" \"{appDir}\\\"");
             sb.AppendLine($"start \"\" \"{Path.Combine(appDir, "ZenTimings.exe")}\"");
-            sb.AppendLine($"rmdir /s /q \"{tempDir}\"");
+            sb.AppendLine($"rmdir /s /q \"{workDir}\"");
 
-            File.WriteAllText(batchPath, sb.ToString());
-
-            Process.Start(new ProcessStartInfo
+            try
             {
-                FileName = "cmd.exe",
-                Arguments = $"/c \"{batchPath}\"",
-                CreateNoWindow = true,
-                UseShellExecute = false,
-                WindowStyle = ProcessWindowStyle.Hidden,
-            });
+                File.WriteAllText(batchPath, sb.ToString());
 
-            progressWindow.Close();
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = Path.Combine(Environment.SystemDirectory, "cmd.exe"),
+                    Arguments = $"/c \"{batchPath}\"",
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                });
+            }
+            catch
+            {
+                CleanupTempDir(workDir);
+                throw;
+            }
+
+            progressWindow.CloseFromUpdater();
             return true;
         }
 
         private static void CleanupTempDir(string tempDir)
         {
-            try
-            {
-                if (Directory.Exists(tempDir))
-                    Directory.Delete(tempDir, true);
-            }
-            catch { }
+            SecureDirectoryHelper.TryDelete(tempDir);
         }
 
-        private static string ComputeFileHash(string filePath, string algorithm)
+        private static string ComputeHash(byte[] data, string algorithm)
         {
             using (var ha = HashAlgorithm.Create(algorithm))
             {
                 if (ha == null)
                     throw new NotSupportedException($"Hash algorithm '{algorithm}' is not supported.");
 
-                using (var stream = File.OpenRead(filePath))
+                byte[] hash = ha.ComputeHash(data);
+                var sb = new StringBuilder(hash.Length * 2);
+                foreach (byte b in hash)
+                    sb.Append(b.ToString("x2"));
+                return sb.ToString();
+            }
+        }
+
+        /// <summary>
+        /// WebClient with a bounded timeout for synchronous requests, so an
+        /// unreachable update server does not block the UI for the default ~100 s.
+        /// </summary>
+        private sealed class TimeoutWebClient : WebClient
+        {
+            private const int DefaultTimeoutMs = 15000;
+
+            protected override WebRequest GetWebRequest(Uri address)
+            {
+                WebRequest request = base.GetWebRequest(address);
+                if (request != null)
                 {
-                    byte[] hash = ha.ComputeHash(stream);
-                    var sb = new StringBuilder(hash.Length * 2);
-                    foreach (byte b in hash)
-                        sb.Append(b.ToString("x2"));
-                    return sb.ToString();
+                    request.Timeout = DefaultTimeoutMs;
+                    if (request is HttpWebRequest httpRequest)
+                        httpRequest.ReadWriteTimeout = DefaultTimeoutMs;
                 }
+                return request;
             }
         }
     }

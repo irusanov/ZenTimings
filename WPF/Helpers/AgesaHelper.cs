@@ -12,11 +12,15 @@ namespace ZenTimings.Helpers
         {
             try
             {
+                var io = CpuSingleton.Instance?.io;
+                if (io == null)
+                    return AppSettings.AGESA_UNKNOWN;
+
                 var CHUNK_SIZE = 1024 * 256;
 
                 for (var i = 0x9000000; i < 0x9FFFFFF; i += CHUNK_SIZE)
                 {
-                    var chunkData = CpuSingleton.Instance.io.ReadMemory(new IntPtr(i), CHUNK_SIZE);
+                    var chunkData = io.ReadMemory(new IntPtr(i), CHUNK_SIZE);
                     var version = AgesaUtils.ParseVersion(chunkData);
                     if (!String.IsNullOrEmpty(version) && version != AppSettings.AGESA_UNKNOWN)
                     {

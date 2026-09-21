@@ -95,6 +95,12 @@ namespace ZenTimings.Common
 
         private void ParseTable(byte[] biosTable)
         {
+            if (biosTable == null || biosTable.Length < Marshal.SizeOf(typeof(Resistances)))
+            {
+                Config = default(Resistances);
+                return;
+            }
+
             GCHandle handle = GCHandle.Alloc(biosTable, GCHandleType.Pinned);
             try
             {

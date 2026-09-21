@@ -15,7 +15,7 @@
     Title="Sensors"
     SnapIdentifier="SensorsWindow"
     Height="500"
-    Width="392"
+    Width="400"
     MinWidth="386"
     MinHeight="280"
     WindowStartupLocation="CenterOwner"
@@ -415,7 +415,7 @@
                                     </Style>
                                 </DataGrid.RowStyle>
                                 <DataGrid.Columns>
-                                    <DataGridTemplateColumn Header="Sensor" CellTemplate="{StaticResource SensorNameCellTemplate}" Width="*" MinWidth="120"/>
+                                    <DataGridTemplateColumn Header="Sensor" CellTemplate="{StaticResource SensorNameCellTemplate}" Width="*" MinWidth="150"/>
 
                                     <DataGridTextColumn Header="Current" Binding="{Binding Current}" Width="*" MinWidth="64">
                                         <DataGridTextColumn.ElementStyle>

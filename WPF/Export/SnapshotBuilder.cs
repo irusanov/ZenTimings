@@ -668,13 +668,13 @@ namespace ZenTimings.Export
 
                 foreach (Sensor sensor in group.Sensors)
                 {
-                    if (hidden.Count > 0 && hidden.Contains($"{group.ChipName}|{sensor.Name}"))
+                    if (hidden.Count > 0 && hidden.Contains($"{group.Name}|{sensor.Name}"))
                     {
                         hiddenCount++;
                         continue;
                     }
 
-                    items.Add(BuildSensor(group.ChipName, sensor));
+                    items.Add(BuildSensor(group.Name, sensor));
                 }
             }
 

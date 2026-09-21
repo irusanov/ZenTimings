@@ -15,7 +15,8 @@ namespace ZenTimings.Windows
     public partial class SplashWindow
     {
         internal static readonly AppSettings appSettings = AppSettings.Instance;
-        internal static readonly Updater updater = (Application.Current as App)?.updater;
+        // Resolved at use time: the updater may not exist yet when this type is first initialized.
+        internal static Updater updater => (Application.Current as App)?.updater;
         public static readonly SplashWindow splash = new SplashWindow();
 
         // To refresh the UI immediately
@@ -27,9 +28,15 @@ namespace ZenTimings.Windows
                 (RefreshDelegate)delegate { });
         }
 
+        private static bool isClosed;
+
+        // False once the splash window has been closed (e.g. after the main window opened).
+        public static bool IsOpen => !isClosed;
+
         public SplashWindow()
         {
             InitializeComponent();
+            Closed += (s, e) => isClosed = true;
         }
 
         // True when the app was launched by the scheduled task created for
@@ -45,13 +52,32 @@ namespace ZenTimings.Windows
             splash.Show();
 
             if (appSettings.CheckForUpdates && !DeferUpdateCheck)
-                updater.CheckForUpdate();
+                updater?.CheckForUpdate();
         }
 
-        public static void Stop() => splash.Close();
+        public static void Stop()
+        {
+            if (!isClosed)
+                splash.Close();
+        }
+
+        public static void HideIfOpen()
+        {
+            if (!isClosed && splash.IsVisible)
+                splash.Hide();
+        }
+
+        public static void ShowIfOpen()
+        {
+            if (!isClosed && !splash.IsVisible)
+                splash.Show();
+        }
 
         public static void Loading(string status)
         {
+            if (isClosed)
+                return;
+
             splash.Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() =>
             {
                 splash.status.Content = status;

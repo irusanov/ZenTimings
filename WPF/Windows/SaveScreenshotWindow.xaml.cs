@@ -17,7 +17,7 @@ namespace ZenTimings.Windows
     /// </summary>
     public partial class SaveWindow : ThemedAdonisWindow, IDisposable
     {
-        private static Bitmap screenshot;
+        private readonly Bitmap screenshot;
 
         public SaveWindow(Bitmap bitmap)
         {
@@ -32,24 +32,53 @@ namespace ZenTimings.Windows
             return $"{string.Join("_", this.Title.Split())}_{unixTimestamp}.png";
         }
 
+        // The configured screenshot folder, or the default one next to the executable when the
+        // setting is empty, relative or not a valid path.
+        private static string GetScreenshotDirectory()
+        {
+            string directory = AppSettings.Instance.ScreenshotSaveLocation;
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(directory) && Path.IsPathRooted(directory.Trim()))
+                    return directory.Trim();
+            }
+            catch (ArgumentException)
+            {
+                // Invalid characters in the configured path - use the default folder.
+            }
+
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Screenshots");
+        }
+
         private void SaveToFile(string filename = "ZenTimingsScreenshot.png")
         {
             try
             {
-                var directory = AppSettings.Instance.ScreenshotSaveLocation;
-                if (!Directory.Exists(directory))
+                string path;
+                if (Path.IsPathRooted(filename))
                 {
-                    Directory.CreateDirectory(directory);
+                    // Full path chosen via "Save As".
+                    path = filename;
                 }
-                var path = Path.Combine(directory, filename);
+                else
+                {
+                    var directory = GetScreenshotDirectory();
+                    if (!Directory.Exists(directory))
+                    {
+                        Directory.CreateDirectory(directory);
+                    }
+                    path = Path.Combine(directory, filename);
+                }
                 screenshot.Save(path);
-                screenshot.Dispose();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to save screenshot: {ex.Message}", "Error", MessageBoxButton.OK,
                     MessageBoxImage.Error);
+                return;
             }
+
+            screenshot.Dispose();
             Close();
         }
 

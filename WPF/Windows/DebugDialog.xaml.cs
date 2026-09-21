@@ -285,7 +285,7 @@ namespace ZenTimings.Windows
 
                 Dictionary<byte, Ddr5SpdInfo> results = CpuSingleton.Instance.memoryConfig.ReadAndDecodeAll();
 
-                foreach (KeyValuePair<byte, Ddr5SpdInfo> kvp in results)
+                foreach (KeyValuePair<byte, Ddr5SpdInfo> kvp in results ?? new Dictionary<byte, Ddr5SpdInfo>())
                 {
                     AddLine(string.Format("DIMM at I2C address 0x{0:X2}", kvp.Key));
                     AddLine(kvp.Value.ToString());
@@ -464,6 +464,9 @@ namespace ZenTimings.Windows
                 CultureInfo.InvariantCulture);
             var filename = $@"{string.Join("_", Title.Split())}_{unixTimestamp}.txt";
 
+            // Never rely on the current directory (it is System32 when started by the scheduled task)
+            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filename);
+
             if (saveAs)
             {
                 var saveFileDialog = new SaveFileDialog
@@ -472,23 +475,53 @@ namespace ZenTimings.Windows
                     FilterIndex = 1,
                     DefaultExt = "txt",
                     FileName = filename,
+                    InitialDirectory = AppDomain.CurrentDomain.BaseDirectory,
                     RestoreDirectory = true
                 };
 
-                if (saveFileDialog.ShowDialog() == false)
+                if (saveFileDialog.ShowDialog() != true)
                     return;
 
-                filename = saveFileDialog.FileName;
+                filePath = saveFileDialog.FileName;
             }
 
-            File.WriteAllText(filename, textBoxDebugOutput.Text);
-            MessageBox.Show($"Debug report saved as {filename}", saveAs ? "Save As" : "Save");
+            try
+            {
+                File.WriteAllText(filePath, textBoxDebugOutput.Text);
+                MessageBox.Show($"Debug report saved as {filePath}", saveAs ? "Save As" : "Save");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Could not save the debug report to {filePath}:\n{ex.Message}",
+                    "Error",
+                    AdonisUI.Controls.MessageBoxButton.OK,
+                    AdonisUI.Controls.MessageBoxImage.Error);
+            }
         }
 
         private async void ButtonDebug_Click(object sender, RoutedEventArgs e)
         {
             bool printSerialNumbers = CheckPrintSerials.IsChecked == true;
-            await Task.Run(() => CoreOptionsScope.Run(printSerialNumbers, Debug));
+
+            try
+            {
+                await Task.Run(() => CoreOptionsScope.Run(printSerialNumbers, Debug));
+            }
+            catch (Exception ex)
+            {
+                // Keep whatever was collected before the failure
+                textBoxDebugOutput.Text = result.ToString() + Environment.NewLine + "<FAILED> " + ex;
+                MessageBox.Show(
+                    $"An error occurred while generating the debug report:\n{ex.Message}",
+                    "Error",
+                    AdonisUI.Controls.MessageBoxButton.OK,
+                    AdonisUI.Controls.MessageBoxImage.Error);
+            }
+            finally
+            {
+                SetControlsState();
+            }
         }
 
         private void ButtonDebugCancel_Click(object sender, RoutedEventArgs e)
