@@ -34,6 +34,7 @@
                 <TextBlock Text=" - Add All DIMMs view (feature by @deadfellow34)" />
                 <TextBlock Text=" - Add Export dialog with more options (feature by @b1zya)" />
                 <TextBlock Text=" - Add copy to clipboard buttons to grids and windows (feature by @b1zya)" />
+                <TextBlock Text=" - Add voltage sources options in Options window" />
                 <TextBlock Text=" - [WIP] Extend debug dialog parsing (thanks @deadfellow34 for the help)" />
                 <TextBlock Text=" - Update HTML export and move as an option in Export dialog" />
                 <TextBlock Text=" - Various bugfixes and performance improvements" />

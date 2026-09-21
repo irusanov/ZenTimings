@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 using ZenStates.Core;
 using ZenStates.Core.Hardware;
+using ZenStates.Core.Hardware.Aod;
 using ZenStates.Core.Hardware.Apob;
 using ZenStates.Core.Hardware.DRAM;
 using ZenStates.Core.Hardware.DRAM.DDR5.Pmic;
@@ -258,6 +259,11 @@ namespace ZenTimings.ViewModels
             set => SetProperty(ref _vmisc, value);
         }
 
+        // The decoded AOD table: rebuilt from the debug report's raw dump in a mock window, read from
+        // the live machine otherwise. Everything below that needs AOD goes through here.
+        private AodData AodData =>
+            mockData != null ? mockData.AodData : CpuSingleton.Instance?.info.aod?.Table?.Data;
+
         private Ddr5PmicData _ddr5PmicData;
         public Ddr5PmicData PmicData
         {
@@ -365,11 +371,11 @@ namespace ZenTimings.ViewModels
                 {
                     PmicData = pmicData;
                 }
-                else if (mockData == null)
+                else
                 {
-                    // fallback to AOD table (not available for a mock report - the debug report's
-                    // AOD table isn't parsed back into a Table.Data instance yet)
-                    var aodData = CpuSingleton.Instance.info.aod?.Table?.Data;
+                    // Fall back to the AOD table's programmed rails when the PMIC can't be read - live
+                    // over SMBus, or from a report without SPD dumps.
+                    var aodData = AodData;
                     if (aodData != null)
                     {
                         SwaAdcV = aodData?.MemVddio != null ? aodData.MemVddio.RawValue / 1000.0f : 0;
@@ -382,15 +388,8 @@ namespace ZenTimings.ViewModels
             // ECC: not captured by the debug report today, so left at its default (false) for mock data
             ECC = mockData == null && SystemInfo.SMBios.MemoryDevices.Any(d => d.HasEcc);
 
-            if (mockData == null)
-            {
-                RefreshSensors();
-            }
-            else if (mockData.PowerTable != null)
-            {
-                Vsoc = mockData.PowerTable.VDDCR_SOC;
-                Vmisc = IsVmiscSupported ? mockData.PowerTable.VDD_MISC : 0;
-            }
+            // Live or mock - RefreshSensors picks the sources each can offer.
+            RefreshSensors();
         }
 
         private static readonly string[] ApuVddioSensorNames = { "CPU VDDIO", "VDIMM", "VDDIO", "CPU VDDIO Memory" };
@@ -402,10 +401,14 @@ namespace ZenTimings.ViewModels
         private Sensor _vsocSensor;
         private Sensor _vmiscSensor;
 
+        // SuperIO sensors: replayed from the debug report's register dumps in a mock window, live otherwise.
+        private IEnumerable<SuperIoSensorGroup> SensorGroups =>
+            mockData != null ? mockData.SensorGroups : CpuSingleton.Instance?.systemInfo?.SensorGroups;
+
         // Locates the relevant sensors once and caches them so subsequent refreshes don't need to search by name again.
         private void DetectSensors()
         {
-            var sensors = CpuSingleton.Instance?.systemInfo?.SensorGroups
+            var sensors = SensorGroups?
                 .SelectMany(g => g.Sensors)
                 .ToList();
 
@@ -418,7 +421,7 @@ namespace ZenTimings.ViewModels
 
         public IReadOnlyList<VoltageSensorSource> GetAvailableVoltageSources(VoltageRail rail)
         {
-            if (mockData == null && !_sensorsDetected)
+            if (!_sensorsDetected)
                 DetectSensors();
 
             var sources = new List<VoltageSensorSource>();
@@ -439,8 +442,7 @@ namespace ZenTimings.ViewModels
                 sources.Add(VoltageSensorSource.Smu);
             }
 
-            if (rail == VoltageRail.Vddio && CpuSingleton.Instance != null &&
-                CpuSingleton.Instance.info.aod?.Table?.Data?.ApuVddio != null)
+            if (rail == VoltageRail.Vddio && AodData?.ApuVddio != null)
             {
                 sources.Add(VoltageSensorSource.Aod);
             }
@@ -497,7 +499,7 @@ namespace ZenTimings.ViewModels
                     if (rail != VoltageRail.Vddio)
                         return 0;
 
-                    var aodData = CpuSingleton.Instance?.info.aod?.Table?.Data;
+                    var aodData = AodData;
                     return aodData?.ApuVddio == null ? 0 : aodData.ApuVddio.RawValue / 1000.0f;
                 default:
                     return 0;
@@ -531,16 +533,8 @@ namespace ZenTimings.ViewModels
         // Call after CpuSingleton.Instance.systemInfo.UpdateSensors() to refresh the live sensor readings.
         public void RefreshSensors()
         {
-            if (mockData != null)
-            {
-                // A debug report reconstructs neither SuperIO sensors nor the AOD table, so its own power table
-                // is the only source available. (ApuVddio therefore has no value to show in mock mode.)
-                ApuVddio = 0;
-                Vsoc = PowerTable?.VDDCR_SOC ?? 0;
-                Vmisc = IsVmiscSupported ? PowerTable?.VDD_MISC ?? 0 : 0;
-                return;
-            }
-
+            // A mock window's sources are the ones the report rebuilds: its SuperIO dump, power table
+            // (SMU) and AOD table. Their values are the captured ones, so refreshing them is harmless.
             if (!_sensorsDetected)
                 DetectSensors();
 

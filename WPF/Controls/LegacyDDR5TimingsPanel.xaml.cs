@@ -11,17 +11,16 @@ namespace ZenTimings.Controls
     /// </summary>
     public partial class LegacyDDR5TimingsPanel : UserControl
     {
-        public LegacyDDR5TimingsPanel()
+        public LegacyDDR5TimingsPanel() : this(LiveAodData(), CpuSingleton.Instance.info.family)
+        {
+        }
+
+        /// <param name="Data">AOD fields to show - a debug report's in a mock window. Null leaves them N/A.</param>
+        /// <param name="family">CPU family, picks the single ProcODT or the pull-up/pull-down pair.</param>
+        public LegacyDDR5TimingsPanel(AodData Data, Cpu.Family family)
         {
             InitializeComponent();
 
-            Cpu cpu = CpuSingleton.Instance;
-            AOD aod = cpu.info.aod;
-
-            if (aod == null || ZenStates.Core.Utils.AllZero(aod.Table.RawAodTable))
-                return;
-
-            AodData Data = aod.Table.Data;
             if (Data != null)
             {
                 //labelMemVdd.IsEnabled = true;
@@ -45,9 +44,7 @@ namespace ZenTimings.Controls
 
                 try
                 {
-                    Cpu.CodeName codeName = cpu.info.codeName;
-
-                    if (cpu.info.family == Cpu.Family.FAMILY_1AH && Data?.ProcOdtPullUp != null)
+                    if (family == Cpu.Family.FAMILY_1AH && Data?.ProcOdtPullUp != null)
                     {
                         labelProcODT.Visibility = Visibility.Collapsed;
                         textBoxProcODT.Visibility = Visibility.Collapsed;
@@ -80,6 +77,17 @@ namespace ZenTimings.Controls
                 textBoxRttParkD5.Text = Data.RttPark.ToString();
                 textBoxRttParkDqs.Text = Data.RttParkDqs.ToString();
             }
+        }
+
+        // The live machine's AOD fields, or null when its AOD table is missing or blank.
+        internal static AodData LiveAodData()
+        {
+            AOD aod = CpuSingleton.Instance.info.aod;
+
+            if (aod == null || ZenStates.Core.Utils.AllZero(aod.Table.RawAodTable))
+                return null;
+
+            return aod.Table.Data;
         }
     }
 }
