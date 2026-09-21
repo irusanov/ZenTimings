@@ -321,7 +321,7 @@ namespace ZenTimings.Windows
             // PMIC Temperature
             if (!string.IsNullOrEmpty(pmicData.PmicTemperature))
             {
-                if (TryParsePmicTemperature(pmicData.PmicTemperature, out double tempValue))
+                if (double.TryParse(pmicData.PmicTemperature.Replace("°C", "").Trim(), out double tempValue))
                 {
                     AddPmicItem("PMIC Temp", tempValue, "°C");
                 }
@@ -422,7 +422,7 @@ namespace ZenTimings.Windows
 
             if (!string.IsNullOrEmpty(pmicData.PmicTemperature))
             {
-                if (TryParsePmicTemperature(pmicData.PmicTemperature, out double tempValue))
+                if (double.TryParse(pmicData.PmicTemperature.Replace("°C", "").Trim(), out double tempValue))
                 {
                     UpdateTelemetryItem(vm, "PMIC Temp", tempValue);
                 }
@@ -1021,23 +1021,6 @@ namespace ZenTimings.Windows
                 row.IsSelected = false;
                 e.Handled = true;
             }
-        }
-
-        // Core reports the PMIC temperature as a threshold string such as "85 C", "< 85 C" or "> 140 C".
-        // Extracts the leading number (ignoring a "<" / ">" prefix) using the invariant culture.
-        private static bool TryParsePmicTemperature(string text, out double value)
-        {
-            value = 0;
-            if (string.IsNullOrWhiteSpace(text))
-                return false;
-
-            string trimmed = text.Trim().TrimStart('<', '>', '=', ' ');
-            int end = 0;
-            while (end < trimmed.Length && (char.IsDigit(trimmed[end]) || trimmed[end] == '.' || (end == 0 && trimmed[end] == '-')))
-                end++;
-
-            return end > 0 && double.TryParse(trimmed.Substring(0, end), System.Globalization.NumberStyles.Float,
-                System.Globalization.CultureInfo.InvariantCulture, out value);
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
