@@ -4,10 +4,10 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using ZenStates.Core.Hardware.DRAM;
+using ZenTimings.Controls;
 using ZenTimings.ViewModels;
 
 namespace ZenTimings.Windows
@@ -183,7 +183,7 @@ namespace ZenTimings.Windows
         {
             foreach (TextBlock text in Descendants(panel).OfType<TextBlock>())
             {
-                string path = BindingOperations.GetBinding(text, TextBlock.TextProperty)?.Path?.Path;
+                string path = TimingRow.GetDisplayedBindingPath(text);
                 if (text.IsVisible && Differs(channels, path))
                 {
                     text.SetResourceReference(TextBlock.ForegroundProperty, "TimingMismatchBrush");
@@ -199,7 +199,7 @@ namespace ZenTimings.Windows
         {
             return Descendants(panel)
                 .OfType<TextBlock>()
-                .Where(text => text.IsVisible && Differs(channels, BindingOperations.GetBinding(text, TextBlock.TextProperty)?.Path?.Path))
+                .Where(text => text.IsVisible && Differs(channels, TimingRow.GetDisplayedBindingPath(text)))
                 .Select(text =>
                 {
                     Rect bounds = text.TransformToAncestor(panel).TransformBounds(new Rect(text.RenderSize));

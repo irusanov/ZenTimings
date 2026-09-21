@@ -147,6 +147,9 @@
     <Compile Include="Controls\DDR5TimingsPanel1Ah.xaml.cs">
       <DependentUpon>DDR5TimingsPanel1Ah.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\TimingRow.xaml.cs">
+      <DependentUpon>TimingRow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\DDR4ToVisConverter.cs" />
     <Compile Include="Converters\FloatToBoolConverter.cs" />
     <Compile Include="Converters\FloatToNAConverter.cs" />
@@ -232,6 +235,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\DDR5TimingsPanel1Ah.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TimingRow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

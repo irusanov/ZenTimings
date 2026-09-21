@@ -25,57 +25,54 @@ namespace ZenTimings.Controls
             {
                 //labelMemVdd.IsEnabled = true;
                 //labelMemVddq.IsEnabled = true;
-                //labelMemVpp.IsEnabled = true;
-                //labelApuVddio.IsEnabled = true;
+                //rowMemVpp.IsEnabled = true;
+                //rowApuVddio.IsEnabled = true;
 
-                labelProcCaDs.IsEnabled = true;
-                labelProcDqDs.IsEnabled = true;
-                labelDramDqDs.IsEnabled = true;
-                labelRttWrD5.IsEnabled = true;
-                labelRttNomWr.IsEnabled = true;
-                labelRttNomRd.IsEnabled = true;
-                labelRttParkD5.IsEnabled = true;
-                labelRttParkDqs.IsEnabled = true;
+                rowProcCaDs.IsEnabled = true;
+                rowProcDqDs.IsEnabled = true;
+                rowDramDqDs.IsEnabled = true;
+                rowRttWrD5.IsEnabled = true;
+                rowRttNomWr.IsEnabled = true;
+                rowRttNomRd.IsEnabled = true;
+                rowRttParkD5.IsEnabled = true;
+                rowRttParkDqs.IsEnabled = true;
 
                 //textBoxMemVddio.Text = Data.MemVddio.ToString();
                 //textBoxMemVddq.Text = Data.MemVddq.ToString();
                 //textBoxMemVpp.Text = Data.MemVpp.ToString();
-                //textBoxApuVddio.Text = Data.ApuVddio.ToString();
+                //rowApuVddio.Value = Data.ApuVddio.ToString();
 
                 try
                 {
                     if (family == Cpu.Family.FAMILY_1AH && Data?.ProcOdtPullUp != null)
                     {
-                        labelProcODT.Visibility = Visibility.Collapsed;
-                        textBoxProcODT.Visibility = Visibility.Collapsed;
+                        rowProcODT.Visibility = Visibility.Collapsed;
                         procOdtDivider1.Visibility = Visibility.Collapsed;
-                        procOdtDivider2.Visibility = Visibility.Collapsed;
-                        labelProcOdtPullUp.Visibility = Visibility.Visible;
-                        labelProcOdtPullUp.IsEnabled = true;
-                        labelProcOdtPullDown.Visibility = Visibility.Visible;
-                        labelProcOdtPullDown.IsEnabled = true;
-                        textBoxProcOdtPullUp.Visibility = Visibility.Visible;
-                        textBoxProcOdtPullDown.Visibility = Visibility.Visible;
-                        textBoxProcOdtPullUp.Text = Data.ProcOdtPullUp.ToString();
-                        textBoxProcOdtPullDown.Text = Data.ProcOdtPullDown.ToString();
+                        procOdtDivider1.Visibility = Visibility.Collapsed;
+                        rowProcOdtPullUp.Visibility = Visibility.Visible;
+                        rowProcOdtPullUp.IsEnabled = true;
+                        rowProcOdtPullDown.Visibility = Visibility.Visible;
+                        rowProcOdtPullDown.IsEnabled = true;
+                        rowProcOdtPullUp.Value = Data.ProcOdtPullUp.ToString();
+                        rowProcOdtPullDown.Value = Data.ProcOdtPullDown.ToString();
                     }
                     else
                     {
-                        labelProcODT.IsEnabled = true;
-                        textBoxProcODT.Text = Data.ProcOdt.ToString();
+                        rowProcODT.IsEnabled = true;
+                        rowProcODT.Value = Data.ProcOdt.ToString();
                     }
                 }
                 catch { }
 
-                textBoxCadBusDrvStren.Text = Data?.CadBusDrvStren?.ToString() ?? "N/A";
-                textBoxDramDataDrvStren.Text = Data?.DramDataDrvStren?.ToString() ?? "N/A";
-                textBoxProcDataDrvStren.Text = Data?.ProcDataDrvStren?.ToString() ?? "N/A";
+                rowProcCaDs.Value = Data?.CadBusDrvStren?.ToString() ?? "N/A";
+                rowDramDqDs.Value = Data?.DramDataDrvStren?.ToString() ?? "N/A";
+                rowProcDqDs.Value = Data?.ProcDataDrvStren?.ToString() ?? "N/A";
 
-                textBoxRttWrD5.Text = Data.RttWr.ToString();
-                textBoxRttNomWr.Text = Data.RttNomWr.ToString();
-                textBoxRttNomRd.Text = Data.RttNomRd.ToString();
-                textBoxRttParkD5.Text = Data.RttPark.ToString();
-                textBoxRttParkDqs.Text = Data.RttParkDqs.ToString();
+                rowRttWrD5.Value = Data.RttWr.ToString();
+                rowRttNomWr.Value = Data.RttNomWr.ToString();
+                rowRttNomRd.Value = Data.RttNomRd.ToString();
+                rowRttParkD5.Value = Data.RttPark.ToString();
+                rowRttParkDqs.Value = Data.RttParkDqs.ToString();
             }
         }
 

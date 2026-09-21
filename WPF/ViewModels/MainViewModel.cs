@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Xml.Serialization;
 using ZenStates.Core;
 using ZenStates.Core.Hardware;
 using ZenStates.Core.Hardware.Aod;
@@ -13,8 +10,6 @@ using ZenStates.Core.Hardware.DRAM;
 using ZenStates.Core.Hardware.DRAM.DDR5.Pmic;
 using ZenStates.Core.Hardware.Mock;
 using ZenTimings.Common;
-using ZenTimings.Export;
-using ZenTimings.Helpers;
 using ZenTimings.Plugin;
 using ZenTimings.Settings;
 using ZenTimings.Utils;
@@ -24,8 +19,6 @@ namespace ZenTimings.ViewModels
 {
     public class MainViewModel : ObservableObject
     {
-        private static readonly string AGESA_SEARCHING = "Searching for AGESA version...";
-
         public enum VoltageRail
         {
             Vsoc,
@@ -65,7 +58,7 @@ namespace ZenTimings.ViewModels
             set => SetProperty(ref _motherboardInfo, value);
         }
 
-        private string _agesaVersion = AGESA_SEARCHING;
+        private string _agesaVersion;
         public string AgesaVersion
         {
             get => _agesaVersion;
@@ -73,20 +66,20 @@ namespace ZenTimings.ViewModels
             {
                 string mbName = mockData != null ? mockData.MbName : CpuSingleton.Instance.systemInfo.MbName;
                 string biosVersion = mockData != null ? mockData.BiosVersion : CpuSingleton.Instance.systemInfo.BiosVersion;
+                string agesaVersion;
 
-                if (string.IsNullOrEmpty(value) || value == AppSettings.AGESA_UNKNOWN || value == AGESA_SEARCHING)
+                if (string.IsNullOrEmpty(value) || value == AppSettings.AGESA_UNKNOWN)
                 {
                     MotherboardInfo = $@"{mbName} | BIOS {biosVersion} ({SmuVersion})";
-                    _agesaVersion = value == AGESA_SEARCHING ? AGESA_SEARCHING : null;
+                    agesaVersion = null;
                 }
                 else
                 {
                     MotherboardInfo = $@"{mbName} | BIOS {biosVersion}";
-                    _agesaVersion = $"AGESA {value} (SMU {SmuVersion})";
+                    agesaVersion = $"AGESA {value} (SMU {SmuVersion})";
                 }
-                IsAgesaVersionVisible = !string.IsNullOrEmpty(_agesaVersion);
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(IsSearchingForAgesaVersion));
+                IsAgesaVersionVisible = !string.IsNullOrEmpty(agesaVersion);
+                SetProperty(ref _agesaVersion, agesaVersion);
             }
         }
 
@@ -96,8 +89,6 @@ namespace ZenTimings.ViewModels
             get => _isAgesaVersionVisible;
             set => SetProperty(ref _isAgesaVersionVisible, value);
         }
-
-        public bool IsSearchingForAgesaVersion => _agesaVersion == AGESA_SEARCHING;
 
         public Capacity TotalCapacity { get; }
 
@@ -377,7 +368,6 @@ namespace ZenTimings.ViewModels
                 ApobData = new ApobDataView(ApobMainData, ApobExtendedData);
             }
 
-            //AgesaVersion = AGESA_SEARCHING;
             AgesaVersion = mockData != null ? (mockData.AgesaVersion ?? agesaVersion) : agesaVersion;
 
             WMIPresent = mockData == null &&
@@ -595,340 +585,6 @@ namespace ZenTimings.ViewModels
 
             Vmisc = ReadVoltage(VoltageRail.Vmisc, out source);
             VmiscLabel = VoltageLabel("MISC", "VDD MISC", source);
-        }
-
-        bool IsMismatch(
-            PropertyInfo prop,
-            List<KeyValuePair<uint, BaseDramTimings>> timings)
-        {
-            object first = null;
-            bool firstSet = false;
-
-            foreach (var t in timings)
-            {
-                object value;
-                try
-                {
-                    value = prop.GetValue(t.Value);
-                }
-                catch
-                {
-                    continue;
-                }
-
-                if (!firstSet)
-                {
-                    first = value;
-                    firstSet = true;
-                }
-                else if (!Equals(first, value))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public string GetXML()
-        {
-            XmlSerializer x = new XmlSerializer(this.GetType());
-            using (StringWriter textWriter = new StringWriter())
-            {
-                x.Serialize(textWriter, this);
-                return textWriter.ToString();
-            }
-        }
-
-        public string GetHTML()
-        {
-            var cpu = CpuSingleton.Instance;
-            var type = cpu.systemInfo.GetType();
-            var properties = type.GetProperties();
-            string appVersion = $"{System.Windows.Forms.Application.ProductName} {System.Windows.Forms.Application.ProductVersion}";
-
-            string html = @"<!DOCTYPE html>
-            <html>
-            <head>
-            <title></title>
-            <style>
-            body {
-                font-family: Segoe UI, Tahoma, sans-serif;
-                background: #f7f9fb;
-                color: #1f2937;
-            }
-
-            h2 {
-                color: #2563eb;
-                border-bottom: 2px solid #e5e7eb;
-                padding-bottom: 4px;
-            }
-
-            table {
-                border-collapse: collapse;
-                width: auto;
-                margin-bottom: 20px;
-                background: #ffffff;
-            }
-
-            th, td {
-                border: 1px solid #e5e7eb;
-                padding: 6px 8px;
-                text-align: center;
-                font-size: 13px;
-            }
-
-            th {
-                background: #e8f0fe;
-                color: #1d4ed8;
-                cursor: pointer;
-                user-select: none;
-            }
-
-            td:first-child {
-                text-align: left;
-                font-weight: 500;
-            }
-
-            tr.primary td {
-                background: #fffbeb;
-            }
-
-            tr.primary td:first-child {
-                background: #fef3c7;
-                color: #b45309;
-                font-weight: 700;
-            }
-
-            tr.secondary td:first-child {
-                color: #475569;
-            }
-
-            tr.mismatch td {
-                background: #fff1f2;
-            }
-
-            tr.mismatch td:first-child {
-                background: #ffe4e6;
-                color: #be123c;
-                font-weight: 700;
-            }
-            </style>
-            </head>
-            <body>";
-            html += $@"<h1>{appVersion}</h1>";
-            html += $@"<div>Core Version: {cpu.Version}</div>";
-            html += $@"<div>PawnIO Version: {DriverHelper.Version}</div>";
-            html += $@"<div>Date: {DateTime.Now:dd MMMM yyyy HH:mm:ss}</div>";
-
-            html += "<h2>System Info</h2>";
-            html += "<table border=\"1\" cellspacing=\"0\" cellpadding=\"4\">";
-
-            foreach (var property in properties)
-            {
-                if (property.Name == "CpuId" || property.Name == "PatchLevel" || property.Name == "SmuTableVersion")
-                    html += $"<tr><td>{property.Name}</td><td>{property.GetValue(cpu.systemInfo, null):X8}</td></tr>";
-                else if (property.Name == "SmuVersion")
-                    html += $"<tr><td>{property.Name}</td><td>{cpu.systemInfo.SmuVersion}</td></tr>";
-                else if (property.Name == "Model" || property.Name == "ExtendedModel" || property.Name == "BaseModel")
-                    html += $"<tr><td>{property.Name}</td><td>{property.GetValue(cpu.systemInfo, null)} (0x{property.GetValue(cpu.systemInfo, null):X})</td></tr>";
-                else if (property.Name != "SMBios")
-                    html += $"<tr><td>{property.Name}</td><td>{property.GetValue(cpu.systemInfo, null)}</td></tr>";
-            }
-
-            html += "</table>";
-
-
-            var memConfigs = cpu.GetMemoryConfig();
-            var allTimings = memConfigs.Timings;
-            var props = allTimings[0].Value.GetType().GetProperties();
-
-            // Filter timings to only include unique DctOffset values
-            var uniqueTimings = allTimings
-                .GroupBy(t => t.Key)
-                .Select(g => g.First())
-                .ToList();
-
-            var timingProperties = uniqueTimings[0].Value
-                .GetType()
-                .GetProperties()
-                .Where(p => p.GetIndexParameters().Length == 0)
-                .ToList();
-
-            var primaryTimings = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-            {
-                "CL", "RCDWR", "RCDRD", "RP", "RAS", "RC",
-                "RRDS", "RRDL", "FAW",
-                "CWL", "WR"
-            };
-
-            // Timings
-            html += "<h2>Memory Timings</h2>";
-            html += "<table id='timingsTable' data-sort-col='' data-sort-dir=''>";
-            html += "<tr><th onclick='sortTable(0)'>Timing</th>";
-
-            foreach (var timing in uniqueTimings)
-            {
-                html += $"<th onclick='sortTable({uniqueTimings.IndexOf(timing) + 1})'>DCT {timing.Key >> 20}</th>";
-            }
-
-            html += "</tr>";
-
-            foreach (var prop in timingProperties)
-            {
-                bool mismatch = IsMismatch(prop, uniqueTimings);
-                bool isPrimary = primaryTimings.Contains(prop.Name);
-                string rowClass = mismatch ? "mismatch" : isPrimary ? "primary" : "secondary";
-
-                html += $"<tr class='{rowClass}'>";
-                html += $"<td>{prop.Name}</td>";
-
-                foreach (var timing in uniqueTimings)
-                {
-                    html += $"<td>{prop.GetValue(timing.Value)}</td>";
-                }
-
-                html += "</tr>";
-            }
-            html += "</table>";
-
-            // PMT
-            html += "<h2>PMT</h2>";
-            html += "<table id='pmtTable' data-sort-col='' data-sort-dir=''>";
-
-            type = cpu.powerTable.GetType();
-            properties = type.GetProperties();
-
-            foreach (var property in properties)
-            {
-
-                if (property.Name == "TableVersion")
-                    html += $"<tr><td>{property.Name}</td><td>{property.GetValue(cpu.powerTable, null):X8}</td></tr>";
-                else if (property.Name != "Table")
-                    html += $"<tr><td>{property.Name}</td><td>{property.GetValue(cpu.powerTable, null)}</td></tr>";
-            }
-            html += "</table>";
-
-            // AOD
-            html += "<h2>AOD</h2>";
-            html += "<table id='pmtTable' data-sort-col='' data-sort-dir=''>";
-
-            type = cpu.info.aod.Table.Data.GetType();
-            properties = type.GetProperties();
-
-            foreach (var property in properties)
-            {
-
-                if (!property.Name.ToLowerInvariant().StartsWith("t"))
-                    html += $"<tr><td>{property.Name}</td><td>{property.GetValue(cpu.info.aod.Table.Data, null)}</td></tr>";
-            }
-            html += "</table>";
-
-            html += "</body></html>";
-
-            return html;
-        }
-
-        public string GetJSON(SnapshotSource source, SnapshotOptions options)
-        {
-            return SnapshotWriter.ToJson(SnapshotBuilder.Build(source, options));
-        }
-
-        public string GetJSON()
-        {
-            var cpu = CpuSingleton.Instance;
-            var systemInfo = cpu.systemInfo;
-            string appVersion = $"{System.Windows.Forms.Application.ProductName} {System.Windows.Forms.Application.ProductVersion}";
-
-            var memConfigs = cpu.GetMemoryConfig();
-            var allTimings = memConfigs.Timings;
-            var uniqueTimings = allTimings
-                .GroupBy(t => t.Key)
-                .Select(g => g.First())
-                .ToList();
-
-            var jsonData = new
-            {
-                Application = new
-                {
-                    Version = appVersion,
-                    CoreVersion = cpu.Version,
-                    PawnIOVersion = DriverHelper.Version,
-                    ExportDate = DateTime.Now.ToString("dd MMMM yyyy HH:mm:ss")
-                },
-                SystemInfo = new
-                {
-                    CpuName,
-                    MotherboardName = systemInfo.MbName,
-                    systemInfo.BiosVersion,
-                    SmuVersion,
-                    CpuId = $"{systemInfo.CpuId:X8}",
-                    PatchLevel = $"{systemInfo.PatchLevel:X8}"
-                },
-                MemoryConfiguration = new
-                {
-                    Type = MemoryType.ToString(),
-                    Frequency = MemoryFrequency,
-                    TotalCapacity = TotalCapacity?.ToString() ?? "Unknown"
-                },
-                MemoryTimings = uniqueTimings.Select(timing => new
-                {
-                    DCT = timing.Key >> 20,
-                    Timings = GetTimingDictionary(timing.Value)
-                }).ToList(),
-                PowerTable = GetPowerTableDictionary(cpu.powerTable),
-                AOD = GetAODDictionary(cpu.info.aod.Table.Data)
-            };
-
-            return null;
-            //return System.Text.Json.JsonSerializer.Serialize(jsonData, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-        }
-
-        private Dictionary<string, object> GetTimingDictionary(BaseDramTimings timings)
-        {
-            var dict = new Dictionary<string, object>();
-            var props = timings.GetType().GetProperties();
-
-            foreach (var prop in props)
-            {
-                if (prop.GetIndexParameters().Length == 0)
-                {
-                    dict[prop.Name] = prop.GetValue(timings) ?? "N/A";
-                }
-            }
-
-            return dict;
-        }
-
-        private Dictionary<string, object> GetPowerTableDictionary(PowerTable powerTable)
-        {
-            var dict = new Dictionary<string, object>();
-            var props = powerTable.GetType().GetProperties();
-
-            foreach (var prop in props)
-            {
-                if (prop.Name != "Table")
-                {
-                    dict[prop.Name] = prop.GetValue(powerTable) ?? "N/A";
-                }
-            }
-
-            return dict;
-        }
-
-        private Dictionary<string, object> GetAODDictionary(object aodData)
-        {
-            var dict = new Dictionary<string, object>();
-            var props = aodData.GetType().GetProperties();
-
-            foreach (var prop in props)
-            {
-                if (!prop.Name.ToLowerInvariant().StartsWith("t"))
-                {
-                    dict[prop.Name] = prop.GetValue(aodData) ?? "N/A";
-                }
-            }
-
-            return dict;
         }
     }
 }

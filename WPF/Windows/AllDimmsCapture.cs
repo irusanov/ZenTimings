@@ -4,11 +4,11 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Media;
 using ZenStates.Core.Hardware.DRAM;
 using ZenStates.Core.Hardware.DRAM.DDR5.Pmic;
 using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
+using ZenTimings.Controls;
 using ZenTimings.Utils;
 using ZenTimings.ViewModels;
 
@@ -127,7 +127,7 @@ namespace ZenTimings.Windows
         {
             return Descendants(panel)
                 .OfType<TextBlock>()
-                .Where(text => text.IsVisible && Differs(channels, BindingOperations.GetBinding(text, TextBlock.TextProperty)?.Path?.Path))
+                .Where(text => text.IsVisible && Differs(channels, TimingRow.GetDisplayedBindingPath(text)))
                 .Select(text =>
                 {
                     Rect bounds = text.TransformToAncestor(panel).TransformBounds(new Rect(text.RenderSize));
