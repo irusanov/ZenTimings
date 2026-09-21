@@ -35,8 +35,10 @@
                 <TextBlock Text=" - Add Export dialog with more options (feature by @b1zya)" />
                 <TextBlock Text=" - Add copy to clipboard buttons to grids and windows (feature by @b1zya)" />
                 <TextBlock Text=" - Add voltage sources options in Options window" />
-                <TextBlock Text=" - [WIP] Extend debug dialog parsing (thanks @deadfellow34 for the help)" />
+                <TextBlock Text=" - Extend debug dialog parsing (thanks @deadfellow34 for the help)" />
                 <TextBlock Text=" - Update HTML export and move as an option in Export dialog" />
+                <TextBlock Text=" - Rename 'SMU' sensors to 'SVI3' and update offsets" />
+                <TextBlock Text=" - Add SMU/SVI3 telemetry to Sensors window" />
                 <TextBlock Text=" - Various bugfixes and performance improvements" />
                 <TextBlock Text="" />
 
