@@ -637,8 +637,9 @@ namespace ZenTimings
             if (!ddr4DramSensorsDetected)
             {
                 // A debug report's window reads the SuperIO sensors replayed from the report.
-                IEnumerable<SuperIoSensorGroup> groups = mockData != null ? mockData.SensorGroups : cpu?.systemInfo?.SensorGroups;
+                IEnumerable<SensorGroup> groups = mockData != null ? mockData.SensorGroups : cpu?.systemInfo?.SensorGroups;
                 ddr4DramSensors = groups?
+                    .Where(g => g.HardwareType == HardwareType.SuperIO)
                     .SelectMany(g => g.Sensors)
                     .Where(s => Ddr4DramSensorNames.Contains(s.Name, StringComparer.OrdinalIgnoreCase))
                     .ToArray();

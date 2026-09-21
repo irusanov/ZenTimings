@@ -17,7 +17,7 @@ namespace ZenTimings.Settings
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public const int VersionMajor = 1;
-        public const int VersionMinor = 16;
+        public const int VersionMinor = 17;
 
         private static readonly string Filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.xml");
         public const string AGESA_UNKNOWN = "Unknown";

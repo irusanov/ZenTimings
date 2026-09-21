@@ -416,13 +416,15 @@ namespace ZenTimings.ViewModels
         private Sensor _vmiscSensor;
 
         // SuperIO sensors: replayed from the debug report's register dumps in a mock window, live otherwise.
-        private IEnumerable<SuperIoSensorGroup> SensorGroups =>
+        private IEnumerable<SensorGroup> SensorGroups =>
             mockData != null ? mockData.SensorGroups : CpuSingleton.Instance?.systemInfo?.SensorGroups;
 
         // Locates the relevant sensors once and caches them so subsequent refreshes don't need to search by name again.
         private void DetectSensors()
         {
+            // Only the SuperIO groups: the SVI3 group is the power table, offered as its own source.
             var sensors = SensorGroups?
+                .Where(g => g.HardwareType == HardwareType.SuperIO)
                 .SelectMany(g => g.Sensors)
                 .ToList();
 

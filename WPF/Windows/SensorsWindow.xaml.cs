@@ -536,12 +536,12 @@ namespace ZenTimings.Windows
 
             foreach (var group in systemInfo.SensorGroups)
             {
-                var groupVm = new SensorGroupViewModel { Header = group.ChipName };
+                var groupVm = new SensorGroupViewModel { Header = group.Name };
                 int hiddenCount = 0;
 
                 foreach (var sensor in group.Sensors)
                 {
-                    var key = GetSensorKey(group.ChipName, sensor.Name);
+                    var key = GetSensorKey(group.Name, sensor.Name);
                     if (hiddenSensors.Contains(key))
                     {
                         hiddenCount++;
@@ -761,10 +761,10 @@ namespace ZenTimings.Windows
 
             foreach (var group in systemInfo.SensorGroups)
             {
-                var groupVm = sensorGroupViewModels.FirstOrDefault(g => g.Header == group.ChipName);
+                var groupVm = sensorGroupViewModels.FirstOrDefault(g => g.Header == group.Name);
                 if (groupVm == null)
                 {
-                    groupVm = new SensorGroupViewModel { Header = group.ChipName };
+                    groupVm = new SensorGroupViewModel { Header = group.Name };
                     sensorGroupViewModels.Add(groupVm);
                 }
 
@@ -786,7 +786,7 @@ namespace ZenTimings.Windows
 
                 foreach (var sensor in group.Sensors)
                 {
-                    var key = GetSensorKey(group.ChipName, sensor.Name);
+                    var key = GetSensorKey(group.Name, sensor.Name);
                     if (hiddenSensors.Contains(key))
                     {
                         hiddenCount++;
