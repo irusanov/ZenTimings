@@ -1,6 +1,8 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Security;
+using System.Text;
 
 namespace ZenTimings.Helpers
 {
@@ -17,7 +19,11 @@ namespace ZenTimings.Helpers
 
         private static string ExecutablePath => Process.GetCurrentProcess().MainModule.FileName;
 
-        public static void SetAutostart(bool enable, int delaySeconds = DefaultDelaySeconds)
+        /// <summary>
+        /// Creates or removes the autostart scheduled task.
+        /// Returns false if schtasks.exe reported a failure.
+        /// </summary>
+        public static bool SetAutostart(bool enable, int delaySeconds = DefaultDelaySeconds)
         {
             try
             {
@@ -26,31 +32,52 @@ namespace ZenTimings.Helpers
                     if (delaySeconds < 0)
                         delaySeconds = 0;
 
-                    string tempXmlPath = Path.Combine(Path.GetTempPath(), TaskName + ".xml");
+                    // The XML defines what runs elevated at logon, so it must not be
+                    // written to a user-writable location such as %TEMP%.
+                    string workDir = SecureDirectoryHelper.CreateAdminOnlyDirectory("Task");
 
                     try
                     {
-                        File.WriteAllText(tempXmlPath, BuildTaskXml(delaySeconds));
+                        string xmlPath = Path.Combine(workDir, TaskName + ".xml");
+
+                        // The XML declares UTF-16, so write it as UTF-16 (with BOM).
+                        File.WriteAllText(xmlPath, BuildTaskXml(delaySeconds), Encoding.Unicode);
 
                         string arguments =
-                            "/Create /F /TN \"" + TaskName + "\" /XML \"" + tempXmlPath + "\"";
+                            "/Create /F /TN \"" + TaskName + "\" /XML \"" + xmlPath + "\"";
 
-                        RunSchTasks(arguments);
+                        int exitCode = RunSchTasks(arguments);
+                        if (exitCode != 0)
+                        {
+                            Debug.WriteLine("schtasks /Create failed with exit code " + exitCode);
+                            return false;
+                        }
                     }
                     finally
                     {
-                        if (File.Exists(tempXmlPath))
-                            File.Delete(tempXmlPath);
+                        SecureDirectoryHelper.TryDelete(workDir);
                     }
                 }
                 else
                 {
-                    RunSchTasks("/Delete /F /TN \"" + TaskName + "\"");
+                    // Nothing to remove
+                    if (!IsAutostartEnabled())
+                        return true;
+
+                    int exitCode = RunSchTasks("/Delete /F /TN \"" + TaskName + "\"");
+                    if (exitCode != 0)
+                    {
+                        Debug.WriteLine("schtasks /Delete failed with exit code " + exitCode);
+                        return false;
+                    }
                 }
+
+                return true;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
+                return false;
             }
         }
 
@@ -71,6 +98,8 @@ namespace ZenTimings.Helpers
         private static string BuildTaskXml(int delaySeconds)
         {
             string delay = "PT" + delaySeconds + "S";
+            string exePath = ExecutablePath;
+            string workingDirectory = Path.GetDirectoryName(exePath) ?? string.Empty;
 
             return
                 "<?xml version=\"1.0\" encoding=\"UTF-16\"?>\n" +
@@ -109,8 +138,9 @@ namespace ZenTimings.Helpers
                 "  </Settings>\n" +
                 "  <Actions Context=\"Author\">\n" +
                 "    <Exec>\n" +
-                "      <Command>\"" + ExecutablePath + "\"</Command>\n" +
-                "      <Arguments>" + AutostartArgument + "</Arguments>\n" +
+                "      <Command>\"" + SecurityElement.Escape(exePath) + "\"</Command>\n" +
+                "      <Arguments>" + SecurityElement.Escape(AutostartArgument) + "</Arguments>\n" +
+                "      <WorkingDirectory>" + SecurityElement.Escape(workingDirectory) + "</WorkingDirectory>\n" +
                 "    </Exec>\n" +
                 "  </Actions>\n" +
                 "</Task>";
@@ -122,7 +152,7 @@ namespace ZenTimings.Helpers
             {
                 process.StartInfo = new ProcessStartInfo
                 {
-                    FileName = "schtasks.exe",
+                    FileName = Path.Combine(Environment.SystemDirectory, "schtasks.exe"),
                     Arguments = arguments,
                     UseShellExecute = false,
                     CreateNoWindow = true,
@@ -130,7 +160,12 @@ namespace ZenTimings.Helpers
                     RedirectStandardError = true
                 };
 
+                process.ErrorDataReceived += (s, e) => { };
                 process.Start();
+
+                // Drain the redirected streams so schtasks can never block on a full pipe.
+                process.BeginErrorReadLine();
+                process.StandardOutput.ReadToEnd();
                 process.WaitForExit();
                 return process.ExitCode;
             }

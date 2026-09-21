@@ -127,7 +127,7 @@ namespace ZenTimings.Windows
 
             try
             {
-                if (mcConfig != null && mc.Type == MemType.DDR4 || mc.Type == MemType.LPDDR4)
+                if (mcConfig != null && (mc.Type == MemType.DDR4 || mc.Type == MemType.LPDDR4))
                 {
                     MemControllerGrid.ItemsSource = GetItemsFromObject(mcConfig);
                 }

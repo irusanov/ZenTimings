@@ -15,7 +15,7 @@ namespace ZenTimings.Windows
     public partial class AllDimmsWindow : ThemedAdonisWindow
     {
         private readonly Func<AllDimmsCapture.Result> describe;
-        private readonly Type panelType;
+        private readonly Func<FrameworkElement> createPanel;
         private readonly MainViewModel sourceViewModel;
         private readonly Window centerOnWindow;
         private readonly List<ChannelFrame> frames = new List<ChannelFrame>();
@@ -27,11 +27,12 @@ namespace ZenTimings.Windows
             public BaseDramTimings Timings;
         }
 
-        internal AllDimmsWindow(Func<AllDimmsCapture.Result> describe, Type panelType, MainViewModel sourceViewModel, Window centerOnWindow)
+        // createPanel builds a panel the way the main window builds its own, including the rows its code-behind fills.
+        internal AllDimmsWindow(Func<AllDimmsCapture.Result> describe, Func<FrameworkElement> createPanel, MainViewModel sourceViewModel, Window centerOnWindow)
         {
             InitializeComponent();
             this.describe = describe;
-            this.panelType = panelType;
+            this.createPanel = createPanel ?? throw new ArgumentNullException(nameof(createPanel));
             this.sourceViewModel = sourceViewModel;
             this.centerOnWindow = centerOnWindow;
 
@@ -145,7 +146,7 @@ namespace ZenTimings.Windows
 
         private FrameworkElement CreatePanel(AllDimmsCapture.Channel channel)
         {
-            var panel = (FrameworkElement)Activator.CreateInstance(panelType);
+            FrameworkElement panel = createPanel() ?? throw new InvalidOperationException("No timings panel for this memory type.");
             panel.DataContext = sourceViewModel.CreateChannelViewModel(channel.Timings, channel.PmicData);
             return panel;
         }

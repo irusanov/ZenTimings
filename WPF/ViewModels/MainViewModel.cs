@@ -41,7 +41,8 @@ namespace ZenTimings.ViewModels
             {
                 _timings = value;
                 // Frequency comes from the live power table; a debug report sets its own speed instead.
-                if (mockData == null)
+                // No timings are read when Core starts degraded; the frequency then stays as it is.
+                if (mockData == null && value != null)
                     MemoryFrequency = value.Frequency;
                 OnPropertyChanged();
             }
@@ -64,8 +65,8 @@ namespace ZenTimings.ViewModels
             get => _agesaVersion;
             set
             {
-                string mbName = mockData != null ? mockData.MbName : CpuSingleton.Instance.systemInfo.MbName;
-                string biosVersion = mockData != null ? mockData.BiosVersion : CpuSingleton.Instance.systemInfo.BiosVersion;
+                string mbName = mockData != null ? mockData.MbName : CpuSingleton.Instance.systemInfo?.MbName;
+                string biosVersion = mockData != null ? mockData.BiosVersion : CpuSingleton.Instance.systemInfo?.BiosVersion;
                 string agesaVersion;
 
                 if (string.IsNullOrEmpty(value) || value == AppSettings.AGESA_UNKNOWN)
@@ -119,9 +120,9 @@ namespace ZenTimings.ViewModels
         public bool WMIPresent { get; }
         public bool IsMotherboardLogoVisible { get; }
         public string MotherboardLogoTooltip { get; }
-        public bool IsRfcEnabled => Timings.RefreshMode == BankRefreshMode.NORMAL;
-        public bool IsRfc2Enabled => Timings.RefreshMode != BankRefreshMode.NORMAL;
-        public bool IsRfcsbEnabled => Timings.RefreshMode == BankRefreshMode.MIXED;
+        public bool IsRfcEnabled => Timings?.RefreshMode == BankRefreshMode.NORMAL;
+        public bool IsRfc2Enabled => Timings != null && Timings.RefreshMode != BankRefreshMode.NORMAL;
+        public bool IsRfcsbEnabled => Timings?.RefreshMode == BankRefreshMode.MIXED;
 
         // DDR4 doesn't have separate RFCsb, but we can still indicate if it's using normal refresh or FGR
         public bool IsDdr4RfcEnabled => (Timings as Ddr4Timings)?.RefreshMode == BankRefreshMode.NORMAL;
@@ -350,7 +351,7 @@ namespace ZenTimings.ViewModels
             {
                 CpuName = VendorUtils.GetCpuNameString(CpuSingleton.Instance.systemInfo);
                 SmuVersion = CpuSingleton.Instance?.systemInfo?.SmuVersion.ToString() ?? "Unknown";
-                TotalCapacity = CpuSingleton.Instance.GetMemoryConfig().TotalCapacity;
+                TotalCapacity = CpuSingleton.Instance.GetMemoryConfig()?.TotalCapacity;
                 CodeName = CpuSingleton.Instance.info.codeName;
                 CpuFamily = CpuSingleton.Instance.info.family;
                 PowerTable = CpuSingleton.Instance?.powerTable;
@@ -375,7 +376,7 @@ namespace ZenTimings.ViewModels
 
             IsMotherboardLogoVisible = motherboardLogoName != null;
             MotherboardLogoTooltip = motherboardLogoName != null
-                ? $"Click to visit {(mockData != null ? mockData.MbName : CpuSingleton.Instance.systemInfo.MbName)} page"
+                ? $"Click to visit {(mockData != null ? mockData.MbName : CpuSingleton.Instance.systemInfo?.MbName)} page"
                 : string.Empty;
 
             if (memoryType == MemType.DDR5 || memoryType == MemType.LPDDR5)

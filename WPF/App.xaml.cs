@@ -83,7 +83,7 @@ namespace ZenTimings
 
             using (Mutex cleanupMutex = new Mutex(false, cleanupMutexName))
             {
-                cleanupMutex.WaitOne();
+                AcquireMutex(cleanupMutex);
 
                 try
                 {
@@ -112,16 +112,18 @@ namespace ZenTimings
         {
             using (Mutex cleanupMutex = new Mutex(false, cleanupMutexName))
             {
-                if (cleanupMutex.WaitOne(0))
+                if (AcquireMutex(cleanupMutex, 0))
                 {
                     cleanupMutex.ReleaseMutex();
                     return;
                 }
 
-                SplashWindow.Start(false);
+                // Defer the update check here; it is performed by the regular
+                // SplashWindow.Start() call in OnStartup once cleanup has finished.
+                SplashWindow.Start(true);
                 SplashWindow.Loading("Waiting for driver cleanup...");
 
-                cleanupMutex.WaitOne();
+                AcquireMutex(cleanupMutex);
                 cleanupMutex.ReleaseMutex();
 
                 // SplashWindow.Stop();
@@ -132,7 +134,7 @@ namespace ZenTimings
         {
             using (Mutex cleanupMutex = new Mutex(false, cleanupMutexName))
             {
-                cleanupMutex.WaitOne();
+                AcquireMutex(cleanupMutex);
 
                 try
                 {
@@ -149,10 +151,34 @@ namespace ZenTimings
             }
         }
 
+        /// <summary>
+        /// Waits for the mutex. An abandoned mutex (previous owner exited without
+        /// releasing it) is still acquired by the caller, so treat it as success.
+        /// </summary>
+        private static bool AcquireMutex(Mutex mutex, int millisecondsTimeout = Timeout.Infinite)
+        {
+            try
+            {
+                return mutex.WaitOne(millisecondsTimeout);
+            }
+            catch (AbandonedMutexException)
+            {
+                return true;
+            }
+        }
+
         private static bool IsLastInstance()
         {
-            int currentProcessId = Process.GetCurrentProcess().Id;
-            Process[] processes = Process.GetProcessesByName("ZenTimings");
+            int currentProcessId;
+            string currentProcessName;
+
+            using (Process currentProcess = Process.GetCurrentProcess())
+            {
+                currentProcessId = currentProcess.Id;
+                currentProcessName = currentProcess.ProcessName;
+            }
+
+            Process[] processes = Process.GetProcessesByName(currentProcessName);
 
             try
             {

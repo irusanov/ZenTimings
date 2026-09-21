@@ -62,7 +62,7 @@ namespace ZenTimings.Windows
             numericUpDownRefreshInterval.IsEnabled = appSettings.AutoRefresh && appSettings.AdvancedMode;
             numericUpDownRefreshInterval.Text = appSettings.AutoRefreshInterval.ToString();
             msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
-            comboBoxTheme.SelectedIndex = (int)_Theme;
+            comboBoxTheme.SelectedItem = FindThemeItem(_Theme);
             comboBoxScreenshot.SelectedIndex = (int)appSettings.ScreenshotMode;
             comboBoxImpedanceSource.SelectedIndex = (int)appSettings.ImpedanceTableSrc;
             textBoxScreenshotPath.Text = appSettings.ScreenshotSaveLocation;
@@ -123,7 +123,18 @@ namespace ZenTimings.Windows
             appSettings.AutostartWithWindows = (bool)checkBoxAutostart.IsChecked;
             appSettings.AutostartDelaySeconds = Convert.ToInt32(numericUpDownAutostartDelay.Text);
             appSettings.StartMinimized = (bool)checkBoxStartMinimized.IsChecked;
-            StartupHelper.SetAutostart(appSettings.AutostartWithWindows, appSettings.AutostartDelaySeconds);
+            if (!StartupHelper.SetAutostart(appSettings.AutostartWithWindows, appSettings.AutostartDelaySeconds))
+            {
+                // Keep the setting in sync with the actual scheduled task state
+                appSettings.AutostartWithWindows = StartupHelper.IsAutostartEnabled();
+                checkBoxAutostart.IsChecked = appSettings.AutostartWithWindows;
+                numericUpDownAutostartDelay.IsEnabled = appSettings.AutostartWithWindows;
+                AdonisUI.Controls.MessageBox.Show(
+                    "Could not update the Windows startup task.",
+                    "Error",
+                    AdonisUI.Controls.MessageBoxButton.OK,
+                    AdonisUI.Controls.MessageBoxImage.Error);
+            }
             appSettings.SingleInstance = (bool)checkBoxSingleInstance.IsChecked;
             appSettings.CornerRadius = comboBoxCornerRadius.SelectedIndex;
             appSettings.ScreenshotMode = (ScreenshotType)comboBoxScreenshot.SelectedIndex;
@@ -248,9 +259,29 @@ namespace ZenTimings.Windows
             }
         }
 
+        private System.Windows.Controls.ComboBoxItem FindThemeItem(Theme theme)
+        {
+            // Charcoal has no theme file and is rendered as Black (see AppSettings.GetThemeUri)
+            if (theme == Theme.Charcoal)
+                theme = Theme.Black;
+
+            var items = comboBoxTheme.Items.OfType<System.Windows.Controls.ComboBoxItem>().ToList();
+            return items.FirstOrDefault(item => TryGetTheme(item, out Theme itemTheme) && itemTheme == theme)
+                ?? items.FirstOrDefault(item => TryGetTheme(item, out Theme itemTheme) && itemTheme == Theme.DarkMintGradient);
+        }
+
+        private static bool TryGetTheme(System.Windows.Controls.ComboBoxItem item, out Theme theme)
+        {
+            theme = default(Theme);
+            return item?.Tag is string tag && Enum.TryParse(tag, false, out theme) && Enum.IsDefined(typeof(Theme), theme);
+        }
+
         private void ComboBoxTheme_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            appSettings.AppTheme = (Theme)comboBoxTheme.SelectedIndex;
+            if (!TryGetTheme(comboBoxTheme.SelectedItem as System.Windows.Controls.ComboBoxItem, out Theme theme))
+                return;
+
+            appSettings.AppTheme = theme;
             appSettings.ApplyTheme();
         }
 

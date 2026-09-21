@@ -10,7 +10,7 @@ namespace ZenTimings.Plugin
 {
     public class SVI2Plugin : IPlugin
     {
-        private int timeout = 20;
+        private const int MaxReadAttempts = 20;
         private const string VERSION = "1.1";
 
         public string Name => "SVI2 Sensors";
@@ -47,6 +47,8 @@ namespace ZenTimings.Plugin
         {
             if (Sensors?.Count > 0 && cpuInstance != null)
             {
+                // Per call, so earlier failed reads don't use up the attempts of later updates.
+                int timeout = MaxReadAttempts;
                 uint socPlaneValue;
                 uint vcorePlaneValue;
                 do

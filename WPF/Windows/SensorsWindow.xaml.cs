@@ -51,6 +51,8 @@ namespace ZenTimings.Windows
         private readonly ObservableCollection<SensorGroupViewModel> sensorGroupViewModels = new ObservableCollection<SensorGroupViewModel>();
         private readonly List<SensorTelemetryLink> sensorTelemetryLinks = new List<SensorTelemetryLink>();
         private bool _isRefreshing;
+        // Set in Window_Closing so async continuations don't touch the UI or restart timers after close.
+        private bool _isClosed;
 
         public SensorsWindow()
         {
@@ -71,6 +73,8 @@ namespace ZenTimings.Windows
             AppSettings.Instance.PropertyChanged += AppSettings_PropertyChanged;
             ToggleAutoOpen.IsChecked = AppSettings.Instance.AutoOpenTelemetry;
             await LoadModulesDataAsync();
+            if (_isClosed)
+                return;
             LoadSensorGroups();
             UpdateNoSensorsMessage();
             ConfigureAutoRefresh();
@@ -150,6 +154,9 @@ namespace ZenTimings.Windows
             {
                 loadError = ex;
             }
+
+            if (_isClosed)
+                return;
 
             moduleViewModels.Clear();
             if (loadError != null)
@@ -314,7 +321,7 @@ namespace ZenTimings.Windows
             // PMIC Temperature
             if (!string.IsNullOrEmpty(pmicData.PmicTemperature))
             {
-                if (double.TryParse(pmicData.PmicTemperature.Replace("°C", "").Trim(), out double tempValue))
+                if (TryParsePmicTemperature(pmicData.PmicTemperature, out double tempValue))
                 {
                     AddPmicItem("PMIC Temp", tempValue, "°C");
                 }
@@ -415,7 +422,7 @@ namespace ZenTimings.Windows
 
             if (!string.IsNullOrEmpty(pmicData.PmicTemperature))
             {
-                if (double.TryParse(pmicData.PmicTemperature.Replace("°C", "").Trim(), out double tempValue))
+                if (TryParsePmicTemperature(pmicData.PmicTemperature, out double tempValue))
                 {
                     UpdateTelemetryItem(vm, "PMIC Temp", tempValue);
                 }
@@ -738,6 +745,8 @@ namespace ZenTimings.Windows
                 UpdateSensorGroupsAfterSettingsChange();
                 RefreshSensorGroups();
                 await UpdateModulesAfterSettingsChangeAsync();
+                if (_isClosed)
+                    return;
                 UpdateNoSensorsMessage();
             }
         }
@@ -820,6 +829,9 @@ namespace ZenTimings.Windows
             {
                 loadError = ex;
             }
+
+            if (_isClosed)
+                return;
 
             if (loadError != null)
             {
@@ -1011,8 +1023,26 @@ namespace ZenTimings.Windows
             }
         }
 
+        // Core reports the PMIC temperature as a threshold string such as "85 C", "< 85 C" or "> 140 C".
+        // Extracts the leading number (ignoring a "<" / ">" prefix) using the invariant culture.
+        private static bool TryParsePmicTemperature(string text, out double value)
+        {
+            value = 0;
+            if (string.IsNullOrWhiteSpace(text))
+                return false;
+
+            string trimmed = text.Trim().TrimStart('<', '>', '=', ' ');
+            int end = 0;
+            while (end < trimmed.Length && (char.IsDigit(trimmed[end]) || trimmed[end] == '.' || (end == 0 && trimmed[end] == '-')))
+                end++;
+
+            return end > 0 && double.TryParse(trimmed.Substring(0, end), System.Globalization.NumberStyles.Float,
+                System.Globalization.CultureInfo.InvariantCulture, out value);
+        }
+
         private void Window_Closing(object sender, CancelEventArgs e)
         {
+            _isClosed = true;
             updateTimer?.Stop();
             _uptimeStatusTimer?.Stop();
             AppSettings.Instance.PropertyChanged -= AppSettings_PropertyChanged;

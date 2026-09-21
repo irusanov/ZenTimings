@@ -356,6 +356,12 @@ namespace ZenTimings.Windows
                 return;
             }
 
+            // The control only clamps on lost focus / Enter, so enforce the range here too.
+            if (seconds < TextInterval.Minimum)
+                seconds = TextInterval.Minimum;
+            else if (seconds > TextInterval.Maximum)
+                seconds = TextInterval.Maximum;
+
             string fileName = LiveSnapshot.CleanFileName(TextLiveFileName.Text);
             string typed = TextLiveFileName.Text.Trim();
             if (typed.Length > 0 && !typed.StartsWith(fileName, StringComparison.Ordinal))

@@ -126,23 +126,50 @@ namespace ZenTimings.Settings
             }
         }
 
+        private static Uri ThemeUri(string name) =>
+            new Uri("pack://application:,,,/ZenTimings;component/Themes/" + name + ".xaml", UriKind.Absolute);
+
+        // Maps each theme by enum value (not by index) to its resource dictionary.
+        private static Uri GetThemeUri(Theme theme)
+        {
+            switch (theme)
+            {
+                case Theme.Light: return ThemeUri("Light");
+                case Theme.Dark: return ThemeUri("Dark");
+                case Theme.DarkMint: return ThemeUri("DarkMint");
+                case Theme.DarkMintGradient: return ThemeUri("DarkMintGradient");
+                case Theme.AsusRog: return ThemeUri("AsusRog");
+                case Theme.Dracula: return ThemeUri("Dracula");
+                case Theme.RetroWave: return ThemeUri("RetroWave");
+                case Theme.BurntOrange: return ThemeUri("BurntOrange");
+                // Charcoal.xaml is not part of the build. Previous builds mapped the
+                // stored "Charcoal" value (selected via the "Black" combo item) to Black.xaml.
+                case Theme.Charcoal: return ThemeUri("Black");
+                case Theme.Black: return ThemeUri("Black");
+                default: return ThemeUri("DarkMintGradient");
+            }
+        }
+
         public void ApplyTheme()
         {
-            Uri[] themeUri = new Uri[]
+            try
             {
-                new Uri("pack://application:,,,/ZenTimings;component/Themes/Light.xaml", UriKind.Absolute),
-                new Uri("pack://application:,,,/ZenTimings;component/Themes/Dark.xaml", UriKind.Absolute),
-                new Uri("pack://application:,,,/ZenTimings;component/Themes/DarkMint.xaml", UriKind.Absolute),
-                new Uri("pack://application:,,,/ZenTimings;component/Themes/DarkMintGradient.xaml", UriKind.Absolute),
-                new Uri("pack://application:,,,/ZenTimings;component/Themes/AsusRog.xaml", UriKind.Absolute),
-                new Uri("pack://application:,,,/ZenTimings;component/Themes/Dracula.xaml", UriKind.Absolute),
-                new Uri("pack://application:,,,/ZenTimings;component/Themes/RetroWave.xaml", UriKind.Absolute),
-                new Uri("pack://application:,,,/ZenTimings;component/Themes/BurntOrange.xaml", UriKind.Absolute),
-                //new Uri("pack://application:,,,/ZenTimings;component/Themes/Charcoal.xaml", UriKind.Absolute),
-                new Uri("pack://application:,,,/ZenTimings;component/Themes/Black.xaml", UriKind.Absolute),
-            };
+                ResourceLocator.SetColorScheme(Application.Current.Resources, GetThemeUri(AppTheme));
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
 
-            ResourceLocator.SetColorScheme(Application.Current.Resources, themeUri[(int)AppTheme]);
+                try
+                {
+                    ResourceLocator.SetColorScheme(Application.Current.Resources, GetThemeUri(Theme.DarkMintGradient));
+                }
+                catch (Exception fallbackEx)
+                {
+                    Debug.WriteLine(fallbackEx.Message);
+                }
+            }
+
             try
             {
                 ThemedAdonisWindow.RefreshAllOpenWindows();

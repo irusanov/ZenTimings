@@ -13,7 +13,7 @@ namespace ZenTimings.Windows
     /// </summary>
     public partial class AboutDialog : ThemedAdonisWindow
     {
-        private static readonly Updater updater = (Application.Current as App)?.updater;
+        private static Updater updater => (Application.Current as App)?.updater;
         private DispatcherTimer notificationTimer;
 
         public AboutDialog()
@@ -83,7 +83,11 @@ namespace ZenTimings.Windows
             appModules.Add(new KeyValuePair<string, string>("PawnIO", DriverHelper.Version.ToString()));
 
             Modules.ItemsSource = appModules;
-            updater.UpdateCheckCompleteEvent += Updater_UpdateCheckCompleteEvent;
+            if (updater != null)
+            {
+                updater.UpdateCheckCompleteEvent += Updater_UpdateCheckCompleteEvent;
+                Closed += (s, e) => updater.UpdateCheckCompleteEvent -= Updater_UpdateCheckCompleteEvent;
+            }
         }
 
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
@@ -94,7 +98,7 @@ namespace ZenTimings.Windows
 
         private void CheckUpdateBtn_Click(object sender, RoutedEventArgs e)
         {
-            updater.CheckForUpdate(true);
+            updater?.CheckForUpdate(true);
         }
 
         private void Updater_UpdateCheckCompleteEvent(object sender, EventArgs e)

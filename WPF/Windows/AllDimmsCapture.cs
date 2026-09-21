@@ -1,21 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
 using ZenStates.Core.Hardware.DRAM;
 using ZenStates.Core.Hardware.DRAM.DDR5.Pmic;
 using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
-using ZenTimings.Controls;
 using ZenTimings.Utils;
-using ZenTimings.ViewModels;
 
 namespace ZenTimings.Windows
 {
     /// <summary>
-    /// Renders the main timings panel once per memory channel and finds the cells that differ between channels.
+    /// Collects each memory channel's timings, PMIC data and module description for the All DIMMs window.
     /// </summary>
     internal static class AllDimmsCapture
     {
@@ -72,11 +66,7 @@ namespace ZenTimings.Windows
             Ddr5PmicData pmic = spd?.PmicData;
             if (pmic != null && pmic.IsValid)
             {
-                float[] rails = RailsOf(pmic);
                 parts.Add($"PMIC {pmic.VendorName} rev {pmic.RevisionMajor}.{pmic.RevisionMinor}");
-                //parts.Add($"VDD {VoltageText(rails[0])}");
-                //parts.Add($"VDDQ {VoltageText(rails[1])}");
-                //parts.Add($"VPP {VoltageText(rails[2])}");
             }
 
             // Non-breaking inside a part, so a wrapped line only breaks between parts.
@@ -101,68 +91,6 @@ namespace ZenTimings.Windows
             return left.SwaAdcMv == right.SwaAdcMv &&
                    left.SwbAdcMv == right.SwbAdcMv &&
                    left.SwcAdcMv == right.SwcAdcMv;
-        }
-
-        private static float[] RailsOf(Ddr5PmicData pmic)
-        {
-            if (pmic == null || !pmic.IsValid)
-                return new float[3];
-
-            return new[] { Volts(pmic.SwaAdcMv), Volts(pmic.SwbAdcMv), Volts(pmic.SwcAdcMv) };
-        }
-
-        private static float Volts(int millivolts) => millivolts > 0 ? millivolts / 1000.0f : 0;
-
-        private static string VoltageText(float volts) => volts > 0 ? $"{volts:F4}V" : "N/A";
-
-        private static void SetRails(MainViewModel viewModel, float[] rails)
-        {
-            viewModel.SwaAdcV = rails[0];
-            viewModel.SwbAdcV = rails[1];
-            viewModel.VppAdcV = rails[2];
-        }
-
-        // Measured on the restored panel; every render shares its layout, so the same rectangles fit them all.
-        private static List<Rect> FindDifferingCells(FrameworkElement panel, List<BaseDramTimings> channels)
-        {
-            return Descendants(panel)
-                .OfType<TextBlock>()
-                .Where(text => text.IsVisible && Differs(channels, TimingRow.GetDisplayedBindingPath(text)))
-                .Select(text =>
-                {
-                    Rect bounds = text.TransformToAncestor(panel).TransformBounds(new Rect(text.RenderSize));
-                    bounds.Inflate(3, 1);
-                    return bounds;
-                })
-                .ToList();
-        }
-
-        // Only bound timings are compared, resolved the way the binding resolves them: some getters are
-        // computed (Frequency can read MMIO), and Ddr5Timings hides RFCns with 'new'.
-        private static bool Differs(List<BaseDramTimings> channels, string path)
-        {
-            const string prefix = "Timings.";
-            if (path == null || !path.StartsWith(prefix, StringComparison.Ordinal))
-                return false;
-
-            PropertyDescriptor property = TypeDescriptor.GetProperties(channels[0])[path.Substring(prefix.Length)];
-            if (property == null)
-                return false;
-
-            object first = property.GetValue(channels[0]);
-            return channels.Skip(1).Any(timings => !Equals(property.GetValue(timings), first));
-        }
-
-        private static IEnumerable<DependencyObject> Descendants(DependencyObject node)
-        {
-            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(node); i++)
-            {
-                DependencyObject child = VisualTreeHelper.GetChild(node, i);
-                yield return child;
-
-                foreach (DependencyObject descendant in Descendants(child))
-                    yield return descendant;
-            }
         }
     }
 }

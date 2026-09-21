@@ -212,15 +212,15 @@
                     Grid.Row="0"
                     Style="{StaticResource SettingCombo}"
                     SelectionChanged="ComboBoxTheme_SelectionChanged">
-                    <ComboBoxItem Content="Light" />
-                    <ComboBoxItem Content="Dark" />
-                    <ComboBoxItem Content="Dark Mint" />
-                    <ComboBoxItem Content="Dark Mint Gradient" />
-                    <ComboBoxItem Content="Asus ROG" />
-                    <ComboBoxItem Content="Dracula" />
-                    <ComboBoxItem Content="Retro Wave" />
-                    <ComboBoxItem Content="Burnt Orange" />
-                    <ComboBoxItem Content="Black" />
+                    <ComboBoxItem Content="Light" Tag="Light" />
+                    <ComboBoxItem Content="Dark" Tag="Dark" />
+                    <ComboBoxItem Content="Dark Mint" Tag="DarkMint" />
+                    <ComboBoxItem Content="Dark Mint Gradient" Tag="DarkMintGradient" />
+                    <ComboBoxItem Content="Asus ROG" Tag="AsusRog" />
+                    <ComboBoxItem Content="Dracula" Tag="Dracula" />
+                    <ComboBoxItem Content="Retro Wave" Tag="RetroWave" />
+                    <ComboBoxItem Content="Burnt Orange" Tag="BurntOrange" />
+                    <ComboBoxItem Content="Black" Tag="Black" />
                 </ComboBox>
 
                 <TextBlock

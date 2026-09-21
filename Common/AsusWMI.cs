@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Management;
 using ZenStates.Core.Hardware;
 
@@ -170,6 +171,23 @@ namespace ZenTimings.Common
         }
 
         public AsusSensorInfo FindSensorByName(string name) => sensors?.Find(x => x.Name == name);
+
+        /// <summary>
+        /// Parses the numeric part of a formatted sensor value, which carries its unit ("1.3500V", "45°C").
+        /// </summary>
+        public static bool TryParseSensorValue(string formattedValue, out float value)
+        {
+            value = 0;
+            if (string.IsNullOrWhiteSpace(formattedValue))
+                return false;
+
+            string text = formattedValue.Trim();
+            int end = text.Length;
+            while (end > 0 && !char.IsDigit(text[end - 1]))
+                end--;
+
+            return end > 0 && float.TryParse(text.Substring(0, end), NumberStyles.Float, CultureInfo.InvariantCulture, out value);
+        }
 
         public uint Status { get; protected set; }
 

@@ -114,19 +114,19 @@
                 <local:TimingRow Label="MEM VPP" Value="{Binding VppAdcV, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" />
                 <local:TimingRow x:Name="rowVddMisc" Label="{Binding VmiscLabel, FallbackValue='VDD MISC', Mode=OneWay}" Value="{Binding Vmisc, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" IsEnabled="{Binding Vmisc}" />
                 <TextBlock Text="" />
-                <local:TimingRow Label="ProcCaOdt" Value="{Binding ApobData.ProcCaOdt, FallbackValue='N/A', Mode=OneWay}" />
-                <local:TimingRow Label="ProcCkOdt" Value="{Binding ApobData.ProcCkOdt, FallbackValue='N/A', Mode=OneWay}" />
-                <local:TimingRow Label="ProcDqOdt" Value="{Binding ApobData.ProcDqOdt, FallbackValue='N/A', Mode=OneWay}" />
-                <local:TimingRow Label="ProcDqsOdt" Value="{Binding ApobData.ProcDqsOdt, FallbackValue='N/A', Mode=OneWay}" />
-                <local:TimingRow Label="ProcCaDs" Value="{Binding ApobData.ProcCaDs, FallbackValue='N/A', Mode=OneWay}" />
-                <local:TimingRow Label="ProcDataDs" Value="{Binding ApobData.ProcDataDsApu, FallbackValue='N/A', Mode=OneWay}" />
-                <local:TimingRow Label="DramDataDs" Value="{Binding ApobData.DramDataDs, FallbackValue='N/A', Mode=OneWay}" />
+                <local:TimingRow Label="ProcCaOdt" Value="{Binding ApobData.ProcCaOdt, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
+                <local:TimingRow Label="ProcCkOdt" Value="{Binding ApobData.ProcCkOdt, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
+                <local:TimingRow Label="ProcDqOdt" Value="{Binding ApobData.ProcDqOdt, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
+                <local:TimingRow Label="ProcDqsOdt" Value="{Binding ApobData.ProcDqsOdt, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
+                <local:TimingRow Label="ProcCaDs" Value="{Binding ApobData.ProcCaDs, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
+                <local:TimingRow Label="ProcDataDs" Value="{Binding ApobData.ProcDataDsApu, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
+                <local:TimingRow Label="DramDataDs" Value="{Binding ApobData.DramDataDs, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
                 <TextBlock Text="" />
-                <local:TimingRow Label="RttNomWr" Value="{Binding ApobData.RttNomWr, FallbackValue='N/A', Mode=OneWay}" />
-                <local:TimingRow Label="RttNomRd" Value="{Binding ApobData.RttNomRd, FallbackValue='N/A', Mode=OneWay}" />
-                <local:TimingRow Label="RttWr" Value="{Binding ApobData.RttWr, FallbackValue='N/A', Mode=OneWay}" />
-                <local:TimingRow Label="RttPark" Value="{Binding ApobData.RttPark, FallbackValue='N/A', Mode=OneWay}" />
-                <local:TimingRow Label="RttParkDqs" Value="{Binding ApobData.RttParkDqs, FallbackValue='N/A', Mode=OneWay}" />
+                <local:TimingRow Label="RttNomWr" Value="{Binding ApobData.RttNomWr, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
+                <local:TimingRow Label="RttNomRd" Value="{Binding ApobData.RttNomRd, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
+                <local:TimingRow Label="RttWr" Value="{Binding ApobData.RttWr, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
+                <local:TimingRow Label="RttPark" Value="{Binding ApobData.RttPark, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
+                <local:TimingRow Label="RttParkDqs" Value="{Binding ApobData.RttParkDqs, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
                 <local:TimingRow Label="tCCDL WR2" Value="{Binding CcdlData.Tccdlwr2, FallbackValue='N/A', Mode=OneWay}" />
             </StackPanel>
         </StackPanel>

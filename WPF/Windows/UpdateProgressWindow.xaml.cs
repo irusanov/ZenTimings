@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -7,6 +8,11 @@ namespace ZenTimings.Windows
     public partial class UpdateProgressWindow : ThemedAdonisWindow
     {
         public bool IsCancelled { get; private set; }
+
+        // Set when the updater itself closes the window (success or error);
+        // any other close (title-bar X, Alt+F4, Cancel button) is a cancellation.
+        private bool closingFromUpdater;
+        private bool isClosed;
 
         public UpdateProgressWindow()
         {
@@ -56,6 +62,40 @@ namespace ZenTimings.Windows
             {
                 CancelButton.Content = "Close";
             }));
+        }
+
+        /// <summary>
+        /// Closes the window without marking the update as cancelled.
+        /// Safe to call when the window has already been closed.
+        /// </summary>
+        internal void CloseFromUpdater()
+        {
+            if (isClosed)
+                return;
+
+            closingFromUpdater = true;
+            try
+            {
+                Close();
+            }
+            catch (InvalidOperationException)
+            {
+                // Window is already closing
+            }
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            if (!closingFromUpdater)
+                IsCancelled = true;
+
+            base.OnClosing(e);
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            isClosed = true;
+            base.OnClosed(e);
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
