@@ -522,6 +522,7 @@
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
 
             <Button
@@ -534,8 +535,17 @@
                 Click="ButtonSettingsRestart_Click" />
 
             <Button
+                x:Name="buttonSettingsReset"
+                Grid.Column="0"
+                Content="Reset"
+                HorizontalAlignment="Left"
+                Margin="6 6 0 6"
+                Width="70"
+                Click="ButtonSettingsReset_Click" />
+
+            <Button
                 x:Name="buttonSettingsApply"
-                Grid.Column="2"
+                Grid.Column="3"
                 Content="Apply"
                 Margin="6 6 0 6"
                 Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
@@ -544,7 +554,7 @@
 
             <Button
                 x:Name="buttonSettingsCancel"
-                Grid.Column="3"
+                Grid.Column="4"
                 Content="Close"
                 IsCancel="True"
                 Width="70"

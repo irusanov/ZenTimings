@@ -26,6 +26,8 @@ namespace ZenTimings.Settings
 
         private AppSettings() { }
 
+        public static AppSettings CreateDefaults() => new AppSettings();
+
         public static AppSettings Instance
         {
             get
