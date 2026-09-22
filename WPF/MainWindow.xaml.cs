@@ -475,7 +475,9 @@ namespace ZenTimings
 
         // Set while the refresh task is reading the hardware (not while it updates the UI).
         private int refreshReadingHardware;
-        private const int CleanupRefreshWaitMs = 3000;
+        // Longer than the refresh's own longest wait (the SMBus mutex, 5 s), so a refresh that got
+        // the bus always finishes before the core is disposed.
+        private const int CleanupRefreshWaitMs = 6000;
 
         private void Cleanup()
         {
@@ -483,6 +485,9 @@ namespace ZenTimings
             if (cleanedUp)
                 return;
             cleanedUp = true;
+            // Publish cleanedUp before reading the refresh flag (the task sets its flag, then reads
+            // cleanedUp), so one of the two always sees the other.
+            Thread.MemoryBarrier();
 
             // Nothing may tick into the core once it is disposed.
             StopAutoRefresh();
@@ -492,20 +497,40 @@ namespace ZenTimings
             for (int waited = 0; Volatile.Read(ref refreshReadingHardware) != 0 && waited < CleanupRefreshWaitMs; waited += RefreshWaitStepMs)
                 Thread.Sleep(RefreshWaitStepMs);
 
+            // Still reading: disposing the core or removing the driver under it could fault. The
+            // process is exiting anyway, and Windows releases what it holds.
+            bool refreshStillRunning = Volatile.Read(ref refreshReadingHardware) != 0;
+
+            // Each step on its own, so one failure doesn't skip the rest (or the shutdown after it).
             foreach (IPlugin plugin in plugins)
-                plugin?.Close();
+                TryCleanup(() => plugin?.Close());
 
-            sensorsWindw?.Close();
-            optionsWnd?.Close();
-            exportWnd?.Close();
+            TryCleanup(() => sensorsWindw?.Close());
+            TryCleanup(() => optionsWnd?.Close());
+            TryCleanup(() => exportWnd?.Close());
+            TryCleanup(() => _notifyIcon?.Dispose());
 
-            _notifyIcon?.Dispose();
-            AsusWmi?.Dispose();
-            cpu?.Dispose();
+            if (refreshStillRunning)
+                return;
+
+            TryCleanup(() => AsusWmi?.Dispose());
+            TryCleanup(() => cpu?.Dispose());
 
             if (settings.AutoUninstallDriver)
             {
-                App.CleanupDriverIfLastInstance((NotificationLevel)settings.AutoUninstallDriverNotificationLevel);
+                TryCleanup(() => App.CleanupDriverIfLastInstance((NotificationLevel)settings.AutoUninstallDriverNotificationLevel));
+            }
+        }
+
+        private static void TryCleanup(Action step)
+        {
+            try
+            {
+                step();
+            }
+            catch (Exception ex)
+            {
+                CrashLog.Write("Cleanup", ex);
             }
         }
 
@@ -517,9 +542,15 @@ namespace ZenTimings
                 return;
             }
 
-            if (save) settings.Save();
-            Cleanup();
-            Application.Current?.Shutdown();
+            try
+            {
+                if (save) settings.Save();
+                Cleanup();
+            }
+            finally
+            {
+                Application.Current?.Shutdown();
+            }
         }
 
         private BiosACPIFunction GetFunctionByIdString(string name)

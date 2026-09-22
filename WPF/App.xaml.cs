@@ -89,6 +89,10 @@ namespace ZenTimings
         // Every unexpected exception is written to crash.log (see CrashLog). An exception on the UI
         // thread is also shown and marked handled, so a failure in one action (a link that can't be
         // opened, a dialog that throws) doesn't close the app; the normal exit path still runs later.
+        // Set while the error box is open: its message loop keeps timers and layout running, so an
+        // exception that repeats is only logged instead of stacking more boxes.
+        private static bool showingError;
+
         private void RegisterUnhandledExceptionHandlers()
         {
             DispatcherUnhandledException += (sender, args) =>
@@ -105,6 +109,19 @@ namespace ZenTimings
 
                 args.Handled = true;
 
+                // Until the main window is up (OnStartup, window construction) there is nothing to keep
+                // running: carrying on would leave a windowless process holding the single-instance
+                // mutex. Show the error, then exit.
+                bool started = Current?.MainWindow is global::ZenTimings.MainWindow mainWindow && mainWindow.IsLoaded;
+
+                if (showingError)
+                {
+                    if (!started)
+                        Environment.Exit(1);
+                    return;
+                }
+
+                showingError = true;
                 try
                 {
                     string logHint = CrashLog.LastPath != null ? $"\n\nDetails were written to {CrashLog.LastPath}" : "";
@@ -118,6 +135,13 @@ namespace ZenTimings
                 {
                     // Nothing more can be done if the message box itself fails.
                 }
+                finally
+                {
+                    showingError = false;
+                }
+
+                if (!started)
+                    Environment.Exit(1);
             };
 
             // Unobserved task exceptions no longer end the process (.NET 4.5+); log them only.
