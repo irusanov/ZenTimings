@@ -470,7 +470,12 @@ namespace ZenTimings
             // else, default = show context menu
         }
 
-        private bool cleanedUp;
+        // Read by the refresh task on a background thread.
+        private volatile bool cleanedUp;
+
+        // Set while the refresh task is reading the hardware (not while it updates the UI).
+        private int refreshReadingHardware;
+        private const int CleanupRefreshWaitMs = 3000;
 
         private void Cleanup()
         {
@@ -481,6 +486,11 @@ namespace ZenTimings
 
             // Nothing may tick into the core once it is disposed.
             StopAutoRefresh();
+
+            // A refresh that already started keeps reading the hardware on a background thread. Let it
+            // finish before the core goes away; it doesn't need the UI thread for that part.
+            for (int waited = 0; Volatile.Read(ref refreshReadingHardware) != 0 && waited < CleanupRefreshWaitMs; waited += RefreshWaitStepMs)
+                Thread.Sleep(RefreshWaitStepMs);
 
             foreach (IPlugin plugin in plugins)
                 plugin?.Close();
@@ -953,9 +963,18 @@ namespace ZenTimings
             // Run refresh operation in a new task
             Task.Run(() =>
             {
+                // isRefreshing stays set until the UI update queued below has run.
+                bool uiUpdateQueued = false;
                 try
                 {
                     Thread.CurrentThread.IsBackground = true;
+
+                    // Flag first, then check: Cleanup sets cleanedUp first, then waits on the flag, so
+                    // either this sees cleanedUp or Cleanup sees the flag.
+                    Interlocked.Exchange(ref refreshReadingHardware, 1);
+
+                    if (cleanedUp)
+                        return;
 
                     var hasAsusDramVoltage = false;
                     float asusDramVoltage = 0;
@@ -977,47 +996,67 @@ namespace ZenTimings
                         voltagesUpdated = cpu.memoryConfig.RefreshTelemetry(settings.AutoRefreshInterval);
                     }
 
-                    Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() =>
+                    Interlocked.Exchange(ref refreshReadingHardware, 0);
+
+                    if (cleanedUp)
+                        return;
+
+                    Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, new Action(() =>
                     {
-                        var newMclk = cpu.powerTable.MCLK;
-
-                        if (newMclk != lastMclk)
+                        try
                         {
-                            var modules = cpu.memoryConfig.Modules;
-                            int selectedIndex = comboBoxPartNumber?.SelectedIndex ?? 0;
-                            MemoryModule module = modules?.Count > 0 ? modules[selectedIndex] : null;
-                            mainViewModel.Timings = ReadTimings(module?.DctOffset ?? 0);
-                            //Dictionary<byte, Ddr5SpdInfo> results = Ddr5SpdDecoder.ReadAndDecodeAll(CpuSingleton.Instance.SmbusPiix4);
+                            if (cleanedUp)
+                                return;
+
+                            var newMclk = cpu.powerTable.MCLK;
+
+                            if (newMclk != lastMclk)
+                            {
+                                var modules = cpu.memoryConfig.Modules;
+                                int selectedIndex = comboBoxPartNumber?.SelectedIndex ?? 0;
+                                MemoryModule module = modules?.Count > 0 ? modules[selectedIndex] : null;
+                                mainViewModel.Timings = ReadTimings(module?.DctOffset ?? 0);
+                                //Dictionary<byte, Ddr5SpdInfo> results = Ddr5SpdDecoder.ReadAndDecodeAll(CpuSingleton.Instance.SmbusPiix4);
+                            }
+
+                            if (voltagesUpdated)
+                                mainViewModel.PmicData = ModulePmicData(comboBoxPartNumber?.SelectedIndex ?? 0);
+
+                            if (cpu.memoryConfig.Type == MemType.DDR4 || cpu.memoryConfig.Type == MemType.LPDDR4)
+                            {
+                                if (hasAsusDramVoltage)
+                                {
+                                    (timingsPanel as DDR4TimingsPanel).rowMemVddio.Value = $"{asusDramVoltage:F4}V";
+                                    (timingsPanel as DDR4TimingsPanel).rowMemVddio.IsEnabled = true;
+                                }
+                                else if (hasSuperIoDramVoltage)
+                                {
+                                    (timingsPanel as DDR4TimingsPanel).rowMemVddio.Value = $"{superIoDramVoltage:F4}V";
+                                }
+                                else if (!ddr4BmcVddioValid)
+                                {
+                                    (timingsPanel as DDR4TimingsPanel).rowMemVddio.IsEnabled = false;
+                                }
+                            }
+
+                            mainViewModel.RefreshSensors();
+
+                            lastMclk = newMclk;
+
+                            ReadSVI();
+                            // SetFrequencyString();
+                            // RefreshSensors();
                         }
-
-                        if (voltagesUpdated)
-                            mainViewModel.PmicData = ModulePmicData(comboBoxPartNumber?.SelectedIndex ?? 0);
-
-                        if (cpu.memoryConfig.Type == MemType.DDR4 || cpu.memoryConfig.Type == MemType.LPDDR4)
+                        catch (Exception ex)
                         {
-                            if (hasAsusDramVoltage)
-                            {
-                                (timingsPanel as DDR4TimingsPanel).rowMemVddio.Value = $"{asusDramVoltage:F4}V";
-                                (timingsPanel as DDR4TimingsPanel).rowMemVddio.IsEnabled = true;
-                            }
-                            else if (hasSuperIoDramVoltage)
-                            {
-                                (timingsPanel as DDR4TimingsPanel).rowMemVddio.Value = $"{superIoDramVoltage:F4}V";
-                            }
-                            else if (!ddr4BmcVddioValid)
-                            {
-                                (timingsPanel as DDR4TimingsPanel).rowMemVddio.IsEnabled = false;
-                            }
+                            Debug.WriteLine(ex.Message);
                         }
-
-                        mainViewModel.RefreshSensors();
-
-                        lastMclk = newMclk;
-
-                        ReadSVI();
-                        // SetFrequencyString();
-                        // RefreshSensors();
+                        finally
+                        {
+                            Interlocked.Exchange(ref isRefreshing, 0);
+                        }
                     }));
+                    uiUpdateQueued = true;
                 }
                 catch (Exception ex)
                 {
@@ -1025,7 +1064,9 @@ namespace ZenTimings
                 }
                 finally
                 {
-                    Interlocked.Exchange(ref isRefreshing, 0);
+                    Interlocked.Exchange(ref refreshReadingHardware, 0);
+                    if (!uiUpdateQueued)
+                        Interlocked.Exchange(ref isRefreshing, 0);
                 }
             });
         }
