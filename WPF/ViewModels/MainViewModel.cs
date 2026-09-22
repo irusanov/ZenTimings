@@ -307,6 +307,13 @@ namespace ZenTimings.ViewModels
 
         public MainViewModel CreateChannelViewModel(BaseDramTimings timings, Ddr5PmicData pmicData)
         {
+            return CreateChannelViewModel(timings, pmicData, null);
+        }
+
+        // capacityOverride lets a caller (the All DIMMs window) show that channel's own module capacity
+        // in the "Capacity" row instead of the whole kit's TotalCapacity.
+        public MainViewModel CreateChannelViewModel(BaseDramTimings timings, Ddr5PmicData pmicData, Capacity capacityOverride)
+        {
             return new MainViewModel(
                 timings,
                 MemoryType,
@@ -316,7 +323,8 @@ namespace ZenTimings.ViewModels
                 null,
                 mockData != null ? mockData.AgesaVersion : null,
                 pmicData,
-                mockData);
+                mockData,
+                capacityOverride);
         }
 
         public MainViewModel(
@@ -328,7 +336,8 @@ namespace ZenTimings.ViewModels
             string motherboardLogoName,
             string agesaVersion,
             Ddr5PmicData pmicData,
-            MockSystemData mockData = null)
+            MockSystemData mockData = null,
+            Capacity capacityOverride = null)
         {
             this.mockData = mockData;
             Timings = timings;
@@ -356,6 +365,10 @@ namespace ZenTimings.ViewModels
                 CpuFamily = CpuSingleton.Instance.info.family;
                 PowerTable = CpuSingleton.Instance?.powerTable;
             }
+
+            // All DIMMs window: show own module capacity instead of the whole kit's total.
+            if (capacityOverride != null)
+                TotalCapacity = capacityOverride;
 
             MemoryType = memoryType;
 

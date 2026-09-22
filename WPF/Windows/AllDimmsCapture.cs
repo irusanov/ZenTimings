@@ -9,7 +9,9 @@ using ZenTimings.Utils;
 namespace ZenTimings.Windows
 {
     /// <summary>
-    /// Collects each memory channel's timings, PMIC data and module description for the All DIMMs window.
+    /// Collects each memory module's own info plus its channel's timings and PMIC data for the All
+    /// DIMMs window - one frame per physical DIMM, even when two DIMMs share a channel (and so share
+    /// the same timings/PMIC data, read once per channel).
     /// </summary>
     internal static class AllDimmsCapture
     {
@@ -20,17 +22,18 @@ namespace ZenTimings.Windows
             public string DetailLine;
         }
 
-        internal sealed class Channel
+        internal sealed class DimmFrame
         {
-            //public string Header;
-            public List<ModuleInfo> Modules;
+            public ModuleInfo Module;
             public BaseDramTimings Timings;
             public Ddr5PmicData PmicData;
+            /// <summary>This DIMM's own capacity - never another DIMM's, even one sharing its channel.</summary>
+            public Capacity Capacity;
         }
 
         internal sealed class Result
         {
-            public readonly List<Channel> Channels = new List<Channel>();
+            public readonly List<DimmFrame> Frames = new List<DimmFrame>();
         }
 
         public static Result Run(IList<MemoryModule> modules, IDictionary<byte, Ddr5SpdInfo> spdInfo, Func<uint, BaseDramTimings> readTimings)
@@ -51,13 +54,19 @@ namespace ZenTimings.Windows
                 BaseDramTimings timings = readTimings(channel.Key);
                 Ddr5PmicData channelPmic = ChannelPmicData(channelModules.Select(m => m.Spd?.PmicData));
 
-                result.Channels.Add(new Channel
+                // One frame per physical DIMM. Two DIMMs sharing this channel get separate frames -
+                // each with its own module description and its own capacity - but the same Timings and
+                // PmicData, since those are only ever read at the channel level.
+                foreach (var entry in channelModules)
                 {
-                    //Header = string.Join(" / ", channelModules.Select(m => m.Module.Slot)),
-                    Modules = channelModules.Select(m => Describe(m.Module, m.Spd)).ToList(),
-                    Timings = timings,
-                    PmicData = channelPmic,
-                });
+                    result.Frames.Add(new DimmFrame
+                    {
+                        Module = Describe(entry.Module, entry.Spd),
+                        Timings = timings,
+                        PmicData = channelPmic,
+                        Capacity = entry.Module?.Capacity,
+                    });
+                }
             }
 
             return result;
@@ -68,13 +77,14 @@ namespace ZenTimings.Windows
             string vendor = !string.IsNullOrEmpty(module.Manufacturer) ? module.Manufacturer : null;
             string vendorAndPart = string.Join(" ", new[] { vendor, module.PartNumber }.Where(s => !string.IsNullOrEmpty(s)));
 
-            string vendorLine;
-            if (string.IsNullOrEmpty(module.Slot))
-                vendorLine = vendorAndPart;
-            else if (string.IsNullOrEmpty(vendorAndPart))
-                vendorLine = module.Slot;
-            else
-                vendorLine = $"{module.Slot}: {vendorAndPart}";
+            var line1Parts = new List<string>();
+            if (!string.IsNullOrEmpty(module.Slot))
+                line1Parts.Add($"{module.Slot}:");
+
+            if (!string.IsNullOrEmpty(vendorAndPart))
+                line1Parts.Add(vendorAndPart);
+
+            line1Parts.Add($"({module.Rank})");
 
             var detailParts = new List<string>();
 
@@ -88,8 +98,8 @@ namespace ZenTimings.Windows
             return new ModuleInfo
             {
                 LogoResourceName = VendorUtils.GetMemoryModuleLogo(module),
-                VendorLine = vendorLine.Replace(' ', ' '),
-                DetailLine = string.Join("  ·  ", detailParts.Select(part => part.Replace(' ', ' '))),
+                VendorLine = string.Join(" ", line1Parts.Select(part => part.Replace(' ', ' '))),
+                DetailLine = string.Join("  ·  ", detailParts.Select(part => part.Replace(' ', ' '))),
             };
         }
 
