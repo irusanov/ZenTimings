@@ -6,6 +6,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
     xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
     adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
     xmlns:converters="clr-namespace:ZenTimings.Converters"
@@ -15,69 +16,81 @@
     Height="580"
     Width="454"
     UseLayoutRounding="True"
-    ResizeMode="NoResize"
+    ResizeMode="CanResize"
     WindowStartupLocation="CenterScreen"
-    Topmost="True" Icon="/ZenTimings;component/Resources/new-icon/16.png"
-    SizeToContent="WidthAndHeight">
+    Topmost="True" Icon="/ZenTimings;component/Resources/new-icon/16.png">
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto" />
-            </Grid.RowDefinitions>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
 
-            <StackPanel Orientation="Vertical" Margin="15,15,5,15" Grid.ColumnSpan="6" Grid.Row="0" Width="424">
-                <!-- TextBlock Text="Changelog" FontSize="14" FontWeight="Bold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" /-->
-                <TextBlock Text="{Binding Version, Mode=OneWay}" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0" />
-                <TextBlock Text=" - Add All DIMMs view (feature by @deadfellow34)" />
-                <TextBlock Text=" - Add Export dialog with more options (feature by @b1zya)" />
-                <TextBlock Text=" - Add copy to clipboard buttons to grids and windows (feature by @b1zya)" />
-                <TextBlock Text=" - Add voltage sources options in Options window" />
-                <TextBlock Text=" - Extend debug dialog parsing (thanks @deadfellow34 for the help)" />
-                <TextBlock Text=" - Update HTML export and move as an option in Export dialog" />
-                <TextBlock Text=" - Rename 'SMU' sensors to 'SVI3' and update offsets" />
-                <TextBlock Text=" - Add SMU/SVI3 telemetry to Sensors window" />
-                <TextBlock Text=" - Various bugfixes and performance improvements" />
-                <TextBlock Text="" />
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Grid.Row="0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
 
-                <TextBlock Text="Version v140.587 - beta" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0" />
-                <TextBlock Text=" - Switch to total power mode reporting on PMIC init" />
-                <TextBlock Text=" - Read and display more values from saved debug reports (still WIP)" />
-                <TextBlock Text=" - Fixed CCD_L group reading on Zen4 APU (Phoenix)" />
-                <TextBlock Text=" - Fixed empty numeric input handling in Options windows" />
-                <TextBlock Text="" />
+                <StackPanel Orientation="Vertical" Margin="15,15,5,15" Grid.ColumnSpan="6" Grid.Row="0" Width="424">
+                    <TextBlock 
+                        Text="Welcome to our BETA version. You might run into a few bugs or features that aren't working quite right just yet. If you spot anything unexpected, please let us know so we can fix it!"
+                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}"
+                        HorizontalAlignment="Left"
+                        Padding="0, 0, 0, 14"
+                        TextWrapping="WrapWithOverflow" />
 
-                <TextBlock Text="Version 140.576 - beta" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0" />
-                <TextBlock Text=" - Fixed issue with NCT6687DR detection on MSI motherboards" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Fixed display of impedances from extended table" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text="" />
+                    <!-- TextBlock Text="Changelog" FontSize="14" FontWeight="Bold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" /-->
+                    <TextBlock Text="{Binding Version, Mode=OneWay}" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0" />
+                    <TextBlock Text=" - Add All DIMMs view (feature by @deadfellow34)" />
+                    <TextBlock Text=" - Add Export dialog with more options (feature by @b1zya)" />
+                    <TextBlock Text=" - Add copy to clipboard buttons to grids and windows (feature by @b1zya)" />
+                    <TextBlock Text=" - Add voltage sources options in Options window" />
+                    <TextBlock Text=" - Extend debug dialog parsing (thanks @deadfellow34 for the help)" />
+                    <TextBlock Text=" - Update HTML export and move as an option in Export dialog" />
+                    <TextBlock Text=" - Rename 'SMU' sensors to 'SVI3' and update offsets" />
+                    <TextBlock Text=" - Add SMU/SVI3 telemetry to Sensors window" />
+                    <TextBlock Text=" - Various bugfixes and performance improvements" />
+                    <TextBlock Text="" />
 
-                <TextBlock Text="Version 140.571 - beta" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0" />
-                <TextBlock Text=" - Added CCD_L timings for DDR5 in advanced mode, based on @deadfellow34's findings" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Renamed Telemetry window to Sensors and enabled it for all systems" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Added a sensor settings dialog to show/hide individual sensors" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Added icons for sensors" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Sensors window now keeps updating while the main window is minimized" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Bind VSOC and VDDIO to SuperIO when available, falling back to PMT" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Added autostart option" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Added automatic inpoutx64 driver cleanup on app close (toggle from Options)" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Added icons to sections in the options dialog" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Improve KrackanPoint support" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Fixed sensors window alarm colors not recording max values" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Fixed incorrect read function used for SVI2 planes (Zen3 and earlier)" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Fixed incorrect handling of corner radius (W11)" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Fixed memory leak in Debug window" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Unmatched Hynix dies are now displayed as 'Unknown' instead of an incorrect value" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Removed the maximize button when maximizing is not applicable" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Added SuperIO hardware support, ported from @LibreHardwareMonitor" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Updated DDR5 UMC timings with additional entries" TextWrapping="WrapWithOverflow" />
-                <TextBlock Text=" - Extended data in Debug report" TextWrapping="WrapWithOverflow" />
-            </StackPanel>
-            <Border Padding="4 10" Grid.ColumnSpan="6" Grid.Row="2">
-                <Button x:Name="Changelog_Close" Content="OK" Width="80" IsCancel="True" />
-            </Border>
-        </Grid>
-    </ScrollViewer>
+                    <TextBlock Text="Version v140.587 - beta" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0" />
+                    <TextBlock Text=" - Switch to total power mode reporting on PMIC init" />
+                    <TextBlock Text=" - Read and display more values from saved debug reports (still WIP)" />
+                    <TextBlock Text=" - Fixed CCD_L group reading on Zen4 APU (Phoenix)" />
+                    <TextBlock Text=" - Fixed empty numeric input handling in Options windows" />
+                    <TextBlock Text="" />
+
+                    <TextBlock Text="Version 140.576 - beta" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0" />
+                    <TextBlock Text=" - Fixed issue with NCT6687DR detection on MSI motherboards" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Fixed display of impedances from extended table" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text="" />
+
+                    <TextBlock Text="Version 140.571 - beta" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0" />
+                    <TextBlock Text=" - Added CCD_L timings for DDR5 in advanced mode, based on @deadfellow34's findings" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Renamed Telemetry window to Sensors and enabled it for all systems" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Added a sensor settings dialog to show/hide individual sensors" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Added icons for sensors" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Sensors window now keeps updating while the main window is minimized" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Bind VSOC and VDDIO to SuperIO when available, falling back to PMT" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Added autostart option" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Added automatic inpoutx64 driver cleanup on app close (toggle from Options)" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Added icons to sections in the options dialog" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Improve KrackanPoint support" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Fixed sensors window alarm colors not recording max values" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Fixed incorrect read function used for SVI2 planes (Zen3 and earlier)" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Fixed incorrect handling of corner radius (W11)" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Fixed memory leak in Debug window" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Unmatched Hynix dies are now displayed as 'Unknown' instead of an incorrect value" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Removed the maximize button when maximizing is not applicable" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Added SuperIO hardware support, ported from @LibreHardwareMonitor" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Updated DDR5 UMC timings with additional entries" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Extended data in Debug report" TextWrapping="WrapWithOverflow" />
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+        <Border Padding="4 10" Grid.Row="1">
+            <Button x:Name="Changelog_Close" Content="OK" Width="80" IsCancel="True" />
+        </Border>
+    </Grid>
 </local:ThemedAdonisWindow>

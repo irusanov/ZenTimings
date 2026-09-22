@@ -43,51 +43,57 @@ namespace ZenTimings.Windows
             LoadSettingsToUi();
         }
 
-        private void LoadSettingsToUi()
+        private void LoadSettingsToUi(AppSettings sourceSettings = null)
         {
-            checkBoxAutoRefresh.IsChecked = appSettings.AutoRefresh;
-            checkBoxAutoRefresh.IsEnabled = appSettings.AdvancedMode;
-            checkBoxAdvancedMode.IsChecked = appSettings.AdvancedMode;
-            checkBoxCheckUpdate.IsChecked = appSettings.CheckForUpdates;
-            checkBoxBetaUpdates.IsChecked = appSettings.ParticipateInBetaUpdates;
-            checkBoxSavePosition.IsChecked = appSettings.SaveWindowPosition;
-            checkBoxWindowSnapping.IsChecked = appSettings.EnableWindowSnapping;
-            checkBoxMinimizeToTray.IsChecked = appSettings.MinimizeToTray;
-            checkBoxAutostart.IsChecked = appSettings.AutostartWithWindows;
-            numericUpDownAutostartDelay.IsEnabled = appSettings.AutostartWithWindows;
-            numericUpDownAutostartDelay.Text = appSettings.AutostartDelaySeconds.ToString();
-            checkBoxStartMinimized.IsChecked = appSettings.StartMinimized;
-            checkBoxSingleInstance.IsChecked = appSettings.SingleInstance;
-            comboBoxCornerRadius.SelectedIndex = appSettings?.CornerRadius ?? 0;
-            numericUpDownRefreshInterval.IsEnabled = appSettings.AutoRefresh && appSettings.AdvancedMode;
-            numericUpDownRefreshInterval.Text = appSettings.AutoRefreshInterval.ToString();
+            var settings = sourceSettings ?? appSettings;
+
+            checkBoxAutoRefresh.IsChecked = settings.AutoRefresh;
+            checkBoxAutoRefresh.IsEnabled = settings.AdvancedMode;
+            checkBoxAdvancedMode.IsChecked = settings.AdvancedMode;
+            checkBoxCheckUpdate.IsChecked = settings.CheckForUpdates;
+            checkBoxBetaUpdates.IsChecked = settings.ParticipateInBetaUpdates;
+            checkBoxSavePosition.IsChecked = settings.SaveWindowPosition;
+            checkBoxWindowSnapping.IsChecked = settings.EnableWindowSnapping;
+            checkBoxMinimizeToTray.IsChecked = settings.MinimizeToTray;
+            checkBoxAutostart.IsChecked = settings.AutostartWithWindows;
+            numericUpDownAutostartDelay.IsEnabled = settings.AutostartWithWindows;
+            numericUpDownAutostartDelay.Text = settings.AutostartDelaySeconds.ToString();
+            checkBoxStartMinimized.IsChecked = settings.StartMinimized;
+            checkBoxSingleInstance.IsChecked = settings.SingleInstance;
+            comboBoxCornerRadius.SelectedIndex = settings.CornerRadius;
+            numericUpDownRefreshInterval.IsEnabled = settings.AutoRefresh && settings.AdvancedMode;
+            numericUpDownRefreshInterval.Text = settings.AutoRefreshInterval.ToString();
             msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
-            comboBoxTheme.SelectedItem = FindThemeItem(_Theme);
-            comboBoxScreenshot.SelectedIndex = (int)appSettings.ScreenshotMode;
-            comboBoxImpedanceSource.SelectedIndex = (int)appSettings.ImpedanceTableSrc;
-            textBoxScreenshotPath.Text = appSettings.ScreenshotSaveLocation;
-            checkBoxAutoUninstallDriver.IsChecked = appSettings.AutoUninstallDriver;
-            var notificationLevelIndex = appSettings.AutoUninstallDriverNotificationLevel + 1;
+            comboBoxTheme.SelectedItem = FindThemeItem(settings.AppTheme);
+            comboBoxScreenshot.SelectedIndex = (int)settings.ScreenshotMode;
+            comboBoxImpedanceSource.SelectedIndex = (int)settings.ImpedanceTableSrc;
+            textBoxScreenshotPath.Text = settings.ScreenshotSaveLocation;
+            checkBoxAutoUninstallDriver.IsChecked = settings.AutoUninstallDriver;
+            var notificationLevelIndex = settings.AutoUninstallDriverNotificationLevel + 1;
             if (notificationLevelIndex > comboBoxDriverNotification.Items.Count - 1)
                 notificationLevelIndex = comboBoxDriverNotification.Items.Count - 1;
             comboBoxDriverNotification.SelectedIndex = notificationLevelIndex;
-            LoadVoltageSensorSources();
+            LoadVoltageSensorSources(settings);
         }
 
-        private void LoadVoltageSensorSources()
+        private void LoadVoltageSensorSources(AppSettings settings)
         {
             labelVddioSource.Text = _mainViewModel.CpuFamily >= ZenStates.Core.Cpu.Family.FAMILY_19H
                 ? "VDDIO source"
                 : "VDIMM source";
 
-            LoadVoltageSensorSources(comboBoxVsocSensorSource, labelVsocSource, MainViewModel.VoltageRail.Vsoc, appSettings.VsocSensorSource);
-            LoadVoltageSensorSources(comboBoxVddioSensorSource, labelVddioSource, MainViewModel.VoltageRail.Vddio, appSettings.VddioSensorSource);
-            LoadVoltageSensorSources(comboBoxVmiscSensorSource, labelVmiscSource, MainViewModel.VoltageRail.Vmisc, appSettings.VmiscSensorSource);
+            LoadVoltageSensorSources(comboBoxVsocSensorSource, labelVsocSource, MainViewModel.VoltageRail.Vsoc, settings.VsocSensorSource);
+            LoadVoltageSensorSources(comboBoxVddioSensorSource, labelVddioSource, MainViewModel.VoltageRail.Vddio, settings.VddioSensorSource);
+            LoadVoltageSensorSources(comboBoxVmiscSensorSource, labelVmiscSource, MainViewModel.VoltageRail.Vmisc, settings.VmiscSensorSource);
         }
 
         private void LoadVoltageSensorSources(System.Windows.Controls.ComboBox comboBox, System.Windows.Controls.TextBlock label,
             MainViewModel.VoltageRail rail, VoltageSensorSource selectedSource)
         {
+            comboBox.Items.Clear();
+            label.Visibility = Visibility.Visible;
+            comboBox.Visibility = Visibility.Visible;
+
             foreach (var source in _mainViewModel.GetAvailableVoltageSources(rail))
             {
                 string displayText;
@@ -216,6 +222,21 @@ namespace ZenTimings.Windows
             }
 
             ShowSavedNotification();
+        }
+
+        private void ButtonSettingsReset_Click(object sender, RoutedEventArgs e)
+        {
+            var result = AdonisUI.Controls.MessageBox.Show(
+                "Reset all application settings to default values?",
+                "Confirm Reset",
+                AdonisUI.Controls.MessageBoxButton.YesNo,
+                AdonisUI.Controls.MessageBoxImage.Warning);
+
+            if (result != AdonisUI.Controls.MessageBoxResult.Yes)
+                return;
+
+            LoadSettingsToUi(AppSettings.CreateDefaults());
+            ButtonSettingsApply_Click(sender, e);
         }
 
         private void ShowSavedNotification()
