@@ -214,7 +214,7 @@ namespace ZenTimings.Windows
 
         private void Debug()
         {
-            Application.Current.Dispatcher.Invoke(new Action(() => { SetControlsState(false); }));
+            Application.Current.Dispatcher.BeginInvoke(new Action(() => { SetControlsState(false); }));
 
             result.Clear();
             result.Append(
@@ -263,32 +263,48 @@ namespace ZenTimings.Windows
             // DRAM modules info
             AddHeading("Memory Modules");
 
-            foreach (var module in memoryConfig.Modules)
+            try
             {
-                AddLine($"{module.BankLabel} | {module.DeviceLocator}");
-                AddLine($"-- Slot: {module.Slot}");
-                if (module.Rank == DRAM.MemRank.DR)
-                    AddLine("-- Dual Rank");
-                else
-                    AddLine("-- Single Rank");
-                AddLine($"-- DCT Offset: 0x{module.DctOffset >> 20:X}");
-                AddLine($"-- Manufacturer: {module.Manufacturer}");
-                AddLine($"-- {module.PartNumber} {module.Capacity} {module.ClockSpeed}MHz");
-                AddLine($"-- {module.AddressConfig}");
-                AddLine();
+                foreach (var module in memoryConfig.Modules)
+                {
+                    AddLine($"{module.BankLabel} | {module.DeviceLocator}");
+                    AddLine($"-- Slot: {module.Slot}");
+                    if (module.Rank == DRAM.MemRank.DR)
+                        AddLine("-- Dual Rank");
+                    else
+                        AddLine("-- Single Rank");
+                    AddLine($"-- DCT Offset: 0x{module.DctOffset >> 20:X}");
+                    AddLine($"-- Manufacturer: {module.Manufacturer}");
+                    AddLine($"-- {module.PartNumber} {module.Capacity} {module.ClockSpeed}MHz");
+                    AddLine($"-- {module.AddressConfig}");
+                    AddLine();
+                }
+            }
+            catch (Exception ex)
+            {
+                AddLine("<FAILED>");
+                AddLine(ex.Message);
             }
 
-            if (cpu.memoryConfig.Type == DRAM.MemType.DDR5)
+            if (cpu.memoryConfig?.Type == DRAM.MemType.DDR5)
             {
                 AddHeading("SMBUS Memory Modules");
                 AddLine();
 
-                Dictionary<byte, Ddr5SpdInfo> results = CpuSingleton.Instance.memoryConfig.ReadAndDecodeAll();
-
-                foreach (KeyValuePair<byte, Ddr5SpdInfo> kvp in results ?? new Dictionary<byte, Ddr5SpdInfo>())
+                try
                 {
-                    AddLine(string.Format("DIMM at I2C address 0x{0:X2}", kvp.Key));
-                    AddLine(kvp.Value.ToString());
+                    Dictionary<byte, Ddr5SpdInfo> results = CpuSingleton.Instance.memoryConfig.ReadAndDecodeAll();
+
+                    foreach (KeyValuePair<byte, Ddr5SpdInfo> kvp in results ?? new Dictionary<byte, Ddr5SpdInfo>())
+                    {
+                        AddLine(string.Format("DIMM at I2C address 0x{0:X2}", kvp.Key));
+                        AddLine(kvp.Value.ToString());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AddLine("<FAILED>");
+                    AddLine(ex.Message);
                 }
                 AddLine();
             }

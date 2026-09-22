@@ -1686,7 +1686,16 @@ namespace ZenTimings
         private static void OpenUrl(string url)
         {
             if (string.IsNullOrEmpty(url)) return;
-            using (Process.Start(url)) { }
+
+            try
+            {
+                using (Process.Start(url)) { }
+            }
+            catch (Exception ex)
+            {
+                // e.g. no default browser associated
+                MessageBox.Show($"Could not open {url} {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ExportToolStripMenuItem_Click(object sender, RoutedEventArgs e)
@@ -1697,9 +1706,7 @@ namespace ZenTimings
 
         private void MotherboardLinkButton_Click(object sender, RoutedEventArgs e)
         {
-            var link = VendorUtils.GetMotherboardLink(cpu.systemInfo);
-            if (link != null && link.Length > 0)
-                Process.Start(link);
+            OpenUrl(VendorUtils.GetMotherboardLink(cpu.systemInfo));
         }
 
         private string GetAgesaVersion()
