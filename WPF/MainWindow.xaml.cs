@@ -279,6 +279,9 @@ namespace ZenTimings
                     }
                     StartAutoRefresh();
                 }
+                SetWindowTitle();
+                UpdateLiveSnapshotIndicator();
+                RestoreWindowPosition();
             }
             catch (Exception ex)
             {
@@ -1303,8 +1306,6 @@ namespace ZenTimings
                 return;
             }
 
-            RestoreWindowPosition();
-            SetWindowTitle();
             //ShowWindow();
 
             if (settings.StartMinimized)
@@ -1348,7 +1349,7 @@ namespace ZenTimings
             InitLiveSnapshot();
 
             if (settings.AdvancedMode && settings.AutoOpenTelemetry)
-                OpenSensorsWindow(settings.StartMinimized);
+                OpenSensorsWindowAfterFirstRender();
 
             //new Thread(() =>
             //{
@@ -1523,7 +1524,46 @@ namespace ZenTimings
             }
         }
 
-        private void OpenSensorsWindow(bool startMinimized = false)
+        private bool hasRendered;
+
+        protected override void OnContentRendered(EventArgs e)
+        {
+            base.OnContentRendered(e);
+            hasRendered = true;
+        }
+
+        // Opens the sensors window at startup once this window is on screen, so the two don't draw
+        // over each other while both are still loading. This window keeps the focus.
+        private void OpenSensorsWindowAfterFirstRender()
+        {
+            if (WindowState == WindowState.Minimized)
+            {
+                // A minimized window isn't rendered until it is restored.
+                OpenSensorsWindow(true);
+                return;
+            }
+
+            Action open = () => Dispatcher.BeginInvoke(
+                new Action(() => OpenSensorsWindow(settings.StartMinimized, false)),
+                DispatcherPriority.ApplicationIdle);
+
+            // Already rendered when a dialog shown from Loaded (the changelog) ran its own message loop.
+            if (hasRendered)
+            {
+                open();
+                return;
+            }
+
+            EventHandler onRendered = null;
+            onRendered = (s, e) =>
+            {
+                ContentRendered -= onRendered;
+                open();
+            };
+            ContentRendered += onRendered;
+        }
+
+        private void OpenSensorsWindow(bool startMinimized = false, bool activate = true)
         {
             try
             {
@@ -1555,7 +1595,8 @@ namespace ZenTimings
                         Height = telemetryWindowHeight,
                         WindowStartupLocation = location,
                         Top = telemetryWindowTop,
-                        Left = telemetryWindowLeft
+                        Left = telemetryWindowLeft,
+                        ShowActivated = activate
                     };
                     sensorsWindw.Show();
 
@@ -1696,6 +1737,13 @@ namespace ZenTimings
                    left + width <= virtualRight && top + height <= virtualBottom;
         }
 
+        // The smallest part of the window, from its top-left corner, that must be on a screen for a
+        // saved position to be used: enough of the title bar to grab it.
+        private const double MinVisibleWindowWidth = 200;
+        private const double MinVisibleWindowHeight = 40;
+
+        // Called before the window is first shown. Its size isn't known yet (SizeToContent), so only
+        // its top-left corner has to be on a screen.
         private void RestoreWindowPosition()
         {
             if (settings.SaveWindowPosition)
@@ -1705,7 +1753,7 @@ namespace ZenTimings
                     return;
                 }
 
-                if (IsPositionOnScreen(settings.WindowLeft, settings.WindowTop, Width, Height))
+                if (IsPositionOnScreen(settings.WindowLeft, settings.WindowTop, MinVisibleWindowWidth, MinVisibleWindowHeight))
                 {
                     WindowStartupLocation = WindowStartupLocation.Manual;
                     Left = settings.WindowLeft;
