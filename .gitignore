@@ -355,3 +355,7 @@ Dotfuscated/
 WPF/Resources/PawnIO/PawnIO_setup.exe
 
 *.bak
+
+# ZenTimings crash logs
+crash.log
+crash.old.log

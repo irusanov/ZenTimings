@@ -329,10 +329,11 @@ namespace ZenTimings.Windows
 
             // Total Power
             // HwInfo seems to set the telemetry to report total power mode on first launch
-            if (!(pmicData.TelemetryReportsPower && pmicData.TelemetryReportsTotalPower))
-            {
-                Ddr5PmicReader.SetTotalPowerMode(pmicData.I2cAddress, true);
-            }
+            // Disable for now, current mode has been fixed and should be close enough. Hwinfo will still switch it.
+            //if (!(pmicData.TelemetryReportsPower && pmicData.TelemetryReportsTotalPower))
+            //{
+            //    Ddr5PmicReader.SetTotalPowerMode(pmicData.I2cAddress, true);
+            //}
 
             AddPmicItem("Total Power", pmicData.TotalW, "W");
 
