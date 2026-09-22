@@ -13,10 +13,17 @@ namespace ZenTimings.Windows
     /// </summary>
     internal static class AllDimmsCapture
     {
+        internal sealed class ModuleInfo
+        {
+            public string LogoResourceName;
+            public string VendorLine;
+            public string DetailLine;
+        }
+
         internal sealed class Channel
         {
             //public string Header;
-            public List<string> ModuleLines;
+            public List<ModuleInfo> Modules;
             public BaseDramTimings Timings;
             public Ddr5PmicData PmicData;
         }
@@ -47,7 +54,7 @@ namespace ZenTimings.Windows
                 result.Channels.Add(new Channel
                 {
                     //Header = string.Join(" / ", channelModules.Select(m => m.Module.Slot)),
-                    ModuleLines = channelModules.Select(m => Describe(m.Module, m.Spd)).ToList(),
+                    Modules = channelModules.Select(m => Describe(m.Module, m.Spd)).ToList(),
                     Timings = timings,
                     PmicData = channelPmic,
                 });
@@ -56,21 +63,34 @@ namespace ZenTimings.Windows
             return result;
         }
 
-        private static string Describe(MemoryModule module, Ddr5SpdInfo spd)
+        private static ModuleInfo Describe(MemoryModule module, Ddr5SpdInfo spd)
         {
-            var parts = new List<string> { module.ToString() };
+            string vendor = !string.IsNullOrEmpty(module.Manufacturer) ? module.Manufacturer : null;
+            string vendorAndPart = string.Join(" ", new[] { vendor, module.PartNumber }.Where(s => !string.IsNullOrEmpty(s)));
+
+            string vendorLine;
+            if (string.IsNullOrEmpty(module.Slot))
+                vendorLine = vendorAndPart;
+            else if (string.IsNullOrEmpty(vendorAndPart))
+                vendorLine = module.Slot;
+            else
+                vendorLine = $"{module.Slot}: {vendorAndPart}";
+
+            var detailParts = new List<string>();
 
             if (!string.IsNullOrEmpty(spd?.DramManufacturer))
-                parts.Add($"{spd.DramManufacturer} {VendorUtils.GetDramDieName(spd.DramManufacturer, spd.DramStepping)}".Trim());
+                detailParts.Add($"{spd.DramManufacturer} {VendorUtils.GetDramDieName(spd.DramManufacturer, spd.DramStepping)}".Trim());
 
             Ddr5PmicData pmic = spd?.PmicData;
             if (pmic != null && pmic.IsValid)
-            {
-                parts.Add($"PMIC {pmic.VendorName} rev {pmic.RevisionMajor}.{pmic.RevisionMinor}");
-            }
+                detailParts.Add($"PMIC {pmic.VendorName} rev {pmic.RevisionMajor}.{pmic.RevisionMinor}");
 
-            // Non-breaking inside a part, so a wrapped line only breaks between parts.
-            return string.Join("  ·  ", parts.Select(part => part.Replace(' ', '\u00A0')));
+            return new ModuleInfo
+            {
+                LogoResourceName = VendorUtils.GetMemoryModuleLogo(module),
+                VendorLine = vendorLine.Replace(' ', ' '),
+                DetailLine = string.Join("  ·  ", detailParts.Select(part => part.Replace(' ', ' '))),
+            };
         }
 
         private static Ddr5PmicData ChannelPmicData(IEnumerable<Ddr5PmicData> pmics)
