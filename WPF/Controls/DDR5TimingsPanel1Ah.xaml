@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="ZenTimings.Controls.DDR5TimingsPanel1Ah"
+<UserControl x:Class="ZenTimings.Controls.DDR5TimingsPanel1Ah"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -53,7 +53,9 @@
                     <local:TimingRow Label="CA ODT A" Value="{Binding ApobData.CaOdtA, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
                     <local:TimingRow Label="CK ODT A" Value="{Binding ApobData.CkOdtA, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
                     <local:TimingRow Label="CS ODT A" Value="{Binding ApobData.CsOdtA, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
-                    <local:TimingRow Label="tCCDL" Value="{Binding CcdlData.Tccdl, FallbackValue='N/A', Mode=OneWay}" />
+                    <local:TimingRow Label="tCCDL"
+                                     Value="{Binding CcdlData.Tccdl, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToNA}}"
+                                     IsEnabled="{Binding CcdlData.Tccdl, Mode=OneWay, Converter={StaticResource FloatToBool}, FallbackValue=False}" />
                 </StackPanel>
                 <!--TextBlock Text="tXP"
                      TextAlignment="Right"
@@ -101,7 +103,9 @@
                     <local:TimingRow Label="CA ODT B" Value="{Binding ApobData.CaOdtB, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
                     <local:TimingRow Label="CK ODT B" Value="{Binding ApobData.CkOdtB, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
                     <local:TimingRow Label="CS ODT B" Value="{Binding ApobData.CsOdtB, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
-                    <local:TimingRow Label="tCCDL WR" Value="{Binding CcdlData.Tccdlwr, FallbackValue='N/A', Mode=OneWay}" />
+                    <local:TimingRow Label="tCCDL WR"
+                                     Value="{Binding CcdlData.Tccdlwr, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToNA}}"
+                                     IsEnabled="{Binding CcdlData.Tccdlwr, Mode=OneWay, Converter={StaticResource FloatToBool}, FallbackValue=False}" />
                 </StackPanel>
             </StackPanel>
 
@@ -135,7 +139,9 @@
                 <local:TimingRow Label="RttPark" Value="{Binding ApobData.RttParkP0, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
                 <local:TimingRow Label="RttParkDqs" Value="{Binding ApobData.RttParkDqsP0, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
                 <local:TimingRow Label="Nitro" Value="{Binding Timings.Nitro, FallbackValue='N/A'}" LabelToolTip="RxData/TxData/ControlLine" />
-                <local:TimingRow Label="tCCDL WR2" Value="{Binding CcdlData.Tccdlwr2, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tCCDL WR2"
+                                 Value="{Binding CcdlData.Tccdlwr2, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToNA}}"
+                                 IsEnabled="{Binding CcdlData.Tccdlwr2, Mode=OneWay, Converter={StaticResource FloatToBool}, FallbackValue=False}" />
             </StackPanel>
         </StackPanel>
     </Border>

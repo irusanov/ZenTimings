@@ -8,7 +8,7 @@ namespace ZenTimings.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value != null && (float)value == 0)
+            if (value != null && System.Convert.ToDouble(value, CultureInfo.InvariantCulture) == 0)
                 return "N/A";
             return value;
         }
