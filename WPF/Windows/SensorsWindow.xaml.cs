@@ -41,6 +41,136 @@ namespace ZenTimings.Windows
         }
     }
 
+    // Drives the shared section GroupBox's visibility: a module section (HasModuleInfo) is always
+    // shown; a chip group section is shown only once it has at least one telemetry item.
+    public class SectionVisibilityConverter : System.Windows.Data.IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            bool hasModuleInfo = values.Length > 0 && values[0] is bool moduleInfo && moduleInfo;
+            int telemetryCount = values.Length > 1 && values[1] is int count ? count : 0;
+            return hasModuleInfo || telemetryCount > 0 ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
+    // One-way: a shared column-width value (pixels) -> the fixed-pixel GridLength used by the single,
+    // always-visible column-header row above the sections (see SensorsWindow.xaml). That row's
+    // GridSplitters write back through this same binding (TwoWay), so a drag there updates the shared
+    // value directly.
+    public class PixelToGridLengthConverter : System.Windows.Data.IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            double pixels = value is double d ? d : 100;
+            return new GridLength(pixels, GridUnitType.Pixel);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return value is GridLength length ? length.Value : System.Windows.Data.Binding.DoNothing;
+        }
+    }
+
+    // One-way: a shared column-width value (pixels) -> the fixed-pixel DataGridLength each section's
+    // Sensor DataGrid columns use. Those columns never resize themselves (their header row is hidden -
+    // the single shared header row above the sections is what the user actually drags), so this only
+    // ever needs to read the shared value, never write it back.
+    public class PixelToDataGridLengthConverter : System.Windows.Data.IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            double pixels = value is double d ? d : 100;
+            return new System.Windows.Controls.DataGridLength(pixels, System.Windows.Controls.DataGridLengthUnitType.Pixel);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
+    // Sums the 5 shared column widths into the total width of a section's Sensor DataGrid (its columns
+    // sit edge-to-edge with no gaps), so the module-info block can be bound to that same total width and
+    // end exactly where the last column does. Only a column resize (dragging a splitter) changes this -
+    // not a window resize, since the widths behind it are fixed pixel values.
+    public class TotalColumnWidthConverter : System.Windows.Data.IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            double total = 0;
+            foreach (object value in values)
+            {
+                if (value is double pixels)
+                    total += pixels;
+            }
+            return total;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
+    // Shared column widths (pixels) for the single header row and every section's Sensor DataGrid.
+    // Declared once as a Window.Resources instance (x:Key="ColumnLayout") and referenced from XAML via
+    // Binding.Source={StaticResource ColumnLayout} - NOT ElementName. DataGridColumn is not part of the
+    // visual/logical tree, so it cannot resolve an ElementName binding reaching outside its DataTemplate;
+    // StaticResource lookup, by contrast, walks the resource-dictionary chain and works from anywhere in
+    // the window, including inside a nested DataTemplate. Plain fixed-pixel values, not "*" star sizing,
+    // so a manual resize sticks and does not get rescaled when the window itself is resized; dragging one
+    // of the header row's GridSplitters is the only thing that changes these.
+    public class ColumnLayout : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private double sensorColumnWidth = 120.0;
+        private double currentColumnWidth = 64.0;
+        private double minColumnWidth = 54.0;
+        private double maxColumnWidth = 54.0;
+        private double averageColumnWidth = 64.0;
+
+        public double SensorColumnWidth
+        {
+            get => sensorColumnWidth;
+            set { sensorColumnWidth = value; OnPropertyChanged(nameof(SensorColumnWidth)); }
+        }
+
+        public double CurrentColumnWidth
+        {
+            get => currentColumnWidth;
+            set { currentColumnWidth = value; OnPropertyChanged(nameof(CurrentColumnWidth)); }
+        }
+
+        public double MinColumnWidth
+        {
+            get => minColumnWidth;
+            set { minColumnWidth = value; OnPropertyChanged(nameof(MinColumnWidth)); }
+        }
+
+        public double MaxColumnWidth
+        {
+            get => maxColumnWidth;
+            set { maxColumnWidth = value; OnPropertyChanged(nameof(MaxColumnWidth)); }
+        }
+
+        public double AverageColumnWidth
+        {
+            get => averageColumnWidth;
+            set { averageColumnWidth = value; OnPropertyChanged(nameof(AverageColumnWidth)); }
+        }
+
+        private void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
     public partial class SensorsWindow : ThemedAdonisWindow
     {
         private readonly DispatcherTimer updateTimer;
@@ -54,6 +184,10 @@ namespace ZenTimings.Windows
         // Set in Window_Closing so async continuations don't touch the UI or restart timers after close.
         private bool _isClosed;
 
+        // The single shared column-width object declared as a Window resource (see SensorsWindow.xaml);
+        // referenced from code-behind to load/save it against settings_sensors.xml.
+        private ColumnLayout Columns => (ColumnLayout)Resources["ColumnLayout"];
+
         public SensorsWindow()
         {
             InitializeComponent();
@@ -64,6 +198,106 @@ namespace ZenTimings.Windows
 
             _uptimeStatusTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
             _uptimeStatusTimer.Tick += UptimeTimer_Tick;
+
+            SensorSettings sensorSettings = SensorSettings.Instance;
+            Columns.SensorColumnWidth = sensorSettings.SensorColumnWidth;
+            Columns.CurrentColumnWidth = sensorSettings.CurrentColumnWidth;
+            Columns.MinColumnWidth = sensorSettings.MinColumnWidth;
+            Columns.MaxColumnWidth = sensorSettings.MaxColumnWidth;
+            Columns.AverageColumnWidth = sensorSettings.AverageColumnWidth;
+        }
+
+        // Double-clicking a header divider auto-fits the column to its left to the widest currently
+        // displayed content in that column, across every section - like double-clicking a column border
+        // in Windows Explorer. Each GridSplitter's Tag (set in XAML) says which shared column it controls.
+        //
+        // Hooked to PreviewMouseLeftButtonDown rather than the more obvious MouseDoubleClick: GridSplitter
+        // derives from Thumb, which captures the mouse and starts its own drag handling on
+        // MouseLeftButtonDown without invoking Control's base handling, so Control.MouseDoubleClick never
+        // actually fires on it. MouseButtonEventArgs.ClickCount is set by the mouse device itself before
+        // routing, independent of that, so checking it here works reliably.
+        private void ColumnSplitter_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount != 2)
+                return;
+
+            if (!(sender is System.Windows.Controls.GridSplitter splitter) || !(splitter.Tag is string column))
+                return;
+
+            var typeface = new System.Windows.Media.Typeface(FontFamily, FontStyle, FontWeight, FontStretch);
+            double dpi = System.Windows.Media.VisualTreeHelper.GetDpi(this).PixelsPerDip;
+
+            double Measure(string text)
+            {
+                if (string.IsNullOrEmpty(text))
+                    return 0;
+
+                var formatted = new System.Windows.Media.FormattedText(
+                    text,
+                    System.Globalization.CultureInfo.CurrentCulture,
+                    FlowDirection.LeftToRight,
+                    typeface,
+                    11.0,
+                    System.Windows.Media.Brushes.Black,
+                    dpi);
+
+                return formatted.WidthIncludingTrailingWhitespace;
+            }
+
+            IEnumerable<TelemetryItemViewModel> AllTelemetryItems()
+            {
+                foreach (ModuleViewModel module in moduleViewModels)
+                    foreach (TelemetryItemViewModel item in module.TelemetryItems)
+                        yield return item;
+
+                foreach (SensorGroupViewModel group in sensorGroupViewModels)
+                    foreach (TelemetryItemViewModel item in group.TelemetryItems)
+                        yield return item;
+            }
+
+            double contentWidth;
+            double headerWidth;
+            double minWidth;
+
+            switch (column)
+            {
+                case "Sensor":
+                    // Icon (11) + its right margin (4) + the cell text's own padding (3 left, 3 right)
+                    contentWidth = AllTelemetryItems().Select(i => Measure(i.Name)).DefaultIfEmpty(0).Max() + 11 + 4 + 6;
+                    headerWidth = Measure("Sensor") + 16;
+                    minWidth = 60;
+                    break;
+                case "Current":
+                    contentWidth = AllTelemetryItems().Select(i => Measure(i.Current)).DefaultIfEmpty(0).Max() + 6;
+                    headerWidth = Measure("Current") + 16;
+                    minWidth = 40;
+                    break;
+                case "Min":
+                    contentWidth = AllTelemetryItems().Select(i => Measure(i.Min)).DefaultIfEmpty(0).Max() + 6;
+                    headerWidth = Measure("Min") + 16;
+                    minWidth = 40;
+                    break;
+                case "Max":
+                    contentWidth = AllTelemetryItems().Select(i => Measure(i.Max)).DefaultIfEmpty(0).Max() + 6;
+                    headerWidth = Measure("Max") + 16;
+                    minWidth = 40;
+                    break;
+                default:
+                    return;
+            }
+
+            // +8px buffer for DataGridCell's own default padding/chrome, which can't be measured directly here.
+            double idealWidth = Math.Max(Math.Max(contentWidth + 8, headerWidth), minWidth);
+
+            switch (column)
+            {
+                case "Sensor": Columns.SensorColumnWidth = idealWidth; break;
+                case "Current": Columns.CurrentColumnWidth = idealWidth; break;
+                case "Min": Columns.MinColumnWidth = idealWidth; break;
+                case "Max": Columns.MaxColumnWidth = idealWidth; break;
+            }
+
+            e.Handled = true;
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
@@ -329,10 +563,11 @@ namespace ZenTimings.Windows
 
             // Total Power
             // HwInfo seems to set the telemetry to report total power mode on first launch
-            if (!(pmicData.TelemetryReportsPower && pmicData.TelemetryReportsTotalPower))
-            {
-                Ddr5PmicReader.SetTotalPowerMode(pmicData.I2cAddress, true);
-            }
+            // Disable for now, current mode has been fixed and should be close enough. Hwinfo will still switch it.
+            //if (!(pmicData.TelemetryReportsPower && pmicData.TelemetryReportsTotalPower))
+            //{
+            //    Ddr5PmicReader.SetTotalPowerMode(pmicData.I2cAddress, true);
+            //}
 
             AddPmicItem("Total Power", pmicData.TotalW, "W");
 
@@ -1032,6 +1267,15 @@ namespace ZenTimings.Windows
             sensorTelemetryLinks.Clear();
             moduleViewModels.Clear();
             sensorGroupViewModels.Clear();
+
+            // Save column widths, so a manual resize survives the next time this window is opened
+            SensorSettings sensorSettings = SensorSettings.Instance;
+            sensorSettings.SensorColumnWidth = Columns.SensorColumnWidth;
+            sensorSettings.CurrentColumnWidth = Columns.CurrentColumnWidth;
+            sensorSettings.MinColumnWidth = Columns.MinColumnWidth;
+            sensorSettings.MaxColumnWidth = Columns.MaxColumnWidth;
+            sensorSettings.AverageColumnWidth = Columns.AverageColumnWidth;
+            sensorSettings.Save();
 
             AppSettings appSettings = AppSettings.Instance;
 

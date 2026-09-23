@@ -37,7 +37,7 @@ namespace ZenTimings.Windows
         {
             InitializeComponent();
             SystemInfo si = CpuSingleton.Instance.systemInfo;
-            AodData aodData = CpuSingleton.Instance.info.aod.Table.Data;
+            AodData aodData = CpuSingleton.Instance.info.aod?.Table?.Data;
             Type type = si.GetType();
             PropertyInfo[] properties = type.GetProperties();
             List<GridItem> items;

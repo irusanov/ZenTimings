@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 namespace ZenTimings.ViewModels
 {
+    // Base for every section shown in the Sensors window
     public class SensorGroupViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
@@ -24,6 +25,13 @@ namespace ZenTimings.ViewModels
         }
 
         public string HeaderDisplay => HiddenCount > 0 ? $"{Header} ({HiddenCount} hidden)" : Header;
+
+        public virtual bool HasTelemetry { get; set; } = true;
+
+        public bool HasNoTelemetry => !HasTelemetry;
+
+        // Drives the module info block in the shared section template. Only ModuleViewModel sets this true.
+        public virtual bool HasModuleInfo => false;
 
         public ObservableCollection<TelemetryItemViewModel> TelemetryItems { get; } = new ObservableCollection<TelemetryItemViewModel>();
 

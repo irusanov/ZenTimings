@@ -279,6 +279,9 @@ namespace ZenTimings
                     }
                     StartAutoRefresh();
                 }
+                SetWindowTitle();
+                UpdateLiveSnapshotIndicator();
+                RestoreWindowPosition();
             }
             catch (Exception ex)
             {
@@ -467,7 +470,14 @@ namespace ZenTimings
             // else, default = show context menu
         }
 
-        private bool cleanedUp;
+        // Read by the refresh task on a background thread.
+        private volatile bool cleanedUp;
+
+        // Set while the refresh task is reading the hardware (not while it updates the UI).
+        private int refreshReadingHardware;
+        // Longer than the refresh's own longest wait (the SMBus mutex, 5 s), so a refresh that got
+        // the bus always finishes before the core is disposed.
+        private const int CleanupRefreshWaitMs = 6000;
 
         private void Cleanup()
         {
@@ -475,24 +485,52 @@ namespace ZenTimings
             if (cleanedUp)
                 return;
             cleanedUp = true;
+            // Publish cleanedUp before reading the refresh flag (the task sets its flag, then reads
+            // cleanedUp), so one of the two always sees the other.
+            Thread.MemoryBarrier();
 
             // Nothing may tick into the core once it is disposed.
             StopAutoRefresh();
 
+            // A refresh that already started keeps reading the hardware on a background thread. Let it
+            // finish before the core goes away; it doesn't need the UI thread for that part.
+            for (int waited = 0; Volatile.Read(ref refreshReadingHardware) != 0 && waited < CleanupRefreshWaitMs; waited += RefreshWaitStepMs)
+                Thread.Sleep(RefreshWaitStepMs);
+
+            // Still reading: disposing the core or removing the driver under it could fault. The
+            // process is exiting anyway, and Windows releases what it holds.
+            bool refreshStillRunning = Volatile.Read(ref refreshReadingHardware) != 0;
+
+            // Each step on its own, so one failure doesn't skip the rest (or the shutdown after it).
             foreach (IPlugin plugin in plugins)
-                plugin?.Close();
+                TryCleanup(() => plugin?.Close());
 
-            sensorsWindw?.Close();
-            optionsWnd?.Close();
-            exportWnd?.Close();
+            TryCleanup(() => sensorsWindw?.Close());
+            TryCleanup(() => optionsWnd?.Close());
+            TryCleanup(() => exportWnd?.Close());
+            TryCleanup(() => _notifyIcon?.Dispose());
 
-            _notifyIcon?.Dispose();
-            AsusWmi?.Dispose();
-            cpu?.Dispose();
+            if (refreshStillRunning)
+                return;
+
+            TryCleanup(() => AsusWmi?.Dispose());
+            TryCleanup(() => cpu?.Dispose());
 
             if (settings.AutoUninstallDriver)
             {
-                App.CleanupDriverIfLastInstance((NotificationLevel)settings.AutoUninstallDriverNotificationLevel);
+                TryCleanup(() => App.CleanupDriverIfLastInstance((NotificationLevel)settings.AutoUninstallDriverNotificationLevel));
+            }
+        }
+
+        private static void TryCleanup(Action step)
+        {
+            try
+            {
+                step();
+            }
+            catch (Exception ex)
+            {
+                CrashLog.Write("Cleanup", ex);
             }
         }
 
@@ -504,9 +542,15 @@ namespace ZenTimings
                 return;
             }
 
-            if (save) settings.Save();
-            Cleanup();
-            Application.Current?.Shutdown();
+            try
+            {
+                if (save) settings.Save();
+                Cleanup();
+            }
+            finally
+            {
+                Application.Current?.Shutdown();
+            }
         }
 
         private BiosACPIFunction GetFunctionByIdString(string name)
@@ -950,9 +994,18 @@ namespace ZenTimings
             // Run refresh operation in a new task
             Task.Run(() =>
             {
+                // isRefreshing stays set until the UI update queued below has run.
+                bool uiUpdateQueued = false;
                 try
                 {
                     Thread.CurrentThread.IsBackground = true;
+
+                    // Flag first, then check: Cleanup sets cleanedUp first, then waits on the flag, so
+                    // either this sees cleanedUp or Cleanup sees the flag.
+                    Interlocked.Exchange(ref refreshReadingHardware, 1);
+
+                    if (cleanedUp)
+                        return;
 
                     var hasAsusDramVoltage = false;
                     float asusDramVoltage = 0;
@@ -974,47 +1027,67 @@ namespace ZenTimings
                         voltagesUpdated = cpu.memoryConfig.RefreshTelemetry(settings.AutoRefreshInterval);
                     }
 
-                    Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() =>
+                    Interlocked.Exchange(ref refreshReadingHardware, 0);
+
+                    if (cleanedUp)
+                        return;
+
+                    Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, new Action(() =>
                     {
-                        var newMclk = cpu.powerTable.MCLK;
-
-                        if (newMclk != lastMclk)
+                        try
                         {
-                            var modules = cpu.memoryConfig.Modules;
-                            int selectedIndex = comboBoxPartNumber?.SelectedIndex ?? 0;
-                            MemoryModule module = modules?.Count > 0 ? modules[selectedIndex] : null;
-                            mainViewModel.Timings = ReadTimings(module?.DctOffset ?? 0);
-                            //Dictionary<byte, Ddr5SpdInfo> results = Ddr5SpdDecoder.ReadAndDecodeAll(CpuSingleton.Instance.SmbusPiix4);
+                            if (cleanedUp)
+                                return;
+
+                            var newMclk = cpu.powerTable.MCLK;
+
+                            if (newMclk != lastMclk)
+                            {
+                                var modules = cpu.memoryConfig.Modules;
+                                int selectedIndex = comboBoxPartNumber?.SelectedIndex ?? 0;
+                                MemoryModule module = modules?.Count > 0 ? modules[selectedIndex] : null;
+                                mainViewModel.Timings = ReadTimings(module?.DctOffset ?? 0);
+                                //Dictionary<byte, Ddr5SpdInfo> results = Ddr5SpdDecoder.ReadAndDecodeAll(CpuSingleton.Instance.SmbusPiix4);
+                            }
+
+                            if (voltagesUpdated)
+                                mainViewModel.PmicData = ModulePmicData(comboBoxPartNumber?.SelectedIndex ?? 0);
+
+                            if (cpu.memoryConfig.Type == MemType.DDR4 || cpu.memoryConfig.Type == MemType.LPDDR4)
+                            {
+                                if (hasAsusDramVoltage)
+                                {
+                                    (timingsPanel as DDR4TimingsPanel).rowMemVddio.Value = $"{asusDramVoltage:F4}V";
+                                    (timingsPanel as DDR4TimingsPanel).rowMemVddio.IsEnabled = true;
+                                }
+                                else if (hasSuperIoDramVoltage)
+                                {
+                                    (timingsPanel as DDR4TimingsPanel).rowMemVddio.Value = $"{superIoDramVoltage:F4}V";
+                                }
+                                else if (!ddr4BmcVddioValid)
+                                {
+                                    (timingsPanel as DDR4TimingsPanel).rowMemVddio.IsEnabled = false;
+                                }
+                            }
+
+                            mainViewModel.RefreshSensors();
+
+                            lastMclk = newMclk;
+
+                            ReadSVI();
+                            // SetFrequencyString();
+                            // RefreshSensors();
                         }
-
-                        if (voltagesUpdated)
-                            mainViewModel.PmicData = ModulePmicData(comboBoxPartNumber?.SelectedIndex ?? 0);
-
-                        if (cpu.memoryConfig.Type == MemType.DDR4 || cpu.memoryConfig.Type == MemType.LPDDR4)
+                        catch (Exception ex)
                         {
-                            if (hasAsusDramVoltage)
-                            {
-                                (timingsPanel as DDR4TimingsPanel).rowMemVddio.Value = $"{asusDramVoltage:F4}V";
-                                (timingsPanel as DDR4TimingsPanel).rowMemVddio.IsEnabled = true;
-                            }
-                            else if (hasSuperIoDramVoltage)
-                            {
-                                (timingsPanel as DDR4TimingsPanel).rowMemVddio.Value = $"{superIoDramVoltage:F4}V";
-                            }
-                            else if (!ddr4BmcVddioValid)
-                            {
-                                (timingsPanel as DDR4TimingsPanel).rowMemVddio.IsEnabled = false;
-                            }
+                            Debug.WriteLine(ex.Message);
                         }
-
-                        mainViewModel.RefreshSensors();
-
-                        lastMclk = newMclk;
-
-                        ReadSVI();
-                        // SetFrequencyString();
-                        // RefreshSensors();
+                        finally
+                        {
+                            Interlocked.Exchange(ref isRefreshing, 0);
+                        }
                     }));
+                    uiUpdateQueued = true;
                 }
                 catch (Exception ex)
                 {
@@ -1022,7 +1095,9 @@ namespace ZenTimings
                 }
                 finally
                 {
-                    Interlocked.Exchange(ref isRefreshing, 0);
+                    Interlocked.Exchange(ref refreshReadingHardware, 0);
+                    if (!uiUpdateQueued)
+                        Interlocked.Exchange(ref isRefreshing, 0);
                 }
             });
         }
@@ -1303,8 +1378,6 @@ namespace ZenTimings
                 return;
             }
 
-            RestoreWindowPosition();
-            SetWindowTitle();
             //ShowWindow();
 
             if (settings.StartMinimized)
@@ -1348,7 +1421,7 @@ namespace ZenTimings
             InitLiveSnapshot();
 
             if (settings.AdvancedMode && settings.AutoOpenTelemetry)
-                OpenSensorsWindow(settings.StartMinimized);
+                OpenSensorsWindowAfterFirstRender();
 
             //new Thread(() =>
             //{
@@ -1523,7 +1596,46 @@ namespace ZenTimings
             }
         }
 
-        private void OpenSensorsWindow(bool startMinimized = false)
+        private bool hasRendered;
+
+        protected override void OnContentRendered(EventArgs e)
+        {
+            base.OnContentRendered(e);
+            hasRendered = true;
+        }
+
+        // Opens the sensors window at startup once this window is on screen, so the two don't draw
+        // over each other while both are still loading. This window keeps the focus.
+        private void OpenSensorsWindowAfterFirstRender()
+        {
+            if (WindowState == WindowState.Minimized)
+            {
+                // A minimized window isn't rendered until it is restored.
+                OpenSensorsWindow(true);
+                return;
+            }
+
+            Action open = () => Dispatcher.BeginInvoke(
+                new Action(() => OpenSensorsWindow(settings.StartMinimized, false)),
+                DispatcherPriority.ApplicationIdle);
+
+            // Already rendered when a dialog shown from Loaded (the changelog) ran its own message loop.
+            if (hasRendered)
+            {
+                open();
+                return;
+            }
+
+            EventHandler onRendered = null;
+            onRendered = (s, e) =>
+            {
+                ContentRendered -= onRendered;
+                open();
+            };
+            ContentRendered += onRendered;
+        }
+
+        private void OpenSensorsWindow(bool startMinimized = false, bool activate = true)
         {
             try
             {
@@ -1555,7 +1667,8 @@ namespace ZenTimings
                         Height = telemetryWindowHeight,
                         WindowStartupLocation = location,
                         Top = telemetryWindowTop,
-                        Left = telemetryWindowLeft
+                        Left = telemetryWindowLeft,
+                        ShowActivated = activate
                     };
                     sensorsWindw.Show();
 
@@ -1645,7 +1758,16 @@ namespace ZenTimings
         private static void OpenUrl(string url)
         {
             if (string.IsNullOrEmpty(url)) return;
-            using (Process.Start(url)) { }
+
+            try
+            {
+                using (Process.Start(url)) { }
+            }
+            catch (Exception ex)
+            {
+                // e.g. no default browser associated
+                MessageBox.Show($"Could not open {url} {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ExportToolStripMenuItem_Click(object sender, RoutedEventArgs e)
@@ -1656,9 +1778,7 @@ namespace ZenTimings
 
         private void MotherboardLinkButton_Click(object sender, RoutedEventArgs e)
         {
-            var link = VendorUtils.GetMotherboardLink(cpu.systemInfo);
-            if (link != null && link.Length > 0)
-                Process.Start(link);
+            OpenUrl(VendorUtils.GetMotherboardLink(cpu.systemInfo));
         }
 
         private string GetAgesaVersion()
@@ -1696,6 +1816,13 @@ namespace ZenTimings
                    left + width <= virtualRight && top + height <= virtualBottom;
         }
 
+        // The smallest part of the window, from its top-left corner, that must be on a screen for a
+        // saved position to be used: enough of the title bar to grab it.
+        private const double MinVisibleWindowWidth = 200;
+        private const double MinVisibleWindowHeight = 40;
+
+        // Called before the window is first shown. Its size isn't known yet (SizeToContent), so only
+        // its top-left corner has to be on a screen.
         private void RestoreWindowPosition()
         {
             if (settings.SaveWindowPosition)
@@ -1705,7 +1832,7 @@ namespace ZenTimings
                     return;
                 }
 
-                if (IsPositionOnScreen(settings.WindowLeft, settings.WindowTop, Width, Height))
+                if (IsPositionOnScreen(settings.WindowLeft, settings.WindowTop, MinVisibleWindowWidth, MinVisibleWindowHeight))
                 {
                     WindowStartupLocation = WindowStartupLocation.Manual;
                     Left = settings.WindowLeft;

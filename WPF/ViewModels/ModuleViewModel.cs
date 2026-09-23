@@ -1,14 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-
 namespace ZenTimings.ViewModels
 {
-    public class ModuleViewModel : INotifyPropertyChanged
+    // A memory module's section in the Sensors window. Shares the header/telemetry-grid shape of
+    // SensorGroupViewModel and adds the module-info block (vendor, capacity, rank, DRAM IC, PMIC, logo).
+    public class ModuleViewModel : SensorGroupViewModel
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private string header;
         private string partNumber;
         private string manufacturer;
         private string capacity;
@@ -20,21 +15,6 @@ namespace ZenTimings.ViewModels
         private bool hasTelemetry;
         private bool hasLogo;
         private string logoResourceName;
-        private int hiddenCount;
-
-        public string Header
-        {
-            get => header;
-            set { header = value; OnPropertyChanged(nameof(Header)); OnPropertyChanged(nameof(HeaderDisplay)); }
-        }
-
-        public int HiddenCount
-        {
-            get => hiddenCount;
-            set { hiddenCount = value; OnPropertyChanged(nameof(HiddenCount)); OnPropertyChanged(nameof(HeaderDisplay)); }
-        }
-
-        public string HeaderDisplay => HiddenCount > 0 ? $"{Header} ({HiddenCount} hidden)" : Header;
 
         public string PartNumber
         {
@@ -84,7 +64,7 @@ namespace ZenTimings.ViewModels
             set { hasPmic = value; OnPropertyChanged(nameof(HasPmic)); }
         }
 
-        public bool HasTelemetry
+        public override bool HasTelemetry
         {
             get => hasTelemetry;
             set
@@ -94,8 +74,6 @@ namespace ZenTimings.ViewModels
                 OnPropertyChanged(nameof(HasNoTelemetry));
             }
         }
-
-        public bool HasNoTelemetry => !HasTelemetry;
 
         public bool HasLogo
         {
@@ -109,13 +87,6 @@ namespace ZenTimings.ViewModels
             set { logoResourceName = value; OnPropertyChanged(nameof(LogoResourceName)); }
         }
 
-        public ObservableCollection<TelemetryItemViewModel> TelemetryItems { get; } = new ObservableCollection<TelemetryItemViewModel>();
-
-        public List<string> HiddenKeys { get; } = new List<string>();
-
-        protected void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        public override bool HasModuleInfo => true;
     }
 }

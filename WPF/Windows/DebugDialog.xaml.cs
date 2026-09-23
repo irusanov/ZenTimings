@@ -212,9 +212,24 @@ namespace ZenTimings.Windows
             return false;
         }
 
+        // Adds one section of the report; a section that fails is marked and the report goes on,
+        // since the report matters most on systems where parts of the core failed to initialize.
+        private void AddReport(Func<string> report)
+        {
+            try
+            {
+                AddLine(report());
+            }
+            catch (Exception ex)
+            {
+                AddLine("<FAILED>");
+                AddLine(ex.Message);
+            }
+        }
+
         private void Debug()
         {
-            Application.Current.Dispatcher.Invoke(new Action(() => { SetControlsState(false); }));
+            Application.Current.Dispatcher.BeginInvoke(new Action(() => { SetControlsState(false); }));
 
             result.Clear();
             result.Append(
@@ -263,32 +278,48 @@ namespace ZenTimings.Windows
             // DRAM modules info
             AddHeading("Memory Modules");
 
-            foreach (var module in memoryConfig.Modules)
+            try
             {
-                AddLine($"{module.BankLabel} | {module.DeviceLocator}");
-                AddLine($"-- Slot: {module.Slot}");
-                if (module.Rank == DRAM.MemRank.DR)
-                    AddLine("-- Dual Rank");
-                else
-                    AddLine("-- Single Rank");
-                AddLine($"-- DCT Offset: 0x{module.DctOffset >> 20:X}");
-                AddLine($"-- Manufacturer: {module.Manufacturer}");
-                AddLine($"-- {module.PartNumber} {module.Capacity} {module.ClockSpeed}MHz");
-                AddLine($"-- {module.AddressConfig}");
-                AddLine();
+                foreach (var module in memoryConfig.Modules)
+                {
+                    AddLine($"{module.BankLabel} | {module.DeviceLocator}");
+                    AddLine($"-- Slot: {module.Slot}");
+                    if (module.Rank == DRAM.MemRank.DR)
+                        AddLine("-- Dual Rank");
+                    else
+                        AddLine("-- Single Rank");
+                    AddLine($"-- DCT Offset: 0x{module.DctOffset >> 20:X}");
+                    AddLine($"-- Manufacturer: {module.Manufacturer}");
+                    AddLine($"-- {module.PartNumber} {module.Capacity} {module.ClockSpeed}MHz");
+                    AddLine($"-- {module.AddressConfig}");
+                    AddLine();
+                }
+            }
+            catch (Exception ex)
+            {
+                AddLine("<FAILED>");
+                AddLine(ex.Message);
             }
 
-            if (cpu.memoryConfig.Type == DRAM.MemType.DDR5)
+            if (cpu.memoryConfig?.Type == DRAM.MemType.DDR5)
             {
                 AddHeading("SMBUS Memory Modules");
                 AddLine();
 
-                Dictionary<byte, Ddr5SpdInfo> results = CpuSingleton.Instance.memoryConfig.ReadAndDecodeAll();
-
-                foreach (KeyValuePair<byte, Ddr5SpdInfo> kvp in results ?? new Dictionary<byte, Ddr5SpdInfo>())
+                try
                 {
-                    AddLine(string.Format("DIMM at I2C address 0x{0:X2}", kvp.Key));
-                    AddLine(kvp.Value.ToString());
+                    Dictionary<byte, Ddr5SpdInfo> results = CpuSingleton.Instance.memoryConfig.ReadAndDecodeAll();
+
+                    foreach (KeyValuePair<byte, Ddr5SpdInfo> kvp in results ?? new Dictionary<byte, Ddr5SpdInfo>())
+                    {
+                        AddLine(string.Format("DIMM at I2C address 0x{0:X2}", kvp.Key));
+                        AddLine(kvp.Value.ToString());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AddLine("<FAILED>");
+                    AddLine(ex.Message);
                 }
                 AddLine();
             }
@@ -312,10 +343,10 @@ namespace ZenTimings.Windows
             }
 
             AddLine();
-            AddLine(cpu.info.apob.GetReport());
+            AddReport(() => cpu.info.apob?.GetReport() ?? "APOB: not available");
 
             AddLine();
-            AddLine(cpu.info.aod.GetReport());
+            AddReport(() => cpu.info.aod?.GetReport() ?? "AOD: not available");
 
             // Configured DRAM memory controller settings from BIOS
             AddHeading("BIOS: Memory Controller Config");
@@ -332,19 +363,16 @@ namespace ZenTimings.Windows
 
             // SMU power table
             AddLine();
-            AddLine(cpu.powerTable.GetReport());
+            AddReport(() => cpu.powerTable?.GetReport() ?? "SMU: Power Table not available");
 
             AddHeading("SuperIO");
-            foreach (var hardware in cpu.systemInfo.Hardware)
+            foreach (var hardware in cpu.systemInfo?.Hardware ?? new List<IHardware>())
             {
                 if (hardware.HardwareType == HardwareType.SuperIO)
-                {
-                    var report = hardware.GetReport();
-                    AddLine(report);
-                }
+                    AddReport(hardware.GetReport);
             }
             AddLine();
-            AddLine(SystemInfo.SMBios.GetReport());
+            AddReport(() => SystemInfo.SMBios.GetReport());
 
             // All WMI classes in root namespace
             /*AddHeading("WMI: Root Classes");
@@ -358,10 +386,7 @@ namespace ZenTimings.Windows
 
             // Check if AMD_ACPI class exists
             AddHeading("WMI: AMD_ACPI");
-            if (WMI.Query(wmiScope, wmiAMDACPI) != null)
-                AddLine("OK");
-            else
-                AddLine("<FAILED>");
+            AddReport(() => WMI.Query(wmiScope, wmiAMDACPI) != null ? "OK" : "<FAILED>");
             AddLine();
 
             AddHeading("WMI: Instance Name");
@@ -448,11 +473,12 @@ namespace ZenTimings.Windows
             }
 
             AddLine();
-            AddLine(Mmio.Instance.GetReport());
+            AddReport(() => Mmio.Instance.GetReport());
 
-            Application.Current.Dispatcher.Invoke(new Action(() =>
+            string report = result.ToString();
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
-                textBoxDebugOutput.Text = result.ToString();
+                textBoxDebugOutput.Text = report;
                 SetControlsState();
                 MinimizeFootprint();
             }));

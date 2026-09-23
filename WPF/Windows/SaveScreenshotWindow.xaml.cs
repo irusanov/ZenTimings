@@ -103,8 +103,17 @@ namespace ZenTimings.Windows
 
         private void ButtonCopyToClipboard_Click(object sender, RoutedEventArgs e)
         {
-            Clipboard.SetDataObject(screenshot, true);
-            statusStrip1.Visibility = Visibility.Visible;
+            try
+            {
+                // Throws when another program (a clipboard manager, RDP) holds the clipboard.
+                Clipboard.SetDataObject(screenshot, true);
+                statusStrip1.Visibility = Visibility.Visible;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Could not copy the screenshot to the clipboard: {ex.Message}", "Clipboard",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         public void Dispose()

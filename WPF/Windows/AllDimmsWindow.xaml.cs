@@ -18,9 +18,9 @@ namespace ZenTimings.Windows
         private readonly Func<FrameworkElement> createPanel;
         private readonly MainViewModel sourceViewModel;
         private readonly Window centerOnWindow;
-        private readonly List<ChannelFrame> frames = new List<ChannelFrame>();
+        private readonly List<RenderedFrame> frames = new List<RenderedFrame>();
 
-        private sealed class ChannelFrame
+        private sealed class RenderedFrame
         {
             public FrameworkElement Panel;
             public Canvas Overlay;
@@ -58,8 +58,8 @@ namespace ZenTimings.Windows
 
             ChannelsPanel.Children.Clear();
             frames.Clear();
-            foreach (AllDimmsCapture.Channel channel in result.Channels)
-                ChannelsPanel.Children.Add(BuildFrame(channel));
+            foreach (AllDimmsCapture.DimmFrame dimm in result.Frames)
+                ChannelsPanel.Children.Add(BuildFrame(dimm));
 
             ChannelsPanel.Columns = BalancedColumns();
         }
@@ -73,7 +73,7 @@ namespace ZenTimings.Windows
 
             List<BaseDramTimings> timings = frames.Select(frame => frame.Timings).ToList();
             List<Rect> highlights = FindDifferingCells(frames[0].Panel, timings);
-            foreach (ChannelFrame frame in frames)
+            foreach (RenderedFrame frame in frames)
             {
                 ApplyMismatchForeground(frame.Panel, timings);
 
@@ -83,34 +83,16 @@ namespace ZenTimings.Windows
             }
         }
 
-        private Border BuildFrame(AllDimmsCapture.Channel channel)
+        private const double ModuleLogoMaxWidth = 40;
+        private const double ModuleLogoMargin = 16;
+
+        private Border BuildFrame(AllDimmsCapture.DimmFrame dimm)
         {
-            FrameworkElement panel = CreatePanel(channel);
+            FrameworkElement panel = CreatePanel(dimm);
             panel.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
 
             var texts = new StackPanel();
-            //texts.Children.Add(new TextBlock
-            //{
-            //    Text = channel.Header,
-            //    FontWeight = FontWeights.SemiBold,
-            //    TextAlignment = TextAlignment.Center,
-            //    Margin = new Thickness(0, 2, 0, 2),
-            //});
-
-            // Capped to the panel width, so a long line wraps instead of widening the column.
-            foreach (string line in channel.ModuleLines)
-            {
-                texts.Children.Add(new TextBlock
-                {
-                    Text = line,
-                    FontSize = 11,
-                    Opacity = 0.7,
-                    TextAlignment = TextAlignment.Center,
-                    TextWrapping = TextWrapping.Wrap,
-                    MaxWidth = panel.DesiredSize.Width,
-                    Margin = new Thickness(0, 2, 0, 2),
-                });
-            }
+            texts.Children.Add(BuildModuleRow(dimm.Module, panel.DesiredSize.Width));
 
             var overlay = new Canvas { IsHitTestVisible = false };
             var panelHost = new Grid
@@ -120,14 +102,14 @@ namespace ZenTimings.Windows
             panelHost.Children.Add(panel);
             panelHost.Children.Add(overlay);
 
-            frames.Add(new ChannelFrame
+            frames.Add(new RenderedFrame
             {
                 Panel = panel,
                 Overlay = overlay,
-                Timings = channel.Timings,
+                Timings = dimm.Timings,
             });
 
-            // Docked to the bottom, so panels in one grid row line up however many module lines they carry.
+            // Docked to the bottom, so panels in one grid row line up regardless of how tall their module row is.
             var column = new DockPanel();
             DockPanel.SetDock(panelHost, Dock.Bottom);
             column.Children.Add(panelHost);
@@ -144,10 +126,75 @@ namespace ZenTimings.Windows
             return frame;
         }
 
-        private FrameworkElement CreatePanel(AllDimmsCapture.Channel channel)
+        // One module: vendor logo (if known) on the left, vendor/part number and DRAM IC/PMIC stacked to its right.
+        private static FrameworkElement BuildModuleRow(AllDimmsCapture.ModuleInfo module, double maxWidth)
+        {
+            bool hasLogo = !string.IsNullOrEmpty(module.LogoResourceName);
+            double textMaxWidth = Math.Max(20, maxWidth - (hasLogo ? ModuleLogoMaxWidth + ModuleLogoMargin : 0));
+            TextAlignment textAlignment = hasLogo ? TextAlignment.Left : TextAlignment.Center;
+
+            var lines = new StackPanel
+            {
+                MaxWidth = textMaxWidth,
+                VerticalAlignment = VerticalAlignment.Center,
+            };
+
+            if (!string.IsNullOrEmpty(module.VendorLine))
+            {
+                lines.Children.Add(new TextBlock
+                {
+                    Text = module.VendorLine,
+                    FontSize = 11,
+                    Opacity = 0.7,
+                    TextAlignment = textAlignment,
+                    TextWrapping = TextWrapping.Wrap,
+                });
+            }
+
+            if (!string.IsNullOrEmpty(module.DetailLine))
+            {
+                lines.Children.Add(new TextBlock
+                {
+                    Text = module.DetailLine,
+                    FontSize = 11,
+                    Opacity = 0.7,
+                    TextAlignment = textAlignment,
+                    TextWrapping = TextWrapping.Wrap,
+                });
+            }
+
+            if (!hasLogo)
+            {
+                lines.HorizontalAlignment = HorizontalAlignment.Center;
+                lines.Margin = new Thickness(0, 2, 0, 2);
+                return lines;
+            }
+
+            var image = new Image
+            {
+                MaxWidth = ModuleLogoMaxWidth,
+                Stretch = Stretch.Uniform,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Margin = new Thickness(0, 0, ModuleLogoMargin, 0),
+            };
+            image.SetResourceReference(Image.SourceProperty, module.LogoResourceName);
+
+            var row = new DockPanel
+            {
+                LastChildFill = true,
+                MaxWidth = maxWidth,
+                Margin = new Thickness(0, 2, 0, 2),
+            };
+            DockPanel.SetDock(image, Dock.Left);
+            row.Children.Add(image);
+            row.Children.Add(lines);
+            return row;
+        }
+
+        private FrameworkElement CreatePanel(AllDimmsCapture.DimmFrame dimm)
         {
             FrameworkElement panel = createPanel() ?? throw new InvalidOperationException("No timings panel for this memory type.");
-            panel.DataContext = sourceViewModel.CreateChannelViewModel(channel.Timings, channel.PmicData);
+            panel.DataContext = sourceViewModel.CreateChannelViewModel(dimm.Timings, dimm.PmicData, dimm.Capacity);
             return panel;
         }
 
