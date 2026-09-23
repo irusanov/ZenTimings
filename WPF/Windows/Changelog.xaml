@@ -42,6 +42,13 @@
                         Padding="0, 0, 0, 14"
                         TextWrapping="WrapWithOverflow" /-->
 
+                    <TextBlock 
+                        Text="This version contains many changes and has been tested on a limited set of configurations. You might run into a few bugs or features that aren't working quite right just yet. If you spot anything unexpected, please let us know so we can fix it!"
+                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}"
+                        HorizontalAlignment="Left"
+                        Padding="0, 0, 0, 14"
+                        TextWrapping="WrapWithOverflow" />
+
                     <!-- TextBlock Text="Changelog" FontSize="14" FontWeight="Bold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" /-->
                     <TextBlock Text="{Binding Version, Mode=OneWay}" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0" />
 
@@ -69,6 +76,7 @@
                     <TextBlock Text=" - Improved KrackanPoint support" TextWrapping="WrapWithOverflow" />
                     <TextBlock Text=" - Extended Debug report data and parsing" TextWrapping="WrapWithOverflow" />
                     <TextBlock Text=" - Sensors window now continues updating while the main window is minimized" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Fixed XMP parsing in Tools -> Advanced Info -> SPD" TextWrapping="WrapWithOverflow" />
                     <TextBlock Text=" - Fixed incorrect read function for SVI2 planes on Zen3 and earlier" TextWrapping="WrapWithOverflow" />
                     <TextBlock Text=" - Fixed sensor alarm colors not recording maximum values correctly" TextWrapping="WrapWithOverflow" />
                     <TextBlock Text=" - Fixed incorrect corner radius handling on Windows 11" TextWrapping="WrapWithOverflow" />
