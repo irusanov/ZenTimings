@@ -195,7 +195,7 @@
                             <StackPanel
                                 Orientation="Horizontal"
                                 Margin="8 -5 0 5"
-                                ToolTip="CPU temperature (Tctl/Tdie)"
+                                ToolTip="{Binding CpuTemperatureToolTip, Mode=OneWay}"
                                 Visibility="{Binding Settings.ShowCpuTemperature, Mode=OneWay, Converter={StaticResource BoolToVis}}">
                                 <TextBlock
                                     Text="CPU"
@@ -210,7 +210,7 @@
                                 <StackPanel
                                     Orientation="Horizontal"
                                     Margin="8 -5 0 5"
-                                    ToolTip="I/O die average / hotspot"
+                                    ToolTip="{Binding IodTemperatureToolTip, Mode=OneWay}"
                                     Visibility="{Binding Settings.ShowIodTemperature, Mode=OneWay, Converter={StaticResource BoolToVis}}">
                                     <TextBlock
                                         Text="IOD"
