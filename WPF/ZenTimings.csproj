@@ -210,6 +210,9 @@
     <Compile Include="Windows\SplashWindow.xaml.cs">
       <DependentUpon>SplashWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\UpdateAvailableDialog.xaml.cs">
+      <DependentUpon>UpdateAvailableDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\UpdateProgressWindow.xaml.cs">
       <DependentUpon>UpdateProgressWindow.xaml</DependentUpon>
     </Compile>
@@ -433,6 +436,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\SplashWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\UpdateAvailableDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

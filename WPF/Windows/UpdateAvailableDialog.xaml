@@ -1,0 +1,56 @@
+<local:ThemedAdonisWindow
+    xmlns:local="clr-namespace:ZenTimings"
+    x:Class="ZenTimings.Windows.UpdateAvailableDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+    adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
+    mc:Ignorable="d"
+    Title="Update Available"
+    Width="460"
+    MaxHeight="520"
+    SizeToContent="Height"
+    WindowStartupLocation="CenterScreen"
+    ResizeMode="NoResize"
+    ShowInTaskbar="True"
+    BorderThickness="1"
+    UseLayoutRounding="True"
+    Style="{DynamicResource WindowStyles}">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Name="HeaderText" TextWrapping="Wrap" Margin="0,0,0,10" />
+
+        <Border Grid.Row="1" Style="{DynamicResource PanelStyles}" Padding="8,6">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel>
+                    <TextBlock Text="Changelog" FontWeight="SemiBold" Margin="0,0,0,4" />
+                    <ItemsControl Name="ChangesList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding StringFormat=' - {0}'}" TextWrapping="WrapWithOverflow" Margin="0,1" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <TextBlock Grid.Row="2" Text="Do you want to update the application now?" Margin="0,10,0,0" />
+
+        <CheckBox Grid.Row="3" Name="DontAskCheckBox" Content="Don't ask for this update again" Margin="0,8,0,0" />
+
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,14,0,0">
+            <Button Content="Update" MinWidth="80" IsDefault="True" Click="UpdateButton_Click" />
+            <Button Content="Skip" MinWidth="80" Margin="8,0,0,0" IsCancel="True" />
+        </StackPanel>
+    </Grid>
+</local:ThemedAdonisWindow>

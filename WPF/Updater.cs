@@ -33,10 +33,6 @@ namespace ZenTimings
         private const string signatureUrl = "https://zentimings.com/Update.xml.sig";
         private const string betaUpdateUrl = "https://zentimings.com/Update_beta.xml";
         private const string betaSignatureUrl = "https://zentimings.com/Update_beta.xml.sig";
-#if DEBUG
-        private const string debugUpdateUrl = "https://zentimings.com/Update_debug.xml";
-        private const string debugSignatureUrl = "https://zentimings.com/Update_debug.xml.sig";
-#endif
 
         protected virtual void OnUpdateCheckCompleteEvent(EventArgs e)
         {
@@ -57,30 +53,6 @@ namespace ZenTimings
 
         private static bool UseBetaUpdates => AppSettings.Instance.ParticipateInBetaUpdates;
 
-        private static string GetUpdateUrl()
-        {
-            if (UseBetaUpdates)
-                return betaUpdateUrl;
-
-#if DEBUG
-            return debugUpdateUrl;
-#else
-            return updateUrl;
-#endif
-        }
-
-        private static string GetSignatureUrl()
-        {
-            if (UseBetaUpdates)
-                return betaSignatureUrl;
-
-#if DEBUG
-            return debugSignatureUrl;
-#else
-            return signatureUrl;
-#endif
-        }
-
         public void CheckForUpdate(bool manualUpdate = false, bool suppressNetworkErrorDialog = false)
         {
             if (!manualUpdate) SplashWindow.Loading("Checking for updates...");
@@ -89,7 +61,7 @@ namespace ZenTimings
 
             try
             {
-                UpdaterArgs updaterArgs = FetchUpdateInfo();
+                UpdaterArgs updaterArgs = FetchLatestUpdateInfo(out bool isBeta);
                 if (updaterArgs == null)
                 {
                     if (manual)
@@ -97,7 +69,7 @@ namespace ZenTimings
                     return;
                 }
 
-                ProcessUpdateInfo(updaterArgs);
+                ProcessUpdateInfo(updaterArgs, isBeta);
             }
             catch (WebException ex)
             {
@@ -147,14 +119,58 @@ namespace ZenTimings
             }
         }
 
-        private UpdaterArgs FetchUpdateInfo()
+        // Stable is always checked. With beta updates enabled the beta channel is checked too and the newer one wins,
+        // so beta users also get a stable release that is newer than the last beta.
+        private UpdaterArgs FetchLatestUpdateInfo(out bool isBeta)
+        {
+            isBeta = false;
+            Exception stableError = null;
+            UpdaterArgs stable = null;
+
+            try
+            {
+                stable = FetchUpdateInfo(updateUrl, signatureUrl);
+            }
+            catch (Exception ex) when (UseBetaUpdates)
+            {
+                // Beta may still be available, report the stable error only if that fails as well
+                stableError = ex;
+            }
+
+            if (!UseBetaUpdates)
+                return stable;
+
+            UpdaterArgs beta = null;
+            try
+            {
+                beta = FetchUpdateInfo(betaUpdateUrl, betaSignatureUrl);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Beta update check failed: {ex.Message}");
+                if (stableError != null)
+                    throw stableError;
+            }
+
+            if (beta == null)
+                return stable;
+            if (stable == null || new Version(beta.Version) > new Version(stable.Version))
+            {
+                isBeta = true;
+                return beta;
+            }
+
+            return stable;
+        }
+
+        private UpdaterArgs FetchUpdateInfo(string xmlUrl, string sigUrl)
         {
             // After upgrading to .NET 4.7.2, the best supported TLS version is automatically negotiated, so we don't need to force TLS 1.2 anymore.
             //ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
             using (var client = new TimeoutWebClient())
             {
-                byte[] xmlData = client.DownloadData(GetUpdateUrl());
-                byte[] signature = client.DownloadData(GetSignatureUrl());
+                byte[] xmlData = client.DownloadData(xmlUrl);
+                byte[] signature = client.DownloadData(sigUrl);
 
                 if (!UpdaterSignature.Verify(xmlData, signature))
                 {
@@ -174,7 +190,7 @@ namespace ZenTimings
             }
         }
 
-        private void ProcessUpdateInfo(UpdaterArgs updaterArgs)
+        private void ProcessUpdateInfo(UpdaterArgs updaterArgs, bool isBeta)
         {
             var remoteVersion = new Version(updaterArgs.Version);
             var installedVersion = InstalledVersion;
@@ -191,39 +207,23 @@ namespace ZenTimings
             if (isUpdateAvailable && (manual || !persistence.GetSkippedVersion().Equals(remoteVersion)))
             {
                 var shortVersion = string.Join(".", updaterArgs.Version.Split('.'), 0, 2);
-                var zipSuffix = UseBetaUpdates ? "_beta" : string.Empty;
+                var zipSuffix = isBeta ? "_beta" : string.Empty;
                 var zipFileName = $"ZenTimings_v{shortVersion}{zipSuffix}.zip";
                 var downloadUrl = $"{GitHubReleaseBaseUrl}/v{shortVersion}/{zipFileName}";
                 var checksumUrl = $"{GitHubReleaseBaseUrl}/v{shortVersion}/{zipFileName}.sha256";
                 var zipSignatureUrl = $"{GitHubReleaseBaseUrl}/v{shortVersion}/{zipFileName}.sig";
 
-                var messageBox = new MessageBoxModel
+                var dialog = new UpdateAvailableDialog(updaterArgs.Version, installedVersion, updaterArgs.Changes, !manual, isBeta);
+                if (Application.Current?.MainWindow != null && Application.Current.MainWindow.IsLoaded && Application.Current.MainWindow != dialog)
                 {
-                    Text = $"There is new version {updaterArgs.Version} available.{Environment.NewLine}" +
-                           $"You are using version {installedVersion}.{Environment.NewLine}" +
-                           $"{ChangelogText}{Environment.NewLine}" +
-                           "Do you want to update the application now?",
-                    Caption = @"Update Available",
-                    Buttons = MessageBoxButtons.YesNo(yesLabel: "Update", noLabel: "Skip"),
-                };
-
-                if (!manual)
-                {
-                    messageBox.CheckBoxes = new[]
-                    {
-                        new MessageBoxCheckBoxModel("Don't ask for this update again")
-                        {
-                            IsChecked = false,
-                            Placement = MessageBoxCheckBoxPlacement.BelowText,
-                        },
-                    };
+                    dialog.Owner = Application.Current.MainWindow;
+                    dialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 }
-
-                MessageBox.Show(messageBox);
+                bool accepted = dialog.ShowDialog() == true;
 
                 if (!manual) SplashWindow.HideIfOpen();
 
-                if (messageBox.Result.Equals(MessageBoxResult.Yes))
+                if (accepted)
                 {
                     try
                     {
@@ -245,9 +245,7 @@ namespace ZenTimings
                 }
                 else if (!manual)
                 {
-                    var enumerator = messageBox.CheckBoxes.GetEnumerator();
-                    enumerator.MoveNext();
-                    if (enumerator.Current.IsChecked)
+                    if (dialog.DontAskAgain)
                     {
                         persistence.SetSkippedVersion(remoteVersion);
                     }
