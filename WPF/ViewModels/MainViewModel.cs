@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using ZenStates.Core;
 using ZenStates.Core.Hardware;
@@ -283,6 +284,20 @@ namespace ZenTimings.ViewModels
         {
             get => _cpuTemperature;
             set => SetProperty(ref _cpuTemperature, value);
+        }
+
+        private string _dimmTelemetry;
+        public string DimmTelemetry
+        {
+            get => _dimmTelemetry;
+            set => SetProperty(ref _dimmTelemetry, value);
+        }
+
+        private string _dimmTelemetryToolTip;
+        public string DimmTelemetryToolTip
+        {
+            get => _dimmTelemetryToolTip;
+            set => SetProperty(ref _dimmTelemetryToolTip, value);
         }
 
         // The decoded AOD table: rebuilt from the debug report's raw dump in a mock window, read from
@@ -643,6 +658,64 @@ namespace ZenTimings.ViewModels
         public void RefreshReadouts(float? cpuTemperature)
         {
             CpuTemperature = cpuTemperature.HasValue ? FormatReadout(cpuTemperature.Value, "°C") : null;
+
+            if (Settings.ShowDimmTelemetry && IsDimmTelemetryAvailable)
+                RefreshDimmTelemetry();
+        }
+
+        private void RefreshDimmTelemetry()
+        {
+            var memoryConfig = CpuSingleton.Instance?.memoryConfig;
+            var spdInfo = memoryConfig?.SpdInfo;
+            var modules = memoryConfig?.Modules;
+
+            double? hottest = null;
+            double totalPower = 0;
+            bool hasPower = false;
+            var toolTip = new StringBuilder();
+
+            if (spdInfo != null)
+            {
+                // Same order as the modules, like the Sensors window pairs them
+                int index = 0;
+                foreach (var entry in spdInfo.Values)
+                {
+                    var module = modules != null && index < modules.Count ? modules[index] : null;
+                    string name = !string.IsNullOrEmpty(module?.Slot) ? module.Slot : $"DIMM {index}";
+                    index++;
+
+                    var parts = new List<string>();
+
+                    if (entry.ThermalData != null && entry.ThermalData.IsValid)
+                    {
+                        double temperature = entry.ThermalData.TemperatureC;
+                        if (!hottest.HasValue || temperature > hottest.Value)
+                            hottest = temperature;
+                        parts.Add(FormatReadout(temperature, "°C"));
+                    }
+
+                    if (entry.PmicData != null && entry.PmicData.IsValid)
+                    {
+                        totalPower += entry.PmicData.TotalW;
+                        hasPower = true;
+                        parts.Add(FormatReadout(entry.PmicData.TotalW, "W"));
+                    }
+
+                    if (parts.Count > 0)
+                        toolTip.AppendLine($"{name}: {string.Join(", ", parts)}");
+                }
+            }
+
+            var text = new List<string>();
+            if (hottest.HasValue)
+                text.Add(FormatReadout(hottest.Value, "°C"));
+            if (hasPower)
+                text.Add(FormatReadout(totalPower, "W"));
+
+            DimmTelemetry = text.Count > 0 ? string.Join(" / ", text) : null;
+            DimmTelemetryToolTip = toolTip.Length > 0
+                ? $"Hottest module and total power\n{toolTip.ToString().TrimEnd()}"
+                : null;
         }
 
         // One decimal keeps all the readouts on one line, the Sensors window has the full precision

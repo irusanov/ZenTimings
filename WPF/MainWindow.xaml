@@ -85,6 +85,12 @@
                                     IsCheckable="True"
                                     IsChecked="{Binding Settings.ShowCpuTemperature, Mode=TwoWay}"
                                     Click="ReadoutMenuItem_Click" />
+                                <MenuItem
+                                    Header="DIMM temperature and power"
+                                    IsCheckable="True"
+                                    IsChecked="{Binding Settings.ShowDimmTelemetry, Mode=TwoWay}"
+                                    Visibility="{Binding IsDimmTelemetryAvailable, Mode=OneTime, Converter={StaticResource BoolToVis}}"
+                                    Click="ReadoutMenuItem_Click" />
                             </MenuItem>
                             <Separator Foreground="{DynamicResource PanelBackground}" />
                             <MenuItem Header="_Debug">
@@ -186,6 +192,22 @@
                                 <TextBlock
                                     Text="{Binding CpuTemperature, Mode=OneWay, TargetNullValue='N/A'}"
                                     Style="{DynamicResource ReadoutValueStyles}" />
+                            </StackPanel>
+                            <StackPanel
+                                Orientation="Horizontal"
+                                Visibility="{Binding IsDimmTelemetryAvailable, Mode=OneTime, Converter={StaticResource BoolToVis}}">
+                                <StackPanel
+                                    Orientation="Horizontal"
+                                    Margin="8 -5 0 5"
+                                    ToolTip="{Binding DimmTelemetryToolTip, Mode=OneWay}"
+                                    Visibility="{Binding Settings.ShowDimmTelemetry, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                                    <TextBlock
+                                        Text="DIMM"
+                                        Style="{DynamicResource ReadoutLabelStyles}" />
+                                    <TextBlock
+                                        Text="{Binding DimmTelemetry, Mode=OneWay, TargetNullValue='N/A'}"
+                                        Style="{DynamicResource ReadoutValueStyles}" />
+                                </StackPanel>
                             </StackPanel>
                         </StackPanel>
                     </StackPanel>

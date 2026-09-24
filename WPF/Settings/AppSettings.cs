@@ -223,6 +223,20 @@ namespace ZenTimings.Settings
                 }
             }
         }
+
+        private bool _showDimmTelemetry = false;
+        public bool ShowDimmTelemetry
+        {
+            get => _showDimmTelemetry;
+            set
+            {
+                if (_showDimmTelemetry != value)
+                {
+                    _showDimmTelemetry = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowDimmTelemetry)));
+                }
+            }
+        }
         public bool AdvancedMode { get; set; } = true;
         public Theme AppTheme { get; set; } = Theme.DarkMintGradient;
         public ScreenshotType ScreenshotMode { get; set; } = ScreenshotType.Window;
