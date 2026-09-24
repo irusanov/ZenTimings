@@ -265,6 +265,7 @@
                 </Grid.RowDefinitions>
 
                 <TextBlock
+                    x:Name="labelImpedanceSource"
                     Grid.Column="0"
                     Grid.Row="0"
                     Style="{StaticResource SettingLabel}"

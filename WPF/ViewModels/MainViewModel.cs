@@ -448,6 +448,8 @@ namespace ZenTimings.ViewModels
             _sensorsDetected = true;
         }
 
+        public bool IsVoltageSourceSelectionSupported => MemoryType == MemType.DDR5 || MemoryType == MemType.LPDDR5;
+
         public IReadOnlyList<VoltageSensorSource> GetAvailableVoltageSources(VoltageRail rail)
         {
             if (!_sensorsDetected)
@@ -516,7 +518,7 @@ namespace ZenTimings.ViewModels
             }
 
             // If the selected source is Default, resolve it to the rail-specific default
-            if (selectedSource == VoltageSensorSource.Auto)
+            if (selectedSource == VoltageSensorSource.Auto || !IsVoltageSourceSelectionSupported)
             {
                 selectedSource = GetDefaultSourceForRail(rail);
             }

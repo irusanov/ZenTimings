@@ -85,6 +85,10 @@ namespace ZenTimings.Windows
             LoadVoltageSensorSources(comboBoxVsocSensorSource, labelVsocSource, MainViewModel.VoltageRail.Vsoc, settings.VsocSensorSource);
             LoadVoltageSensorSources(comboBoxVddioSensorSource, labelVddioSource, MainViewModel.VoltageRail.Vddio, settings.VddioSensorSource);
             LoadVoltageSensorSources(comboBoxVmiscSensorSource, labelVmiscSource, MainViewModel.VoltageRail.Vmisc, settings.VmiscSensorSource);
+
+            bool supported = _mainViewModel.IsVoltageSourceSelectionSupported;
+            foreach (var element in new UIElement[] { labelImpedanceSource, comboBoxImpedanceSource, labelVsocSource, comboBoxVsocSensorSource, labelVddioSource, comboBoxVddioSensorSource, labelVmiscSource, comboBoxVmiscSensorSource })
+                element.IsEnabled = supported;
         }
 
         private void LoadVoltageSensorSources(System.Windows.Controls.ComboBox comboBox, System.Windows.Controls.TextBlock label,
@@ -159,12 +163,16 @@ namespace ZenTimings.Windows
             appSettings.CornerRadius = comboBoxCornerRadius.SelectedIndex;
             appSettings.ScreenshotMode = (ScreenshotType)comboBoxScreenshot.SelectedIndex;
             appSettings.ScreenshotSaveLocation = textBoxScreenshotPath.Text.Trim();
-            appSettings.ImpedanceTableSrc = (ImpedanceTableSource)comboBoxImpedanceSource.SelectedIndex;
+            if (_mainViewModel.IsVoltageSourceSelectionSupported)
+                appSettings.ImpedanceTableSrc = (ImpedanceTableSource)comboBoxImpedanceSource.SelectedIndex;
             appSettings.AutoUninstallDriver = (bool)checkBoxAutoUninstallDriver.IsChecked;
             appSettings.AutoUninstallDriverNotificationLevel = comboBoxDriverNotification.SelectedIndex - 1;
-            appSettings.VsocSensorSource = GetSelectedVoltageSensorSource(comboBoxVsocSensorSource, appSettings.VsocSensorSource);
-            appSettings.VddioSensorSource = GetSelectedVoltageSensorSource(comboBoxVddioSensorSource, appSettings.VddioSensorSource);
-            appSettings.VmiscSensorSource = GetSelectedVoltageSensorSource(comboBoxVmiscSensorSource, appSettings.VmiscSensorSource);
+            if (_mainViewModel.IsVoltageSourceSelectionSupported)
+            {
+                appSettings.VsocSensorSource = GetSelectedVoltageSensorSource(comboBoxVsocSensorSource, appSettings.VsocSensorSource);
+                appSettings.VddioSensorSource = GetSelectedVoltageSensorSource(comboBoxVddioSensorSource, appSettings.VddioSensorSource);
+                appSettings.VmiscSensorSource = GetSelectedVoltageSensorSource(comboBoxVmiscSensorSource, appSettings.VmiscSensorSource);
+            }
         }
 
         private static VoltageSensorSource GetSelectedVoltageSensorSource(System.Windows.Controls.ComboBox comboBox, VoltageSensorSource fallback)
