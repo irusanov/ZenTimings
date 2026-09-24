@@ -903,7 +903,14 @@ namespace ZenTimings
 
         private BaseDramTimings ReadTimings(uint offset = 0)
         {
-            return cpu.memoryConfig.ReadTimings(offset);
+            cpu.memoryConfig.ReadTimings(offset);
+            var timings = cpu.memoryConfig.Timings;
+
+            if (timings.Count == 0)
+                return null;
+
+            var index = timings.FindIndex(m => m.Key.Equals(offset));
+            return timings[index < 0 ? 0 : index].Value;
         }
 
         private bool WaitForInpoutDriverLoad()
