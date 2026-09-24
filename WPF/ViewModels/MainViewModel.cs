@@ -253,6 +253,14 @@ namespace ZenTimings.ViewModels
             set => SetProperty(ref _vmisc, value);
         }
 
+        // UCLK row label with the memory controller's ratio to MCLK, e.g. "UCLK [1:1]"
+        private string _uclkLabel = "UCLK";
+        public string UclkLabel
+        {
+            get => _uclkLabel;
+            set => SetProperty(ref _uclkLabel, value);
+        }
+
         // Row labels naming the source each rail's value came from, e.g. "VSOC (SMU)" or "VDDIO (AOD)".
         // They keep the plain name while a rail has no reading.
         private string _vsocLabel = "VSOC";
@@ -666,6 +674,24 @@ namespace ZenTimings.ViewModels
             }
         }
 
+        // The memory controller runs at MCLK or at half of it, any other reading is not a ratio it has.
+        // Compared within half a percent, the clocks come out of the power table as measured values.
+        private static string UclkRatioLabel(float uclk, float mclk)
+        {
+            if (uclk <= 0 || mclk <= 0)
+                return "UCLK";
+
+            float ratio = uclk / mclk;
+
+            if (Math.Abs(ratio - 1.0f) < 0.005f)
+                return "UCLK [1:1]";
+
+            if (Math.Abs(ratio - 0.5f) < 0.005f)
+                return "UCLK [1:2]";
+
+            return "UCLK";
+        }
+
         // Call after CpuSingleton.Instance.systemInfo.UpdateSensors() to refresh the live sensor readings.
         public void RefreshSensors()
         {
@@ -684,6 +710,8 @@ namespace ZenTimings.ViewModels
 
             Vmisc = ReadVoltage(VoltageRail.Vmisc, out source);
             VmiscLabel = VoltageLabel("MISC", "VDD MISC", source);
+
+            UclkLabel = UclkRatioLabel(PowerTable?.UCLK ?? 0, PowerTable?.MCLK ?? 0);
         }
 
         // Everything shown here was already read by the refresh, except the values passed in
