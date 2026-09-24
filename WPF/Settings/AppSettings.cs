@@ -224,6 +224,20 @@ namespace ZenTimings.Settings
             }
         }
 
+        private bool _showIodTemperature = false;
+        public bool ShowIodTemperature
+        {
+            get => _showIodTemperature;
+            set
+            {
+                if (_showIodTemperature != value)
+                {
+                    _showIodTemperature = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowIodTemperature)));
+                }
+            }
+        }
+
         private bool _showDimmTelemetry = false;
         public bool ShowDimmTelemetry
         {

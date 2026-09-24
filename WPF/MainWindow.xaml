@@ -86,6 +86,12 @@
                                     IsChecked="{Binding Settings.ShowCpuTemperature, Mode=TwoWay}"
                                     Click="ReadoutMenuItem_Click" />
                                 <MenuItem
+                                    Header="IOD temperature"
+                                    IsCheckable="True"
+                                    IsChecked="{Binding Settings.ShowIodTemperature, Mode=TwoWay}"
+                                    Visibility="{Binding IsIodTemperatureAvailable, Mode=OneTime, Converter={StaticResource BoolToVis}}"
+                                    Click="ReadoutMenuItem_Click" />
+                                <MenuItem
                                     Header="DIMM temperature and power"
                                     IsCheckable="True"
                                     IsChecked="{Binding Settings.ShowDimmTelemetry, Mode=TwoWay}"
@@ -197,6 +203,22 @@
                                 <TextBlock
                                     Text="{Binding CpuTemperature, Mode=OneWay, TargetNullValue='N/A'}"
                                     Style="{DynamicResource ReadoutValueStyles}" />
+                            </StackPanel>
+                            <StackPanel
+                                Orientation="Horizontal"
+                                Visibility="{Binding IsIodTemperatureAvailable, Mode=OneTime, Converter={StaticResource BoolToVis}}">
+                                <StackPanel
+                                    Orientation="Horizontal"
+                                    Margin="8 -5 0 5"
+                                    ToolTip="I/O die average / hotspot"
+                                    Visibility="{Binding Settings.ShowIodTemperature, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                                    <TextBlock
+                                        Text="IOD"
+                                        Style="{DynamicResource ReadoutLabelStyles}" />
+                                    <TextBlock
+                                        Text="{Binding IodTemperature, Mode=OneWay, TargetNullValue='N/A'}"
+                                        Style="{DynamicResource ReadoutValueStyles}" />
+                                </StackPanel>
                             </StackPanel>
                             <StackPanel
                                 Orientation="Horizontal"

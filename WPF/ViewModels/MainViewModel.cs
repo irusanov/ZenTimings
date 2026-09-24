@@ -279,11 +279,29 @@ namespace ZenTimings.ViewModels
         // The readouts describe the machine the app runs on, a debug report has nothing to show there
         public bool IsLiveReadoutAvailable => mockData == null;
 
+        // The SMU has no register for the I/O die temperatures, they sit in the power table and move
+        // between its versions. Only layouts checked against HWiNFO are listed: average, hotspot.
+        private static readonly Dictionary<uint, int[]> IodTemperatureOffsets = new Dictionary<uint, int[]>
+        {
+            // Granite Ridge
+            { 0x00620105, new[] { 0x1A8, 0x458 } },
+        };
+
+        public bool IsIodTemperatureAvailable => IsLiveReadoutAvailable
+            && IodTemperatureOffsets.ContainsKey(CpuSingleton.Instance?.systemInfo?.SmuTableVersion ?? 0);
+
         private string _cpuTemperature;
         public string CpuTemperature
         {
             get => _cpuTemperature;
             set => SetProperty(ref _cpuTemperature, value);
+        }
+
+        private string _iodTemperature;
+        public string IodTemperature
+        {
+            get => _iodTemperature;
+            set => SetProperty(ref _iodTemperature, value);
         }
 
         private string _dimmTelemetry;
@@ -673,11 +691,31 @@ namespace ZenTimings.ViewModels
         {
             CpuTemperature = cpuTemperature.HasValue ? FormatReadout(cpuTemperature.Value, "°C") : null;
 
+            if (Settings.ShowIodTemperature && IsIodTemperatureAvailable)
+                RefreshIodTemperature();
+
             if (Settings.ShowDimmTelemetry && IsDimmTelemetryAvailable)
                 RefreshDimmTelemetry();
 
             WheaErrors = wheaErrorCount >= 0 ? wheaErrorCount.ToString(CultureInfo.InvariantCulture) : null;
             HasWheaErrors = wheaErrorCount > 0;
+        }
+
+        // Read from the power table the refresh has just updated
+        private void RefreshIodTemperature()
+        {
+            float[] table = PowerTable?.Table;
+            int[] offsets = IodTemperatureOffsets[CpuSingleton.Instance.systemInfo.SmuTableVersion];
+
+            if (table == null || offsets[1] / 4 >= table.Length)
+            {
+                IodTemperature = null;
+                return;
+            }
+
+            float average = table[offsets[0] / 4];
+            float hotspot = table[offsets[1] / 4];
+            IodTemperature = $"{average.ToString("F1", CultureInfo.InvariantCulture)} / {FormatReadout(hotspot, "°C")}";
         }
 
         private void RefreshDimmTelemetry()
