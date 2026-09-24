@@ -1698,6 +1698,12 @@ namespace ZenTimings
             OpenSensorsWindow();
         }
 
+        private void UclkRatioMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            settings.Save();
+            mainViewModel.RefreshUclkLabel();
+        }
+
         private void SpdInfoToolstripMenuItem_Click(object sender, RoutedEventArgs e)
         {
             try

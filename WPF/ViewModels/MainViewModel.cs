@@ -253,7 +253,7 @@ namespace ZenTimings.ViewModels
             set => SetProperty(ref _vmisc, value);
         }
 
-        // UCLK row label with the memory controller's ratio to MCLK, e.g. "UCLK [1:1]"
+        // UCLK row label with the memory controller's ratio to MCLK, e.g. "UCLK [1:1]", switched on from Tools
         private string _uclkLabel = "UCLK";
         public string UclkLabel
         {
@@ -733,7 +733,13 @@ namespace ZenTimings.ViewModels
             Vmisc = ReadVoltage(VoltageRail.Vmisc, out source);
             VmiscLabel = VoltageLabel("MISC", "VDD MISC", source);
 
-            UclkLabel = UclkRatioLabel(PowerTable?.UCLK ?? 0, PowerTable?.MCLK ?? 0);
+            RefreshUclkLabel();
+        }
+
+        // Also called on its own when the Tools item is switched, the clocks it needs are already read
+        public void RefreshUclkLabel()
+        {
+            UclkLabel = Settings.ShowUclkRatio ? UclkRatioLabel(PowerTable?.UCLK ?? 0, PowerTable?.MCLK ?? 0) : "UCLK";
         }
 
         // Everything shown here was already read by the refresh, except the values passed in

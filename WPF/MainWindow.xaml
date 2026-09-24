@@ -63,6 +63,12 @@
                                 Header="_Sensors"
                                 Click="TelemetryMonitorToolstripMenuItem_Click"
                                 Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
+                            <MenuItem
+                                Header="UCLK ratio"
+                                IsCheckable="True"
+                                IsChecked="{Binding Settings.ShowUclkRatio, Mode=TwoWay}"
+                                Click="UclkRatioMenuItem_Click"
+                                Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
                             <MenuItem Header="Advanced Info">
                                 <MenuItem
                                     Header="System"
