@@ -1027,6 +1027,9 @@ namespace ZenTimings
                         voltagesUpdated = cpu.memoryConfig.RefreshTelemetry(settings.AutoRefreshInterval);
                     }
 
+                    // The only readout the refresh doesn't already have, so it is read only while shown
+                    float? cpuTemperature = settings.ShowCpuTemperature ? cpu.GetCpuTemperature() : null;
+
                     Interlocked.Exchange(ref refreshReadingHardware, 0);
 
                     if (cleanedUp)
@@ -1071,6 +1074,7 @@ namespace ZenTimings
                             }
 
                             mainViewModel.RefreshSensors();
+                            mainViewModel.RefreshReadouts(cpuTemperature);
 
                             lastMclk = newMclk;
 
@@ -1845,6 +1849,11 @@ namespace ZenTimings
         private const int RefreshWaitLimitMs = 5000;
 
         private DateTime? lastRefreshUtc;
+
+        private void ReadoutMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            settings.Save();
+        }
 
         // Called once the live window is loaded, a debug report window has no live data to export
         private void InitLiveSnapshot()

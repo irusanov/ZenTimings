@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using ZenStates.Core;
@@ -272,6 +273,16 @@ namespace ZenTimings.ViewModels
         {
             get => _vmiscLabel;
             set => SetProperty(ref _vmiscLabel, value);
+        }
+
+        // The readouts describe the machine the app runs on, a debug report has nothing to show there
+        public bool IsLiveReadoutAvailable => mockData == null;
+
+        private string _cpuTemperature;
+        public string CpuTemperature
+        {
+            get => _cpuTemperature;
+            set => SetProperty(ref _cpuTemperature, value);
         }
 
         // The decoded AOD table: rebuilt from the debug report's raw dump in a mock window, read from
@@ -626,6 +637,18 @@ namespace ZenTimings.ViewModels
 
             Vmisc = ReadVoltage(VoltageRail.Vmisc, out source);
             VmiscLabel = VoltageLabel("MISC", "VDD MISC", source);
+        }
+
+        // Everything shown here was already read by the refresh, except the values passed in
+        public void RefreshReadouts(float? cpuTemperature)
+        {
+            CpuTemperature = cpuTemperature.HasValue ? FormatReadout(cpuTemperature.Value, "°C") : null;
+        }
+
+        // One decimal keeps all the readouts on one line, the Sensors window has the full precision
+        private static string FormatReadout(double value, string unit)
+        {
+            return $"{value.ToString("F1", CultureInfo.InvariantCulture)} {unit}";
         }
     }
 }

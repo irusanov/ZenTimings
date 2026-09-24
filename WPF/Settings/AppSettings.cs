@@ -209,6 +209,20 @@ namespace ZenTimings.Settings
                 }
             }
         }
+
+        private bool _showCpuTemperature = false;
+        public bool ShowCpuTemperature
+        {
+            get => _showCpuTemperature;
+            set
+            {
+                if (_showCpuTemperature != value)
+                {
+                    _showCpuTemperature = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowCpuTemperature)));
+                }
+            }
+        }
         public bool AdvancedMode { get; set; } = true;
         public Theme AppTheme { get; set; } = Theme.DarkMintGradient;
         public ScreenshotType ScreenshotMode { get; set; } = ScreenshotType.Window;

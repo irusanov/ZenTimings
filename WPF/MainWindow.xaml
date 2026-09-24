@@ -77,6 +77,15 @@
                                     Click="SpdInfoToolstripMenuItem_Click"
                                     Visibility="{Binding IsDimmTelemetryAvailable, Mode=OneTime, Converter={StaticResource BoolToVis}}" />
                             </MenuItem>
+                            <MenuItem
+                                Header="Main window sensors"
+                                Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                                <MenuItem
+                                    Header="CPU temperature"
+                                    IsCheckable="True"
+                                    IsChecked="{Binding Settings.ShowCpuTemperature, Mode=TwoWay}"
+                                    Click="ReadoutMenuItem_Click" />
+                            </MenuItem>
                             <Separator Foreground="{DynamicResource PanelBackground}" />
                             <MenuItem Header="_Debug">
                                 <MenuItem Header="Dump _APOB table" Click="DumpApobTable_Click" />
@@ -160,6 +169,25 @@
                             Padding="12 0 5 5"
                             Margin="0 -5 0 0"
                         />
+
+                        <!-- Optional readouts, switched on from Tools > Main window sensors -->
+                        <StackPanel
+                            Orientation="Horizontal"
+                            Margin="4 0 0 0"
+                            Visibility="{Binding IsLiveReadoutAvailable, Mode=OneTime, Converter={StaticResource BoolToVis}}">
+                            <StackPanel
+                                Orientation="Horizontal"
+                                Margin="8 -5 0 5"
+                                ToolTip="CPU temperature (Tctl/Tdie)"
+                                Visibility="{Binding Settings.ShowCpuTemperature, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                                <TextBlock
+                                    Text="CPU"
+                                    Style="{DynamicResource ReadoutLabelStyles}" />
+                                <TextBlock
+                                    Text="{Binding CpuTemperature, Mode=OneWay, TargetNullValue='N/A'}"
+                                    Style="{DynamicResource ReadoutValueStyles}" />
+                            </StackPanel>
+                        </StackPanel>
                     </StackPanel>
                     <Border Padding="0 0 5 0" Grid.Column="2"
                             Visibility="{Binding IsMotherboardLogoVisible, Mode=OneTime, Converter={StaticResource BoolToVis}}">
