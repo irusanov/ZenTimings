@@ -12,6 +12,7 @@ using ZenStates.Core.Hardware.DRAM;
 using ZenStates.Core.Hardware.DRAM.DDR5.Pmic;
 using ZenStates.Core.Hardware.Mock;
 using ZenTimings.Common;
+using ZenTimings.Helpers;
 using ZenTimings.Plugin;
 using ZenTimings.Settings;
 using ZenTimings.Utils;
@@ -287,16 +288,8 @@ namespace ZenTimings.ViewModels
         // The readouts describe the machine the app runs on, a debug report has nothing to show there
         public bool IsLiveReadoutAvailable => mockData == null;
 
-        // The SMU has no register for the I/O die temperatures, they sit in the power table and move
-        // between its versions. Only layouts checked against HWiNFO are listed: average, hotspot.
-        private static readonly Dictionary<uint, int[]> IodTemperatureOffsets = new Dictionary<uint, int[]>
-        {
-            // Granite Ridge
-            { 0x00620105, new[] { 0x1A8, 0x458 } },
-        };
-
         public bool IsIodTemperatureAvailable => IsLiveReadoutAvailable
-            && IodTemperatureOffsets.ContainsKey(CpuSingleton.Instance?.systemInfo?.SmuTableVersion ?? 0);
+            && CpuTemperatureSensors.HasIodTemperature(CpuSingleton.Instance?.systemInfo?.SmuTableVersion ?? 0);
 
         // Min, max and average of each readout since it was first shown, kept by the same class the
         // Sensors window uses for its columns
@@ -766,17 +759,12 @@ namespace ZenTimings.ViewModels
         // Read from the power table the refresh has just updated
         private void RefreshIodTemperature()
         {
-            float[] table = PowerTable?.Table;
-            int[] offsets = IodTemperatureOffsets[CpuSingleton.Instance.systemInfo.SmuTableVersion];
-
-            if (table == null || offsets[1] / 4 >= table.Length)
+            if (!CpuTemperatureSensors.TryReadIodTemperature(CpuSingleton.Instance.systemInfo.SmuTableVersion, PowerTable?.Table, out float average, out float hotspot))
             {
                 IodTemperature = null;
                 return;
             }
 
-            float average = table[offsets[0] / 4];
-            float hotspot = table[offsets[1] / 4];
             IodTemperature = $"{average.ToString("F1", CultureInfo.InvariantCulture)} / {FormatReadout(hotspot, "°C")}";
 
             _iodAverageStats = TrackReadout(_iodAverageStats, "IOD", average, "°C");

@@ -128,6 +128,7 @@
     <Compile Include="Helpers\DriverCleanerNotification.cs" />
     <Compile Include="Helpers\StartupHelper.cs" />
     <Compile Include="Helpers\SecureDirectoryHelper.cs" />
+    <Compile Include="Helpers\CpuTemperatureSensors.cs" />
     <Compile Include="Helpers\CrashLog.cs" />
     <Compile Include="Helpers\WheaErrorCounter.cs" />
     <Compile Include="Utils\VendorUtils.cs" />
