@@ -300,6 +300,20 @@ namespace ZenTimings.ViewModels
             set => SetProperty(ref _dimmTelemetryToolTip, value);
         }
 
+        private string _wheaErrors;
+        public string WheaErrors
+        {
+            get => _wheaErrors;
+            set => SetProperty(ref _wheaErrors, value);
+        }
+
+        private bool _hasWheaErrors;
+        public bool HasWheaErrors
+        {
+            get => _hasWheaErrors;
+            set => SetProperty(ref _hasWheaErrors, value);
+        }
+
         // The decoded AOD table: rebuilt from the debug report's raw dump in a mock window, read from
         // the live machine otherwise. Everything below that needs AOD goes through here.
         private AodData AodData =>
@@ -655,12 +669,15 @@ namespace ZenTimings.ViewModels
         }
 
         // Everything shown here was already read by the refresh, except the values passed in
-        public void RefreshReadouts(float? cpuTemperature)
+        public void RefreshReadouts(float? cpuTemperature, int wheaErrorCount)
         {
             CpuTemperature = cpuTemperature.HasValue ? FormatReadout(cpuTemperature.Value, "°C") : null;
 
             if (Settings.ShowDimmTelemetry && IsDimmTelemetryAvailable)
                 RefreshDimmTelemetry();
+
+            WheaErrors = wheaErrorCount >= 0 ? wheaErrorCount.ToString(CultureInfo.InvariantCulture) : null;
+            HasWheaErrors = wheaErrorCount > 0;
         }
 
         private void RefreshDimmTelemetry()

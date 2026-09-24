@@ -91,6 +91,11 @@
                                     IsChecked="{Binding Settings.ShowDimmTelemetry, Mode=TwoWay}"
                                     Visibility="{Binding IsDimmTelemetryAvailable, Mode=OneTime, Converter={StaticResource BoolToVis}}"
                                     Click="ReadoutMenuItem_Click" />
+                                <MenuItem
+                                    Header="WHEA errors"
+                                    IsCheckable="True"
+                                    IsChecked="{Binding Settings.ShowWheaErrors, Mode=TwoWay}"
+                                    Click="ReadoutMenuItem_Click" />
                             </MenuItem>
                             <Separator Foreground="{DynamicResource PanelBackground}" />
                             <MenuItem Header="_Debug">
@@ -208,6 +213,27 @@
                                         Text="{Binding DimmTelemetry, Mode=OneWay, TargetNullValue='N/A'}"
                                         Style="{DynamicResource ReadoutValueStyles}" />
                                 </StackPanel>
+                            </StackPanel>
+                            <StackPanel
+                                Orientation="Horizontal"
+                                Margin="8 -5 0 5"
+                                ToolTip="WHEA-Logger events since Windows started"
+                                Visibility="{Binding Settings.ShowWheaErrors, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                                <TextBlock
+                                    Text="WHEA"
+                                    Style="{DynamicResource ReadoutLabelStyles}" />
+                                <TextBlock
+                                    Text="{Binding WheaErrors, Mode=OneWay, TargetNullValue='N/A'}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource ReadoutValueStyles}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding HasWheaErrors, Mode=OneWay}" Value="True">
+                                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
                             </StackPanel>
                         </StackPanel>
                     </StackPanel>

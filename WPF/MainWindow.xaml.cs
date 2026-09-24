@@ -54,6 +54,7 @@ namespace ZenTimings
         private readonly Cpu cpu;
         private readonly DispatcherTimer PowerCfgTimer = new DispatcherTimer();
         private readonly AppSettings settings = AppSettings.Instance;
+        private readonly WheaErrorCounter wheaErrorCounter = new WheaErrorCounter();
         private readonly List<IPlugin> plugins = new List<IPlugin>();
         private SystemInfoWindow siWnd = null;
         private AdvancedTimingsWindow advancedTimingsWnd = null;
@@ -509,6 +510,7 @@ namespace ZenTimings
             TryCleanup(() => optionsWnd?.Close());
             TryCleanup(() => exportWnd?.Close());
             TryCleanup(() => _notifyIcon?.Dispose());
+            TryCleanup(() => wheaErrorCounter.Dispose());
 
             if (refreshStillRunning)
                 return;
@@ -1074,7 +1076,7 @@ namespace ZenTimings
                             }
 
                             mainViewModel.RefreshSensors();
-                            mainViewModel.RefreshReadouts(cpuTemperature);
+                            mainViewModel.RefreshReadouts(cpuTemperature, wheaErrorCounter.Count);
 
                             lastMclk = newMclk;
 
@@ -1423,6 +1425,7 @@ namespace ZenTimings
             //#endif
             MinimizeFootprint();
             InitLiveSnapshot();
+            UpdateWheaErrorCounter();
 
             if (settings.AdvancedMode && settings.AutoOpenTelemetry)
                 OpenSensorsWindowAfterFirstRender();
@@ -1853,6 +1856,16 @@ namespace ZenTimings
         private void ReadoutMenuItem_Click(object sender, RoutedEventArgs e)
         {
             settings.Save();
+            UpdateWheaErrorCounter();
+        }
+
+        // The event log is only watched while the WHEA readout can be seen
+        private void UpdateWheaErrorCounter()
+        {
+            if (settings.AdvancedMode && settings.ShowWheaErrors)
+                wheaErrorCounter.Start();
+            else
+                wheaErrorCounter.Stop();
         }
 
         // Called once the live window is loaded, a debug report window has no live data to export

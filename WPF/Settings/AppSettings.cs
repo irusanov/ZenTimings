@@ -237,6 +237,20 @@ namespace ZenTimings.Settings
                 }
             }
         }
+
+        private bool _showWheaErrors = false;
+        public bool ShowWheaErrors
+        {
+            get => _showWheaErrors;
+            set
+            {
+                if (_showWheaErrors != value)
+                {
+                    _showWheaErrors = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowWheaErrors)));
+                }
+            }
+        }
         public bool AdvancedMode { get; set; } = true;
         public Theme AppTheme { get; set; } = Theme.DarkMintGradient;
         public ScreenshotType ScreenshotMode { get; set; } = ScreenshotType.Window;
