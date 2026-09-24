@@ -62,35 +62,21 @@ namespace ZenTimings.Helpers
         }
 
         /// <summary>
-        /// Extracts a zip archive held in memory into <paramref name="targetDir"/>,
-        /// rejecting any entry that would resolve outside of the target directory.
+        /// Writes the verified zip bytes next to <paramref name="targetDir"/> (inside the
+        /// protected work directory) and extracts them. ZipFile.ExtractToDirectory rejects
+        /// entries that would resolve outside of the target directory.
         /// </summary>
         public static void ExtractZip(byte[] zipData, string targetDir)
         {
-            string root = Path.GetFullPath(targetDir);
-            if (!root.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal))
-                root += Path.DirectorySeparatorChar;
-
-            using (var stream = new MemoryStream(zipData, false))
-            using (var archive = new ZipArchive(stream, ZipArchiveMode.Read))
+            string zipPath = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(targetDir)), "update.zip");
+            File.WriteAllBytes(zipPath, zipData);
+            try
             {
-                foreach (ZipArchiveEntry entry in archive.Entries)
-                {
-                    string destination = Path.GetFullPath(Path.Combine(root, entry.FullName));
-
-                    if (!destination.StartsWith(root, StringComparison.OrdinalIgnoreCase))
-                        throw new InvalidDataException($"The update archive contains an invalid entry: {entry.FullName}");
-
-                    // Directory entry
-                    if (string.IsNullOrEmpty(entry.Name))
-                    {
-                        Directory.CreateDirectory(destination);
-                        continue;
-                    }
-
-                    Directory.CreateDirectory(Path.GetDirectoryName(destination));
-                    entry.ExtractToFile(destination, false);
-                }
+                ZipFile.ExtractToDirectory(zipPath, targetDir);
+            }
+            finally
+            {
+                File.Delete(zipPath);
             }
         }
     }
