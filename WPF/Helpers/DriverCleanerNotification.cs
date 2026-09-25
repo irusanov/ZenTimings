@@ -119,6 +119,10 @@ namespace ZenTimings.Helpers
         [DllImport("user32.dll")]
         private static extern bool DestroyIcon(IntPtr hIcon);
 
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        private static extern uint PrivateExtractIcons(string szFileName, int nIconIndex, int cxIcon, int cyIcon,
+            [Out] IntPtr[] phicon, IntPtr piconid, uint nIcons, uint flags);
+
         [ComImport, Guid("00021401-0000-0000-C000-000000000046")]
         private class ShellLink
         {
@@ -346,8 +350,22 @@ namespace ZenTimings.Helpers
             largeIcon = IntPtr.Zero;
 
             string exePath = ExecutablePath();
-            if (!string.IsNullOrEmpty(exePath))
-                ExtractIconEx(exePath, 0, out largeIcon, out smallIcon, 1);
+            if (string.IsNullOrEmpty(exePath))
+                return false;
+
+            ExtractIconEx(exePath, 0, out IntPtr extractedLarge, out smallIcon, 1);
+
+            IntPtr[] icons = new IntPtr[1];
+            if (PrivateExtractIcons(exePath, 0, 256, 256, icons, IntPtr.Zero, 1, 0) > 0 && icons[0] != IntPtr.Zero)
+            {
+                largeIcon = icons[0];
+                if (extractedLarge != IntPtr.Zero)
+                    DestroyIcon(extractedLarge);
+            }
+            else
+            {
+                largeIcon = extractedLarge;
+            }
 
             return smallIcon != IntPtr.Zero && largeIcon != IntPtr.Zero;
         }
