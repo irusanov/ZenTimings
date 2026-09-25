@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -11,6 +10,7 @@ namespace ZenTimings.Helpers
         private const uint NIM_DELETE = 0x00000002;
         private const uint NIM_SETVERSION = 0x00000004;
 
+        private const uint NIF_MESSAGE = 0x00000001;
         private const uint NIF_ICON = 0x00000002;
         private const uint NIF_TIP = 0x00000004;
         private const uint NIF_INFO = 0x00000010;
@@ -22,17 +22,84 @@ namespace ZenTimings.Helpers
 
         private const uint NOTIFYICON_VERSION_4 = 4;
 
+        private const uint WM_APP = 0x8000;
+        private const uint CallbackMessage = WM_APP + 1;
+        private const uint NIN_BALLOONSHOW = 0x0402;
+        private const uint NIN_BALLOONHIDE = 0x0403;
+        private const uint NIN_BALLOONTIMEOUT = 0x0404;
+        private const uint NIN_BALLOONUSERCLICK = 0x0405;
+
+        private const uint PM_REMOVE = 0x0001;
+        private const uint QS_ALLINPUT = 0x04FF;
+        private const int BalloonTimeoutMs = 7000;
+        private const int BalloonVisibleMs = 6000;
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct MSG
+        {
+            public IntPtr hwnd;
+            public uint message;
+            public IntPtr wParam;
+            public IntPtr lParam;
+            public uint time;
+            public int ptX;
+            public int ptY;
+        }
+
+        [DllImport("user32.dll")]
+        private static extern bool PeekMessage(out MSG lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax, uint wRemoveMsg);
+
+        [DllImport("user32.dll")]
+        private static extern bool TranslateMessage(ref MSG lpMsg);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr DispatchMessage(ref MSG lpMsg);
+
+        [DllImport("user32.dll")]
+        private static extern uint MsgWaitForMultipleObjects(uint nCount, IntPtr[] pHandles, bool bWaitAll, uint dwMilliseconds, uint dwWakeMask);
+
+        private const uint MSGFLT_ALLOW = 1;
+        private const string WindowClassName = "ZenTimingsDriverCleanupNotification";
+
+        private delegate IntPtr WndProcDelegate(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        private struct WNDCLASSEX
+        {
+            public uint cbSize;
+            public uint style;
+            public IntPtr lpfnWndProc;
+            public int cbClsExtra;
+            public int cbWndExtra;
+            public IntPtr hInstance;
+            public IntPtr hIcon;
+            public IntPtr hCursor;
+            public IntPtr hbrBackground;
+            public string lpszMenuName;
+            public string lpszClassName;
+            public IntPtr hIconSm;
+        }
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        private static extern ushort RegisterClassEx(ref WNDCLASSEX lpwcx);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr DefWindowProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        private static extern bool ChangeWindowMessageFilterEx(IntPtr hWnd, uint message, uint action, IntPtr pChangeFilterStruct);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+        private static extern IntPtr GetModuleHandle(string lpModuleName);
+
+        private static readonly WndProcDelegate wndProc = WindowProc;
+        private static bool classRegistered;
+        private static bool balloonClosed;
+        private static int balloonDeadline;
+
         // Stock Windows icons.
         private const int IDI_INFORMATION = 32516;
         private const int IDI_WARNING = 32515;
-
-        private const string AppUserModelId = "irusanov.ZenTimings";
-        private const string AppName = "ZenTimings";
-        private const ushort VT_LPWSTR = 31;
-
-        private static readonly Guid AppUserModelIdProperty = new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3");
-        private static readonly object identityGate = new object();
-        private static bool identityApplied;
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         private struct NOTIFYICONDATA
@@ -63,37 +130,8 @@ namespace ZenTimings.Helpers
             public IntPtr hBalloonIcon;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
-        private struct PropVariant
-        {
-            public ushort vt;
-            public ushort reserved1;
-            public ushort reserved2;
-            public ushort reserved3;
-            public IntPtr value;
-            public int padding;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct PropertyKey
-        {
-            public Guid formatId;
-            public uint propertyId;
-        }
-
         [DllImport("shell32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         private static extern bool Shell_NotifyIcon(uint dwMessage, ref NOTIFYICONDATA lpData);
-
-        [DllImport("shell32.dll", CharSet = CharSet.Unicode, PreserveSig = false)]
-        private static extern void SetCurrentProcessExplicitAppUserModelID(
-            [MarshalAs(UnmanagedType.LPWStr)] string appId);
-
-        [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
-        private static extern uint ExtractIconEx(string lpszFile, int nIconIndex,
-            out IntPtr phiconLarge, out IntPtr phiconSmall, uint nIcons);
-
-        [DllImport("ole32.dll", PreserveSig = false)]
-        private static extern void PropVariantClear(ref PropVariant pvar);
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         private static extern IntPtr CreateWindowEx(
@@ -123,68 +161,12 @@ namespace ZenTimings.Helpers
         private static extern uint PrivateExtractIcons(string szFileName, int nIconIndex, int cxIcon, int cyIcon,
             [Out] IntPtr[] phicon, IntPtr piconid, uint nIcons, uint flags);
 
-        [ComImport, Guid("00021401-0000-0000-C000-000000000046")]
-        private class ShellLink
-        {
-        }
-
-        [ComImport, Guid("000214F9-0000-0000-C000-000000000046")]
-        [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        private interface IShellLinkW
-        {
-            void GetPath(IntPtr pszFile, int cch, IntPtr pfd, uint fFlags);
-            void GetIDList(out IntPtr ppidl);
-            void SetIDList(IntPtr pidl);
-            void GetDescription(IntPtr pszName, int cch);
-            void SetDescription([MarshalAs(UnmanagedType.LPWStr)] string pszName);
-            void GetWorkingDirectory(IntPtr pszDir, int cch);
-            void SetWorkingDirectory([MarshalAs(UnmanagedType.LPWStr)] string pszDir);
-            void GetArguments(IntPtr pszArgs, int cch);
-            void SetArguments([MarshalAs(UnmanagedType.LPWStr)] string pszArgs);
-            void GetHotkey(out ushort pwHotkey);
-            void SetHotkey(ushort wHotkey);
-            void GetShowCmd(out int piShowCmd);
-            void SetShowCmd(int iShowCmd);
-            void GetIconLocation(IntPtr pszIconPath, int cch, out int piIcon);
-            void SetIconLocation([MarshalAs(UnmanagedType.LPWStr)] string pszIconPath, int iIcon);
-            void SetRelativePath([MarshalAs(UnmanagedType.LPWStr)] string pszPathRel, uint dwReserved);
-            void Resolve(IntPtr hwnd, uint fFlags);
-            void SetPath([MarshalAs(UnmanagedType.LPWStr)] string pszFile);
-        }
-
-        [ComImport, Guid("0000010b-0000-0000-C000-000000000046")]
-        [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        private interface IPersistFile
-        {
-            void GetClassID(out Guid pClassID);
-            [PreserveSig]
-            int IsDirty();
-            void Load([MarshalAs(UnmanagedType.LPWStr)] string pszFileName, uint dwMode);
-            void Save([MarshalAs(UnmanagedType.LPWStr)] string pszFileName,
-                [MarshalAs(UnmanagedType.Bool)] bool fRemember);
-            void SaveCompleted([MarshalAs(UnmanagedType.LPWStr)] string pszFileName);
-            void GetCurFile([MarshalAs(UnmanagedType.LPWStr)] out string ppszFileName);
-        }
-
-        [ComImport, Guid("886D8EEB-8CF2-4446-8D02-CDBA1DBDCF99")]
-        [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        private interface IPropertyStore
-        {
-            void GetCount(out uint cProps);
-            void GetAt(uint iProp, out PropertyKey pkey);
-            void GetValue(ref PropertyKey key, out PropVariant pv);
-            void SetValue(ref PropertyKey key, ref PropVariant pv);
-            void Commit();
-        }
-
         public static void Show(string title, string message, bool warning = false)
         {
             IntPtr hwnd = IntPtr.Zero;
             IntPtr smallIcon = IntPtr.Zero;
             IntPtr largeIcon = IntPtr.Zero;
             bool iconAdded = false;
-
-            ApplyIdentity();
 
             try
             {
@@ -193,7 +175,7 @@ namespace ZenTimings.Helpers
 
                 hwnd = CreateWindowEx(
                     0,
-                    "STATIC",
+                    EnsureWindowClass() ? WindowClassName : "STATIC",
                     "ZenTimings Driver Cleanup",
                     0,
                     0,
@@ -202,18 +184,22 @@ namespace ZenTimings.Helpers
                     0,
                     IntPtr.Zero,
                     IntPtr.Zero,
-                    IntPtr.Zero,
+                    GetModuleHandle(null),
                     IntPtr.Zero);
 
                 if (hwnd == IntPtr.Zero)
                     return;
+
+                // Explorer runs non-elevated
+                ChangeWindowMessageFilterEx(hwnd, CallbackMessage, MSGFLT_ALLOW, IntPtr.Zero);
 
                 NOTIFYICONDATA data = new NOTIFYICONDATA
                 {
                     cbSize = (uint)Marshal.SizeOf(typeof(NOTIFYICONDATA)),
                     hWnd = hwnd,
                     uID = 1,
-                    uFlags = NIF_ICON | NIF_TIP | NIF_INFO,
+                    uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP | NIF_INFO,
+                    uCallbackMessage = CallbackMessage,
                     hIcon = hasIcons
                         ? smallIcon
                         : LoadIcon(IntPtr.Zero, new IntPtr(warning ? IDI_WARNING : IDI_INFORMATION)),
@@ -245,6 +231,9 @@ namespace ZenTimings.Helpers
 
                 // Tell Shell that we want the Windows Vista+ notification icon interface.
                 Shell_NotifyIcon(NIM_SETVERSION, ref data);
+
+                // Keep the icon (and process) alive until the balloon closes so Shell can attribute it to this app.
+                WaitForBalloon(hwnd);
             }
             catch
             {
@@ -275,99 +264,78 @@ namespace ZenTimings.Helpers
             }
         }
 
-        private static void ApplyIdentity()
+        private static void WaitForBalloon(IntPtr hwnd)
         {
-            lock (identityGate)
+            balloonClosed = false;
+            balloonDeadline = Environment.TickCount + BalloonTimeoutMs;
+
+            while (!balloonClosed)
             {
-                if (identityApplied)
+                int remaining = balloonDeadline - Environment.TickCount;
+                if (remaining <= 0)
                     return;
 
-                identityApplied = true;
+                MsgWaitForMultipleObjects(0, null, false, (uint)remaining, QS_ALLINPUT);
 
-                try
+                while (PeekMessage(out MSG msg, IntPtr.Zero, 0, 0, PM_REMOVE))
                 {
-                    SetCurrentProcessExplicitAppUserModelID(AppUserModelId);
-                    EnsureShortcut(ExecutablePath());
-                }
-                catch
-                {
+                    TranslateMessage(ref msg);
+                    DispatchMessage(ref msg);
                 }
             }
         }
 
-        private static void EnsureShortcut(string exePath)
+        private static IntPtr WindowProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
         {
-            if (string.IsNullOrEmpty(exePath) || !File.Exists(exePath))
-                return;
-
-            string startMenu = Environment.GetFolderPath(Environment.SpecialFolder.StartMenu);
-            if (string.IsNullOrEmpty(startMenu))
-                return;
-
-            string programs = Path.Combine(startMenu, "Programs");
-            string shortcut = Path.Combine(programs, AppName + ".lnk");
-
-            if (File.Exists(shortcut) && File.GetLastWriteTimeUtc(shortcut) >= File.GetLastWriteTimeUtc(exePath))
-                return;
-
-            Directory.CreateDirectory(programs);
-
-            object link = new ShellLink();
-
-            try
+            if (msg == CallbackMessage)
             {
-                ((IShellLinkW)link).SetPath(exePath);
+                uint evt = (uint)(lParam.ToInt64() & 0xFFFF);
 
-                PropertyKey key = new PropertyKey { formatId = AppUserModelIdProperty, propertyId = 5 };
-                PropVariant id = new PropVariant
-                {
-                    vt = VT_LPWSTR,
-                    value = Marshal.StringToCoTaskMemUni(AppUserModelId)
-                };
+                if (evt == NIN_BALLOONHIDE || evt == NIN_BALLOONTIMEOUT || evt == NIN_BALLOONUSERCLICK)
+                    balloonClosed = true;
+                else if (evt == NIN_BALLOONSHOW)
+                    balloonDeadline = Environment.TickCount + BalloonVisibleMs;
 
-                try
-                {
-                    IPropertyStore store = (IPropertyStore)link;
-                    store.SetValue(ref key, ref id);
-                    store.Commit();
-                }
-                finally
-                {
-                    PropVariantClear(ref id);
-                }
-
-                ((IPersistFile)link).Save(shortcut, true);
+                return IntPtr.Zero;
             }
-            finally
+
+            return DefWindowProc(hWnd, msg, wParam, lParam);
+        }
+
+        private static bool EnsureWindowClass()
+        {
+            if (classRegistered)
+                return true;
+
+            WNDCLASSEX wc = new WNDCLASSEX
             {
-                Marshal.FinalReleaseComObject(link);
-            }
+                cbSize = (uint)Marshal.SizeOf(typeof(WNDCLASSEX)),
+                lpfnWndProc = Marshal.GetFunctionPointerForDelegate(wndProc),
+                hInstance = GetModuleHandle(null),
+                lpszClassName = WindowClassName
+            };
+
+            classRegistered = RegisterClassEx(ref wc) != 0;
+            return classRegistered;
         }
 
         private static bool TryLoadIcons(out IntPtr smallIcon, out IntPtr largeIcon)
         {
-            smallIcon = IntPtr.Zero;
-            largeIcon = IntPtr.Zero;
-
             string exePath = ExecutablePath();
-            if (string.IsNullOrEmpty(exePath))
-                return false;
-
-            ExtractIconEx(exePath, 0, out IntPtr extractedLarge, out smallIcon, 1);
-
-            IntPtr[] icons = new IntPtr[1];
-            if (PrivateExtractIcons(exePath, 0, 256, 256, icons, IntPtr.Zero, 1, 0) > 0 && icons[0] != IntPtr.Zero)
-            {
-                largeIcon = icons[0];
-                if (extractedLarge != IntPtr.Zero)
-                    DestroyIcon(extractedLarge);
-            }
-            else
-            {
-                largeIcon = extractedLarge;
-            }
+            smallIcon = LoadIconFromFile(exePath, 16);
+            largeIcon = LoadIconFromFile(exePath, 256);
 
             return smallIcon != IntPtr.Zero && largeIcon != IntPtr.Zero;
+        }
+
+        private static IntPtr LoadIconFromFile(string path, int size)
+        {
+            if (string.IsNullOrEmpty(path))
+                return IntPtr.Zero;
+
+            IntPtr[] icons = new IntPtr[1];
+            PrivateExtractIcons(path, 0, size, size, icons, IntPtr.Zero, 1, 0);
+            return icons[0];
         }
 
         private static string ExecutablePath()
