@@ -83,7 +83,7 @@ namespace ZenTimings.Windows
                 Filter = "SPD files (*.spd)|*.spd|Binary files (*.bin)|*.bin|All files (*.*)|*.*",
                 FilterIndex = 1,
                 DefaultExt = "spd",
-                FileName = $"SPD_0x{selected.I2cAddress:X2}.spd",
+                FileName = GetDumpFileName(selected),
                 RestoreDirectory = true
             };
 
@@ -123,6 +123,32 @@ namespace ZenTimings.Windows
             {
                 StatusText.Text = $"SPD dumped to {dlg.FileName}";
             }
+        }
+
+        private static string GetDumpFileName(SlotItem slot)
+        {
+            var parts = new List<string> { "SPD" };
+
+            if (slot.SpdInfo is Ddr5SpdInfo info)
+            {
+                AddFileNamePart(parts, info.ModuleManufacturer);
+                AddFileNamePart(parts, info.ModulePartNumber);
+            }
+
+            parts.Add($"0x{slot.I2cAddress:X2}");
+            return string.Join("_", parts) + ".spd";
+        }
+
+        private static void AddFileNamePart(List<string> parts, string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return;
+
+            var invalid = System.IO.Path.GetInvalidFileNameChars();
+            var cleaned = new string(value.Trim().Select(c => invalid.Contains(c) || char.IsWhiteSpace(c) ? '-' : c).ToArray()).Trim('-');
+
+            if (cleaned.Length > 0)
+                parts.Add(cleaned);
         }
 
         private async Task LoadSlotsAsync()
