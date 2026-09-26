@@ -574,7 +574,7 @@ namespace ZenTimings.ViewModels
 
             var selectedSource = GetSelectedVoltageSource(rail);
             float value = ReadVoltageFrom(rail, selectedSource);
-            if (value > 0)
+            if (IsValidReading(rail, selectedSource, value))
             {
                 usedSource = selectedSource;
                 return value;
@@ -586,7 +586,7 @@ namespace ZenTimings.ViewModels
                     continue;
 
                 value = ReadVoltageFrom(rail, source);
-                if (value > 0)
+                if (IsValidReading(rail, source, value))
                 {
                     usedSource = source;
                     return value;
@@ -594,6 +594,27 @@ namespace ZenTimings.ViewModels
             }
 
             return 0;
+        }
+
+        private const float MinSuperIoVddio = 1.08f;
+        private const float MaxSuperIoVddio = 1.65f;
+
+        // SuperIO VDDIO readings outside the plausible range are ignored (so AOD is used instead),
+        // unless the user explicitly selected SuperIO as the VDDIO source.
+        // Still unsure about the best reasonable min/max range
+        private bool IsValidReading(VoltageRail rail, VoltageSensorSource source, float value)
+        {
+            if (value <= 0)
+                return false;
+
+            if (rail == VoltageRail.Vddio && source == VoltageSensorSource.SuperIo)
+            {
+                bool sioForced = IsVoltageSourceSelectionSupported && Settings.VddioSensorSource == VoltageSensorSource.SuperIo;
+                if (!sioForced)
+                    return value >= MinSuperIoVddio && value <= MaxSuperIoVddio;
+            }
+
+            return true;
         }
 
         private static string VoltageLabel(string name, string plainLabel, VoltageSensorSource? source)
