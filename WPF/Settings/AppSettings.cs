@@ -209,6 +209,62 @@ namespace ZenTimings.Settings
                 }
             }
         }
+
+        private bool _showCpuTemperature = false;
+        public bool ShowCpuTemperature
+        {
+            get => _showCpuTemperature;
+            set
+            {
+                if (_showCpuTemperature != value)
+                {
+                    _showCpuTemperature = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowCpuTemperature)));
+                }
+            }
+        }
+
+        private bool _showIodTemperature = false;
+        public bool ShowIodTemperature
+        {
+            get => _showIodTemperature;
+            set
+            {
+                if (_showIodTemperature != value)
+                {
+                    _showIodTemperature = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowIodTemperature)));
+                }
+            }
+        }
+
+        private bool _showDimmTelemetry = false;
+        public bool ShowDimmTelemetry
+        {
+            get => _showDimmTelemetry;
+            set
+            {
+                if (_showDimmTelemetry != value)
+                {
+                    _showDimmTelemetry = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowDimmTelemetry)));
+                }
+            }
+        }
+
+        private bool _showWheaErrors = false;
+        public bool ShowWheaErrors
+        {
+            get => _showWheaErrors;
+            set
+            {
+                if (_showWheaErrors != value)
+                {
+                    _showWheaErrors = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowWheaErrors)));
+                }
+            }
+        }
         public bool AdvancedMode { get; set; } = true;
         public Theme AppTheme { get; set; } = Theme.DarkMintGradient;
         public ScreenshotType ScreenshotMode { get; set; } = ScreenshotType.Window;
@@ -244,6 +300,7 @@ namespace ZenTimings.Settings
         public string NotifiedChangelog { get; set; } = "";
         public bool SingleInstance { get; set; } = true;
         public bool AutoOpenTelemetry { get; set; } = false;
+        public bool ShowUclkRatio { get; set; } = false;
         public bool FirstStart { get; set; } = true;
         public int CornerRadius { get; set; } = 0;
         public ImpedanceTableSource ImpedanceTableSrc { get; set; } = ImpedanceTableSource.APOB;

@@ -13,6 +13,7 @@ using ZenStates.Core.Hardware.DRAM.DDR5.Pmic;
 using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
 using ZenStates.Core.Hardware.DRAM.DDR5.Thermal;
 using ZenTimings.Common;
+using ZenTimings.Helpers;
 using ZenTimings.Settings;
 using ZenTimings.Utils;
 using ZenTimings.ViewModels;
@@ -187,6 +188,9 @@ namespace ZenTimings.Windows
         // The single shared column-width object declared as a Window resource (see SensorsWindow.xaml);
         // referenced from code-behind to load/save it against settings_sensors.xml.
         private ColumnLayout Columns => (ColumnLayout)Resources["ColumnLayout"];
+
+        // Set by the main window, read when the window loads its sensor groups
+        internal CpuTemperatureSensors CpuTemperatures { get; set; }
 
         public SensorsWindow()
         {
@@ -769,7 +773,7 @@ namespace ZenTimings.Windows
 
             var hiddenSensors = SensorSettings.Instance.HiddenSensors;
 
-            foreach (var group in systemInfo.SensorGroups)
+            foreach (var group in GetSensorGroups(systemInfo))
             {
                 var groupVm = new SensorGroupViewModel { Header = group.Name };
                 int hiddenCount = 0;
@@ -799,6 +803,16 @@ namespace ZenTimings.Windows
         }
 
         private static string GetSensorKey(string chipName, string sensorName) => $"{chipName}|{sensorName}";
+
+        // The core's sensor groups, after the CPU temperatures the main window reads for this window
+        private IEnumerable<SensorGroup> GetSensorGroups(SystemInfo systemInfo)
+        {
+            if (CpuTemperatures != null)
+                yield return CpuTemperatures.Group;
+
+            foreach (var group in systemInfo.SensorGroups)
+                yield return group;
+        }
 
         // Hides the sensors currently selected in the DataGrid the context menu was opened on.
         private void HideSensors_Click(object sender, RoutedEventArgs e)
@@ -994,7 +1008,7 @@ namespace ZenTimings.Windows
 
             var hiddenSensors = SensorSettings.Instance.HiddenSensors;
 
-            foreach (var group in systemInfo.SensorGroups)
+            foreach (var group in GetSensorGroups(systemInfo))
             {
                 var groupVm = sensorGroupViewModels.FirstOrDefault(g => g.Header == group.Name);
                 if (groupVm == null)

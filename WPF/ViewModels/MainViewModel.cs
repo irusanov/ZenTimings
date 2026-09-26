@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using ZenStates.Core;
 using ZenStates.Core.Hardware;
@@ -10,6 +12,7 @@ using ZenStates.Core.Hardware.DRAM;
 using ZenStates.Core.Hardware.DRAM.DDR5.Pmic;
 using ZenStates.Core.Hardware.Mock;
 using ZenTimings.Common;
+using ZenTimings.Helpers;
 using ZenTimings.Plugin;
 using ZenTimings.Settings;
 using ZenTimings.Utils;
@@ -251,6 +254,14 @@ namespace ZenTimings.ViewModels
             set => SetProperty(ref _vmisc, value);
         }
 
+        // UCLK row label with the memory controller's ratio to MCLK, e.g. "UCLK [1:1]", switched on from Tools
+        private string _uclkLabel = "UCLK";
+        public string UclkLabel
+        {
+            get => _uclkLabel;
+            set => SetProperty(ref _uclkLabel, value);
+        }
+
         // Row labels naming the source each rail's value came from, e.g. "VSOC (SMU)" or "VDDIO (AOD)".
         // They keep the plain name while a rail has no reading.
         private string _vsocLabel = "VSOC";
@@ -272,6 +283,76 @@ namespace ZenTimings.ViewModels
         {
             get => _vmiscLabel;
             set => SetProperty(ref _vmiscLabel, value);
+        }
+
+        // The readouts describe the machine the app runs on, a debug report has nothing to show there
+        public bool IsLiveReadoutAvailable => mockData == null;
+
+        public bool IsIodTemperatureAvailable => IsLiveReadoutAvailable
+            && CpuTemperatureSensors.HasIodTemperature(CpuSingleton.Instance?.systemInfo?.SmuTableVersion ?? 0);
+
+        // Min, max and average of each readout since it was first shown, kept by the same class the
+        // Sensors window uses for its columns
+        private TelemetryItemViewModel _cpuTemperatureStats;
+        private TelemetryItemViewModel _iodAverageStats;
+        private TelemetryItemViewModel _iodHotspotStats;
+        private TelemetryItemViewModel _dimmTemperatureStats;
+        private TelemetryItemViewModel _dimmPowerStats;
+
+        private string _cpuTemperature;
+        public string CpuTemperature
+        {
+            get => _cpuTemperature;
+            set => SetProperty(ref _cpuTemperature, value);
+        }
+
+        private string _cpuTemperatureToolTip = "CPU temperature (Tctl/Tdie)";
+        public string CpuTemperatureToolTip
+        {
+            get => _cpuTemperatureToolTip;
+            set => SetProperty(ref _cpuTemperatureToolTip, value);
+        }
+
+        private string _iodTemperature;
+        public string IodTemperature
+        {
+            get => _iodTemperature;
+            set => SetProperty(ref _iodTemperature, value);
+        }
+
+        private string _iodTemperatureToolTip = "I/O die average / hotspot";
+        public string IodTemperatureToolTip
+        {
+            get => _iodTemperatureToolTip;
+            set => SetProperty(ref _iodTemperatureToolTip, value);
+        }
+
+        private string _dimmTelemetry;
+        public string DimmTelemetry
+        {
+            get => _dimmTelemetry;
+            set => SetProperty(ref _dimmTelemetry, value);
+        }
+
+        private string _dimmTelemetryToolTip;
+        public string DimmTelemetryToolTip
+        {
+            get => _dimmTelemetryToolTip;
+            set => SetProperty(ref _dimmTelemetryToolTip, value);
+        }
+
+        private string _wheaErrors;
+        public string WheaErrors
+        {
+            get => _wheaErrors;
+            set => SetProperty(ref _wheaErrors, value);
+        }
+
+        private bool _hasWheaErrors;
+        public bool HasWheaErrors
+        {
+            get => _hasWheaErrors;
+            set => SetProperty(ref _hasWheaErrors, value);
         }
 
         // The decoded AOD table: rebuilt from the debug report's raw dump in a mock window, read from
@@ -610,6 +691,24 @@ namespace ZenTimings.ViewModels
             }
         }
 
+        // The memory controller runs at MCLK or at half of it, any other reading is not a ratio it has.
+        // Compared within half a percent, the clocks come out of the power table as measured values.
+        private static string UclkRatioLabel(float uclk, float mclk)
+        {
+            if (uclk <= 0 || mclk <= 0)
+                return "UCLK";
+
+            float ratio = uclk / mclk;
+
+            if (Math.Abs(ratio - 1.0f) < 0.005f)
+                return "UCLK [1:1]";
+
+            if (Math.Abs(ratio - 0.5f) < 0.005f)
+                return "UCLK [1:2]";
+
+            return "UCLK";
+        }
+
         // Call after CpuSingleton.Instance.systemInfo.UpdateSensors() to refresh the live sensor readings.
         public void RefreshSensors()
         {
@@ -628,6 +727,138 @@ namespace ZenTimings.ViewModels
 
             Vmisc = ReadVoltage(VoltageRail.Vmisc, out source);
             VmiscLabel = VoltageLabel("MISC", "VDD MISC", source);
+
+            RefreshUclkLabel();
+        }
+
+        // Also called on its own when the Tools item is switched, the clocks it needs are already read
+        public void RefreshUclkLabel()
+        {
+            UclkLabel = Settings.ShowUclkRatio ? UclkRatioLabel(PowerTable?.UCLK ?? 0, PowerTable?.MCLK ?? 0) : "UCLK";
+        }
+
+        // Everything shown here was already read by the refresh, except the values passed in
+        public void RefreshReadouts(float? cpuTemperature, int wheaErrorCount)
+        {
+            CpuTemperature = cpuTemperature.HasValue ? FormatReadout(cpuTemperature.Value, "°C") : null;
+
+            if (cpuTemperature.HasValue)
+            {
+                _cpuTemperatureStats = TrackReadout(_cpuTemperatureStats, "CPU", cpuTemperature.Value, "°C");
+                CpuTemperatureToolTip = $"CPU temperature (Tctl/Tdie)\n{ReadoutStats(_cpuTemperatureStats)}";
+            }
+
+            if (Settings.ShowIodTemperature && IsIodTemperatureAvailable)
+                RefreshIodTemperature();
+
+            if (Settings.ShowDimmTelemetry && IsDimmTelemetryAvailable)
+                RefreshDimmTelemetry();
+
+            WheaErrors = wheaErrorCount >= 0 ? wheaErrorCount.ToString(CultureInfo.InvariantCulture) : null;
+            HasWheaErrors = wheaErrorCount > 0;
+        }
+
+        // Read from the power table the refresh has just updated
+        private void RefreshIodTemperature()
+        {
+            if (!CpuTemperatureSensors.TryReadIodTemperature(CpuSingleton.Instance.systemInfo.SmuTableVersion, PowerTable?.Table, out float average, out float hotspot))
+            {
+                IodTemperature = null;
+                return;
+            }
+
+            IodTemperature = $"{average.ToString("F1", CultureInfo.InvariantCulture)} / {FormatReadout(hotspot, "°C")}";
+
+            _iodAverageStats = TrackReadout(_iodAverageStats, "IOD", average, "°C");
+            _iodHotspotStats = TrackReadout(_iodHotspotStats, "IOD Hotspot", hotspot, "°C");
+            IodTemperatureToolTip = $"I/O die average / hotspot\n{ReadoutStats(_iodAverageStats, _iodHotspotStats)}";
+        }
+
+        private void RefreshDimmTelemetry()
+        {
+            var memoryConfig = CpuSingleton.Instance?.memoryConfig;
+            var spdInfo = memoryConfig?.SpdInfo;
+            var modules = memoryConfig?.Modules;
+
+            double? hottest = null;
+            double totalPower = 0;
+            bool hasPower = false;
+            var toolTip = new StringBuilder();
+
+            if (spdInfo != null)
+            {
+                // Same order as the modules, like the Sensors window pairs them
+                int index = 0;
+                foreach (var entry in spdInfo.Values)
+                {
+                    var module = modules != null && index < modules.Count ? modules[index] : null;
+                    string name = !string.IsNullOrEmpty(module?.Slot) ? module.Slot : $"DIMM {index}";
+                    index++;
+
+                    var parts = new List<string>();
+
+                    if (entry.ThermalData != null && entry.ThermalData.IsValid)
+                    {
+                        double temperature = entry.ThermalData.TemperatureC;
+                        if (!hottest.HasValue || temperature > hottest.Value)
+                            hottest = temperature;
+                        parts.Add(FormatReadout(temperature, "°C"));
+                    }
+
+                    if (entry.PmicData != null && entry.PmicData.IsValid)
+                    {
+                        totalPower += entry.PmicData.TotalW;
+                        hasPower = true;
+                        parts.Add(FormatReadout(entry.PmicData.TotalW, "W"));
+                    }
+
+                    if (parts.Count > 0)
+                        toolTip.AppendLine($"{name}: {string.Join(", ", parts)}");
+                }
+            }
+
+            var text = new List<string>();
+            var stats = new List<TelemetryItemViewModel>();
+            if (hottest.HasValue)
+            {
+                text.Add(FormatReadout(hottest.Value, "°C"));
+                _dimmTemperatureStats = TrackReadout(_dimmTemperatureStats, "DIMM", hottest.Value, "°C");
+                stats.Add(_dimmTemperatureStats);
+            }
+            if (hasPower)
+            {
+                text.Add(FormatReadout(totalPower, "W"));
+                _dimmPowerStats = TrackReadout(_dimmPowerStats, "DIMM Power", totalPower, "W");
+                stats.Add(_dimmPowerStats);
+            }
+
+            DimmTelemetry = text.Count > 0 ? string.Join(" / ", text) : null;
+            DimmTelemetryToolTip = toolTip.Length > 0
+                ? $"Hottest module and total power\n{ReadoutStats(stats.ToArray())}\n\n{toolTip.ToString().TrimEnd()}"
+                : null;
+        }
+
+        private static TelemetryItemViewModel TrackReadout(TelemetryItemViewModel stats, string name, double value, string unit)
+        {
+            if (stats == null)
+                return new TelemetryItemViewModel(name, value, unit);
+
+            stats.UpdateValue(value);
+            return stats;
+        }
+
+        // One line per statistic, several readouts side by side like on the main window: "Max 43.69 °C / 51.75 °C"
+        private static string ReadoutStats(params TelemetryItemViewModel[] stats)
+        {
+            return $"Min {string.Join(" / ", stats.Select(s => s.Min))}\n" +
+                $"Max {string.Join(" / ", stats.Select(s => s.Max))}\n" +
+                $"Average {string.Join(" / ", stats.Select(s => s.Average))}";
+        }
+
+        // One decimal keeps all the readouts on one line, the Sensors window has the full precision
+        private static string FormatReadout(double value, string unit)
+        {
+            return $"{value.ToString("F1", CultureInfo.InvariantCulture)} {unit}";
         }
     }
 }

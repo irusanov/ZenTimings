@@ -82,6 +82,18 @@
         </Style.Triggers>
     </Style>
 
+    <!-- The optional readouts under the system info share one line, so they drop the fixed widths of the grid cells -->
+    <Style x:Key="ReadoutLabelStyles" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource DefaultTextBlockStyles}">
+        <Setter Property="Padding" Value="0 2 3 2" />
+        <Setter Property="MinWidth" Value="0" />
+    </Style>
+
+    <Style x:Key="ReadoutValueStyles" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource ValueStyles}">
+        <Setter Property="Padding" Value="0 2" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="TextAlignment" Value="Left" />
+    </Style>
+
     <Style x:Key="Separator" TargetType="{x:Type Border}">
         <Setter Property="Margin" Value="0" />
         <Setter Property="Padding" Value="0" />
