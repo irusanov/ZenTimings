@@ -174,6 +174,9 @@ namespace ZenTimings
                 }
             }
 
+            // Keep the notification alive only after the mutex is released, so a new instance isn't blocked.
+            DriverCleanerNotification.WaitForPending();
+
             Environment.Exit(0);
         }
 
