@@ -23,6 +23,11 @@ namespace ZenTimings
 
         private const string cleanupMutexName = "Local\\ZenTimings.DriverCleanup";
 
+        // Held by each cleanup-mode process so it isn't counted as a running app instance.
+        private const string cleanupProcessMarkerPrefix = "Local\\ZenTimings.DriverCleanup.Process.";
+
+        private static Mutex cleanupProcessMarker;
+
         internal static Mutex instanceMutex;
         internal bool createdNew;
 
@@ -158,6 +163,9 @@ namespace ZenTimings
 
         private static void StartCleanupProcess(StartupEventArgs e)
         {
+            using (Process current = Process.GetCurrentProcess())
+                cleanupProcessMarker = new Mutex(false, cleanupProcessMarkerPrefix + current.Id);
+
             NotificationLevel notificationLevel = GetNotificationLevel(e.Args);
 
             using (Mutex cleanupMutex = new Mutex(false, cleanupMutexName))
@@ -173,6 +181,9 @@ namespace ZenTimings
                     cleanupMutex.ReleaseMutex();
                 }
             }
+
+            // Keep the notification alive only after the mutex is released, so a new instance isn't blocked.
+            DriverCleanerNotification.WaitForPending();
 
             Environment.Exit(0);
         }
@@ -265,7 +276,7 @@ namespace ZenTimings
                 {
                     try
                     {
-                        if (process.Id != currentProcessId)
+                        if (process.Id != currentProcessId && !IsCleanupProcess(process.Id))
                             return false;
                     }
                     catch
@@ -280,6 +291,17 @@ namespace ZenTimings
                 foreach (Process process in processes)
                     process.Dispose();
             }
+        }
+
+        private static bool IsCleanupProcess(int processId)
+        {
+            if (Mutex.TryOpenExisting(cleanupProcessMarkerPrefix + processId, out Mutex marker))
+            {
+                marker.Dispose();
+                return true;
+            }
+
+            return false;
         }
 
         internal static bool StartDriverCleanup(NotificationLevel notificationLevel = NotificationLevel.All)

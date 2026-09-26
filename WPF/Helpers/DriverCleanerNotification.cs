@@ -161,12 +161,21 @@ namespace ZenTimings.Helpers
         private static extern uint PrivateExtractIcons(string szFileName, int nIconIndex, int cxIcon, int cyIcon,
             [Out] IntPtr[] phicon, IntPtr piconid, uint nIcons, uint flags);
 
+        private static IntPtr pendingHwnd;
+        private static IntPtr pendingSmallIcon;
+        private static IntPtr pendingLargeIcon;
+        private static bool pendingIconAdded;
+
         public static void Show(string title, string message, bool warning = false)
         {
+            // Only one notification is kept alive at a time.
+            WaitForPending();
+
             IntPtr hwnd = IntPtr.Zero;
             IntPtr smallIcon = IntPtr.Zero;
             IntPtr largeIcon = IntPtr.Zero;
             bool iconAdded = false;
+            bool keepAlive = false;
 
             try
             {
@@ -232,8 +241,15 @@ namespace ZenTimings.Helpers
                 // Tell Shell that we want the Windows Vista+ notification icon interface.
                 Shell_NotifyIcon(NIM_SETVERSION, ref data);
 
-                // Keep the icon (and process) alive until the balloon closes so Shell can attribute it to this app.
-                WaitForBalloon(hwnd);
+                // Keep the icon alive until the balloon closes so Shell can attribute it to this app.
+                // The wait happens in WaitForPending so callers are not blocked.
+                pendingHwnd = hwnd;
+                pendingSmallIcon = smallIcon;
+                pendingLargeIcon = largeIcon;
+                pendingIconAdded = iconAdded;
+                balloonClosed = false;
+                balloonDeadline = Environment.TickCount + BalloonTimeoutMs;
+                keepAlive = true;
             }
             catch
             {
@@ -241,34 +257,62 @@ namespace ZenTimings.Helpers
             }
             finally
             {
-                if (iconAdded)
-                {
-                    NOTIFYICONDATA data = new NOTIFYICONDATA
-                    {
-                        cbSize = (uint)Marshal.SizeOf(typeof(NOTIFYICONDATA)),
-                        hWnd = hwnd,
-                        uID = 1
-                    };
-
-                    Shell_NotifyIcon(NIM_DELETE, ref data);
-                }
-
-                if (hwnd != IntPtr.Zero)
-                    DestroyWindow(hwnd);
-
-                if (smallIcon != IntPtr.Zero)
-                    DestroyIcon(smallIcon);
-
-                if (largeIcon != IntPtr.Zero)
-                    DestroyIcon(largeIcon);
+                if (!keepAlive)
+                    Release(hwnd, smallIcon, largeIcon, iconAdded);
             }
         }
 
-        private static void WaitForBalloon(IntPtr hwnd)
+        /// <summary>
+        /// Blocks until the last shown notification has closed (or timed out), then removes its tray icon.
+        /// </summary>
+        public static void WaitForPending()
         {
-            balloonClosed = false;
-            balloonDeadline = Environment.TickCount + BalloonTimeoutMs;
+            if (pendingHwnd == IntPtr.Zero)
+                return;
 
+            try
+            {
+                WaitForBalloon();
+            }
+            catch
+            {
+            }
+            finally
+            {
+                Release(pendingHwnd, pendingSmallIcon, pendingLargeIcon, pendingIconAdded);
+                pendingHwnd = IntPtr.Zero;
+                pendingSmallIcon = IntPtr.Zero;
+                pendingLargeIcon = IntPtr.Zero;
+                pendingIconAdded = false;
+            }
+        }
+
+        private static void Release(IntPtr hwnd, IntPtr smallIcon, IntPtr largeIcon, bool iconAdded)
+        {
+            if (iconAdded)
+            {
+                NOTIFYICONDATA data = new NOTIFYICONDATA
+                {
+                    cbSize = (uint)Marshal.SizeOf(typeof(NOTIFYICONDATA)),
+                    hWnd = hwnd,
+                    uID = 1
+                };
+
+                Shell_NotifyIcon(NIM_DELETE, ref data);
+            }
+
+            if (hwnd != IntPtr.Zero)
+                DestroyWindow(hwnd);
+
+            if (smallIcon != IntPtr.Zero)
+                DestroyIcon(smallIcon);
+
+            if (largeIcon != IntPtr.Zero)
+                DestroyIcon(largeIcon);
+        }
+
+        private static void WaitForBalloon()
+        {
             while (!balloonClosed)
             {
                 int remaining = balloonDeadline - Environment.TickCount;
