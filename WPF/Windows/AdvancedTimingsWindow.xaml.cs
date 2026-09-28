@@ -1,10 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Interop;
+using System.Windows.Media;
+using System.Windows.Threading;
 using ZenStates.Core.Hardware.DRAM;
 using ZenTimings.Common;
+using ZenTimings.Settings;
 using ZenTimings.Utils;
 
 namespace ZenTimings.Windows
@@ -18,16 +25,51 @@ namespace ZenTimings.Windows
             public bool IsMismatch { get; set; }
         }
 
+        // Fixed row and header heights make the number of rows that fit in a column predictable
+        private const double GridFontSize = 11;
+        private const double GridRowHeight = 20;
+        private const double GridHeaderHeight = 24;
+        private const double PanelGap = 8;
+        // Cell padding from the text styles plus room for the bold text of mismatched rows
+        private const double NameCellExtra = 16 + 12;
+        private const double ValueCellExtra = 16 + 12;
+
+        private const string NameHeader = "Timing";
+
         private List<TimingGridItem> _allRows = new List<TimingGridItem>();
-        private List<TimingGridItem> _baseRows = new List<TimingGridItem>();
-        private List<TimingGridItem> _extendedRows = new List<TimingGridItem>();
+        private List<TimingGridItem> _visibleRows = new List<TimingGridItem>();
+        private readonly List<DataGrid> _panels = new List<DataGrid>();
+        private string[] _valueHeaders = new string[0];
         private int _channelCount;
+
+        private double _nameColumnWidth;
+        private double _valueColumnWidth;
+        private double _panelWidth;
+
+        // Border and padding of the themed DataGrid, measured once the first panel is loaded
+        private double _chromeWidth = 4;
+        private double _chromeHeight = 4;
+        private bool _chromeMeasured;
+
+        // Last applied layout, to skip work while resizing doesn't change the flow
+        private int _layoutCapacity = -1;
+        private int _layoutPanels = -1;
+        private bool _rowsChanged = true;
+        private bool _initialWidthApplied;
+
+        // Set when a saved size and position were restored, so the default two-panel width is not applied
+        private bool _placementRestored;
 
         public AdvancedTimingsWindow()
         {
             InitializeComponent();
+            Loaded += AdvancedTimingsWindow_Loaded;
+            Closing += AdvancedTimingsWindow_Closing;
+            RestoreWindowPlacement();
             LoadTimings();
         }
+
+        private static double ScrollBarWidth => SystemParameters.VerticalScrollBarWidth;
 
         private void LoadTimings()
         {
@@ -40,10 +82,9 @@ namespace ZenTimings.Windows
                 if (allTimings == null || allTimings.Count == 0)
                 {
                     _allRows.Clear();
-                    _baseRows.Clear();
-                    _extendedRows.Clear();
-                    BaseTimingsGrid.ItemsSource = _baseRows;
-                    ExtendedTimingsGrid.ItemsSource = _extendedRows;
+                    _valueHeaders = new string[0];
+                    MeasureColumns();
+                    ApplyFilter();
                     StatusText.Text = "No memory timings available.";
                     return;
                 }
@@ -55,6 +96,7 @@ namespace ZenTimings.Windows
                     .ToList();
 
                 _channelCount = uniqueTimings.Count;
+                _valueHeaders = uniqueTimings.Select(t => $"DCT {t.Key >> 20}").ToArray();
                 _allRows = props
                     .Where(p => p.Name != "Item")
                     .Select(property =>
@@ -69,11 +111,7 @@ namespace ZenTimings.Windows
                     })
                     .ToList();
 
-                var splitIndex = GetExtendedStartIndex(_allRows);
-                _baseRows = splitIndex > 0 ? _allRows.Take(splitIndex).ToList() : new List<TimingGridItem>(_allRows);
-                _extendedRows = splitIndex >= 0 ? _allRows.Skip(splitIndex).ToList() : new List<TimingGridItem>();
-
-                BuildColumns(uniqueTimings);
+                MeasureColumns();
                 ApplyFilter();
             }
             catch (Exception ex)
@@ -83,36 +121,330 @@ namespace ZenTimings.Windows
             }
         }
 
-        private void BuildColumns(List<KeyValuePair<uint, BaseDramTimings>> uniqueTimings)
+        #region Column flow layout
+
+        // Widths are measured over all rows, not just the filtered ones, so the columns don't jump
+        // while typing in the search box, and all panels line up.
+        private void MeasureColumns()
         {
-            ConfigureGridColumns(ExtendedTimingsGrid, uniqueTimings, "Timing");
-            ConfigureGridColumns(BaseTimingsGrid, uniqueTimings, "Timing");
-        }
+            double nameWidth = MeasureText(NameHeader);
+            double valueWidth = 0;
 
-        private void ConfigureGridColumns(DataGrid grid, List<KeyValuePair<uint, BaseDramTimings>> uniqueTimings, string nameHeader)
-        {
-            grid.Columns.Clear();
+            foreach (string header in _valueHeaders)
+                valueWidth = Math.Max(valueWidth, MeasureText(header));
 
-            var nameColumn = new DataGridTextColumn
+            foreach (TimingGridItem row in _allRows)
             {
-                Header = nameHeader,
-                Binding = new System.Windows.Data.Binding("PropertyName"),
-                ElementStyle = (Style)FindResource("TimingNameTextStyle")
-            };
-            grid.Columns.Add(nameColumn);
-
-            for (int i = 0; i < uniqueTimings.Count; i++)
-            {
-                var valueColumn = new DataGridTextColumn
-                {
-                    Header = $"DCT {uniqueTimings[i].Key >> 20}",
-                    Binding = new System.Windows.Data.Binding($"Values[{i}]"),
-                    ElementStyle = (Style)FindResource("TimingValueTextStyle")
-                };
-
-                grid.Columns.Add(valueColumn);
+                nameWidth = Math.Max(nameWidth, MeasureText(row.PropertyName));
+                foreach (string value in row.Values)
+                    valueWidth = Math.Max(valueWidth, MeasureText(value));
             }
+
+            _nameColumnWidth = Math.Ceiling(nameWidth + NameCellExtra);
+            _valueColumnWidth = Math.Ceiling(valueWidth + ValueCellExtra);
+            UpdatePanelWidth();
         }
+
+        private void UpdatePanelWidth()
+        {
+            _panelWidth = _nameColumnWidth + _valueColumnWidth * _valueHeaders.Length + _chromeWidth;
+        }
+
+        // Measured bold, the widest weight the text styles use
+        private double MeasureText(string text)
+        {
+            var typeface = new Typeface(FontFamily, FontStyles.Normal, FontWeights.Bold, FontStretches.Normal);
+            var formatted = new FormattedText(
+                text ?? string.Empty,
+                CultureInfo.CurrentUICulture,
+                FlowDirection.LeftToRight,
+                typeface,
+                GridFontSize,
+                Brushes.Black,
+                VisualTreeHelper.GetDpi(this).PixelsPerDip);
+
+            return formatted.WidthIncludingTrailingWhitespace;
+        }
+
+        private DataGrid CreatePanel()
+        {
+            var grid = new DataGrid
+            {
+                AutoGenerateColumns = false,
+                HeadersVisibility = DataGridHeadersVisibility.Column,
+                GridLinesVisibility = DataGridGridLinesVisibility.None,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                Focusable = false,
+                IsReadOnly = true,
+                CanUserAddRows = false,
+                CanUserDeleteRows = false,
+                CanUserResizeRows = false,
+                // Sorting or resizing a single panel would break the flow and the alignment between panels
+                CanUserSortColumns = false,
+                CanUserResizeColumns = false,
+                CanUserReorderColumns = false,
+                RowStyle = (Style)FindResource("TimingRowStyle"),
+                FontSize = GridFontSize,
+                RowHeight = GridRowHeight,
+                ColumnHeaderHeight = GridHeaderHeight,
+                VerticalAlignment = VerticalAlignment.Stretch,
+            };
+
+            grid.Columns.Add(new DataGridTextColumn
+            {
+                Header = NameHeader,
+                Binding = new Binding(nameof(TimingGridItem.PropertyName)),
+                ElementStyle = (Style)FindResource("TimingNameTextStyle"),
+                Width = new DataGridLength(_nameColumnWidth),
+            });
+
+            for (int i = 0; i < _valueHeaders.Length; i++)
+            {
+                grid.Columns.Add(new DataGridTextColumn
+                {
+                    Header = _valueHeaders[i],
+                    Binding = new Binding($"Values[{i}]"),
+                    ElementStyle = (Style)FindResource("TimingValueTextStyle"),
+                    Width = new DataGridLength(_valueColumnWidth),
+                });
+            }
+
+            grid.Loaded += Panel_Loaded;
+            return grid;
+        }
+
+        // The theme's border and padding are only known once a grid is in the visual tree
+        private void Panel_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (_chromeMeasured || !(sender is DataGrid grid))
+                return;
+
+            _chromeMeasured = true;
+            _chromeWidth = grid.BorderThickness.Left + grid.BorderThickness.Right + grid.Padding.Left + grid.Padding.Right + 2;
+            _chromeHeight = grid.BorderThickness.Top + grid.BorderThickness.Bottom + grid.Padding.Top + grid.Padding.Bottom + 2;
+            UpdatePanelWidth();
+
+            Dispatcher.BeginInvoke(new Action(() => LayoutPanels(force: true)), DispatcherPriority.Loaded);
+        }
+
+        /// <summary>Rows that fit in one panel without scrolling.</summary>
+        private int GetCapacity(double hostHeight)
+        {
+            return Math.Max(1, (int)Math.Floor((hostHeight - GridHeaderHeight - _chromeHeight) / GridRowHeight));
+        }
+
+        private void LayoutPanels(bool force = false)
+        {
+            if (TimingsHost == null || TimingsPanels == null || _panelWidth <= 0)
+                return;
+
+            double width = TimingsHost.ActualWidth;
+            double height = TimingsHost.ActualHeight;
+            if (width <= 0 || height <= 0)
+                return;
+
+            int rowCount = _visibleRows.Count;
+            int capacity = GetCapacity(height);
+            int maxPanels = Math.Max(1, (int)Math.Floor((width - ScrollBarWidth + PanelGap) / (_panelWidth + PanelGap)));
+            int neededPanels = Math.Max(1, (rowCount + capacity - 1) / capacity);
+            int panelCount = Math.Min(maxPanels, neededPanels);
+
+            if (!force && !_rowsChanged && capacity == _layoutCapacity && panelCount == _layoutPanels)
+                return;
+
+            _layoutCapacity = capacity;
+            _layoutPanels = panelCount;
+            _rowsChanged = false;
+
+            while (_panels.Count < panelCount)
+                _panels.Add(CreatePanel());
+
+            TimingsPanels.Children.Clear();
+
+            for (int i = 0; i < panelCount; i++)
+            {
+                bool isLast = i == panelCount - 1;
+                int start = i * capacity;
+                int take = isLast ? rowCount - start : capacity;
+
+                // Every panel but the last holds exactly as many rows as fit, the last takes the rest and scrolls
+                DataGrid grid = _panels[i];
+                grid.ItemsSource = take > 0 ? _visibleRows.GetRange(start, take) : new List<TimingGridItem>();
+                grid.VerticalScrollBarVisibility = isLast ? ScrollBarVisibility.Auto : ScrollBarVisibility.Disabled;
+                grid.Width = _panelWidth + (isLast ? ScrollBarWidth : 0);
+                grid.Margin = new Thickness(0, 0, isLast ? 0 : PanelGap, 0);
+
+                TimingsPanels.Children.Add(grid);
+            }
+
+            for (int i = panelCount; i < _panels.Count; i++)
+                _panels[i].ItemsSource = null;
+        }
+
+        private void TimingsHost_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            LayoutPanels();
+        }
+
+        private void AdvancedTimingsWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            // After the first panel reported its border, so the widths are final
+            Dispatcher.BeginInvoke(new Action(ApplyInitialWidth), DispatcherPriority.ContextIdle);
+        }
+
+        // Without a saved size and position the window opens auto-fitted, centered where it was opened
+        private void ApplyInitialWidth()
+        {
+            if (_initialWidthApplied || !CanFitWidth())
+                return;
+
+            _initialWidthApplied = true;
+
+            Rect workArea = GetWorkArea();
+            MinWidth = Math.Min(workArea.Width, _panelWidth + ScrollBarWidth + ActualWidth - TimingsHost.ActualWidth);
+
+            if (!_placementRestored)
+                FitToContent(keepCentered: true);
+        }
+
+        #region Size and position
+
+        // Uses the saved size and position when saving is enabled and the whole window would be on a screen,
+        // the same rule as the other windows
+        private void RestoreWindowPlacement()
+        {
+            AppSettings settings = AppSettings.Instance;
+            if (!settings.SaveWindowPosition)
+                return;
+
+            double left = settings.AdvancedTimingsWindowLeft;
+            double top = settings.AdvancedTimingsWindowTop;
+            double width = settings.AdvancedTimingsWindowWidth;
+            double height = settings.AdvancedTimingsWindowHeight;
+
+            if (left == -1 || top == -1 || width <= 0 || height <= 0 || !IsOnVirtualScreen(left, top, width, height))
+                return;
+
+            WindowStartupLocation = WindowStartupLocation.Manual;
+            Left = left;
+            Top = top;
+            Width = Math.Max(width, MinWidth);
+            Height = Math.Max(height, MinHeight);
+            _placementRestored = true;
+        }
+
+        private void AdvancedTimingsWindow_Closing(object sender, CancelEventArgs e)
+        {
+            AppSettings settings = AppSettings.Instance;
+            if (!settings.SaveWindowPosition)
+                return;
+
+            // A maximized or minimized window saves the size it returns to
+            Rect bounds = WindowState == WindowState.Normal || RestoreBounds.IsEmpty
+                ? new Rect(Left, Top, Width, Height)
+                : RestoreBounds;
+
+            if (double.IsNaN(bounds.Width) || double.IsNaN(bounds.Height) || bounds.Width <= 0 || bounds.Height <= 0)
+                return;
+
+            settings.AdvancedTimingsWindowLeft = bounds.Left;
+            settings.AdvancedTimingsWindowTop = bounds.Top;
+            settings.AdvancedTimingsWindowWidth = bounds.Width;
+            settings.AdvancedTimingsWindowHeight = bounds.Height;
+            settings.Save();
+        }
+
+        private static bool IsOnVirtualScreen(double left, double top, double width, double height)
+        {
+            double virtualLeft = SystemParameters.VirtualScreenLeft;
+            double virtualTop = SystemParameters.VirtualScreenTop;
+            double virtualRight = virtualLeft + SystemParameters.VirtualScreenWidth;
+            double virtualBottom = virtualTop + SystemParameters.VirtualScreenHeight;
+
+            return left >= virtualLeft && top >= virtualTop &&
+                   left + width <= virtualRight && top + height <= virtualBottom;
+        }
+
+        #endregion
+
+        private void AutoFit_Click(object sender, RoutedEventArgs e)
+        {
+            if (WindowState != WindowState.Normal)
+                WindowState = WindowState.Normal;
+
+            UpdateLayout();
+            if (CanFitWidth())
+                FitToContent();
+        }
+
+        /// <summary>
+        /// Sizes the window to show all shown timings without scrolling. Grows taller first, up to the
+        /// screen height, and only adds panels side by side when one column can't hold them all. The rows
+        /// are then spread evenly over the panels, so the height is no more than the fullest panel needs.
+        /// </summary>
+        private void FitToContent(bool keepCentered = false)
+        {
+            Rect workArea = GetWorkArea();
+            double centerX = Left + ActualWidth / 2;
+            double centerY = Top + ActualHeight / 2;
+            int rowCount = Math.Max(1, _visibleRows.Count);
+
+            double chromeHeight = ActualHeight - TimingsHost.ActualHeight;
+            double maxHostHeight = Math.Max(0, workArea.Height - chromeHeight);
+
+            int maxCapacity = GetCapacity(maxHostHeight);
+            int panels = Math.Max(1, (rowCount + maxCapacity - 1) / maxCapacity);
+            int rowsPerPanel = (rowCount + panels - 1) / panels;
+
+            // Width first: a wider window can wrap the module summary into fewer lines, which changes the chrome height
+            double chromeWidth = ActualWidth - TimingsHost.ActualWidth;
+            double contentWidth = panels * _panelWidth + (panels - 1) * PanelGap + ScrollBarWidth;
+            double newWidth = Math.Max(MinWidth, Math.Min(contentWidth + chromeWidth, workArea.Width));
+            Width = newWidth;
+            double left = keepCentered ? centerX - newWidth / 2 : Left;
+            Left = Math.Max(workArea.Left, Math.Min(left, workArea.Right - newWidth));
+            UpdateLayout();
+
+            chromeHeight = ActualHeight - TimingsHost.ActualHeight;
+            // One pixel of slack so layout rounding can't cost the last row
+            double hostHeight = GridHeaderHeight + _chromeHeight + rowsPerPanel * GridRowHeight + 1;
+            double newHeight = Math.Max(MinHeight, Math.Min(hostHeight + chromeHeight, workArea.Height));
+            Height = newHeight;
+            double top = keepCentered ? centerY - newHeight / 2 : Top;
+            Top = Math.Max(workArea.Top, Math.Min(top, workArea.Bottom - newHeight));
+        }
+
+        private bool CanFitWidth()
+        {
+            return _panelWidth > 0 && TimingsHost.ActualWidth > 0 && TimingsHost.ActualHeight > 0;
+        }
+
+        // Work area of the monitor the window is on, in device independent units
+        private Rect GetWorkArea()
+        {
+            try
+            {
+                IntPtr handle = new WindowInteropHelper(this).Handle;
+                PresentationSource source = PresentationSource.FromVisual(this);
+                if (handle != IntPtr.Zero && source?.CompositionTarget != null)
+                {
+                    System.Drawing.Rectangle area = System.Windows.Forms.Screen.FromHandle(handle).WorkingArea;
+                    Matrix toDip = source.CompositionTarget.TransformFromDevice;
+                    Point topLeft = toDip.Transform(new Point(area.Left, area.Top));
+                    Point bottomRight = toDip.Transform(new Point(area.Right, area.Bottom));
+                    return new Rect(topLeft, bottomRight);
+                }
+            }
+            catch
+            {
+                // Fall back to the primary monitor
+            }
+
+            return SystemParameters.WorkArea;
+        }
+
+        #endregion
 
         private void SetMemorySticksSummary(MemoryConfig memoryConfig)
         {
@@ -143,53 +475,28 @@ namespace ZenTimings.Windows
 
         private void ApplyFilter()
         {
-            if (BaseTimingsGrid == null || ExtendedTimingsGrid == null || StatusText == null)
+            if (StatusText == null)
                 return;
 
             var query = TimingSearchTextBox?.Text;
             var showDifferencesOnly = DifferencesOnlyCheckBox?.IsChecked == true;
-            var showAllTimings = ExtendedTimingsCheckBox?.IsChecked != false;
 
-            IEnumerable<TimingGridItem> leftRows = _baseRows;
-            IEnumerable<TimingGridItem> rightRows = _extendedRows;
+            IEnumerable<TimingGridItem> rows = _allRows;
 
             if (!string.IsNullOrWhiteSpace(query))
             {
                 var q = query.Trim();
-                leftRows = leftRows.Where(r => r.PropertyName.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0);
-                rightRows = rightRows.Where(r => r.PropertyName.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0);
+                rows = rows.Where(r => r.PropertyName.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0);
             }
 
             if (showDifferencesOnly)
-            {
-                leftRows = leftRows.Where(r => r.IsMismatch);
-                rightRows = rightRows.Where(r => r.IsMismatch);
-            }
+                rows = rows.Where(r => r.IsMismatch);
 
-            var left = leftRows.ToList();
-            var right = rightRows.ToList();
+            _visibleRows = rows.ToList();
+            _rowsChanged = true;
+            LayoutPanels();
 
-            BaseTimingsGrid.ItemsSource = right;
-            ExtendedTimingsGrid.ItemsSource = left;
-
-            var showLeft = _extendedRows.Count > 0;
-            var showRight = showAllTimings && _baseRows.Count > 0;
-            if (!showLeft)
-                showRight = true;
-
-            BaseTimingsColumn.Width = showLeft ? new GridLength(1, GridUnitType.Star) : new GridLength(0);
-            BaseTimingsGrid.Visibility = showLeft ? Visibility.Visible : Visibility.Collapsed;
-
-            ExtendedTimingsColumn.Width = showRight ? new GridLength(1, GridUnitType.Star) : new GridLength(0);
-            ExtendedTimingsGrid.Visibility = showRight ? Visibility.Visible : Visibility.Collapsed;
-
-            TimingsSplitterColumn.Width = showLeft && showRight ? new GridLength(8) : new GridLength(0);
-
-            StatusText.Text = showLeft && showRight
-                ? $"{left.Count} base + {right.Count} extended timings shown across {_channelCount} channel(s)."
-                : showRight
-                    ? $"{right.Count} timings shown across {_channelCount} channel(s)."
-                    : $"{left.Count} timings shown across {_channelCount} channel(s).";
+            StatusText.Text = $"{_visibleRows.Count} timings shown across {_channelCount} channel(s).";
         }
 
         private void TimingSearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -202,36 +509,18 @@ namespace ZenTimings.Windows
             ApplyFilter();
         }
 
-        private void ExtendedTimingsCheckBox_Changed(object sender, RoutedEventArgs e)
-        {
-            ApplyFilter();
-        }
-
+        // One table in display order, however the rows currently flow across the panels
         private void CopyTimings_Click(object sender, RoutedEventArgs e)
         {
             var text = new System.Text.StringBuilder();
             text.AppendLine(MemorySticksText.Text);
             text.AppendLine();
 
-            if (BaseTimingsGrid.Visibility == Visibility.Visible)
-                text.AppendLine(ClipboardUtils.GridToText(BaseTimingsGrid));
-            if (ExtendedTimingsGrid.Visibility == Visibility.Visible)
-                text.Append(ClipboardUtils.GridToText(ExtendedTimingsGrid));
+            text.AppendLine(string.Join("\t", new[] { NameHeader }.Concat(_valueHeaders)));
+            foreach (TimingGridItem row in _visibleRows)
+                text.AppendLine(string.Join("\t", new[] { row.PropertyName }.Concat(row.Values)));
 
             ClipboardUtils.Copy(text.ToString(), sender as Button);
-        }
-
-        private static int GetExtendedStartIndex(IReadOnlyList<TimingGridItem> rows)
-        {
-            if (rows == null || rows.Count == 0)
-                return -1;
-
-            for (int i = 0; i < rows.Count; i++)
-                if (string.Equals(rows[i].PropertyName, "RFCsb", StringComparison.OrdinalIgnoreCase)
-                    || string.Equals(rows[i].PropertyName, "RFCb", StringComparison.OrdinalIgnoreCase))
-                    return i;
-
-            return -1;
         }
 
         private static bool HasMismatch(IReadOnlyList<string> values)

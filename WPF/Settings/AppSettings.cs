@@ -241,6 +241,10 @@ namespace ZenTimings.Settings
         public double SensorsWindowTop { get; set; } = -1;
         public double SensorsWindowWidth { get; set; }
         public double SensorsWindowHeight { get; set; }
+        public double AdvancedTimingsWindowLeft { get; set; } = -1;
+        public double AdvancedTimingsWindowTop { get; set; } = -1;
+        public double AdvancedTimingsWindowWidth { get; set; }
+        public double AdvancedTimingsWindowHeight { get; set; }
         public string NotifiedChangelog { get; set; } = "";
         public bool SingleInstance { get; set; } = true;
         public bool AutoOpenTelemetry { get; set; } = false;

@@ -999,6 +999,12 @@ namespace ZenTimings.Export
             if (value is CommandRateProp)
                 return Text(value.ToString());
 
+            if (value is BurstLengthProp burstLength)
+                return new SnapshotObject().Add("raw", (uint)burstLength).Add("text", Text(burstLength.ToString()));
+
+            if (value is BurstCtrlProp burstCtrl)
+                return new SnapshotObject().Add("raw", (uint)burstCtrl).Add("text", Text(burstCtrl.ToString()));
+
             if (value is BankRefreshMode refreshMode)
                 return refreshMode.Name;
 
