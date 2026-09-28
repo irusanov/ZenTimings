@@ -30,9 +30,10 @@ namespace ZenTimings.Windows
         private const double GridRowHeight = 20;
         private const double GridHeaderHeight = 24;
         private const double PanelGap = 8;
-        // Cell padding from the text styles plus room for the bold text of mismatched rows
-        private const double NameCellExtra = 16 + 12;
-        private const double ValueCellExtra = 16 + 12;
+        // Cell border (1 + 1) + TextBlock padding (3 + 6 or 3 + 3) + 3px slack; the text is measured bold,
+        // like mismatched rows. Keep in sync with the text and header styles in the XAML.
+        private const double NameCellExtra = 2 + 9 + 3;
+        private const double ValueCellExtra = 2 + 6 + 3;
 
         private const string NameHeader = "Timing";
 
@@ -196,6 +197,7 @@ namespace ZenTimings.Windows
                 Header = NameHeader,
                 Binding = new Binding(nameof(TimingGridItem.PropertyName)),
                 ElementStyle = (Style)FindResource("TimingNameTextStyle"),
+                HeaderStyle = (Style)FindResource("TimingNameHeaderStyle"),
                 Width = new DataGridLength(_nameColumnWidth),
             });
 
@@ -206,6 +208,7 @@ namespace ZenTimings.Windows
                     Header = _valueHeaders[i],
                     Binding = new Binding($"Values[{i}]"),
                     ElementStyle = (Style)FindResource("TimingValueTextStyle"),
+                    HeaderStyle = (Style)FindResource("TimingValueHeaderStyle"),
                     Width = new DataGridLength(_valueColumnWidth),
                 });
             }

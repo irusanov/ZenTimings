@@ -506,6 +506,7 @@ namespace ZenTimings
                 TryCleanup(() => plugin?.Close());
 
             TryCleanup(() => sensorsWindw?.Close());
+            TryCleanup(() => advancedTimingsWnd?.Close());
             TryCleanup(() => optionsWnd?.Close());
             TryCleanup(() => exportWnd?.Close());
             TryCleanup(() => _notifyIcon?.Dispose());

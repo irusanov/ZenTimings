@@ -18,6 +18,7 @@
     WindowStartupLocation="CenterOwner"
     BorderThickness="1"
     UseLayoutRounding="True"
+	SnapIdentifier="AdvancedTimingsWindow"
     Style="{DynamicResource WindowStyles}">
 
     <Window.Resources>
