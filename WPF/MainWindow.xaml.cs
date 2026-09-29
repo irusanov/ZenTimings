@@ -54,6 +54,8 @@ namespace ZenTimings
         private readonly Cpu cpu;
         private readonly DispatcherTimer PowerCfgTimer = new DispatcherTimer();
         private readonly AppSettings settings = AppSettings.Instance;
+        private readonly WheaErrorCounter wheaErrorCounter = new WheaErrorCounter();
+        private CpuTemperatureSensors cpuTemperatureSensors = null;
         private readonly List<IPlugin> plugins = new List<IPlugin>();
         private SystemInfoWindow siWnd = null;
         private volatile bool systemInfoWindowOpen;
@@ -514,6 +516,7 @@ namespace ZenTimings
             TryCleanup(() => optionsWnd?.Close());
             TryCleanup(() => exportWnd?.Close());
             TryCleanup(() => _notifyIcon?.Dispose());
+            TryCleanup(() => wheaErrorCounter.Dispose());
 
             if (refreshStillRunning)
                 return;
@@ -1006,6 +1009,8 @@ namespace ZenTimings
         {
             if (Interlocked.Exchange(ref isRefreshing, 1) == 1) return;
 
+            bool readCpuTemperature = settings.ShowCpuTemperature || (sensorsWindw != null && sensorsWindw.IsLoaded);
+
             // Run refresh operation in a new task
             Task.Run(() =>
             {
@@ -1057,6 +1062,9 @@ namespace ZenTimings
                         voltagesUpdated = cpu.memoryConfig.RefreshTelemetry(settings.AutoRefreshInterval / 2);
                     }
 
+                    // Not part of the refresh, read only while the readout or the Sensors window shows it
+                    float? cpuTemperature = readCpuTemperature ? cpu.GetCpuTemperature() : null;
+
                     Interlocked.Exchange(ref refreshReadingHardware, 0);
 
                     if (cleanedUp)
@@ -1101,6 +1109,8 @@ namespace ZenTimings
                             }
 
                             mainViewModel.RefreshSensors();
+                            mainViewModel.RefreshReadouts(settings.ShowCpuTemperature ? cpuTemperature : null, wheaErrorCounter.Count);
+                            cpuTemperatureSensors?.Update(cpuTemperature, cpu.powerTable?.Table);
 
                             lastMclk = newMclk;
 
@@ -1459,6 +1469,7 @@ namespace ZenTimings
             //#endif
             MinimizeFootprint();
             InitLiveSnapshot();
+            UpdateWheaErrorCounter();
 
             if (settings.AdvancedMode && settings.AutoOpenTelemetry)
                 OpenSensorsWindowAfterFirstRender();
@@ -1708,8 +1719,18 @@ namespace ZenTimings
 
                 if (sensorsWindw == null || !sensorsWindw.IsLoaded)
                 {
+                    // Read once here, the window takes its first values as the start of its min and max
+                    if (mockData == null)
+                    {
+                        if (cpuTemperatureSensors == null)
+                            cpuTemperatureSensors = new CpuTemperatureSensors(cpu.systemInfo.SmuTableVersion);
+
+                        cpuTemperatureSensors.Update(cpu.GetCpuTemperature(), cpu.powerTable?.Table);
+                    }
+
                     sensorsWindw = new Windows.SensorsWindow()
                     {
+                        CpuTemperatures = cpuTemperatureSensors,
                         Width = telemetryWindowWidth,
                         Height = telemetryWindowHeight,
                         WindowStartupLocation = location,
@@ -1736,6 +1757,12 @@ namespace ZenTimings
         private void TelemetryMonitorToolstripMenuItem_Click(object sender, RoutedEventArgs e)
         {
             OpenSensorsWindow();
+        }
+
+        private void UclkRatioMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            settings.Save();
+            mainViewModel.RefreshUclkLabel();
         }
 
         private void SpdInfoToolstripMenuItem_Click(object sender, RoutedEventArgs e)
@@ -1892,6 +1919,21 @@ namespace ZenTimings
         private const int RefreshWaitLimitMs = 5000;
 
         private DateTime? lastRefreshUtc;
+
+        private void ReadoutMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            settings.Save();
+            UpdateWheaErrorCounter();
+        }
+
+        // The event log is only watched while the WHEA readout can be seen
+        private void UpdateWheaErrorCounter()
+        {
+            if (settings.AdvancedMode && settings.ShowWheaErrors)
+                wheaErrorCounter.Start();
+            else
+                wheaErrorCounter.Stop();
+        }
 
         // Called once the live window is loaded, a debug report window has no live data to export
         private void InitLiveSnapshot()

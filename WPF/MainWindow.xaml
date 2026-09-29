@@ -63,6 +63,12 @@
                                 Header="_Sensors"
                                 Click="TelemetryMonitorToolstripMenuItem_Click"
                                 Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
+                            <MenuItem
+                                Header="UCLK ratio"
+                                IsCheckable="True"
+                                IsChecked="{Binding Settings.ShowUclkRatio, Mode=TwoWay}"
+                                Click="UclkRatioMenuItem_Click"
+                                Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
                             <MenuItem Header="Advanced Info">
                                 <MenuItem
                                     Header="System"
@@ -76,6 +82,32 @@
                                     Header="SPD"
                                     Click="SpdInfoToolstripMenuItem_Click"
                                     Visibility="{Binding IsDimmTelemetryAvailable, Mode=OneTime, Converter={StaticResource BoolToVis}}" />
+                            </MenuItem>
+                            <MenuItem
+                                Header="Main window sensors"
+                                Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                                <MenuItem
+                                    Header="CPU temperature"
+                                    IsCheckable="True"
+                                    IsChecked="{Binding Settings.ShowCpuTemperature, Mode=TwoWay}"
+                                    Click="ReadoutMenuItem_Click" />
+                                <MenuItem
+                                    Header="IOD temperature"
+                                    IsCheckable="True"
+                                    IsChecked="{Binding Settings.ShowIodTemperature, Mode=TwoWay}"
+                                    Visibility="{Binding IsIodTemperatureAvailable, Mode=OneTime, Converter={StaticResource BoolToVis}}"
+                                    Click="ReadoutMenuItem_Click" />
+                                <MenuItem
+                                    Header="DIMM temperature and power"
+                                    IsCheckable="True"
+                                    IsChecked="{Binding Settings.ShowDimmTelemetry, Mode=TwoWay}"
+                                    Visibility="{Binding IsDimmTelemetryAvailable, Mode=OneTime, Converter={StaticResource BoolToVis}}"
+                                    Click="ReadoutMenuItem_Click" />
+                                <MenuItem
+                                    Header="WHEA errors"
+                                    IsCheckable="True"
+                                    IsChecked="{Binding Settings.ShowWheaErrors, Mode=TwoWay}"
+                                    Click="ReadoutMenuItem_Click" />
                             </MenuItem>
                             <Separator Foreground="{DynamicResource PanelBackground}" />
                             <MenuItem Header="_Debug">
@@ -160,6 +192,78 @@
                             Padding="12 0 5 5"
                             Margin="0 -5 0 0"
                         />
+
+                        <!-- Optional readouts, switched on from Tools > Main window sensors -->
+                        <StackPanel
+                            Orientation="Horizontal"
+                            Margin="4 0 0 0"
+                            Visibility="{Binding IsLiveReadoutAvailable, Mode=OneTime, Converter={StaticResource BoolToVis}}">
+                            <StackPanel
+                                Orientation="Horizontal"
+                                Margin="8 -5 0 5"
+                                ToolTip="{Binding CpuTemperatureToolTip, Mode=OneWay}"
+                                Visibility="{Binding Settings.ShowCpuTemperature, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                                <TextBlock
+                                    Text="CPU"
+                                    Style="{DynamicResource ReadoutLabelStyles}" />
+                                <TextBlock
+                                    Text="{Binding CpuTemperature, Mode=OneWay, TargetNullValue='N/A'}"
+                                    Style="{DynamicResource ReadoutValueStyles}" />
+                            </StackPanel>
+                            <StackPanel
+                                Orientation="Horizontal"
+                                Visibility="{Binding IsIodTemperatureAvailable, Mode=OneTime, Converter={StaticResource BoolToVis}}">
+                                <StackPanel
+                                    Orientation="Horizontal"
+                                    Margin="8 -5 0 5"
+                                    ToolTip="{Binding IodTemperatureToolTip, Mode=OneWay}"
+                                    Visibility="{Binding Settings.ShowIodTemperature, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                                    <TextBlock
+                                        Text="IOD"
+                                        Style="{DynamicResource ReadoutLabelStyles}" />
+                                    <TextBlock
+                                        Text="{Binding IodTemperature, Mode=OneWay, TargetNullValue='N/A'}"
+                                        Style="{DynamicResource ReadoutValueStyles}" />
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel
+                                Orientation="Horizontal"
+                                Visibility="{Binding IsDimmTelemetryAvailable, Mode=OneTime, Converter={StaticResource BoolToVis}}">
+                                <StackPanel
+                                    Orientation="Horizontal"
+                                    Margin="8 -5 0 5"
+                                    ToolTip="{Binding DimmTelemetryToolTip, Mode=OneWay}"
+                                    Visibility="{Binding Settings.ShowDimmTelemetry, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                                    <TextBlock
+                                        Text="DIMM"
+                                        Style="{DynamicResource ReadoutLabelStyles}" />
+                                    <TextBlock
+                                        Text="{Binding DimmTelemetry, Mode=OneWay, TargetNullValue='N/A'}"
+                                        Style="{DynamicResource ReadoutValueStyles}" />
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel
+                                Orientation="Horizontal"
+                                Margin="8 -5 0 5"
+                                ToolTip="WHEA-Logger events since Windows started"
+                                Visibility="{Binding Settings.ShowWheaErrors, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                                <TextBlock
+                                    Text="WHEA"
+                                    Style="{DynamicResource ReadoutLabelStyles}" />
+                                <TextBlock
+                                    Text="{Binding WheaErrors, Mode=OneWay, TargetNullValue='N/A'}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource ReadoutValueStyles}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding HasWheaErrors, Mode=OneWay}" Value="True">
+                                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </StackPanel>
+                        </StackPanel>
                     </StackPanel>
                     <Border Padding="0 0 5 0" Grid.Column="2"
                             Visibility="{Binding IsMotherboardLogoVisible, Mode=OneTime, Converter={StaticResource BoolToVis}}">
