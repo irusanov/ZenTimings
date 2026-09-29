@@ -25,6 +25,8 @@ namespace ZenTimings.Settings
         }
 
         public List<string> HiddenSensors { get; set; } = new List<string>();
+        public List<string> CollapsedSections { get; set; } = new List<string>();
+        public List<string> HiddenModuleInfo { get; set; } = new List<string>();
         public double SensorColumnWidth { get; set; } = 120.0;
         public double CurrentColumnWidth { get; set; } = 64.0;
         public double MinColumnWidth { get; set; } = 54.0;

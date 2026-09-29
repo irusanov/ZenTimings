@@ -169,9 +169,11 @@
                     </MultiBinding>
                 </GroupBox.Visibility>
                 <GroupBox.Header>
-                    <Grid Width="{Binding ActualWidth, ElementName=SectionGroupBox, Converter={StaticResource WidthOffset}}" MinHeight="22">
+                    <!-- Sized from the viewport, not the section itself: the section's width follows its content, so binding to it would only ever grow. -->
+                    <Grid Width="{Binding ViewportWidth, RelativeSource={RelativeSource AncestorType=ScrollViewer}, Converter={StaticResource WidthOffset}}" MinHeight="22">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <ToggleButton Grid.Column="0"
@@ -191,6 +193,25 @@
                         </ToggleButton>
                         <Button Grid.Column="1"
                                 Style="{DynamicResource IconButtonStyle}"
+                                ToolTip="Show/hide module info"
+                                Margin="0,0,2,0"
+                                Visibility="{Binding HasModuleInfo, Converter={StaticResource BoolToVis}}"
+                                Click="ToggleModuleInfo_Click">
+                            <controls:AppIcon Kind="IconInfo" IconWidth="11" IconHeight="11" Fill="{DynamicResource TextColor}">
+                                <controls:AppIcon.Style>
+                                    <Style TargetType="controls:AppIcon">
+                                        <Setter Property="Opacity" Value="1"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ShowModuleInfo}" Value="False">
+                                                <Setter Property="Opacity" Value="0.45"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </controls:AppIcon.Style>
+                            </controls:AppIcon>
+                        </Button>
+                        <Button Grid.Column="2"
+                                Style="{DynamicResource IconButtonStyle}"
                                 ToolTip="Copy to clipboard"
                                 Click="CopyGroup_Click">
                             <controls:AppIcon Kind="IconCopy" IconWidth="11" IconHeight="11" Fill="{DynamicResource TextColor}" />
@@ -206,21 +227,25 @@
                         does and only changes size when a column is resized - not when the window itself
                         is resized.
                     -->
+                    <Grid Margin="0,2,0,3" Visibility="{Binding IsModuleInfoVisible, Converter={StaticResource BoolToVis}}">
+                    <!-- Star column capped at the column total: the block never asks for more width than the section has, so toggling it can't widen the layout. -->
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*">
+                            <ColumnDefinition.MaxWidth>
+                                <MultiBinding Converter="{StaticResource TotalColumnWidth}">
+                                    <Binding Path="SensorColumnWidth" Source="{StaticResource ColumnLayout}"/>
+                                    <Binding Path="CurrentColumnWidth" Source="{StaticResource ColumnLayout}"/>
+                                    <Binding Path="MinColumnWidth" Source="{StaticResource ColumnLayout}"/>
+                                    <Binding Path="MaxColumnWidth" Source="{StaticResource ColumnLayout}"/>
+                                    <Binding Path="AverageColumnWidth" Source="{StaticResource ColumnLayout}"/>
+                                </MultiBinding>
+                            </ColumnDefinition.MaxWidth>
+                        </ColumnDefinition>
+                    </Grid.ColumnDefinitions>
                     <Border Background="{DynamicResource SensorModuleInfoBackground}"
                             BorderBrush="{DynamicResource SensorModuleInfoBorder}"
                             BorderThickness="1"
-                            CornerRadius="3" Padding="6,4" Margin="0,2,0,3"
-                            HorizontalAlignment="Left"
-                            Visibility="{Binding HasModuleInfo, Converter={StaticResource BoolToVis}}">
-                        <Border.Width>
-                            <MultiBinding Converter="{StaticResource TotalColumnWidth}">
-                                <Binding Path="SensorColumnWidth" Source="{StaticResource ColumnLayout}"/>
-                                <Binding Path="CurrentColumnWidth" Source="{StaticResource ColumnLayout}"/>
-                                <Binding Path="MinColumnWidth" Source="{StaticResource ColumnLayout}"/>
-                                <Binding Path="MaxColumnWidth" Source="{StaticResource ColumnLayout}"/>
-                                <Binding Path="AverageColumnWidth" Source="{StaticResource ColumnLayout}"/>
-                            </MultiBinding>
-                        </Border.Width>
+                            CornerRadius="3" Padding="6,4">
                         <!--
                             Two independent groups (manufacturer/capacity/DRAM on the left, part
                             number/rank/PMIC on the right), each its own Auto-sized 2-column Grid so its
@@ -284,6 +309,7 @@
                             </Grid>
                         </Grid>
                     </Border>
+                    </Grid>
 
                     <!-- Telemetry DataGrid - no header of its own; see the shared header row above the list -->
                     <DataGrid ItemsSource="{Binding TelemetryItems}"
@@ -446,7 +472,7 @@
         </Border>
 
         <!-- Module grid — all DIMMs visible simultaneously -->
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0" Margin="0">
+        <ScrollViewer x:Name="SectionsScroll" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0" Margin="0">
             <StackPanel>
             <ItemsControl x:Name="ModulesContainer" ItemTemplate="{StaticResource SensorSectionTemplate}"/>
 

@@ -401,11 +401,54 @@ namespace ZenTimings.Windows
             else
             {
                 foreach (var vm in result.Item1)
+                {
+                    ApplySectionState(vm);
                     moduleViewModels.Add(vm);
+                }
                 StatusText.Text = result.Item2;
             }
 
             _isRefreshing = false;
+        }
+
+        // Restores the saved collapsed state and module-info visibility, and saves any later change.
+        private void ApplySectionState(SensorGroupViewModel vm)
+        {
+            var settings = SensorSettings.Instance;
+            vm.IsExpanded = !settings.CollapsedSections.Contains(vm.SectionKey);
+            vm.ShowModuleInfo = !settings.HiddenModuleInfo.Contains(vm.SectionKey);
+            vm.PropertyChanged -= Section_PropertyChanged;
+            vm.PropertyChanged += Section_PropertyChanged;
+        }
+
+        private void Section_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != nameof(SensorGroupViewModel.IsExpanded) || !(sender is SensorGroupViewModel vm))
+                return;
+
+            var collapsed = SensorSettings.Instance.CollapsedSections;
+            bool changed = vm.IsExpanded ? collapsed.Remove(vm.SectionKey) : !collapsed.Contains(vm.SectionKey);
+            if (!vm.IsExpanded && changed)
+                collapsed.Add(vm.SectionKey);
+            if (changed)
+                SensorSettings.Instance.Save();
+        }
+
+        private void ToggleModuleInfo_Click(object sender, RoutedEventArgs e)
+        {
+            if (!((sender as FrameworkElement)?.DataContext is SensorGroupViewModel vm))
+                return;
+
+            var settings = SensorSettings.Instance;
+            vm.ShowModuleInfo = !vm.ShowModuleInfo;
+            settings.HiddenModuleInfo.Remove(vm.SectionKey);
+            if (!vm.ShowModuleInfo)
+                settings.HiddenModuleInfo.Add(vm.SectionKey);
+            settings.Save();
+
+            // Remeasure from the top so the scrollbar and widths settle to the new content size.
+            (SectionsScroll.Content as UIElement)?.InvalidateMeasure();
+            SectionsScroll.InvalidateMeasure();
         }
 
         // Runs entirely on a thread-pool thread
@@ -433,6 +476,7 @@ namespace ZenTimings.Windows
                 {
                     var vm = new ModuleViewModel
                     {
+                        SectionKey = $"DIMM {slotIndex}",
                         PartNumber = spdEntry.Value.ModulePartNumber ?? "N/A",
                         Manufacturer = spdEntry.Value.ModuleManufacturer ?? "N/A",
                         Capacity = spdEntry.Value.TotalCapacityMB > 0 ? $"{spdEntry.Value.TotalCapacityMB} MB" : "N/A",
@@ -488,6 +532,7 @@ namespace ZenTimings.Windows
                         : $"DIMM {i}  ·  {module.Slot}";
                     var vm = new ModuleViewModel
                     {
+                        SectionKey = $"DIMM {i}",
                         Header = header,
                         PartNumber = module.PartNumber ?? "N/A",
                         Manufacturer = module.Manufacturer ?? "N/A",
@@ -794,7 +839,10 @@ namespace ZenTimings.Windows
                 groupVm.HiddenCount = hiddenCount;
 
                 if (groupVm.TelemetryItems.Count > 0 || hiddenCount > 0)
+                {
+                    ApplySectionState(groupVm);
                     sensorGroupViewModels.Add(groupVm);
+                }
             }
         }
 
@@ -1000,6 +1048,7 @@ namespace ZenTimings.Windows
                 if (groupVm == null)
                 {
                     groupVm = new SensorGroupViewModel { Header = group.Name };
+                    ApplySectionState(groupVm);
                     sensorGroupViewModels.Add(groupVm);
                 }
 
@@ -1082,7 +1131,10 @@ namespace ZenTimings.Windows
                 // Module count changed (unexpected here) - fall back to a full replace.
                 moduleViewModels.Clear();
                 foreach (var vm in freshList)
+                {
+                    ApplySectionState(vm);
                     moduleViewModels.Add(vm);
+                }
             }
             else
             {
