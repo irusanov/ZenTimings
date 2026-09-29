@@ -56,6 +56,7 @@ namespace ZenTimings
         private readonly AppSettings settings = AppSettings.Instance;
         private readonly List<IPlugin> plugins = new List<IPlugin>();
         private SystemInfoWindow siWnd = null;
+        private volatile bool systemInfoWindowOpen;
         private AdvancedTimingsWindow advancedTimingsWnd = null;
         private SensorsWindow sensorsWindw = null;
         private OptionsDialog optionsWnd = null;
@@ -164,7 +165,10 @@ namespace ZenTimings
                 CheckForDriver();
 
                 SplashWindow.Loading("Core");
+                // Core initialization does most of the startup work; show each of its stages.
+                CpuSingleton.InitProgress = stage => SplashWindow.Loading($"Core: {stage}");
                 cpu = CpuSingleton.Instance;
+                CpuSingleton.InitProgress = null;
 
                 if (cpu.info.family.Equals(Cpu.Family.UNSUPPORTED))
                 {
@@ -923,11 +927,10 @@ namespace ZenTimings
                 return false;
 
             bool temp;
-            // Refresh until driver is opened
-            do
-            {
-                temp = cpu.io.IsInpOutDriverOpen();
-            } while (!temp && timer.Elapsed.TotalMilliseconds < 5000);
+            // Refresh until driver is opened. This runs on the UI thread, so keep the splash painted
+            // while waiting instead of spinning; a tight loop left it frozen (black) for 5 s.
+            while (!(temp = cpu.io.IsInpOutDriverOpen()) && timer.Elapsed.TotalMilliseconds < 5000)
+                SplashWindow.Wait(20);
 
             timer.Stop();
 
@@ -965,7 +968,11 @@ namespace ZenTimings
             {
                 status = cpu.RefreshPowerTable();
                 if (status != SMU.Status.OK)
-                    Thread.Sleep(200);  // It's ok to block the current thread
+                {
+                    // Runs on the UI thread: wait with the splash kept responsive, and show how long it's been.
+                    SplashWindow.Loading($"Reading power table ({(int)timer.Elapsed.TotalSeconds}s)");
+                    SplashWindow.Wait(200);
+                }
             } while (status != SMU.Status.OK && timer.Elapsed.TotalMilliseconds < timeout);
 
             timer.Stop();
@@ -1015,13 +1022,22 @@ namespace ZenTimings
                     if (cleanedUp)
                         return;
 
+                    bool isDdr4 = cpu.memoryConfig.Type == MemType.DDR4 || cpu.memoryConfig.Type == MemType.LPDDR4;
+
                     var hasAsusDramVoltage = false;
                     float asusDramVoltage = 0;
                     if (AsusWmi != null && AsusWmi.Status == 1)
                     {
-                        AsusWmi.UpdateSensors();
                         AsusSensorInfo sensor = AsusWmi.FindSensorByName("DRAM Voltage");
-                        hasAsusDramVoltage = sensor != null && AsusWMI.TryParseSensorValue(sensor.Value, out asusDramVoltage) && asusDramVoltage > 0 && asusDramVoltage < 3;
+
+                        // Every ASUS sensor is its own WMI method call, so all of them are read only while
+                        // something shows them. Otherwise the main window needs just the DRAM voltage, on DDR4.
+                        if (systemInfoWindowOpen || (ExportSettings.Instance.LiveSnapshotEnabled && LiveSnapshot.IsDue))
+                            AsusWmi.UpdateSensors();
+                        else if (isDdr4)
+                            AsusWmi.UpdateSensor(sensor);
+
+                        hasAsusDramVoltage = isDdr4 && sensor != null && AsusWMI.TryParseSensorValue(sensor.Value, out asusDramVoltage) && asusDramVoltage > 0 && asusDramVoltage < 3;
                     }
 
                     //ReadDDR4MemoryConfig();
@@ -1029,10 +1045,16 @@ namespace ZenTimings
                     cpu.systemInfo?.UpdateSensors();
                     var hasSuperIoDramVoltage = TryReadDdr4SuperIoDramVoltage(out var superIoDramVoltage);
 
+                    // SVI2 is read here, off the UI thread; the UI update below only shows the reading.
+                    if (isDdr4 && mockData == null && plugins.Count > 0)
+                        plugins[0].Update();
+
                     var voltagesUpdated = false;
                     if (cpu.memoryConfig?.SpdInfo?.Values != null)
                     {
-                        voltagesUpdated = cpu.memoryConfig.RefreshTelemetry(settings.AutoRefreshInterval);
+                        // Half the interval: the throttle measures from the start of the previous read, and
+                        // a tick that runs a little early would otherwise skip every other refresh.
+                        voltagesUpdated = cpu.memoryConfig.RefreshTelemetry(settings.AutoRefreshInterval / 2);
                     }
 
                     Interlocked.Exchange(ref refreshReadingHardware, 0);
@@ -1082,7 +1104,8 @@ namespace ZenTimings
 
                             lastMclk = newMclk;
 
-                            ReadSVI();
+                            if (timingsPanel is DDR4TimingsPanel ddr4Panel && isDdr4)
+                                ApplyDdr4Vsoc(ddr4Panel, false);
                             // SetFrequencyString();
                             // RefreshSensors();
                         }
@@ -1124,12 +1147,21 @@ namespace ZenTimings
 
         public void HandleError(string message, string title = "Error")
         {
-            MessageBox.Show(
-                message,
-                title,
-                MessageBoxButton.OK,
-                MessageBoxImage.Error
-            );
+            // The splash is topmost and could cover the message box during startup.
+            SplashWindow.HideIfOpen();
+            try
+            {
+                MessageBox.Show(
+                    message,
+                    title,
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
+            }
+            finally
+            {
+                SplashWindow.ShowIfOpen();
+            }
         }
 
         private AllDimmsWindow allDimmsWnd;
@@ -1525,6 +1557,13 @@ namespace ZenTimings
                 Left = sysInfoWindowLeft
             };
 
+            SystemInfoWindow shownWnd = siWnd;
+            shownWnd.Closed += (s, args) =>
+            {
+                if (ReferenceEquals(siWnd, shownWnd))
+                    systemInfoWindowOpen = false;
+            };
+            systemInfoWindowOpen = true;
             siWnd.Show();
         }
 
@@ -1970,7 +2009,13 @@ namespace ZenTimings
             }
 
             exportWnd = new ExportDialog(
-                (options, selectedFormat) => SnapshotWriter.Write(SnapshotBuilder.Build(GetSnapshotSource(), options), selectedFormat),
+                (options, selectedFormat) =>
+                {
+                    // The refresh reads only the ASUS sensor it needs, so read them all for the export.
+                    if (mockData == null && AsusWmi != null && AsusWmi.Status == 1)
+                        AsusWmi.UpdateSensors();
+                    return SnapshotWriter.Write(SnapshotBuilder.Build(GetSnapshotSource(), options), selectedFormat);
+                },
                 format,
                 false,
                 SnapshotBuilder.GetUnavailableSections(GetSnapshotSource()))

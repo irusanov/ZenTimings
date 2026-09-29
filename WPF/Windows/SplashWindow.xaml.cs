@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 using ZenTimings.Common;
@@ -83,6 +84,36 @@ namespace ZenTimings.Windows
                 splash.status.Content = status;
                 Refresh(splash.status);
             }));
+        }
+
+        /// <summary>
+        /// Processes pending UI work (painting, input) so the splash stays responsive while the startup
+        /// code, which runs on the UI thread, is waiting for something.
+        /// </summary>
+        public static void Pump()
+        {
+            if (isClosed)
+                return;
+
+            // A no-op queued below input and render priority: Invoke runs a nested message loop that
+            // handles everything above it first, then returns.
+            splash.Dispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+        }
+
+        /// <summary>
+        /// Waits for <paramref name="milliseconds"/> while keeping the splash painted and responsive.
+        /// Use instead of Thread.Sleep on the UI thread during startup.
+        /// </summary>
+        public static void Wait(int milliseconds)
+        {
+            Stopwatch timer = Stopwatch.StartNew();
+            do
+            {
+                Pump();
+                int left = milliseconds - (int)timer.ElapsedMilliseconds;
+                if (left > 0)
+                    Thread.Sleep(Math.Min(left, 15));
+            } while (timer.ElapsedMilliseconds < milliseconds);
         }
 
         private static void ApplySettings()

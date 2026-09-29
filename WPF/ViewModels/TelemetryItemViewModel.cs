@@ -14,6 +14,13 @@ namespace ZenTimings.ViewModels
         private double sum = 0;
         private int count = 0;
 
+        // The texts the view shows. Change notifications are raised only when one of them actually
+        // changes, so a steady sensor costs no binding or layout work on a refresh.
+        private string currentText = "-";
+        private string minText = "-";
+        private string maxText = "-";
+        private string averageText = "-";
+
         private readonly string unit;
         private readonly bool _isBoolean;
 
@@ -48,6 +55,8 @@ namespace ZenTimings.ViewModels
             get => currentAlarmLevel;
             private set
             {
+                if (currentAlarmLevel == value)
+                    return;
                 currentAlarmLevel = value;
                 OnPropertyChanged(nameof(CurrentAlarmLevel));
             }
@@ -58,6 +67,8 @@ namespace ZenTimings.ViewModels
             get => minAlarmLevel;
             private set
             {
+                if (minAlarmLevel == value)
+                    return;
                 minAlarmLevel = value;
                 OnPropertyChanged(nameof(MinAlarmLevel));
             }
@@ -68,15 +79,17 @@ namespace ZenTimings.ViewModels
             get => maxAlarmLevel;
             private set
             {
+                if (maxAlarmLevel == value)
+                    return;
                 maxAlarmLevel = value;
                 OnPropertyChanged(nameof(MaxAlarmLevel));
             }
         }
 
-        public string Current => FormatValue(currentValue);
-        public string Min => minValue != double.MaxValue ? FormatValue(minValue) : "-";
-        public string Max => maxValue != double.MinValue ? FormatValue(maxValue) : "-";
-        public string Average => count > 0 ? FormatValue(sum / count) : "-";
+        public string Current => currentText;
+        public string Min => minText;
+        public string Max => maxText;
+        public string Average => averageText;
 
         // True when current, min and max values are all zero (or min/max have never been recorded).
         public bool IsAllZero =>
@@ -123,10 +136,25 @@ namespace ZenTimings.ViewModels
             sum += value;
             count++;
 
-            OnPropertyChanged(nameof(Current));
-            OnPropertyChanged(nameof(Min));
-            OnPropertyChanged(nameof(Max));
-            OnPropertyChanged(nameof(Average));
+            UpdateTexts(true);
+        }
+
+        // Re-formats the shown values and notifies only those whose text changed.
+        private void UpdateTexts(bool includeCurrent)
+        {
+            if (includeCurrent)
+                SetText(ref currentText, FormatValue(currentValue), nameof(Current));
+            SetText(ref minText, minValue != double.MaxValue ? FormatValue(minValue) : "-", nameof(Min));
+            SetText(ref maxText, maxValue != double.MinValue ? FormatValue(maxValue) : "-", nameof(Max));
+            SetText(ref averageText, count > 0 ? FormatValue(sum / count) : "-", nameof(Average));
+        }
+
+        private void SetText(ref string field, string text, string propertyName)
+        {
+            if (string.Equals(field, text))
+                return;
+            field = text;
+            OnPropertyChanged(propertyName);
         }
 
         public void ResetStats()
@@ -139,9 +167,7 @@ namespace ZenTimings.ViewModels
             MinAlarmLevel = CurrentAlarmLevel;
             MaxAlarmLevel = CurrentAlarmLevel;
 
-            OnPropertyChanged(nameof(Min));
-            OnPropertyChanged(nameof(Max));
-            OnPropertyChanged(nameof(Average));
+            UpdateTexts(false);
         }
 
         public void UpdateThermalAlarm(bool critHigh, bool high)

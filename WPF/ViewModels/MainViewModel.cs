@@ -209,46 +209,53 @@ namespace ZenTimings.ViewModels
             set => SetProperty(ref _ccdlData, value);
         }
 
+        // Voltages are shown with 4 decimals (FloatToVoltageConverter). Rounding them to that before the
+        // equality check skips the binding update, converter call and re-layout for sub-display jitter.
+        private bool SetVoltage(ref float storage, float value, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
+        {
+            return SetProperty(ref storage, (float)Math.Round(value, 4), propertyName);
+        }
+
         private float _swaAdcV;
         public float SwaAdcV
         {
             get => _swaAdcV;
-            set => SetProperty(ref _swaAdcV, value);
+            set => SetVoltage(ref _swaAdcV, value);
         }
 
         private float _swbAdcV;
         public float SwbAdcV
         {
             get => _swbAdcV;
-            set => SetProperty(ref _swbAdcV, value);
+            set => SetVoltage(ref _swbAdcV, value);
         }
 
         private float _vppAdcV;
         public float VppAdcV
         {
             get => _vppAdcV;
-            set => SetProperty(ref _vppAdcV, value);
+            set => SetVoltage(ref _vppAdcV, value);
         }
 
         private float _apuVddio;
         public float ApuVddio
         {
             get => _apuVddio;
-            set => SetProperty(ref _apuVddio, value);
+            set => SetVoltage(ref _apuVddio, value);
         }
 
         private float _vsoc;
         public float Vsoc
         {
             get => _vsoc;
-            set => SetProperty(ref _vsoc, value);
+            set => SetVoltage(ref _vsoc, value);
         }
 
         private float _vmisc;
         public float Vmisc
         {
             get => _vmisc;
-            set => SetProperty(ref _vmisc, value);
+            set => SetVoltage(ref _vmisc, value);
         }
 
         // Row labels naming the source each rail's value came from, e.g. "VSOC (SMU)" or "VDDIO (AOD)".
@@ -598,9 +605,10 @@ namespace ZenTimings.ViewModels
 
         private const float MinSuperIoVddio = 1.08f;
         private const float MaxSuperIoVddio = 1.65f;
+        private const float MaxSuperIoAodVddioDelta = 0.2f;
 
-        // SuperIO VDDIO readings outside the plausible range are ignored (so AOD is used instead),
-        // unless the user explicitly selected SuperIO as the VDDIO source.
+        // SuperIO VDDIO readings outside the plausible range, or too far from the AOD VDDIO, are ignored
+        // (so AOD is used instead), unless the user explicitly selected SuperIO as the VDDIO source.
         // Still unsure about the best reasonable min/max range
         private bool IsValidReading(VoltageRail rail, VoltageSensorSource source, float value)
         {
@@ -610,8 +618,19 @@ namespace ZenTimings.ViewModels
             if (rail == VoltageRail.Vddio && source == VoltageSensorSource.SuperIo)
             {
                 bool sioForced = IsVoltageSourceSelectionSupported && Settings.VddioSensorSource == VoltageSensorSource.SuperIo;
-                if (!sioForced)
-                    return value >= MinSuperIoVddio && value <= MaxSuperIoVddio;
+                if (sioForced)
+                    return true;
+
+                if (value < MinSuperIoVddio || value > MaxSuperIoVddio)
+                    return false;
+
+                // Only an AOD value that is set and plausible itself is used to judge the SuperIO reading
+                float aodVddio = ReadVoltageFrom(VoltageRail.Vddio, VoltageSensorSource.Aod);
+                if (aodVddio >= MinSuperIoVddio && aodVddio <= MaxSuperIoVddio &&
+                    Math.Abs(value - aodVddio) > MaxSuperIoAodVddioDelta)
+                {
+                    return false;
+                }
             }
 
             return true;
