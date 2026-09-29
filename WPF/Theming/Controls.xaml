@@ -957,6 +957,74 @@
         </Style.Triggers>
     </Style>
 
+    <!-- Tool tip -->
+
+    <Style x:Key="{x:Type ToolTip}" TargetType="ToolTip">
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static t:ThemeBrushes.ForegroundBrush}}"/>
+        <Setter Property="Background" Value="{DynamicResource {x:Static t:ThemeBrushes.PopupBrush}}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static t:ThemeBrushes.BorderBrush}}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="t:ThemeAssist.CornerRadius" Value="{DynamicResource {x:Static t:ThemeDimensions.CornerRadius}}"/>
+        <Setter Property="Padding" Value="12,8"/>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="HasDropShadow" Value="False"/>
+        <Setter Property="Placement" Value="Mouse"/>
+        <Setter Property="VerticalOffset" Value="4"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="UseLayoutRounding" Value="True"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToolTip">
+                    <!-- Margin leaves room for the soft shadow inside the popup -->
+                    <Grid Margin="0,0,8,8">
+                        <Grid x:Name="Root" Opacity="0">
+                            <Grid.RenderTransform>
+                                <TranslateTransform x:Name="Slide" Y="3"/>
+                            </Grid.RenderTransform>
+                            <Border Background="{TemplateBinding Background}"
+                                    CornerRadius="{TemplateBinding t:ThemeAssist.CornerRadius}">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="12" ShadowDepth="3" Direction="270" Opacity="0.5" Color="Black"/>
+                                </Border.Effect>
+                            </Border>
+                            <!-- Lifts the surface above the window background in every theme -->
+                            <Border Background="{DynamicResource {x:Static t:ThemeBrushes.ForegroundBrush}}"
+                                    Opacity="0.08"
+                                    CornerRadius="{TemplateBinding t:ThemeAssist.CornerRadius}"/>
+                            <Border BorderBrush="{DynamicResource {x:Static t:ThemeBrushes.AccentBrush}}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    Opacity="0.55"
+                                    CornerRadius="{TemplateBinding t:ThemeAssist.CornerRadius}"/>
+                            <ContentPresenter Margin="{TemplateBinding Padding}" MaxWidth="360">
+                                <ContentPresenter.Resources>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="TextWrapping" Value="Wrap"/>
+                                    </Style>
+                                </ContentPresenter.Resources>
+                            </ContentPresenter>
+                        </Grid>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsOpen" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Root" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.12"/>
+                                        <DoubleAnimation Storyboard.TargetName="Slide" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.12">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CubicEase EasingMode="EaseOut"/>
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- Menus -->
 
     <Style x:Key="{x:Type Menu}" TargetType="Menu">

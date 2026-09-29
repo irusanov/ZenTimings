@@ -88,7 +88,7 @@
                 <local:TimingRow Label="tMRD" Value="{Binding Timings.MRD, FallbackValue='N/A'}" />
                 <local:TimingRow Label="tMRDPDA" Value="{Binding Timings.MRDPDA, FallbackValue='N/A'}" />
                 <local:TimingRow Label="tPHYRDL" Value="{Binding Timings.PHYRDL, FallbackValue='N/A'}" />
-                <local:TimingRow Label="tCCDL" Value="{Binding CcdlData, FallbackValue='N/A'}" LabelToolTip="tCCDL/tCCDL_WR/tCCDL_WR2" />
+                <local:TimingRow Label="tCCDL" Value="{Binding CcdlData, FallbackValue='N/A'}" LabelToolTip="tCCDL / tCCDL_WR / tCCDL_WR2" />
                 <local:TimingRow Label="tWRPRE" Value="{Binding Timings.WRPRE, FallbackValue='N/A'}" />
                 <StackPanel Orientation="Vertical" Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
                     <local:TimingRow Label="CK ODT A" Value="{Binding ApobData.CkOdtA, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />

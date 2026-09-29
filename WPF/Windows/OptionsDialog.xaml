@@ -245,7 +245,7 @@
         <StackPanel Grid.Column="1" Grid.Row="0" Style="{StaticResource SectionPanel}">
             <StackPanel Style="{StaticResource SectionHeaderPanel}">
                 <controls:AppIcon Kind="IconTemperature" Style="{StaticResource SectionIcon}" />
-                <TextBlock Text="Sensors" Style="{StaticResource SectionHeader}" />
+                <TextBlock Text="Sensor Sources" Style="{StaticResource SectionHeader}" />
             </StackPanel>
             <Border Style="{DynamicResource Separator}" />
             <Grid Style="{StaticResource SectionGrid}">
@@ -268,7 +268,7 @@
                     Grid.Column="0"
                     Grid.Row="0"
                     Style="{StaticResource SettingLabel}"
-                    Text="Impedance table source" />
+                    Text="Impedance table" />
                 <ComboBox
                     x:Name="comboBoxImpedanceSource"
                     Grid.ColumnSpan="2"
@@ -284,7 +284,7 @@
                     Grid.Column="0"
                     Grid.Row="1"
                     Style="{StaticResource SettingLabel}"
-                    Text="VSOC source" />
+                    Text="VSOC" />
                 <ComboBox
                     x:Name="comboBoxVsocSensorSource"
                     Grid.Column="1"
@@ -297,7 +297,7 @@
                     Grid.Column="0"
                     Grid.Row="2"
                     Style="{StaticResource SettingLabel}"
-                    Text="VDDIO source" />
+                    Text="VDDIO" />
                 <ComboBox
                     x:Name="comboBoxVddioSensorSource"
                     Grid.Column="1"
@@ -310,7 +310,7 @@
                     Grid.Column="0"
                     Grid.Row="3"
                     Style="{StaticResource SettingLabel}"
-                    Text="VDD MISC source" />
+                    Text="VDD MISC" />
                 <ComboBox
                     x:Name="comboBoxVmiscSensorSource"
                     Grid.Column="1"

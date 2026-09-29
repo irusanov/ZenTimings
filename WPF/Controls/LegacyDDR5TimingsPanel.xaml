@@ -123,7 +123,7 @@
                 <local:TimingRow x:Name="rowRttWrD5" Label="RttWr" Value="N/A" IsEnabled="False" />
                 <local:TimingRow x:Name="rowRttParkD5" Label="RttPark" Value="N/A" IsEnabled="False" />
                 <local:TimingRow x:Name="rowRttParkDqs" Label="RttParkDqs" Value="N/A" IsEnabled="False" />
-                <local:TimingRow Label="Nitro" Value="{Binding Timings.Nitro, FallbackValue='N/A'}" LabelToolTip="RxData/TxData/ControlLine" />
+                <local:TimingRow Label="Nitro" Value="{Binding Timings.Nitro, FallbackValue='N/A'}" LabelToolTip="RxData / TxData / ControlLine" />
             </StackPanel>
         </StackPanel>
     </Border>
