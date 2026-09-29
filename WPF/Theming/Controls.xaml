@@ -1921,4 +1921,217 @@
         </Setter>
     </Style>
 
+    <!-- Data sections (Sensors, System Info) -->
+
+    <SolidColorBrush x:Key="SubtleSelectionBrush" Color="{DynamicResource {x:Static t:ThemeColors.AccentColor}}" Opacity="0.15"/>
+
+    <Style x:Key="SectionHeaderTextStyle" TargetType="TextBlock">
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="{DynamicResource SensorGroupHeaderForeground}"/>
+    </Style>
+
+    <!-- Header toggle with a chevron that points down when expanded and right when collapsed -->
+    <Style x:Key="SectionToggleStyle" TargetType="ToggleButton">
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="IsChecked" Value="True"/>
+        <Setter Property="ToolTip" Value="Collapse / expand section"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border Background="Transparent">
+                        <DockPanel VerticalAlignment="Center">
+                            <Path x:Name="Chevron"
+                                  DockPanel.Dock="Left"
+                                  Data="M 0,0 L 4,4 L 8,0"
+                                  Stroke="{DynamicResource AccentTextColor}"
+                                  StrokeThickness="1.6"
+                                  StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                  Width="8" Height="5"
+                                  Margin="2,0,8,0"
+                                  VerticalAlignment="Center"
+                                  RenderTransformOrigin="0.5,0.5"/>
+                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+                        </DockPanel>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="False">
+                            <Setter TargetName="Chevron" Property="RenderTransform">
+                                <Setter.Value>
+                                    <RotateTransform Angle="-90"/>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Section group box colors, used as is when the header is supplied by the caller -->
+    <Style x:Key="SectionGroupBoxStyle" TargetType="GroupBox" BasedOn="{StaticResource {x:Type GroupBox}}">
+        <Setter Property="Background" Value="{DynamicResource SensorGroupBackground}"/>
+        <Setter Property="t:ThemeAssist.HeaderBackground" Value="{DynamicResource SensorGroupHeaderBackground}"/>
+        <Setter Property="Padding" Value="6,3"/>
+        <Setter Property="Margin" Value="0"/>
+    </Style>
+
+    <!-- Self-contained collapsible section: the header template is hosted in a chevron toggle that hides the content -->
+    <Style x:Key="CollapsibleSectionStyle" TargetType="GroupBox" BasedOn="{StaticResource SectionGroupBoxStyle}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="GroupBox">
+                    <Grid ClipToBounds="True">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{TemplateBinding t:ThemeAssist.CornerRadius}"/>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Border Background="{TemplateBinding t:ThemeAssist.HeaderBackground}"
+                                    CornerRadius="{Binding Path=(t:ThemeAssist.CornerRadius), RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static t:CornerRadiusMaskConverter.Instance}, ConverterParameter=1100}">
+                                <ToggleButton x:Name="SectionToggle"
+                                              Style="{StaticResource SectionToggleStyle}"
+                                              MinHeight="22"
+                                              Margin="{TemplateBinding Padding}"
+                                              Content="{TemplateBinding Header}"
+                                              ContentTemplate="{TemplateBinding HeaderTemplate}"/>
+                            </Border>
+                            <ContentPresenter x:Name="SectionContent" Grid.Row="1" Margin="{TemplateBinding Padding}"/>
+                        </Grid>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger SourceName="SectionToggle" Property="IsChecked" Value="False">
+                            <Setter TargetName="SectionContent" Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SectionColumnHeaderStyle" TargetType="DataGridColumnHeader">
+        <Setter Property="Foreground" Value="{DynamicResource SensorColumnHeaderForeground}"/>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Padding" Value="8,6"/>
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="IsHitTestVisible" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridColumnHeader">
+                    <Border Background="Transparent" Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Column header of a real DataGrid, drawn like the Sensors window header row -->
+    <Style x:Key="SectionGridColumnHeaderStyle" TargetType="DataGridColumnHeader" BasedOn="{StaticResource SectionColumnHeaderStyle}">
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridColumnHeader">
+                    <Border Background="{DynamicResource SensorColumnHeaderBackground}"
+                            BorderBrush="{DynamicResource SensorColumnHeaderBorder}"
+                            BorderThickness="0,0,0,1">
+                        <Grid>
+                            <ContentPresenter Margin="{TemplateBinding Padding}"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="Center"/>
+                            <Rectangle Width="1" Margin="0,6" HorizontalAlignment="Right" Fill="{DynamicResource SensorColumnHeaderBorder}"/>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SectionColumnSplitterStyle" TargetType="GridSplitter">
+        <Setter Property="Width" Value="3"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="ResizeDirection" Value="Columns"/>
+        <Setter Property="ResizeBehavior" Value="PreviousAndNext"/>
+        <Setter Property="Cursor" Value="SizeWE"/>
+        <Setter Property="ToolTip" Value="Double-click to auto-fit, drag to resize"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="GridSplitter">
+                    <Border Background="Transparent">
+                        <Rectangle x:Name="SplitterLine" Width="1" Margin="0,6" HorizontalAlignment="Center" Fill="{DynamicResource SensorColumnHeaderBorder}"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="SplitterLine" Property="Fill" Value="{DynamicResource AccentTextColor}"/>
+                            <Setter TargetName="SplitterLine" Property="Width" Value="2"/>
+                        </Trigger>
+                        <Trigger Property="IsDragging" Value="True">
+                            <Setter TargetName="SplitterLine" Property="Fill" Value="{DynamicResource AccentTextColor}"/>
+                            <Setter TargetName="SplitterLine" Property="Width" Value="2"/>
+                            <Setter TargetName="SplitterLine" Property="Margin" Value="0"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Data row with a subtle bottom divider -->
+    <Style x:Key="SectionRowStyle" TargetType="DataGridRow">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource SensorRowDivider}"/>
+        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        <Style.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="{StaticResource SubtleSelectionBrush}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Read-only name/value grid used inside a section -->
+    <Style x:Key="SectionDataGridStyle" TargetType="DataGrid" BasedOn="{StaticResource {x:Type DataGrid}}">
+        <Setter Property="AutoGenerateColumns" Value="False"/>
+        <Setter Property="HeadersVisibility" Value="None"/>
+        <Setter Property="GridLinesVisibility" Value="None"/>
+        <Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
+        <Setter Property="VerticalScrollBarVisibility" Value="Disabled"/>
+        <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="IsReadOnly" Value="True"/>
+        <Setter Property="IsEnabled" Value="False"/>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="RowHeight" Value="18"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="RowStyle" Value="{StaticResource SectionRowStyle}"/>
+        <Setter Property="ColumnHeaderStyle" Value="{StaticResource SectionGridColumnHeaderStyle}"/>
+        <Style.Resources>
+            <!-- Also covers the filler header right of the last column -->
+            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource SectionGridColumnHeaderStyle}"/>
+        </Style.Resources>
+    </Style>
+
+    <Style x:Key="SectionNameTextStyle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
+        <Setter Property="Padding" Value="3,0"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <Style x:Key="SectionValueTextStyle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource AccentTextColor}"/>
+        <Setter Property="Padding" Value="3,0"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
 </ResourceDictionary>
