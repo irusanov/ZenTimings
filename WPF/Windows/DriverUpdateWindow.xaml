@@ -1,14 +1,11 @@
-﻿<local:ThemedAdonisWindow
+﻿<local:ThemedWindow
     xmlns:local="clr-namespace:ZenTimings"
     x:Class="ZenTimings.Windows.DriverUpdateWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
-    xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"                   
-    adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
+    xmlns:theming="clr-namespace:ZenTimings.Theming"                   
     mc:Ignorable="d"
     Title="PawnIO Driver Update Available"
     Width="400"
@@ -85,8 +82,8 @@
             <Button x:Name="DriverUpdate_Install"
                 Content="Update Now"
                 Width="100"
-                Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" Click="DriverUpdate_Install_Click" />
+                Style="{DynamicResource {x:Static theming:ThemeStyles.AccentButton}}" Click="DriverUpdate_Install_Click" />
         </StackPanel>
 
     </StackPanel>
-</local:ThemedAdonisWindow>
+</local:ThemedWindow>

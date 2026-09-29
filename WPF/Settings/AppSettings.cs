@@ -1,4 +1,3 @@
-using AdonisUI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -121,11 +120,11 @@ namespace ZenTimings.Settings
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
-                AdonisUI.Controls.MessageBox.Show(
+                ZenTimings.Theming.MessageBox.Show(
                     "Could not save settings to file!",
                     "Error",
-                    AdonisUI.Controls.MessageBoxButton.OK,
-                    AdonisUI.Controls.MessageBoxImage.Error);
+                    ZenTimings.Theming.MessageBoxButton.OK,
+                    ZenTimings.Theming.MessageBoxImage.Error);
             }
         }
 
@@ -157,7 +156,7 @@ namespace ZenTimings.Settings
         {
             try
             {
-                ResourceLocator.SetColorScheme(Application.Current.Resources, GetThemeUri(AppTheme));
+                ZenTimings.Theming.ThemeManager.SetTheme(GetThemeUri(AppTheme));
             }
             catch (Exception ex)
             {
@@ -165,7 +164,7 @@ namespace ZenTimings.Settings
 
                 try
                 {
-                    ResourceLocator.SetColorScheme(Application.Current.Resources, GetThemeUri(Theme.DarkMintGradient));
+                    ZenTimings.Theming.ThemeManager.SetTheme(GetThemeUri(Theme.DarkMintGradient));
                 }
                 catch (Exception fallbackEx)
                 {
@@ -175,7 +174,7 @@ namespace ZenTimings.Settings
 
             try
             {
-                ThemedAdonisWindow.RefreshAllOpenWindows();
+                ThemedWindow.RefreshAllOpenWindows();
             }
             catch { }
         }

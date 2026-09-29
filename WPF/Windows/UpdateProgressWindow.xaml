@@ -1,12 +1,10 @@
-<local:ThemedAdonisWindow
+<local:ThemedWindow
     xmlns:local="clr-namespace:ZenTimings"
     x:Class="ZenTimings.Windows.UpdateProgressWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-    adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
     mc:Ignorable="d"
     Title="ZenTimings Update"
     Width="400"
@@ -42,4 +40,4 @@
                 MinWidth="80"
                 Click="CancelButton_Click" />
     </StackPanel>
-</local:ThemedAdonisWindow>
+</local:ThemedWindow>

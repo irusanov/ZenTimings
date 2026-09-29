@@ -171,7 +171,7 @@ namespace ZenTimings.Windows
         }
     }
 
-    public partial class SensorsWindow : ThemedAdonisWindow
+    public partial class SensorsWindow : ThemedWindow
     {
         private readonly DispatcherTimer updateTimer;
         private readonly DispatcherTimer _uptimeStatusTimer;

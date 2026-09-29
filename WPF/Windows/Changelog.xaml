@@ -1,14 +1,11 @@
-﻿<local:ThemedAdonisWindow
+﻿<local:ThemedWindow
     xmlns:local="clr-namespace:ZenTimings"
-    xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+    xmlns:theming="clr-namespace:ZenTimings.Theming"
     x:Class="ZenTimings.Windows.Changelog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-    xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-    adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
     xmlns:converters="clr-namespace:ZenTimings.Converters"
     mc:Ignorable="d"
     Style="{DynamicResource WindowStyles}"
@@ -37,14 +34,14 @@
                     <!-- @TODO: add binding to show beta text on BETA builds only -->
                     <!--TextBlock 
                         Text="Welcome to our BETA version. You might run into a few bugs or features that aren't working quite right just yet. If you spot anything unexpected, please let us know so we can fix it!"
-                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}"
+                        Foreground="{DynamicResource {x:Static theming:ThemeBrushes.AlertBrush}}"
                         HorizontalAlignment="Left"
                         Padding="0, 0, 0, 14"
                         TextWrapping="WrapWithOverflow" /-->
 
                     <TextBlock 
                         Text="This version contains many changes and has been tested on a limited set of configurations. You might run into a few bugs or features that aren't working quite right just yet. If you spot anything unexpected, please let us know so we can fix it!"
-                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}"
+                        Foreground="{DynamicResource {x:Static theming:ThemeBrushes.AlertBrush}}"
                         HorizontalAlignment="Left"
                         Padding="0, 0, 0, 14"
                         TextWrapping="WrapWithOverflow" />
@@ -91,4 +88,4 @@
             <Button x:Name="Changelog_Close" Content="OK" Width="80" IsCancel="True" />
         </Border>
     </Grid>
-</local:ThemedAdonisWindow>
+</local:ThemedWindow>

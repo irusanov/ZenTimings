@@ -11,7 +11,7 @@ namespace ZenTimings.Windows
     /// <summary>
     /// Interaction logic for AboutDialog.xaml
     /// </summary>
-    public partial class AboutDialog : ThemedAdonisWindow
+    public partial class AboutDialog : ThemedWindow
     {
         private static Updater updater => (Application.Current as App)?.updater;
         private DispatcherTimer notificationTimer;
@@ -55,8 +55,6 @@ namespace ZenTimings.Windows
             // List of all modules, there might be more DLL files in the directory
             string[] files =
             {
-                "AdonisUI.ClassicTheme.dll",
-                "AdonisUI.dll",
                 "inpoutx64.dll",
                 "WinIo32.dll",
                 "ZenStates-Core.dll",

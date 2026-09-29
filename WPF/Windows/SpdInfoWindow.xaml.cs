@@ -10,14 +10,14 @@ using ZenStates.Core.Hardware.DRAM;
 using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
 using ZenTimings.Common;
 using ZenTimings.Utils;
-using MessageBox = AdonisUI.Controls.MessageBox;
-using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
-using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
+using MessageBox = ZenTimings.Theming.MessageBox;
+using MessageBoxButton = ZenTimings.Theming.MessageBoxButton;
+using MessageBoxImage = ZenTimings.Theming.MessageBoxImage;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace ZenTimings.Windows
 {
-    public partial class SpdInfoWindow : ThemedAdonisWindow
+    public partial class SpdInfoWindow : ThemedWindow
     {
         private class SlotItem
         {

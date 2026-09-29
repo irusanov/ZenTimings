@@ -18,7 +18,7 @@ namespace ZenTimings.Windows
     /// <summary>
     /// Interaction logic for SystemInfoWindow.xaml
     /// </summary>
-    public partial class SystemInfoWindow : ThemedAdonisWindow
+    public partial class SystemInfoWindow : ThemedWindow
     {
         private class GridItem
         {
@@ -196,12 +196,12 @@ namespace ZenTimings.Windows
             ClipboardUtils.Copy($"{section.Header}{Environment.NewLine}{ClipboardUtils.GridToText(grid)}", button);
         }
 
-        private void AdonisWindow_Activated(object sender, EventArgs e)
+        private void Window_Activated(object sender, EventArgs e)
         {
             InteropMethods.EmptyWorkingSet(System.Diagnostics.Process.GetCurrentProcess().Handle);
         }
 
-        private void AdonisWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             AppSettings appSettings = AppSettings.Instance;
             if (appSettings.SaveWindowPosition)

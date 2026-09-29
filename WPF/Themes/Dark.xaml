@@ -1,37 +1,36 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI">
+                    xmlns:theming="clr-namespace:ZenTimings.Theming;assembly=ZenTimings">
 
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="pack://application:,,,/AdonisUI;component/ColorSchemes/Dark.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/ZenTimings;component/Theming/ColorSchemes/Dark.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Themes/SharedAssets.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <Thickness x:Key="WindowBorderThickness">1</Thickness>
-    
-    <Color x:Key="{x:Static adonisUi:Colors.ForegroundColor}">#d5d5d5</Color>
+    <Color x:Key="{x:Static theming:ThemeColors.ForegroundColor}">#d5d5d5</Color>
 
-    <SolidColorBrush x:Key="TextColor" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
+    <SolidColorBrush x:Key="TextColor" Color="{StaticResource {x:Static theming:ThemeColors.ForegroundColor}}" />
     <SolidColorBrush x:Key="AccentTextColor" Color="#7facff" />
-    <SolidColorBrush x:Key="SeparatorColor" Color="{StaticResource {x:Static adonisUi:Colors.Layer3BorderColor}}" />
-    <SolidColorBrush x:Key="PanelBackground" Color="{StaticResource {x:Static adonisUi:Colors.Layer0BackgroundColor}}" />
-    <SolidColorBrush x:Key="BottomPanelBackground" Color="{StaticResource {x:Static adonisUi:Colors.Layer0BackgroundColor}}" />
-    <SolidColorBrush x:Key="MainMenuPanelBackground" Color="{StaticResource {x:Static adonisUi:Colors.Layer0BackgroundColor}}" />
-    <SolidColorBrush x:Key="MenuItemBackground" Color="{StaticResource {x:Static adonisUi:Colors.Layer0BackgroundColor}}" />
-    <!-- SolidColorBrush x:Key="SuccessBackground" Color="{DynamicResource {x:Static adonisUi:Colors.Layer3BorderColor}}" /-->
+    <SolidColorBrush x:Key="SeparatorColor" Color="{StaticResource {x:Static theming:ThemeColors.Layer3BorderColor}}" />
+    <SolidColorBrush x:Key="PanelBackground" Color="{StaticResource {x:Static theming:ThemeColors.Layer0BackgroundColor}}" />
+    <SolidColorBrush x:Key="BottomPanelBackground" Color="{StaticResource {x:Static theming:ThemeColors.Layer0BackgroundColor}}" />
+    <SolidColorBrush x:Key="MainMenuPanelBackground" Color="{StaticResource {x:Static theming:ThemeColors.Layer0BackgroundColor}}" />
+    <SolidColorBrush x:Key="MenuItemBackground" Color="{StaticResource {x:Static theming:ThemeColors.Layer0BackgroundColor}}" />
+    <!-- SolidColorBrush x:Key="SuccessBackground" Color="{DynamicResource {x:Static theming:ThemeColors.Layer3BorderColor}}" /-->
     <SolidColorBrush x:Key="SuccessBackground" Color="#00661c" />
     <SolidColorBrush x:Key="DisabledColor" Color="#5b5b70" />
-    <SolidColorBrush x:Key="WindowBorderColor" Color="{StaticResource {x:Static adonisUi:Colors.Layer3BorderColor}}" />
+    <SolidColorBrush x:Key="WindowBorderColor" Color="{StaticResource {x:Static theming:ThemeColors.Layer3BorderColor}}" />
 
     <!-- logo -->
-    <SolidColorBrush x:Key="LogoColor" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
-    <SolidColorBrush x:Key="LogoColorAlt" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
+    <SolidColorBrush x:Key="LogoColor" Color="{StaticResource {x:Static theming:ThemeColors.ForegroundColor}}" />
+    <SolidColorBrush x:Key="LogoColorAlt" Color="{StaticResource {x:Static theming:ThemeColors.ForegroundColor}}" />
 
     <!-- Mismatch colors -->
-    <SolidColorBrush x:Key="TimingMismatchBrush" Color="{StaticResource {x:Static adonisUi:Colors.AlertColor}}"/>
-    <SolidColorBrush x:Key="TimingMismatchBackgroundBrush" Color="{StaticResource {x:Static adonisUi:Colors.AlertColor}}" Opacity="0.16"/>
+    <SolidColorBrush x:Key="TimingMismatchBrush" Color="{StaticResource {x:Static theming:ThemeColors.AlertColor}}"/>
+    <SolidColorBrush x:Key="TimingMismatchBackgroundBrush" Color="{StaticResource {x:Static theming:ThemeColors.AlertColor}}" Opacity="0.16"/>
 
-    <SolidColorBrush x:Key="LiveSnapshotBrush" Color="{StaticResource {x:Static adonisUi:Colors.AlertColor}}" />
+    <SolidColorBrush x:Key="LiveSnapshotBrush" Color="{StaticResource {x:Static theming:ThemeColors.AlertColor}}" />
 
     <Style x:Key="WindowStyles" TargetType="{x:Type Window}">
         <Setter Property="BorderThickness" Value="{StaticResource WindowBorderThickness}" />

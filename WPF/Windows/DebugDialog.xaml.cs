@@ -16,7 +16,7 @@ using ZenTimings.Export;
 using ZenTimings.Helpers;
 using Application = System.Windows.Application;
 using DRAM = ZenStates.Core.Hardware.DRAM;
-using MessageBox = AdonisUI.Controls.MessageBox;
+using MessageBox = ZenTimings.Theming.MessageBox;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace ZenTimings.Windows
@@ -24,7 +24,7 @@ namespace ZenTimings.Windows
     /// <summary>
     ///     Interaction logic for DebugDialog.xaml
     /// </summary>
-    public partial class DebugDialog : ThemedAdonisWindow
+    public partial class DebugDialog : ThemedWindow
     {
         private readonly AsusWMI AWMI;
         private readonly BiosMemController BMC;
@@ -521,8 +521,8 @@ namespace ZenTimings.Windows
                 MessageBox.Show(
                     $"Could not save the debug report to {filePath}:\n{ex.Message}",
                     "Error",
-                    AdonisUI.Controls.MessageBoxButton.OK,
-                    AdonisUI.Controls.MessageBoxImage.Error);
+                    ZenTimings.Theming.MessageBoxButton.OK,
+                    ZenTimings.Theming.MessageBoxImage.Error);
             }
         }
 
@@ -541,8 +541,8 @@ namespace ZenTimings.Windows
                 MessageBox.Show(
                     $"An error occurred while generating the debug report:\n{ex.Message}",
                     "Error",
-                    AdonisUI.Controls.MessageBoxButton.OK,
-                    AdonisUI.Controls.MessageBoxImage.Error);
+                    ZenTimings.Theming.MessageBoxButton.OK,
+                    ZenTimings.Theming.MessageBoxImage.Error);
             }
             finally
             {

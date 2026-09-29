@@ -1,15 +1,12 @@
-<local:ThemedAdonisWindow
+<local:ThemedWindow
     xmlns:local="clr-namespace:ZenTimings"
-    xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+    xmlns:theming="clr-namespace:ZenTimings.Theming"
     x:Class="ZenTimings.Windows.SystemInfoWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
     xmlns:controls="clr-namespace:ZenTimings.Controls"
-    adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
     mc:Ignorable="d"
     Title="System Info"
     SnapIdentifier="SystemInfoWindow"
@@ -19,9 +16,9 @@
     BorderThickness="1"
     UseLayoutRounding="True"
     Style="{DynamicResource WindowStyles}"
-    Activated="AdonisWindow_Activated"
+    Activated="Window_Activated"
     Icon="/ZenTimings;component/Resources/new-icon/16.png"
-    Closing="AdonisWindow_Closing">
+    Closing="Window_Closing">
 
     <Window.Resources>
         <!-- Section header with a button that copies the grid the section names in its Tag -->
@@ -39,8 +36,8 @@
             </DockPanel>
         </DataTemplate>
 
-        <SolidColorBrush x:Key="TimingMismatchBrush" Color="{DynamicResource {x:Static adonisUi:Colors.AlertColor}}"/>
-        <SolidColorBrush x:Key="TimingMismatchBackgroundBrush" Color="{DynamicResource {x:Static adonisUi:Colors.AlertColor}}" Opacity="0.16"/>
+        <SolidColorBrush x:Key="TimingMismatchBrush" Color="{DynamicResource {x:Static theming:ThemeColors.AlertColor}}"/>
+        <SolidColorBrush x:Key="TimingMismatchBackgroundBrush" Color="{DynamicResource {x:Static theming:ThemeColors.AlertColor}}" Opacity="0.16"/>
 
         <Style x:Key="TimingRowStyle" TargetType="{x:Type DataGridRow}">
             <Setter Property="Background" Value="Transparent" />
@@ -78,7 +75,7 @@
                 Header="SystemInfo"
                 HeaderTemplate="{StaticResource CopyHeaderTemplate}"
                 Tag="{x:Reference TestGrid}"
-                adonisExtensions:LayerExtension.Layer="3"
+                theming:LayerExtension.Layer="3"
                 Padding="10 5">
                 <DataGrid
                     Name="TestGrid"
@@ -114,10 +111,10 @@
                 Header="Memory Timings"
                 HeaderTemplate="{StaticResource CopyHeaderTemplate}"
                 Tag="{x:Reference MemCfgGrid}"
-                adonisExtensions:LayerExtension.Layer="3">
+                theming:LayerExtension.Layer="3">
                 <DataGrid
                     Name="MemCfgGrid"
-                    adonisExtensions:LayerExtension.Layer="3"
+                    theming:LayerExtension.Layer="3"
                     AutoGenerateColumns="False"
                     HeadersVisibility="Column"
                     GridLinesVisibility="None"
@@ -151,10 +148,10 @@
                 Header="AOD Table"
                 HeaderTemplate="{StaticResource CopyHeaderTemplate}"
                 Tag="{x:Reference MemControllerGrid}"
-                adonisExtensions:LayerExtension.Layer="3">
+                theming:LayerExtension.Layer="3">
                 <DataGrid
                     Name="MemControllerGrid"
-                    adonisExtensions:LayerExtension.Layer="3"
+                    theming:LayerExtension.Layer="3"
                     AutoGenerateColumns="False"
                     HeadersVisibility="None"
                     GridLinesVisibility="None"
@@ -187,10 +184,10 @@
                 Header="APOB Table"
                 HeaderTemplate="{StaticResource CopyHeaderTemplate}"
                 Tag="{x:Reference ApobTableGrid}"
-                adonisExtensions:LayerExtension.Layer="3">
+                theming:LayerExtension.Layer="3">
                 <DataGrid
                     Name="ApobTableGrid"
-                    adonisExtensions:LayerExtension.Layer="3"
+                    theming:LayerExtension.Layer="3"
                     AutoGenerateColumns="False"
                     HeadersVisibility="None"
                     GridLinesVisibility="None"
@@ -238,11 +235,11 @@
                     Header="Asus WMI"
                     HeaderTemplate="{StaticResource CopyHeaderTemplate}"
                     Tag="{x:Reference AsusWmiGrid}"
-                    adonisExtensions:LayerExtension.Layer="3">
+                    theming:LayerExtension.Layer="3">
 
                     <DataGrid
                         Name="AsusWmiGrid"
-                        adonisExtensions:LayerExtension.Layer="3"
+                        theming:LayerExtension.Layer="3"
                         AutoGenerateColumns="False"
                         HeadersVisibility="None"
                         GridLinesVisibility="None"
@@ -274,4 +271,4 @@
             </Border>
         </StackPanel>
     </ScrollViewer>
-</local:ThemedAdonisWindow>
+</local:ThemedWindow>

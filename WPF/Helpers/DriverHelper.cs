@@ -94,11 +94,11 @@ namespace ZenTimings.Helpers
         {
             try
             {
-                AdonisUI.Controls.MessageBox.Show(
+                ZenTimings.Theming.MessageBox.Show(
                     "PawnIO could not be installed." + Environment.NewLine + details,
                     "PawnIO",
-                    AdonisUI.Controls.MessageBoxButton.OK,
-                    AdonisUI.Controls.MessageBoxImage.Error);
+                    ZenTimings.Theming.MessageBoxButton.OK,
+                    ZenTimings.Theming.MessageBoxImage.Error);
             }
             catch
             {

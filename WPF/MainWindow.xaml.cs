@@ -1,4 +1,3 @@
-using AdonisUI.Controls;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -35,10 +34,12 @@ using ZenTimings.ViewModels;
 using ZenTimings.Windows;
 using static ZenTimings.Helpers.DriverCleaner;
 using Forms = System.Windows.Forms;
-using MessageBox = AdonisUI.Controls.MessageBox;
-using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
-using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
-using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
+using MessageBox = ZenTimings.Theming.MessageBox;
+using MessageBoxButtons = ZenTimings.Theming.MessageBoxButtons;
+using MessageBoxModel = ZenTimings.Theming.MessageBoxModel;
+using MessageBoxButton = ZenTimings.Theming.MessageBoxButton;
+using MessageBoxImage = ZenTimings.Theming.MessageBoxImage;
+using MessageBoxResult = ZenTimings.Theming.MessageBoxResult;
 //using OpenHardwareMonitor.Hardware;
 
 namespace ZenTimings
@@ -46,7 +47,7 @@ namespace ZenTimings
     /// <summary>
     ///     Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : ThemedAdonisWindow
+    public partial class MainWindow : ThemedWindow
     {
         private readonly AsusWMI AsusWmi = new AsusWMI();
         private readonly List<BiosACPIFunction> biosFunctions = new List<BiosACPIFunction>();
@@ -128,14 +129,14 @@ namespace ZenTimings
             else
             {
                 {
-                    AdonisUI.Controls.MessageBoxResult result = AdonisUI.Controls.MessageBox.Show(
+                    ZenTimings.Theming.MessageBoxResult result = ZenTimings.Theming.MessageBox.Show(
                         "PawnIO is not installed, do you want to install it?",
                         nameof(ZenTimings),
-                        AdonisUI.Controls.MessageBoxButton.OKCancel,
-                        AdonisUI.Controls.MessageBoxImage.Warning
+                        ZenTimings.Theming.MessageBoxButton.OKCancel,
+                        ZenTimings.Theming.MessageBoxImage.Warning
                     );
 
-                    if (result == AdonisUI.Controls.MessageBoxResult.OK)
+                    if (result == ZenTimings.Theming.MessageBoxResult.OK)
                     {
                         SplashWindow.Stop();
                         if (!DriverHelper.InstallPawnIO())
@@ -1364,7 +1365,7 @@ namespace ZenTimings
             }
         }
 
-        private void AdonisWindow_StateChanged(object sender, EventArgs e)
+        private void Window_StateChanged(object sender, EventArgs e)
         {
             // A debug report's window has no tray icon and nothing to refresh.
             if (isMockWindow || _notifyIcon == null)
@@ -1400,13 +1401,13 @@ namespace ZenTimings
             MinimizeFootprint();
         }
 
-        private void AdonisWindow_SizeChanged(object sender, SizeChangedEventArgs e) => MinimizeFootprint();
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e) => MinimizeFootprint();
 
-        private void AdonisWindow_Activated(object sender, EventArgs e) => MinimizeFootprint();
+        private void Window_Activated(object sender, EventArgs e) => MinimizeFootprint();
 
         private void ExitToolStripMenuItem_Click(object sender, RoutedEventArgs e) => ExitApplication();
 
-        private void AdonisWindow_Loaded(object sender, RoutedEventArgs e)
+        private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             this.Topmost = true;
 
@@ -1754,7 +1755,7 @@ namespace ZenTimings
             }
         }
 
-        private void AdonisWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (isMockWindow)
             {

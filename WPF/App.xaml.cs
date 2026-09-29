@@ -38,7 +38,7 @@ namespace ZenTimings
         public App()
         {
             // Registered here rather than in OnStartup: the constructor runs before App.xaml's
-            // resources (themes, AdonisUI) are loaded and before any static settings are read, and
+            // resources (themes, control styles) are loaded and before any static settings are read, and
             // in driver-cleanup mode too, so failures there are logged as well.
             RegisterUnhandledExceptionHandlers();
         }

@@ -4,7 +4,7 @@ using System.Windows;
 
 namespace ZenTimings.Windows
 {
-    public partial class UpdateAvailableDialog : ThemedAdonisWindow
+    public partial class UpdateAvailableDialog : ThemedWindow
     {
         public bool DontAskAgain => DontAskCheckBox.IsChecked == true;
 

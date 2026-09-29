@@ -5,7 +5,7 @@ namespace ZenTimings.Windows
     /// <summary>
     /// Interaction logic for DriverUpdateWindow.xaml
     /// </summary>
-    public partial class DriverUpdateWindow : ThemedAdonisWindow
+    public partial class DriverUpdateWindow : ThemedWindow
     {
         public bool IsSkipChecked => SkipDriverUpdateCheckBox.IsChecked == true;
 

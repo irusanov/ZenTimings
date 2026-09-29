@@ -1,9 +1,9 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI">
+                    xmlns:theming="clr-namespace:ZenTimings.Theming;assembly=ZenTimings">
 
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="pack://application:,,,/AdonisUI;component/ColorSchemes/Light.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/ZenTimings;component/Theming/ColorSchemes/Light.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Themes/SharedAssets.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/rog/rog-logo-alt.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Resources/vendor/asus/proart/proart-logo-alt.xaml" />
@@ -13,7 +13,7 @@
 
     <Thickness x:Key="WindowBorderThickness">1</Thickness>
 
-    <SolidColorBrush x:Key="TextColor" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
+    <SolidColorBrush x:Key="TextColor" Color="{StaticResource {x:Static theming:ThemeColors.ForegroundColor}}" />
     <SolidColorBrush x:Key="AccentTextColor" Color="#004b84" />
     <SolidColorBrush x:Key="SeparatorColor" Color="#e5e5e5" />
     <SolidColorBrush x:Key="PanelBackground" Color="#f3f3f3" />
@@ -26,21 +26,21 @@
     <SolidColorBrush x:Key="WindowBorderColor" Color="#c4c4c4" />
 
     <!-- Window background color -->
-    <Color x:Key="{x:Static adonisUi:Colors.Layer0BackgroundColor}">#f3f3f3</Color>
+    <Color x:Key="{x:Static theming:ThemeColors.Layer0BackgroundColor}">#f3f3f3</Color>
     <!-- Window border and titlebar color -->
-    <Color x:Key="{x:Static adonisUi:Colors.Layer0BorderColor}">#f3f3f3</Color>
+    <Color x:Key="{x:Static theming:ThemeColors.Layer0BorderColor}">#f3f3f3</Color>
     <!-- Window text color -->
-    <Color x:Key="{x:Static adonisUi:Colors.ForegroundColor}">#212529</Color>
+    <Color x:Key="{x:Static theming:ThemeColors.ForegroundColor}">#212529</Color>
 
     <!-- logo -->
-    <SolidColorBrush x:Key="LogoColor" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
-    <SolidColorBrush x:Key="LogoColorAlt" Color="{StaticResource {x:Static adonisUi:Colors.ForegroundColor}}" />
+    <SolidColorBrush x:Key="LogoColor" Color="{StaticResource {x:Static theming:ThemeColors.ForegroundColor}}" />
+    <SolidColorBrush x:Key="LogoColorAlt" Color="{StaticResource {x:Static theming:ThemeColors.ForegroundColor}}" />
 
     <!-- Mismatch colors -->
-    <SolidColorBrush x:Key="TimingMismatchBrush" Color="{StaticResource {x:Static adonisUi:Colors.ErrorColor}}"/>
-    <SolidColorBrush x:Key="TimingMismatchBackgroundBrush" Color="{StaticResource {x:Static adonisUi:Colors.ErrorColor}}" Opacity="0.16"/>
+    <SolidColorBrush x:Key="TimingMismatchBrush" Color="{StaticResource {x:Static theming:ThemeColors.ErrorColor}}"/>
+    <SolidColorBrush x:Key="TimingMismatchBackgroundBrush" Color="{StaticResource {x:Static theming:ThemeColors.ErrorColor}}" Opacity="0.16"/>
 
-    <SolidColorBrush x:Key="LiveSnapshotBrush" Color="{StaticResource {x:Static adonisUi:Colors.ErrorColor}}" />
+    <SolidColorBrush x:Key="LiveSnapshotBrush" Color="{StaticResource {x:Static theming:ThemeColors.ErrorColor}}" />
 
     <Style x:Key="WindowStyles" TargetType="{x:Type Window}">
         <Setter Property="BorderThickness" Value="{StaticResource WindowBorderThickness}" />

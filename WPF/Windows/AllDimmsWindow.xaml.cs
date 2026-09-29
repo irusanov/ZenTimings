@@ -12,7 +12,7 @@ using ZenTimings.ViewModels;
 
 namespace ZenTimings.Windows
 {
-    public partial class AllDimmsWindow : ThemedAdonisWindow
+    public partial class AllDimmsWindow : ThemedWindow
     {
         private readonly Func<AllDimmsCapture.Result> describe;
         private readonly Func<FrameworkElement> createPanel;

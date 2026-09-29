@@ -16,7 +16,7 @@ using ZenTimings.Utils;
 
 namespace ZenTimings.Windows
 {
-    public partial class AdvancedTimingsWindow : ThemedAdonisWindow
+    public partial class AdvancedTimingsWindow : ThemedWindow
     {
         private class TimingGridItem
         {

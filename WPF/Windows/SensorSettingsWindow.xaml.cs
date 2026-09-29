@@ -50,7 +50,7 @@ namespace ZenTimings.Windows
         }
     }
 
-    public partial class SensorSettingsWindow : ThemedAdonisWindow
+    public partial class SensorSettingsWindow : ThemedWindow
     {
         public ObservableCollection<SensorSettingsGroup> Groups { get; }
 
