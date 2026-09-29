@@ -56,17 +56,12 @@
                 <!--TextBlock Text="{Binding Timings.XP, FallbackValue='N/A'}"
                      Style="{DynamicResource ValueStyles}"
                      /-->
-                <StackPanel Orientation="Vertical" Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
-                    <local:TimingRow Label="tCCDL"
-                                     Value="{Binding CcdlData.Tccdl, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToNA}}"
-                                     IsEnabled="{Binding CcdlData.Tccdl, Mode=OneWay, Converter={StaticResource FloatToBool}, FallbackValue=False}" />
-                </StackPanel>
             </StackPanel>
 
             <!-- Second Column -->
             <StackPanel Grid.IsSharedSizeScope="True">
                 <local:TimingRow Label="Capacity" Value="{Binding TotalCapacity, FallbackValue='N/A'}" />
-                <local:TimingRow Label="BGS Alt" Value="{Binding Timings.BGSAlt, FallbackValue='N/A'}" />
+                <local:TimingRow Label="PwrDwn" Value="{Binding Timings.PowerDown, FallbackValue='N/A'}" />
                 <local:TimingRow Label="Cmd2T" Value="{Binding Timings.Cmd2T, FallbackValue='N/A'}" />
                 <TextBlock Style="{DynamicResource DividerTextBlock}" />
                 <local:TimingRow Label="tRDRDSCL" Value="{Binding Timings.RDRDSCL, FallbackValue='N/A'}" />
@@ -95,13 +90,8 @@
                 <local:TimingRow Label="tMRD" Value="{Binding Timings.MRD, FallbackValue='N/A'}" />
                 <local:TimingRow Label="tMRDPDA" Value="{Binding Timings.MRDPDA, FallbackValue='N/A'}" />
                 <local:TimingRow Label="tPHYRDL" Value="{Binding Timings.PHYRDL, FallbackValue='N/A'}" />
-                <local:TimingRow Label="PowerDown" Value="{Binding Timings.PowerDown, FallbackValue='N/A'}" />
-                <local:TimingRow Label="tWRPRE" Value="{Binding Timings.WRPRE, FallbackValue='N/A'}" />
-                <StackPanel Orientation="Vertical" Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
-                    <local:TimingRow Label="tCCDL WR"
-                                     Value="{Binding CcdlData.Tccdlwr, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToNA}}"
-                                     IsEnabled="{Binding CcdlData.Tccdlwr, Mode=OneWay, Converter={StaticResource FloatToBool}, FallbackValue=False}" />
-                </StackPanel>
+                <local:TimingRow Label="tCCDL" Value="{Binding CcdlData, FallbackValue='N/A'}" LabelToolTip="tCCDL/tCCDL_WR/tCCDL_WR2" />
+
             </StackPanel>
 
             <!-- Third Column -->
@@ -130,10 +120,7 @@
                 <local:TimingRow Label="RttNomRd" Value="{Binding ApobData.RttNomRd, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
                 <local:TimingRow Label="RttWr" Value="{Binding ApobData.RttWr, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
                 <local:TimingRow Label="RttPark" Value="{Binding ApobData.RttPark, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
-                <local:TimingRow Label="RttParkDqs" Value="{Binding ApobData.RttParkDqs, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
-                <local:TimingRow Label="tCCDL WR2"
-                                 Value="{Binding CcdlData.Tccdlwr2, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToNA}}"
-                                 IsEnabled="{Binding CcdlData.Tccdlwr2, Mode=OneWay, Converter={StaticResource FloatToBool}, FallbackValue=False}" />
+
             </StackPanel>
         </StackPanel>
     </Border>
