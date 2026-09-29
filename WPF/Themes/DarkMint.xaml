@@ -1,135 +1,36 @@
+<!--
+    DarkMint theme. The palette below is all a theme has to define: the control brushes are built from it
+    (Theming/ColorSchemes) and the application colors default to it (Themes/ThemeCommon.xaml).
+-->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:theming="clr-namespace:ZenTimings.Theming;assembly=ZenTimings">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/ZenTimings;component/Theming/ColorSchemes/Dark.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Themes/ThemeCommon.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Themes/SharedAssets.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
-    <Thickness x:Key="WindowBorderThickness">1</Thickness>
-    <CornerRadius x:Key="{x:Static theming:ThemeDimensions.CornerRadius}">2</CornerRadius>
-    <!-- Text color -->
+    <!-- Palette -->
+    <Color x:Key="{x:Static theming:ThemeColors.BackgroundColor}">#1F2029</Color> <!-- window -->
+    <Color x:Key="{x:Static theming:ThemeColors.SurfaceColor}">#0DFFFFFF</Color> <!-- cards and group boxes (translucent, so it also works on gradients) -->
+    <Color x:Key="{x:Static theming:ThemeColors.PopupColor}">#2A2B37</Color> <!-- menus, drop-downs, tool tips -->
+    <Color x:Key="{x:Static theming:ThemeColors.BorderColor}">#1AFFFFFF</Color> <!-- control, card and popup outlines -->
     <Color x:Key="{x:Static theming:ThemeColors.ForegroundColor}">#D1D4C9</Color>
-    <!-- Window title background -->
-    <Color x:Key="{x:Static theming:ThemeColors.Layer0BorderColor}">#1f2029</Color>
-    <!-- Window background -->
-    <Color x:Key="{x:Static theming:ThemeColors.Layer0BackgroundColor}">#1f2029</Color>
+    <Color x:Key="{x:Static theming:ThemeColors.SecondaryForegroundColor}">#B8D1D4C9</Color>
+    <Color x:Key="{x:Static theming:ThemeColors.DisabledForegroundColor}">#66D1D4C9</Color>
+    <Color x:Key="{x:Static theming:ThemeColors.AccentColor}">#7CCAA2</Color> <!-- switches, selection, main buttons -->
+    <Color x:Key="{x:Static theming:ThemeColors.AccentForegroundColor}">#1F2029</Color> <!-- text on the accent color -->
+    <Color x:Key="{x:Static theming:ThemeColors.SuccessColor}">#4CC38A</Color>
+    <Color x:Key="{x:Static theming:ThemeColors.WarningColor}">#FFC107</Color>
+    <Color x:Key="{x:Static theming:ThemeColors.ErrorColor}">#FF6B6B</Color>
 
-    <Color x:Key="{x:Static theming:ThemeColors.Layer3BorderColor}">#14151a</Color>
+    <CornerRadius x:Key="{x:Static theming:ThemeDimensions.CornerRadius}">2</CornerRadius>
 
-    <!-- Accent button and toggles -->
-    <Color x:Key="{x:Static theming:ThemeColors.AccentColor}">#7ccaa2</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.AccentForegroundColor}">#1f2029</Color>
-    <!-- Accent button and toggles hover -->
-    <Color x:Key="{x:Static theming:ThemeColors.AccentHighlightColor}">#60cd95</Color>
-    <!-- Accent button and toggles active -->
-    <Color x:Key="{x:Static theming:ThemeColors.AccentInteractionColor}">#5ad394</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.AccentInteractionBorderColor}">#5ad394</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.AccentIntenseHighlightBorderColor}">#5ad394</Color>
-    <!-- Dropdown and menu background, 5% lighter than window -->
-    <Color x:Key="{x:Static theming:ThemeColors.Layer1BackgroundColor}">#2a2b37</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer1BorderColor}">#2a2b37</Color>
-    <!-- Dropdown and menu hover background -->
-    <Color x:Key="{x:Static theming:ThemeColors.Layer1HighlightColor}">#353746</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer1HighlightBorderColor}">#404255</Color>
-    <!-- Window button hover color -->
-    <Color x:Key="{x:Static theming:ThemeColors.WindowButtonHighlightColor}">#353746</Color>
-
-    <Color x:Key="{x:Static theming:ThemeColors.Layer2HighlightColor}">#353746</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer2HighlightBorderColor}">#353746</Color>
-
-    <SolidColorBrush x:Key="AccentTextColor" Color="{StaticResource {x:Static theming:ThemeColors.AccentColor}}" />
-
-    <!-- Panels -->
-    <SolidColorBrush x:Key="PanelBackground" Color="{StaticResource {x:Static theming:ThemeColors.Layer0BackgroundColor}}" />
-    <SolidColorBrush x:Key="BottomPanelBackground" Color="{StaticResource {x:Static theming:ThemeColors.Layer0BackgroundColor}}" />
-    <SolidColorBrush x:Key="MainMenuPanelBackground" Color="{StaticResource {x:Static theming:ThemeColors.Layer0BackgroundColor}}" />
-    <SolidColorBrush x:Key="MenuItemBackground" Color="{StaticResource {x:Static theming:ThemeColors.Layer0BackgroundColor}}" />
-    <SolidColorBrush x:Key="TextColor" Color="{StaticResource {x:Static theming:ThemeColors.ForegroundColor}}" />
-    <SolidColorBrush x:Key="SeparatorColor" Color="{StaticResource {x:Static theming:ThemeColors.Layer3BorderColor}}" />
-    <!-- SolidColorBrush x:Key="SuccessBackground" Color="{DynamicResource {x:Static theming:ThemeColors.Layer3BorderColor}}" /-->
-    <SolidColorBrush x:Key="SuccessBackground" Color="#327b56" />
-    <SolidColorBrush x:Key="DisabledColor" Color="#5b5b70" />
-    <SolidColorBrush x:Key="WindowBorderColor" Color="{StaticResource {x:Static theming:ThemeColors.Layer3BorderColor}}" />
-
-    <!-- logo -->
-    <SolidColorBrush x:Key="LogoColor" Color="{StaticResource {x:Static theming:ThemeColors.ForegroundColor}}" />
-    <SolidColorBrush x:Key="LogoColorAlt" Color="{StaticResource {x:Static theming:ThemeColors.ForegroundColor}}" />
-
-    <!-- Mismatch colors -->
-    <SolidColorBrush x:Key="TimingMismatchBrush" Color="{StaticResource {x:Static theming:ThemeColors.AlertColor}}"/>
-    <SolidColorBrush x:Key="TimingMismatchBackgroundBrush" Color="{StaticResource {x:Static theming:ThemeColors.AlertColor}}" Opacity="0.16"/>
-
-    <SolidColorBrush x:Key="LiveSnapshotBrush" Color="{StaticResource {x:Static theming:ThemeColors.AlertColor}}" />
-
-    <Style x:Key="WindowStyles" TargetType="{x:Type Window}">
-        <Setter Property="BorderThickness" Value="{StaticResource WindowBorderThickness}" />
-        <Setter Property="BorderBrush" Value="{StaticResource WindowBorderColor}" />
-    </Style>
+    <!-- Application colors that differ from the defaults in ThemeCommon.xaml -->
+    <SolidColorBrush x:Key="SuccessBackground" Color="#327B56" />
+    <SolidColorBrush x:Key="DisabledColor" Color="#5B5B70" />
+    <SolidColorBrush x:Key="SeparatorColor" Color="#14151A" />
+    <SolidColorBrush x:Key="WindowBorderColor" Color="#14151A" />
 </ResourceDictionary>
-
-<!--
-Layer 0
-Layer0BackgroundColor
-Layer0BorderColor
-Layer 1
-Layer1BackgroundColor
-Layer1BorderColor
-Layer1HighlightColor
-Layer1HighlightBorderColor
-Layer1IntenseHighlightColor
-Layer1IntenseHighlightBorderColor
-Layer1InteractionColor
-Layer1InteractionBorderColor
-Layer1InteractionForegroundColor
-Layer 2
-Layer2BackgroundColor
-Layer2BorderColor
-Layer2HighlightColor
-Layer2HighlightBorderColor
-Layer2IntenseHighlightColor
-Layer2IntenseHighlightBorderColor
-Layer2InteractionColor
-Layer2InteractionBorderColor
-Layer2InteractionForegroundColor
-Layer 3
-Layer3BackgroundColor
-Layer3BorderColor
-Layer3HighlightColor
-Layer3HighlightBorderColor
-Layer3IntenseHighlightColor
-Layer3IntenseHighlightBorderColor
-Layer3InteractionColor
-Layer3InteractionBorderColor
-Layer3InteractionForegroundColor
-Layer 4
-Layer4BackgroundColor
-Layer4BorderColor
-Layer4HighlightColor
-Layer4HighlightBorderColor
-Layer4IntenseHighlightColor
-Layer4IntenseHighlightBorderColor
-Layer4InteractionColor
-Layer4InteractionBorderColor
-Layer4InteractionForegroundColor
-Accent
-AccentColor
-AccentForegroundColor
-AccentHighlightColor
-AccentIntenseHighlightColor
-AccentIntenseHighlightBorderColor
-AccentInteractionColor
-AccentInteractionBorderColor
-AccentInteractionForegroundColor
-Misc
-ForegroundColor
-DisabledForegroundColor
-DisabledAccentForegroundColor
-ErrorColor
-AlertColor
-SuccessColor
-HyperlinkColor
-WindowButtonHighlightColor
-WindowButtonInteractionColor
--->

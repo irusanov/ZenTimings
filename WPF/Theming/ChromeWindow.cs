@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -232,8 +233,20 @@ namespace ZenTimings.Theming
                 maximizeRestoreButton.Click += MaximizeRestoreButton_Click;
             if (closeButton != null)
                 closeButton.Click += CloseButton_Click;
+        }
 
+        protected override void OnContentRendered(EventArgs e)
+        {
+            base.OnContentRendered(e);
+
+            if (sizeRefreshed)
+                return;
+
+            sizeRefreshed = true;
             RefreshSizeToContent();
+
+            // Show the window once the size refresh above has been laid out and drawn.
+            Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(Uncloak));
         }
 
         protected override void OnSourceInitialized(EventArgs e)
@@ -241,8 +254,53 @@ namespace ZenTimings.Theming
             base.OnSourceInitialized(e);
 
             if (PresentationSource.FromVisual(this) is HwndSource source)
+            {
                 source.AddHook(ChromeWndProc);
+
+                // Until WPF has drawn the window, Windows would show the bare native frame (a white window with a
+                // light border) for a moment. Keep the window cloaked - invisible, but laid out and rendered as
+                // usual - until its first frame is on screen.
+                SetCloaked(source.Handle, true);
+
+                // Fallback in case the window is never rendered (e.g. it is hidden again right away).
+                Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, new Action(Uncloak));
+            }
         }
+
+        private bool cloaked;
+
+        private void SetCloaked(IntPtr hwnd, bool cloak)
+        {
+            if (hwnd == IntPtr.Zero)
+                return;
+
+            int value = cloak ? 1 : 0;
+            try
+            {
+                // Fails harmlessly where DWM cloaking isn't supported (before Windows 8).
+                if (DwmSetWindowAttribute(hwnd, DWMWA_CLOAK, ref value, sizeof(int)) == 0)
+                    cloaked = cloak;
+            }
+            catch (DllNotFoundException)
+            {
+            }
+            catch (EntryPointNotFoundException)
+            {
+            }
+        }
+
+        private void Uncloak()
+        {
+            if (!cloaked)
+                return;
+
+            SetCloaked(new WindowInteropHelper(this).Handle, false);
+        }
+
+        private const int DWMWA_CLOAK = 13;
+
+        [DllImport("dwmapi.dll")]
+        private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attribute, ref int value, int size);
 
         private IntPtr ChromeWndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
@@ -254,9 +312,12 @@ namespace ZenTimings.Theming
             return IntPtr.Zero;
         }
 
+        private bool sizeRefreshed;
+
         /// <summary>
         /// With custom chrome, a window sized to its content can get the size of the native frame wrong on the first
-        /// layout and show a black band. Measuring again once loaded fixes it.
+        /// layout and show a black band. Measuring again once the window is shown fixes it. Switching to Manual keeps
+        /// the current size, so the window doesn't jump or flash, and switching back measures the content again.
         /// </summary>
         private void RefreshSizeToContent()
         {
@@ -264,7 +325,7 @@ namespace ZenTimings.Theming
                 return;
 
             SizeToContent = SizeToContent.Manual;
-            Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(() => SizeToContent = SizeToContent.WidthAndHeight));
+            SizeToContent = SizeToContent.WidthAndHeight;
         }
 
         private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

@@ -32,7 +32,7 @@
         <windows:PixelToDataGridLengthConverter x:Key="PixelToDataGridLength" />
         <windows:TotalColumnWidthConverter x:Key="TotalColumnWidth" />
         <windows:ColumnLayout x:Key="ColumnLayout" />
-        <SolidColorBrush x:Key="ThermalAlarmHighBrush"     Color="{DynamicResource {x:Static theming:ThemeColors.AlertColor}}"/>
+        <SolidColorBrush x:Key="ThermalAlarmHighBrush"     Color="{DynamicResource {x:Static theming:ThemeColors.WarningColor}}"/>
         <SolidColorBrush x:Key="ThermalAlarmCriticalBrush" Color="{DynamicResource {x:Static theming:ThemeColors.ErrorColor}}"/>
         <SolidColorBrush x:Key="SubtleSelectionBrush" Color="{DynamicResource {x:Static theming:ThemeColors.AccentColor}}" Opacity="0.15"/>
         <!-- Sensor type icons are defined in Themes/AppIcons.xaml -->
@@ -69,6 +69,54 @@
             <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="Fill" Value="{DynamicResource TextColor}"/>
             <Setter Property="Opacity" Value="0.7"/>
+        </Style>
+
+        <Style x:Key="SensorColumnHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="Foreground" Value="{DynamicResource SensorColumnHeaderForeground}"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="IsHitTestVisible" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
+                        <Border Background="Transparent" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SensorColumnSplitterStyle" TargetType="{x:Type GridSplitter}">
+            <Setter Property="Width" Value="3"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="ResizeDirection" Value="Columns"/>
+            <Setter Property="ResizeBehavior" Value="PreviousAndNext"/>
+            <Setter Property="Cursor" Value="SizeWE"/>
+            <Setter Property="ToolTip" Value="Double-click to auto-fit, drag to resize"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type GridSplitter}">
+                        <Border Background="Transparent">
+                            <Rectangle x:Name="SplitterLine" Width="1" Margin="0,6" HorizontalAlignment="Center" Fill="{DynamicResource SensorColumnHeaderBorder}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="SplitterLine" Property="Fill" Value="{DynamicResource AccentTextColor}"/>
+                                <Setter TargetName="SplitterLine" Property="Width" Value="2"/>
+                            </Trigger>
+                            <Trigger Property="IsDragging" Value="True">
+                                <Setter TargetName="SplitterLine" Property="Fill" Value="{DynamicResource AccentTextColor}"/>
+                                <Setter TargetName="SplitterLine" Property="Width" Value="2"/>
+                                <Setter TargetName="SplitterLine" Property="Margin" Value="0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
         <DataTemplate x:Key="SensorNameCellTemplate">
@@ -111,7 +159,7 @@
 
         <!-- MIN column -->
         <Style x:Key="TelemetryMinValueCellStyle" TargetType="{x:Type TextBlock}">
-            <Setter Property="Foreground" Value="{DynamicResource AccentTextColor}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
             <Setter Property="Padding" Value="3,0"/>
             <Setter Property="HorizontalAlignment" Value="Right"/>
 
@@ -128,7 +176,7 @@
 
         <!-- MAX column -->
         <Style x:Key="TelemetryMaxValueCellStyle" TargetType="{x:Type TextBlock}">
-            <Setter Property="Foreground" Value="{DynamicResource AccentTextColor}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
             <Setter Property="Padding" Value="3,0"/>
             <Setter Property="HorizontalAlignment" Value="Right"/>
 
@@ -145,7 +193,7 @@
 
         <!-- AVERAGE column (temporary: no alarm coloring yet) -->
         <Style x:Key="TelemetryAverageValueCellStyle" TargetType="{x:Type TextBlock}">
-            <Setter Property="Foreground" Value="{DynamicResource AccentTextColor}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
             <Setter Property="Padding" Value="3,0"/>
             <Setter Property="HorizontalAlignment" Value="Right"/>
         </Style>
@@ -160,8 +208,9 @@
             so the whole window reads as one table with one header.
         -->
         <DataTemplate x:Key="SensorSectionTemplate">
-            <GroupBox x:Name="SectionGroupBox" theming:LayerExtension.Layer="3"
-                      Background="{DynamicResource PanelBackground}"
+            <GroupBox x:Name="SectionGroupBox"
+                      Background="{DynamicResource SensorGroupBackground}"
+                      theming:ThemeAssist.HeaderBackground="{DynamicResource SensorGroupHeaderBackground}"
                       Padding="6,3"
                       Margin="0">
                 <GroupBox.Visibility>
@@ -177,7 +226,55 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="{Binding HeaderDisplay}" VerticalAlignment="Center" FontSize="11"/>
+                        <ToggleButton Grid.Column="0"
+                                      IsChecked="{Binding IsExpanded, Mode=TwoWay}"
+                                      Cursor="Hand"
+                                      Focusable="False"
+                                      ToolTip="Collapse / expand section"
+                                      HorizontalAlignment="Stretch"
+                                      HorizontalContentAlignment="Left">
+                            <ToggleButton.Template>
+                                <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                    <Border Background="Transparent">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Path x:Name="Chevron"
+                                                  Data="M 0,0 L 4,4 L 8,0"
+                                                  Stroke="{DynamicResource AccentTextColor}"
+                                                  StrokeThickness="1.6"
+                                                  StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                                  Width="8" Height="5"
+                                                  Margin="2,0,8,0"
+                                                  VerticalAlignment="Center"
+                                                  RenderTransformOrigin="0.5,0.5"/>
+                                            <ContentPresenter VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsChecked" Value="False">
+                                            <Setter TargetName="Chevron" Property="RenderTransform">
+                                                <Setter.Value>
+                                                    <RotateTransform Angle="-90"/>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </ToggleButton.Template>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Header}"
+                                           VerticalAlignment="Center"
+                                           FontSize="11"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource SensorGroupHeaderForeground}"/>
+                                <TextBlock Text="{Binding HiddenDisplay}"
+                                           Margin="8,0,0,0"
+                                           VerticalAlignment="Center"
+                                           FontSize="10"
+                                           FontFamily="Consolas"
+                                           Foreground="{DynamicResource {x:Static theming:ThemeBrushes.ForegroundBrush}}"
+                                           Opacity="0.5"/>
+                            </StackPanel>
+                        </ToggleButton>
                         <Button Grid.Column="1"
                                 Style="{DynamicResource IconButtonStyle}"
                                 ToolTip="Copy to clipboard"
@@ -186,16 +283,18 @@
                         </Button>
                     </Grid>
                 </GroupBox.Header>
-                <StackPanel>
+                <StackPanel Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVis}}">
 
                     <!--
-                        Module info - the one thing that sets a DIMM section apart from a plain sensor
+                        Module info
                         group. Its Width tracks the total of the 5 shared column widths (see
                         TotalColumnWidthConverter), so it ends exactly where the DataGrid's last column
                         does and only changes size when a column is resized - not when the window itself
                         is resized.
                     -->
-                    <Border Background="{DynamicResource {x:Static theming:ThemeBrushes.Layer1BackgroundBrush}}"
+                    <Border Background="{DynamicResource SensorModuleInfoBackground}"
+                            BorderBrush="{DynamicResource SensorModuleInfoBorder}"
+                            BorderThickness="1"
                             CornerRadius="3" Padding="6,4" Margin="0,2,0,3"
                             HorizontalAlignment="Left"
                             Visibility="{Binding HasModuleInfo, Converter={StaticResource BoolToVis}}">
@@ -290,7 +389,6 @@
                           SelectionMode="Extended"
                           SelectionUnit="FullRow"
                           PreviewMouseWheel="DataGrid_PreviewMouseWheel"
-                          theming:LayerExtension.Layer="3"
                           Visibility="{Binding HasTelemetry, Converter={StaticResource BoolToVis}}">
                         <DataGrid.ContextMenu>
                             <ContextMenu>
@@ -325,6 +423,8 @@
                             <Style TargetType="{x:Type DataGridRow}">
                                 <Setter Property="Focusable" Value="False"/>
                                 <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource SensorRowDivider}"/>
+                                <Setter Property="BorderThickness" Value="0,0,0,1"/>
                                 <EventSetter Event="PreviewMouseLeftButtonDown" Handler="SensorRow_PreviewMouseLeftButtonDown"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsSelected" Value="True">
@@ -407,7 +507,10 @@
             separator is turned off; the GridSplitters are the actual (and only) divider line, styled
             with the same brush as the app's other section dividers so they're clearly visible.
         -->
-        <Border Grid.Row="0" Margin="0,0,0,2">
+        <Border Grid.Row="0"
+                Background="{DynamicResource SensorColumnHeaderBackground}"
+                BorderBrush="{DynamicResource SensorColumnHeaderBorder}"
+                BorderThickness="0,0,0,1">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="{Binding SensorColumnWidth, Source={StaticResource ColumnLayout}, Converter={StaticResource PixelToGridLength}, Mode=TwoWay}" MinWidth="60"/>
@@ -421,31 +524,19 @@
                     <ColumnDefinition Width="{Binding AverageColumnWidth, Source={StaticResource ColumnLayout}, Converter={StaticResource PixelToGridLength}, Mode=TwoWay}" MinWidth="40"/>
                 </Grid.ColumnDefinitions>
 
-                <DataGridColumnHeader Grid.Column="0" Content="Sensor" Padding="8,4" HorizontalContentAlignment="Left" SeparatorVisibility="Visible" Focusable="False" IsHitTestVisible="False"/>
-                <GridSplitter Grid.Column="1" Width="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                              Background="{DynamicResource SeparatorColor}" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext" Cursor="SizeWE"
-                              Tag="Sensor" PreviewMouseLeftButtonDown="ColumnSplitter_PreviewMouseLeftButtonDown"
-                              ToolTip="Double-click to auto-fit, drag to resize"/>
+                <DataGridColumnHeader Grid.Column="0" Content="Sensor" HorizontalContentAlignment="Left" Style="{StaticResource SensorColumnHeaderStyle}"/>
+                <GridSplitter Grid.Column="1" Style="{StaticResource SensorColumnSplitterStyle}" Tag="Sensor" PreviewMouseLeftButtonDown="ColumnSplitter_PreviewMouseLeftButtonDown"/>
 
-                <DataGridColumnHeader Grid.Column="2" Content="Current" Padding="8,4" HorizontalContentAlignment="Left" SeparatorVisibility="Collapsed" Focusable="False" IsHitTestVisible="False"/>
-                <GridSplitter Grid.Column="3" Width="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                              Background="{DynamicResource SeparatorColor}" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext" Cursor="SizeWE"
-                              Tag="Current" PreviewMouseLeftButtonDown="ColumnSplitter_PreviewMouseLeftButtonDown"
-                              ToolTip="Double-click to auto-fit, drag to resize"/>
+                <DataGridColumnHeader Grid.Column="2" Content="Current" HorizontalContentAlignment="Right" Style="{StaticResource SensorColumnHeaderStyle}"/>
+                <GridSplitter Grid.Column="3" Style="{StaticResource SensorColumnSplitterStyle}" Tag="Current" PreviewMouseLeftButtonDown="ColumnSplitter_PreviewMouseLeftButtonDown"/>
 
-                <DataGridColumnHeader Grid.Column="4" Content="Min" Padding="8,4" HorizontalContentAlignment="Left" SeparatorVisibility="Collapsed" Focusable="False" IsHitTestVisible="False"/>
-                <GridSplitter Grid.Column="5" Width="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                              Background="{DynamicResource SeparatorColor}" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext" Cursor="SizeWE"
-                              Tag="Min" PreviewMouseLeftButtonDown="ColumnSplitter_PreviewMouseLeftButtonDown"
-                              ToolTip="Double-click to auto-fit, drag to resize"/>
+                <DataGridColumnHeader Grid.Column="4" Content="Min" HorizontalContentAlignment="Right" Style="{StaticResource SensorColumnHeaderStyle}"/>
+                <GridSplitter Grid.Column="5" Style="{StaticResource SensorColumnSplitterStyle}" Tag="Min" PreviewMouseLeftButtonDown="ColumnSplitter_PreviewMouseLeftButtonDown"/>
 
-                <DataGridColumnHeader Grid.Column="6" Content="Max" Padding="8,4" HorizontalContentAlignment="Left" SeparatorVisibility="Collapsed" Focusable="False" IsHitTestVisible="False"/>
-                <GridSplitter Grid.Column="7" Width="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                              Background="{DynamicResource SeparatorColor}" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext" Cursor="SizeWE"
-                              Tag="Max" PreviewMouseLeftButtonDown="ColumnSplitter_PreviewMouseLeftButtonDown"
-                              ToolTip="Double-click to auto-fit, drag to resize"/>
+                <DataGridColumnHeader Grid.Column="6" Content="Max" HorizontalContentAlignment="Right" Style="{StaticResource SensorColumnHeaderStyle}"/>
+                <GridSplitter Grid.Column="7" Style="{StaticResource SensorColumnSplitterStyle}" Tag="Max" PreviewMouseLeftButtonDown="ColumnSplitter_PreviewMouseLeftButtonDown"/>
 
-                <DataGridColumnHeader Grid.Column="8" Content="Average" Padding="8,4" HorizontalContentAlignment="Left" SeparatorVisibility="Collapsed" Focusable="False" IsHitTestVisible="False"/>
+                <DataGridColumnHeader Grid.Column="8" Content="Average" HorizontalContentAlignment="Right" Style="{StaticResource SensorColumnHeaderStyle}"/>
             </Grid>
         </Border>
 

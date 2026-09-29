@@ -1,126 +1,33 @@
 ﻿<!--
-    Light color scheme: the base colors every theme builds on (a theme merges one of the schemes and
-    overrides the colors it wants to change). Based on the AdonisUI color schemes (MIT license).
+    Light color scheme: default palette and the neutral interaction layers of the light
+    themes. A theme merges one scheme and redefines the palette colors; all brushes come from Shared.xaml.
 -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:theming="clr-namespace:ZenTimings.Theming">
+                    xmlns:t="clr-namespace:ZenTimings.Theming">
 
-    <!-- colors -->
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/ZenTimings;component/Theming/ColorSchemes/Shared.xaml" />
+    </ResourceDictionary.MergedDictionaries>
 
-    <Color x:Key="{x:Static theming:ThemeColors.ForegroundColor}">#000000</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.AccentColor}">#5080d8</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.AccentHighlightColor}">#6C9CF6</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.AccentForegroundColor}">#ffffff</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.AccentIntenseHighlightColor}">#85AFFF</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.AccentIntenseHighlightBorderColor}">#85AFFF</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.AccentInteractionColor}">#568AE9</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.AccentInteractionBorderColor}">#568AE9</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.AccentInteractionForegroundColor}">#ffffff</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer0BackgroundColor}">#ffffff</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer0BorderColor}">#f3f3f3</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer1BackgroundColor}">#ededed</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer1BorderColor}">#c4c4c4</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer1HighlightColor}">#f4f4f4</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer1HighlightBorderColor}">#b0b0b0</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer1IntenseHighlightColor}">#fcfcfc</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer1IntenseHighlightBorderColor}">#606060</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer1InteractionColor}">#5080d8</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer1InteractionBorderColor}">#5080d8</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer1InteractionForegroundColor}">#ffffff</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer2BackgroundColor}">#f6f6f6</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer2BorderColor}">#c0c0c0</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer2HighlightColor}">#f4f4f4</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer2HighlightBorderColor}">#808080</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer2IntenseHighlightColor}">#ffffff</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer2IntenseHighlightBorderColor}">#606060</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer2InteractionColor}">#5080d8</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer2InteractionBorderColor}">#5080d8</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer2InteractionForegroundColor}">#ffffff</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer3BackgroundColor}">#e8e8e8</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer3BorderColor}">#c8c8c8</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer3HighlightColor}">#f6f6f6</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer3HighlightBorderColor}">#808080</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer3IntenseHighlightColor}">#ffffff</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer3IntenseHighlightBorderColor}">#606060</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer3InteractionColor}">#5080d8</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer3InteractionBorderColor}">#5080d8</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer3InteractionForegroundColor}">#ffffff</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer4BackgroundColor}">#f4f4f4</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer4BorderColor}">#c0c0c0</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer4HighlightColor}">#f4f4f4</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer4HighlightBorderColor}">#929292</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer4IntenseHighlightColor}">#ffffff</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer4IntenseHighlightBorderColor}">#606060</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer4InteractionColor}">#5080d8</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer4InteractionBorderColor}">#5080d8</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.Layer4InteractionForegroundColor}">#ffffff</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.DisabledForegroundColor}">#808080</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.DisabledAccentForegroundColor}">#d3d3d3</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.SuccessColor}">#00b94e</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.ErrorColor}">#dd2c00</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.AlertColor}">#ffa000</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.HyperlinkColor}">#0645ad</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.WindowButtonHighlightColor}">#e5e5e5</Color>
-    <Color x:Key="{x:Static theming:ThemeColors.WindowButtonInteractionColor}">#cacaca</Color>
+    <!-- Default palette -->
+    <Color x:Key="{x:Static t:ThemeColors.BackgroundColor}">#F3F3F3</Color>
+    <Color x:Key="{x:Static t:ThemeColors.SurfaceColor}">#B3FFFFFF</Color>
+    <Color x:Key="{x:Static t:ThemeColors.PopupColor}">#FBFBFB</Color>
+    <Color x:Key="{x:Static t:ThemeColors.BorderColor}">#1A000000</Color>
+    <Color x:Key="{x:Static t:ThemeColors.ForegroundColor}">#1B1B1B</Color>
+    <Color x:Key="{x:Static t:ThemeColors.SecondaryForegroundColor}">#B81B1B1B</Color>
+    <Color x:Key="{x:Static t:ThemeColors.DisabledForegroundColor}">#611B1B1B</Color>
+    <Color x:Key="{x:Static t:ThemeColors.AccentColor}">#005FB8</Color>
+    <Color x:Key="{x:Static t:ThemeColors.AccentForegroundColor}">#FFFFFF</Color>
+    <Color x:Key="{x:Static t:ThemeColors.SuccessColor}">#0F7B0F</Color>
+    <Color x:Key="{x:Static t:ThemeColors.WarningColor}">#C27C00</Color>
+    <Color x:Key="{x:Static t:ThemeColors.ErrorColor}">#C42B1C</Color>
 
-    <!-- brushes: each follows the color of the same name, so a theme only overrides colors.
-         The interaction brushes follow the accent color, as the interaction colors do by default. -->
-
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.ForegroundBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.ForegroundColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.AccentBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.AccentColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.AccentHighlightBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.AccentHighlightColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.AccentForegroundBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.AccentForegroundColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.AccentIntenseHighlightBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.AccentIntenseHighlightColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.AccentIntenseHighlightBorderBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.AccentIntenseHighlightBorderColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.AccentInteractionBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.AccentInteractionColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.AccentInteractionBorderBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.AccentInteractionBorderColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.AccentInteractionForegroundBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.AccentForegroundColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer0BackgroundBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.Layer0BackgroundColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer0BorderBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.Layer0BorderColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer1BackgroundBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.Layer1BackgroundColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer1BorderBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.Layer1BorderColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer1HighlightBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.Layer1HighlightColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer1HighlightBorderBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.Layer1HighlightBorderColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer1IntenseHighlightBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.Layer1IntenseHighlightColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer1IntenseHighlightBorderBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.Layer1IntenseHighlightBorderColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer1InteractionBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.AccentColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer1InteractionBorderBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.AccentColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer1InteractionForegroundBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.AccentForegroundColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer2BackgroundBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.Layer2BackgroundColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer2BorderBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.Layer2BorderColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer2HighlightBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.Layer2HighlightColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer2HighlightBorderBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.Layer2HighlightBorderColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer2IntenseHighlightBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.Layer2IntenseHighlightColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer2IntenseHighlightBorderBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.Layer2IntenseHighlightBorderColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer2InteractionBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.AccentColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer2InteractionBorderBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.AccentColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer2InteractionForegroundBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.AccentForegroundColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer3BackgroundBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.Layer3BackgroundColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer3BorderBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.Layer3BorderColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer3HighlightBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.Layer3HighlightColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer3HighlightBorderBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.Layer3HighlightBorderColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer3IntenseHighlightBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.Layer3IntenseHighlightColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer3IntenseHighlightBorderBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.Layer3IntenseHighlightBorderColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer3InteractionBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.AccentColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer3InteractionBorderBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.AccentColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer3InteractionForegroundBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.AccentForegroundColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer4BackgroundBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.Layer4BackgroundColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer4BorderBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.Layer4BorderColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer4HighlightBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.Layer4HighlightColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer4HighlightBorderBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.Layer4HighlightBorderColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer4IntenseHighlightBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.Layer4IntenseHighlightColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer4IntenseHighlightBorderBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.Layer4IntenseHighlightBorderColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer4InteractionBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.AccentColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer4InteractionBorderBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.AccentColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.Layer4InteractionForegroundBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.AccentForegroundColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.DisabledForegroundBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.DisabledForegroundColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.DisabledAccentForegroundBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.DisabledAccentForegroundColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.SuccessBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.SuccessColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.ErrorBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.ErrorColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.AlertBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.AlertColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.HyperlinkBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.HyperlinkColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.WindowButtonHighlightBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.WindowButtonHighlightColor}}"/>
-    <SolidColorBrush x:Key="{x:Static theming:ThemeBrushes.WindowButtonInteractionBrush}" Color="{DynamicResource {x:Static theming:ThemeColors.WindowButtonInteractionColor}}"/>
-
+    <!-- Interaction layers: translucent fills that suit any background of a light theme -->
+    <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.ControlFillBrush}" Color="#B3FFFFFF"/>
+    <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.ControlFillHoverBrush}" Color="#80F9F9F9"/>
+    <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.ControlFillPressedBrush}" Color="#4DF9F9F9"/>
+    <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.SubtleHoverBrush}" Color="#0A000000"/>
+    <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.SubtlePressedBrush}" Color="#06000000"/>
 </ResourceDictionary>

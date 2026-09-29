@@ -122,24 +122,23 @@
         </Style.Triggers>
     </Style>
 
-    <!-- Tab control whose page has no top-left corner radius, so the page joins the first tab -->
+    <!-- Tab control of the About dialog: the tab headers (see the TabItem style) above the page -->
     <ControlTemplate x:Key="TabControlControlTemplate" TargetType="{x:Type TabControl}">
         <Grid KeyboardNavigation.TabNavigation="Local">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <TabPanel x:Name="HeaderPanel" Background="Transparent" IsItemsHost="True" Grid.Row="0" KeyboardNavigation.TabIndex="1" Panel.ZIndex="1"/>
+            <TabPanel x:Name="HeaderPanel" Background="Transparent" IsItemsHost="True" Grid.Row="0" KeyboardNavigation.TabIndex="1" Panel.ZIndex="1" Margin="0 0 0 4"/>
             <Border x:Name="Border"
                     Grid.Row="1"
                     BorderBrush="{TemplateBinding BorderBrush}"
                     BorderThickness="{TemplateBinding BorderThickness}"
                     Background="{TemplateBinding Background}"
-                    CornerRadius="{Binding Path=(theming:ThemeAssist.CornerRadius), RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static theming:CornerRadiusMaskConverter.Instance}, ConverterParameter=0111}"
                     KeyboardNavigation.DirectionalNavigation="Contained"
                     KeyboardNavigation.TabIndex="2"
                     KeyboardNavigation.TabNavigation="Local">
-                <ContentPresenter x:Name="PART_SelectedContentHost" ContentTemplate="{TemplateBinding SelectedContentTemplate}" Content="{TemplateBinding SelectedContent}" ContentStringFormat="{TemplateBinding SelectedContentStringFormat}" ContentSource="SelectedContent" Margin="0"/>
+                <ContentPresenter x:Name="PART_SelectedContentHost" ContentTemplate="{TemplateBinding SelectedContentTemplate}" Content="{TemplateBinding SelectedContent}" ContentStringFormat="{TemplateBinding SelectedContentStringFormat}" ContentSource="SelectedContent" Margin="{TemplateBinding Padding}"/>
             </Border>
         </Grid>
     </ControlTemplate>

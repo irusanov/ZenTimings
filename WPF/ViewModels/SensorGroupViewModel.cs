@@ -21,16 +21,26 @@ namespace ZenTimings.ViewModels
         public int HiddenCount
         {
             get => hiddenCount;
-            set { hiddenCount = value; OnPropertyChanged(nameof(HiddenCount)); OnPropertyChanged(nameof(HeaderDisplay)); }
+            set { hiddenCount = value; OnPropertyChanged(nameof(HiddenCount)); OnPropertyChanged(nameof(HeaderDisplay)); OnPropertyChanged(nameof(HiddenDisplay)); }
         }
 
         public string HeaderDisplay => HiddenCount > 0 ? $"{Header} ({HiddenCount} hidden)" : Header;
+
+        public string HiddenDisplay => HiddenCount > 0 ? $"({HiddenCount} hidden)" : string.Empty;
+
+        private bool isExpanded = true;
+
+        public bool IsExpanded
+        {
+            get => isExpanded;
+            set { isExpanded = value; OnPropertyChanged(nameof(IsExpanded)); }
+        }
 
         public virtual bool HasTelemetry { get; set; } = true;
 
         public bool HasNoTelemetry => !HasTelemetry;
 
-        // Drives the module info block in the shared section template. Only ModuleViewModel sets this true.
+        // Drives the module info block
         public virtual bool HasModuleInfo => false;
 
         public ObservableCollection<TelemetryItemViewModel> TelemetryItems { get; } = new ObservableCollection<TelemetryItemViewModel>();

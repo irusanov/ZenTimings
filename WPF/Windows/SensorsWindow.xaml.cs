@@ -467,9 +467,9 @@ namespace ZenTimings.Windows
 
                     var header = new System.Text.StringBuilder($"DIMM {slotIndex}");
                     if (module != null && !string.IsNullOrEmpty(module.Slot))
-                        header.Append($" | {module.Slot}");
+                        header.Append($"  ·  {module.Slot}");
                     if (spdEntry.Value.PmicData != null && spdEntry.Value.PmicData.IsValid)
-                        header.Append($" | PMIC 0x{spdEntry.Value.PmicData.I2cAddress:X2}");
+                        header.Append($"  ·  PMIC 0x{spdEntry.Value.PmicData.I2cAddress:X2}");
                     vm.Header = header.ToString();
 
                     vms.Add(vm);
@@ -485,7 +485,7 @@ namespace ZenTimings.Windows
                     var module = memoryConfig.Modules[i];
                     var header = string.IsNullOrEmpty(module.Slot)
                         ? $"DIMM {i}"
-                        : $"DIMM {i} | {module.Slot}";
+                        : $"DIMM {i}  ·  {module.Slot}";
                     var vm = new ModuleViewModel
                     {
                         Header = header,

@@ -36,8 +36,8 @@
             </DockPanel>
         </DataTemplate>
 
-        <SolidColorBrush x:Key="TimingMismatchBrush" Color="{DynamicResource {x:Static theming:ThemeColors.AlertColor}}"/>
-        <SolidColorBrush x:Key="TimingMismatchBackgroundBrush" Color="{DynamicResource {x:Static theming:ThemeColors.AlertColor}}" Opacity="0.16"/>
+        <SolidColorBrush x:Key="TimingMismatchBrush" Color="{DynamicResource {x:Static theming:ThemeColors.WarningColor}}"/>
+        <SolidColorBrush x:Key="TimingMismatchBackgroundBrush" Color="{DynamicResource {x:Static theming:ThemeColors.WarningColor}}" Opacity="0.16"/>
 
         <Style x:Key="TimingRowStyle" TargetType="{x:Type DataGridRow}">
             <Setter Property="Background" Value="Transparent" />
@@ -75,7 +75,6 @@
                 Header="SystemInfo"
                 HeaderTemplate="{StaticResource CopyHeaderTemplate}"
                 Tag="{x:Reference TestGrid}"
-                theming:LayerExtension.Layer="3"
                 Padding="10 5">
                 <DataGrid
                     Name="TestGrid"
@@ -110,11 +109,9 @@
             <GroupBox
                 Header="Memory Timings"
                 HeaderTemplate="{StaticResource CopyHeaderTemplate}"
-                Tag="{x:Reference MemCfgGrid}"
-                theming:LayerExtension.Layer="3">
+                Tag="{x:Reference MemCfgGrid}">
                 <DataGrid
                     Name="MemCfgGrid"
-                    theming:LayerExtension.Layer="3"
                     AutoGenerateColumns="False"
                     HeadersVisibility="Column"
                     GridLinesVisibility="None"
@@ -147,11 +144,9 @@
             <GroupBox
                 Header="AOD Table"
                 HeaderTemplate="{StaticResource CopyHeaderTemplate}"
-                Tag="{x:Reference MemControllerGrid}"
-                theming:LayerExtension.Layer="3">
+                Tag="{x:Reference MemControllerGrid}">
                 <DataGrid
                     Name="MemControllerGrid"
-                    theming:LayerExtension.Layer="3"
                     AutoGenerateColumns="False"
                     HeadersVisibility="None"
                     GridLinesVisibility="None"
@@ -183,11 +178,9 @@
             <GroupBox
                 Header="APOB Table"
                 HeaderTemplate="{StaticResource CopyHeaderTemplate}"
-                Tag="{x:Reference ApobTableGrid}"
-                theming:LayerExtension.Layer="3">
+                Tag="{x:Reference ApobTableGrid}">
                 <DataGrid
                     Name="ApobTableGrid"
-                    theming:LayerExtension.Layer="3"
                     AutoGenerateColumns="False"
                     HeadersVisibility="None"
                     GridLinesVisibility="None"
@@ -234,12 +227,10 @@
                 <GroupBox
                     Header="Asus WMI"
                     HeaderTemplate="{StaticResource CopyHeaderTemplate}"
-                    Tag="{x:Reference AsusWmiGrid}"
-                    theming:LayerExtension.Layer="3">
+                    Tag="{x:Reference AsusWmiGrid}">
 
                     <DataGrid
                         Name="AsusWmiGrid"
-                        theming:LayerExtension.Layer="3"
                         AutoGenerateColumns="False"
                         HeadersVisibility="None"
                         GridLinesVisibility="None"

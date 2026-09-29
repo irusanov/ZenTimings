@@ -1,0 +1,31 @@
+﻿<!--
+    Brushes and sizes shared by the color schemes. Every brush takes its color from the palette through
+    DynamicResource, so the colors a theme redefines recolor them. Hover and pressed states of accent
+    elements are the accent at a lower opacity.
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:t="clr-namespace:ZenTimings.Theming">
+
+    <!-- Palette brushes -->
+    <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.BackgroundBrush}" Color="{DynamicResource {x:Static t:ThemeColors.BackgroundColor}}"/>
+    <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.SurfaceBrush}" Color="{DynamicResource {x:Static t:ThemeColors.SurfaceColor}}"/>
+    <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.PopupBrush}" Color="{DynamicResource {x:Static t:ThemeColors.PopupColor}}"/>
+    <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.BorderBrush}" Color="{DynamicResource {x:Static t:ThemeColors.BorderColor}}"/>
+    <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.ForegroundBrush}" Color="{DynamicResource {x:Static t:ThemeColors.ForegroundColor}}"/>
+    <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.SecondaryForegroundBrush}" Color="{DynamicResource {x:Static t:ThemeColors.SecondaryForegroundColor}}"/>
+    <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.DisabledForegroundBrush}" Color="{DynamicResource {x:Static t:ThemeColors.DisabledForegroundColor}}"/>
+    <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.AccentBrush}" Color="{DynamicResource {x:Static t:ThemeColors.AccentColor}}"/>
+    <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.AccentForegroundBrush}" Color="{DynamicResource {x:Static t:ThemeColors.AccentForegroundColor}}"/>
+    <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.SuccessBrush}" Color="{DynamicResource {x:Static t:ThemeColors.SuccessColor}}"/>
+    <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.WarningBrush}" Color="{DynamicResource {x:Static t:ThemeColors.WarningColor}}"/>
+    <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.ErrorBrush}" Color="{DynamicResource {x:Static t:ThemeColors.ErrorColor}}"/>
+
+    <!-- Accent states -->
+    <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.AccentHoverBrush}" Color="{DynamicResource {x:Static t:ThemeColors.AccentColor}}" Opacity="0.9"/>
+    <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.AccentPressedBrush}" Color="{DynamicResource {x:Static t:ThemeColors.AccentColor}}" Opacity="0.8"/>
+
+    <!-- Sizes -->
+    <CornerRadius x:Key="{x:Static t:ThemeDimensions.CornerRadius}">0</CornerRadius>
+
+</ResourceDictionary>

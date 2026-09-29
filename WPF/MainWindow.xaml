@@ -37,7 +37,7 @@
     </Window.Resources>
 
     <Border>
-        <StackPanel theming:LayerExtension.Layer="0">
+        <StackPanel>
             <Border Style="{DynamicResource MainMenuStyles}">
                 <Grid>
                     <Grid.ColumnDefinitions>

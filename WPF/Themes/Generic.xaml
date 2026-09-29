@@ -10,12 +10,13 @@
     <!-- Window with a title bar drawn by the theme -->
     <Style TargetType="{x:Type t:ChromeWindow}">
         <Setter Property="Foreground" Value="{DynamicResource {x:Static t:ThemeBrushes.ForegroundBrush}}"/>
-        <Setter Property="Background" Value="{DynamicResource {x:Static t:ThemeBrushes.Layer0BackgroundBrush}}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static t:ThemeBrushes.Layer0BorderBrush}}"/>
+        <Setter Property="Background" Value="{DynamicResource {x:Static t:ThemeBrushes.BackgroundBrush}}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource WindowBorderColor}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="TitleBarForeground" Value="{DynamicResource {x:Static t:ThemeBrushes.ForegroundBrush}}"/>
-        <Setter Property="TitleBarBackground" Value="{DynamicResource {x:Static t:ThemeBrushes.Layer0BorderBrush}}"/>
-        <Setter Property="WindowButtonHighlightBrush" Value="{DynamicResource {x:Static t:ThemeBrushes.WindowButtonHighlightBrush}}"/>
+        <!-- Transparent: the title bar shows the window background, gradients included -->
+        <Setter Property="TitleBarBackground" Value="Transparent"/>
+        <Setter Property="WindowButtonHighlightBrush" Value="{DynamicResource {x:Static t:ThemeBrushes.SubtleHoverBrush}}"/>
         <Setter Property="shell:WindowChrome.WindowChrome">
             <Setter.Value>
                 <shell:WindowChrome ResizeBorderThickness="{Binding Source={x:Static SystemParameters.WindowResizeBorderThickness}}"
@@ -219,8 +220,7 @@
                         </Grid>
 
                         <Border Grid.Row="3"
-                                Background="{DynamicResource {x:Static t:ThemeBrushes.Layer1BackgroundBrush}}"
-                                t:LayerExtension.IncreaseLayer="True">
+                                Background="{DynamicResource {x:Static t:ThemeBrushes.SurfaceBrush}}">
                             <ItemsControl Margin="30, 12, 6, 12"
                                           HorizontalAlignment="Right"
                                           ItemsSource="{Binding Buttons}"

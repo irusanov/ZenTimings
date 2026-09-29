@@ -188,7 +188,6 @@
     </Compile>
     <Compile Include="Windows\ThemedWindow.cs" />
     <Compile Include="Theming\ChromeWindow.cs" />
-    <Compile Include="Theming\LayerExtension.cs" />
     <Compile Include="Theming\MessageBox.cs" />
     <Compile Include="Theming\MessageBoxWindow.cs" />
     <Compile Include="Theming\ThemeAssist.cs" />
@@ -416,6 +415,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Resource>
+    <Resource Include="Themes\ThemeCommon.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
     <Page Include="Windows\AboutDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -473,6 +476,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Theming\ColorSchemes\Light.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Theming\ColorSchemes\Shared.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
