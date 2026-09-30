@@ -241,12 +241,16 @@ namespace ZenTimings.Theming
             // WPF draws the window from now on.
             firstFrameRendered = true;
 
-            if (sizeRefreshed)
+            // Measure once more with the final native frame; after the pass on Loaded this is normally a no-op,
+            // so the window doesn't visibly resize.
+            if (sizeRefreshedAfterRender)
                 return;
 
-            sizeRefreshed = true;
+            sizeRefreshedAfterRender = true;
             RefreshSizeToContent();
         }
+
+        private bool sizeRefreshedAfterRender;
 
         protected override void OnSourceInitialized(EventArgs e)
         {
@@ -256,6 +260,14 @@ namespace ZenTimings.Theming
             {
                 source.AddHook(ChromeWndProc);
                 PrepareFirstFrame(source);
+            }
+
+            // WindowChrome has replaced the native frame by now, but the window isn't shown yet. Measuring the
+            // content again here gives the correct size before the open animation, so it doesn't resize visibly.
+            if (!sizeRefreshed)
+            {
+                sizeRefreshed = true;
+                RefreshSizeToContent();
             }
         }
 
@@ -417,7 +429,7 @@ namespace ZenTimings.Theming
 
         /// <summary>
         /// With custom chrome, a window sized to its content can get the size of the native frame wrong on the first
-        /// layout and show a black band. Measuring again once the window is shown fixes it. Switching to Manual keeps
+        /// layout and show a black band. Measuring again once the native frame exists fixes it.
         /// the current size, so the window doesn't jump or flash, and switching back measures the content again.
         /// </summary>
         private void RefreshSizeToContent()
