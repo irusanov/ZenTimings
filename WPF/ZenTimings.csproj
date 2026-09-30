@@ -180,6 +180,9 @@
     <Compile Include="Controls\AppIcon.xaml.cs">
       <DependentUpon>AppIcon.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ChangelogItem.xaml.cs">
+      <DependentUpon>ChangelogItem.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\SensorSettingsWindow.xaml.cs">
       <DependentUpon>SensorSettingsWindow.xaml</DependentUpon>
     </Compile>
@@ -480,6 +483,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Theming\ColorSchemes\Shared.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\ChangelogItem.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

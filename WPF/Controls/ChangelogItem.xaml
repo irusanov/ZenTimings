@@ -1,0 +1,47 @@
+﻿<UserControl x:Class="ZenTimings.Controls.ChangelogItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:t="clr-namespace:ZenTimings.Theming"
+             x:Name="Root"
+             Margin="0,2">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <!-- Generic bullet icon, colored with the theme accent -->
+        <Style x:Key="ChangelogIconStyle" TargetType="Path">
+            <Setter Property="Fill" Value="{DynamicResource {x:Static t:ThemeBrushes.AccentBrush}}"/>
+            <!-- Icon is defined in Themes/AppIcons.xaml -->
+            <Setter Property="Data" Value="{StaticResource IconBullet}"/>
+            <Setter Property="Width" Value="4"/>
+            <Setter Property="Height" Value="4"/>
+            <Setter Property="Margin" Value="4,7,12,0"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Path Style="{StaticResource ChangelogIconStyle}"
+              Stretch="Uniform"
+              VerticalAlignment="Top"/>
+
+        <TextBlock Grid.Column="1" TextWrapping="Wrap">
+            <Run Text="{Binding Text, ElementName=Root, Mode=OneWay}"/>
+            <InlineUIContainer BaselineAlignment="Center">
+                <Border Margin="4,0,0,0"
+                        Padding="4,0"
+                        CornerRadius="3"
+                        BorderThickness="1"
+                        BorderBrush="{DynamicResource {x:Static t:ThemeBrushes.WarningBrush}}"
+                        Visibility="{Binding IsBeta, ElementName=Root, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="BETA"
+                               FontSize="9"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource {x:Static t:ThemeBrushes.WarningBrush}}"/>
+                </Border>
+            </InlineUIContainer>
+        </TextBlock>
+    </Grid>
+</UserControl>
