@@ -32,55 +32,32 @@
 
                 <StackPanel Orientation="Vertical" Margin="15,15,5,15" Grid.ColumnSpan="6" Grid.Row="0" Width="424">
                     <!-- @TODO: add binding to show beta text on BETA builds only -->
-                    <!--TextBlock 
-                        Text="Welcome to our BETA version. You might run into a few bugs or features that aren't working quite right just yet. If you spot anything unexpected, please let us know so we can fix it!"
-                        Foreground="{DynamicResource {x:Static theming:ThemeBrushes.WarningBrush}}"
-                        HorizontalAlignment="Left"
-                        Padding="0, 0, 0, 14"
-                        TextWrapping="WrapWithOverflow" /-->
-
                     <TextBlock 
-                        Text="This version contains many changes and has been tested on a limited set of configurations. You might run into a few bugs or features that aren't working quite right just yet. If you spot anything unexpected, please let us know so we can fix it!"
+                        Text="Welcome to our BETA version. You might run into a few bugs or features that aren't working quite right just yet. If you spot anything unexpected, please let us know so we can fix it!"
                         Foreground="{DynamicResource {x:Static theming:ThemeBrushes.WarningBrush}}"
                         HorizontalAlignment="Left"
                         Padding="0, 0, 0, 14"
                         TextWrapping="WrapWithOverflow" />
 
+                    <!--TextBlock 
+                        Text="This version contains many changes and has been tested on a limited set of configurations. You might run into a few bugs or features that aren't working quite right just yet. If you spot anything unexpected, please let us know so we can fix it!"
+                        Foreground="{DynamicResource {x:Static theming:ThemeBrushes.WarningBrush}}"
+                        HorizontalAlignment="Left"
+                        Padding="0, 0, 0, 14"
+                        TextWrapping="WrapWithOverflow" /-->
+
                     <!-- TextBlock Text="Changelog" FontSize="14" FontWeight="Bold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" /-->
                     <TextBlock Text="{Binding Version, Mode=OneWay}" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0" />
 
-                    <TextBlock Text=" - Added All DIMMs view (feature by @deadfellow34)" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Added Export dialog with additional options (feature by @b1zya)" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Added copy to clipboard buttons to grids and windows (feature by @b1zya)" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Added CCD_L timings for DDR5 in Advanced mode, based on @deadfellow34's findings" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Added Super I/O hardware support, ported from @LibreHardwareMonitor" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Added voltage source selection options in Options" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Added SMU/SVI3 telemetry to the Sensors window" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Added additional DDR5 UMC timings" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Added autostart option" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Added automatic inpoutx64 driver cleanup on application exit, configurable from Options" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Added sensor settings dialog to show/hide individual sensors" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Added window snapping option" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Added icons to sections in the Options dialog" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Added icons to sensors" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Added ASRock B650M-HDV/M.2 to supported motherboards (thanks Melan@ocn for testing)" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Added support for reading and displaying more values from saved Debug reports (beta)" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Added resizable columns for Sensors windw (double click to auto-fit, drag for manual resizing)" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Added beta update channel (off by default, toggle from Options)" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Updated HTML export and moved it to the Export dialog" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Renamed Telemetry window to Sensors and enabled it on all systems" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Renamed SMU sensors to SVI3 and updated offsets" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Improved KrackanPoint support" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Extended Debug report data and parsing" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Sensors window now continues updating while the main window is minimized" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Fixed XMP parsing in Tools -> Advanced Info -> SPD" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Fixed incorrect read function for SVI2 planes on Zen3 and earlier" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Fixed sensor alarm colors not recording maximum values correctly" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Fixed incorrect corner radius handling on Windows 11" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Fixed memory leak in Debug window" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Unmatched Hynix dies are now displayed as 'Unknown' instead of an incorrect value" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Removed the maximize button when maximizing is not applicable" TextWrapping="WrapWithOverflow" />
-                    <TextBlock Text=" - Various other bug fixes and performance improvements" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Fix older beta builds can't update from Release channel" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Remove AdonisUI dependency, but keep the existing themes" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Improve driver cleanup notification" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Splash screen now reports core init progress" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Replace BGS Alt with PowerDown and move tCCDL as compound display value" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Check if VDDIO from SuperIO is in range, fallback to AOD if not. Can still be wrong if motherboard is not supported" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Several QoL improvements for Sensors window" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Show the UCLK to MCLK ratio next to UCLK (idea by @deadfellow34, PR#109 by @b1zya) temporary placed in Tools menu" TextWrapping="WrapWithOverflow" />
+                    <TextBlock Text=" - Performance improvements" TextWrapping="WrapWithOverflow" />
                 </StackPanel>
             </Grid>
         </ScrollViewer>
