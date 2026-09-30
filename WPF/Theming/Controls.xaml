@@ -2116,9 +2116,16 @@
                             <ContentPresenter Margin="{TemplateBinding Padding}"
                                               HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                               VerticalAlignment="Center"/>
-                            <Rectangle Width="1" Margin="0,6" HorizontalAlignment="Right" Fill="{DynamicResource SensorColumnHeaderBorder}"/>
+                            <Rectangle x:Name="HeaderDivider" Width="1" Margin="0,6" HorizontalAlignment="Right" Fill="{DynamicResource SensorColumnHeaderBorder}"/>
                         </Grid>
                     </Border>
+                    <ControlTemplate.Triggers>
+                        <!-- The filler header right of the last column has no column and needs no divider.
+                             Column is a plain CLR property, so it needs a DataTrigger rather than a Trigger. -->
+                        <DataTrigger Binding="{Binding Column, RelativeSource={RelativeSource TemplatedParent}}" Value="{x:Null}">
+                            <Setter TargetName="HeaderDivider" Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

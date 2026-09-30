@@ -186,6 +186,7 @@ namespace ZenTimings.Windows
                 CanUserResizeColumns = false,
                 CanUserReorderColumns = false,
                 RowStyle = (Style)FindResource("TimingRowStyle"),
+                ColumnHeaderStyle = (Style)FindResource("SectionGridColumnHeaderStyle"),
                 FontSize = GridFontSize,
                 RowHeight = GridRowHeight,
                 ColumnHeaderHeight = GridHeaderHeight,

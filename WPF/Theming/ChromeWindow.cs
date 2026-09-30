@@ -8,7 +8,6 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 
 namespace ZenTimings.Theming
 {
@@ -239,14 +238,14 @@ namespace ZenTimings.Theming
         {
             base.OnContentRendered(e);
 
+            // WPF draws the window from now on.
+            firstFrameRendered = true;
+
             if (sizeRefreshed)
                 return;
 
             sizeRefreshed = true;
             RefreshSizeToContent();
-
-            // Show the window once the size refresh above has been laid out and drawn.
-            Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(Uncloak));
         }
 
         protected override void OnSourceInitialized(EventArgs e)
@@ -256,30 +255,106 @@ namespace ZenTimings.Theming
             if (PresentationSource.FromVisual(this) is HwndSource source)
             {
                 source.AddHook(ChromeWndProc);
-
-                // Until WPF has drawn the window, Windows would show the bare native frame (a white window with a
-                // light border) for a moment. Keep the window cloaked - invisible, but laid out and rendered as
-                // usual - until its first frame is on screen.
-                SetCloaked(source.Handle, true);
-
-                // Fallback in case the window is never rendered (e.g. it is hidden again right away).
-                Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, new Action(Uncloak));
+                PrepareFirstFrame(source);
             }
         }
 
-        private bool cloaked;
-
-        private void SetCloaked(IntPtr hwnd, bool cloak)
+        /// <summary>
+        /// Windows shows (and animates) a new window before WPF has drawn anything into it, so for a moment it
+        /// would appear as a white window with a light border. Give the native window the theme colors instead:
+        /// its background is painted in the theme background until WPF's first frame (see WM_ERASEBKGND in
+        /// <see cref="ChromeWndProc"/>), and the DWM border and dark mode follow the theme.
+        /// </summary>
+        private void PrepareFirstFrame(HwndSource source)
         {
-            if (hwnd == IntPtr.Zero)
+            if (AllowsTransparency)
                 return;
 
-            int value = cloak ? 1 : 0;
+            Color? background = GetThemeBackgroundColor();
+            if (background == null)
+                return;
+
+            Color color = background.Value;
+            eraseColor = ToColorRef(color);
+
+            if (source.CompositionTarget != null)
+                source.CompositionTarget.BackgroundColor = color;
+
+            IntPtr hwnd = source.Handle;
+            bool dark = 0.299 * color.R + 0.587 * color.G + 0.114 * color.B < 128;
+            int darkValue = dark ? 1 : 0;
+            // Windows 10 20H1 and newer use 20, older Windows 10 builds 19; both fail harmlessly elsewhere.
+            if (SetDwmAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, darkValue) != 0)
+                SetDwmAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20H1, darkValue);
+
+            // Windows 11 draws a border around the window; ThemedWindow keeps it in sync with the theme later on.
+            if (BorderBrush is SolidColorBrush border && border.Color.A > 0)
+                SetDwmAttribute(hwnd, DWMWA_BORDER_COLOR, ToColorRef(border.Color));
+        }
+
+        private Color? GetThemeBackgroundColor()
+        {
+            Color? color = ToOpaqueColor(Background);
+            return color ?? ToOpaqueColor(TryFindResource(ThemeBrushes.BackgroundBrush) as Brush);
+        }
+
+        private static Color? ToOpaqueColor(Brush brush)
+        {
+            if (brush is SolidColorBrush solid)
+                return solid.Color.A > 0 ? Color.FromRgb(solid.Color.R, solid.Color.G, solid.Color.B) : (Color?)null;
+
+            if (brush is GradientBrush gradient && gradient.GradientStops.Count > 0)
+            {
+                // The average of the stops is close enough for the moment before the first frame.
+                int r = 0, g = 0, b = 0;
+                foreach (GradientStop stop in gradient.GradientStops)
+                {
+                    r += stop.Color.R;
+                    g += stop.Color.G;
+                    b += stop.Color.B;
+                }
+                int count = gradient.GradientStops.Count;
+                return Color.FromRgb((byte)(r / count), (byte)(g / count), (byte)(b / count));
+            }
+
+            return null;
+        }
+
+        private static int ToColorRef(Color color) => color.R | (color.G << 8) | (color.B << 16);
+
+        private bool firstFrameRendered;
+        private int? eraseColor;
+
+        private bool EraseBackground(IntPtr hwnd, IntPtr hdc)
+        {
+            if (firstFrameRendered || eraseColor == null || hdc == IntPtr.Zero)
+                return false;
+
             try
             {
-                // Fails harmlessly where DWM cloaking isn't supported (before Windows 8).
-                if (DwmSetWindowAttribute(hwnd, DWMWA_CLOAK, ref value, sizeof(int)) == 0)
-                    cloaked = cloak;
+                if (!GetClientRect(hwnd, out RECT rect))
+                    return false;
+
+                IntPtr brush = CreateSolidBrush(eraseColor.Value);
+                if (brush == IntPtr.Zero)
+                    return false;
+
+                FillRect(hdc, ref rect, brush);
+                DeleteObject(brush);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"ChromeWindow: could not paint the background: {ex.Message}");
+                return false;
+            }
+        }
+
+        private static int SetDwmAttribute(IntPtr hwnd, int attribute, int value)
+        {
+            try
+            {
+                return DwmSetWindowAttribute(hwnd, attribute, ref value, sizeof(int));
             }
             catch (DllNotFoundException)
             {
@@ -287,20 +362,40 @@ namespace ZenTimings.Theming
             catch (EntryPointNotFoundException)
             {
             }
+
+            return -1;
         }
 
-        private void Uncloak()
+        private const int WM_ERASEBKGND = 0x0014;
+        private const int DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20H1 = 19;
+        private const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
+        private const int DWMWA_BORDER_COLOR = 34;
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct RECT
         {
-            if (!cloaked)
-                return;
-
-            SetCloaked(new WindowInteropHelper(this).Handle, false);
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
         }
-
-        private const int DWMWA_CLOAK = 13;
 
         [DllImport("dwmapi.dll")]
         private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attribute, ref int value, int size);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool GetClientRect(IntPtr hwnd, out RECT rect);
+
+        [DllImport("user32.dll")]
+        private static extern int FillRect(IntPtr hdc, ref RECT rect, IntPtr brush);
+
+        [DllImport("gdi32.dll")]
+        private static extern IntPtr CreateSolidBrush(int color);
+
+        [DllImport("gdi32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool DeleteObject(IntPtr handle);
 
         private IntPtr ChromeWndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
@@ -308,6 +403,12 @@ namespace ZenTimings.Theming
             // (also when maximized by the keyboard, the system menu or Aero Snap).
             if (msg == WM_SYSCOMMAND && (wParam.ToInt64() & 0xFFF0) == SC_MAXIMIZE)
                 SizeToContent = SizeToContent.Manual;
+
+            if (msg == WM_ERASEBKGND && EraseBackground(hwnd, wParam))
+            {
+                handled = true;
+                return new IntPtr(1);
+            }
 
             return IntPtr.Zero;
         }

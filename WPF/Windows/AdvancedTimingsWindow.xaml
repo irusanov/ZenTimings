@@ -38,12 +38,12 @@
         <!-- Cell text starts 1px (the cell border) + 3px (TextBlock padding) = 4px into the column, and the
              headers use 4px left padding, so header and cell text line up. The code-behind sizes the columns
              from these paddings (NameCellExtra, ValueCellExtra), keep them in sync. -->
-        <Style x:Key="TimingNameHeaderStyle" TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+        <Style x:Key="TimingNameHeaderStyle" TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource SectionGridColumnHeaderStyle}">
             <Setter Property="Padding" Value="4,2,6,2" />
             <Setter Property="HorizontalContentAlignment" Value="Left" />
         </Style>
 
-        <Style x:Key="TimingValueHeaderStyle" TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+        <Style x:Key="TimingValueHeaderStyle" TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource SectionGridColumnHeaderStyle}">
             <Setter Property="Padding" Value="4,2,3,2" />
             <Setter Property="HorizontalContentAlignment" Value="Left" />
         </Style>
@@ -76,6 +76,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
@@ -157,11 +158,14 @@
             <StackPanel x:Name="TimingsPanels" Orientation="Horizontal" />
         </Grid>
 
-        <Border Grid.Row="3" Style="{DynamicResource BottomPanelStyles}">
+        <Border Grid.Row="3" Style="{DynamicResource Separator}"/>
+
+        <!-- Status bar -->
+        <Border Grid.Row="4" Style="{DynamicResource BottomPanelStyles}">
             <TextBlock x:Name="StatusText"
                        Text="Ready"
                        Foreground="{DynamicResource TextColor}"
-                       Opacity="0.8"
+                       Opacity="0.75"
                        VerticalAlignment="Center" />
         </Border>
     </Grid>
