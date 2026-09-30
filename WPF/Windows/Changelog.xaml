@@ -10,10 +10,11 @@
     mc:Ignorable="d"
     Style="{DynamicResource WindowStyles}"
     Title="What's New"
-    Height="580"
+    MaxHeight="580"
     Width="454"
     UseLayoutRounding="True"
     ResizeMode="CanResize"
+    SizeToContent="Height"
     WindowStartupLocation="CenterScreen"
     Topmost="True" Icon="/ZenTimings;component/Resources/new-icon/16.png">
 

@@ -287,6 +287,8 @@ namespace ZenTimings
                 SetWindowTitle();
                 UpdateLiveSnapshotIndicator();
                 RestoreWindowPosition();
+
+                ShowChangelog();
             }
             catch (Exception ex)
             {
@@ -299,6 +301,18 @@ namespace ZenTimings
         private static void TerminateStartup()
         {
             Environment.Exit(0);
+        }
+
+        private void ShowChangelog()
+        {
+            if (!settings.NotifiedChangelog.Equals(AssemblyVersion))
+            {
+                SplashWindow.HideIfOpen();
+                new Changelog().ShowDialog();
+                settings.NotifiedChangelog = AssemblyVersion;
+                settings.Save();
+                SplashWindow.ShowIfOpen();
+            }
         }
 
         private MainWindow(MainViewModel viewModel, MockSystemData mockData)
@@ -1441,19 +1455,6 @@ namespace ZenTimings
             HwndSource source = HwndSource.FromHwnd(handle);
 
             source?.AddHook(WndProc);
-            //#if !DEBUG
-            if (!settings.NotifiedChangelog.Equals(AssemblyVersion))
-            {
-                Changelog changelogWindow = new Changelog()
-                {
-                    Owner = Application.Current.MainWindow
-                };
-                changelogWindow.ShowDialog();
-                settings.NotifiedChangelog = AssemblyVersion;
-                settings.Save();
-            }
-
-            //#endif
             //#if BETA
             //            MessageBox.Show("This is a BETA version of the application. Some functions might be working incorrectly.\n\n" +
             //                    "Please report if something is not working as expected.", "Beta version", MessageBoxButton.OK);
