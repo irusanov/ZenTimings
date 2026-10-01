@@ -566,7 +566,7 @@ namespace ZenTimings.Export
 
         // Members of the DDR4 / DDR5 classes which are regular timings. Everything else those classes declare
         // is a raw memory controller register field.
-        private static readonly HashSet<string> DerivedTimingNames = new HashSet<string> { "RFCsb", "RFC4", "RFCns", "Nitro" };
+        private static readonly HashSet<string> DerivedTimingNames = new HashSet<string> { "RFCsb", "RFC4", "RFCns", "Nitro", "FgrMultiplier", "FgrOnTheFly" };
 
         private static bool IsRegister(Member member)
         {
@@ -1200,7 +1200,7 @@ namespace ZenTimings.Export
 
                 // The refresh timings and the way the active one is chosen differ between the generations
                 legend.Add("refresh", ddr4
-                    ? "Only one refresh timing is in use: RFC when RefreshMode is NORMAL, otherwise RFC2 or RFC4, FGR says which one (2 or 4). RFCns is the active one in nanoseconds."
+                    ? "Only one refresh timing is in use: RFC when RefreshMode is NORMAL, otherwise RFC2 or RFC4, FgrMultiplier says which one (2 or 4; FGR is the raw mode, 1/5 = 2x, 2/6 = 4x). RFCns is the active one in nanoseconds."
                     : "Only one refresh timing is in use: RFC when RefreshMode is NORMAL, otherwise RFC2, together with RFCsb when it is MIXED. RFCns is the active one in nanoseconds (active timing = RFCns x MCLK in GHz), the inactive ones keep their BIOS values.");
 
                 legend.Add("not_tunable", "PHYRDL, PHYWRL and PHYWRD are results of memory training, a PHYRDL difference between channels is common. SD and DD variants (RDRDSD, RDRDDD, WRWRSD, WRWRDD) only matter with two ranks or two DIMMs per channel.");

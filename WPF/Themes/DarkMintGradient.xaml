@@ -31,8 +31,8 @@
     <!-- Application colors that differ from the defaults in ThemeCommon.xaml -->
     <SolidColorBrush x:Key="SuccessBackground" Color="#327B56" />
     <SolidColorBrush x:Key="DisabledColor" Color="#5B6C70" />
-    <SolidColorBrush x:Key="SeparatorColor" Color="#14151A" />
-    <SolidColorBrush x:Key="WindowBorderColor" Color="#14151A" />
+    <SolidColorBrush x:Key="SeparatorColor" Color="#0d1726" />
+    <SolidColorBrush x:Key="WindowBorderColor" Color="#0d1726" />
 
     <!-- Sensors window sections -->
     <SolidColorBrush x:Key="SensorGroupHeaderBackground" Color="#1A2B45" />

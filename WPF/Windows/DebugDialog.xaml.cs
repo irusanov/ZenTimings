@@ -275,6 +275,10 @@ namespace ZenTimings.Windows
 
             AddLine();
 
+            AddHeading("CPU Topology");
+            AddReport(GetTopologyReport);
+            AddLine();
+
             // DRAM modules info
             AddHeading("Memory Modules");
 
@@ -502,6 +506,23 @@ namespace ZenTimings.Windows
                 AddLine("<FAILED>");
             }
 
+            // Strix / Krackan have no SMUFUSE block at 0x5D200; their fuses are looked for around 0x3820AB0
+            if (cpu.ReadDword(0x0005D218) == 0xFFFFFFFF)
+            {
+                AddHeading("SMU: SMUFUSE 0x3820A00");
+                try
+                {
+                    for (uint address = 0x03820A00; address <= 0x03820BFF; address += 4)
+                        AddLine($"0x{address:X8}: 0x{cpu.ReadDword(address):X8}");
+                }
+                catch
+                {
+                    AddLine("<FAILED>");
+                }
+
+                AddLine();
+            }
+
             AddHeading("SMU: SMUFUSE NBSMNIND");
             try
             {
@@ -533,6 +554,48 @@ namespace ZenTimings.Windows
                 SetControlsState();
                 MinimizeFootprint();
             }));
+        }
+
+        /// <summary>
+        /// How the CCD / CCX / core counts were found: the CCXs CPUID reports, the CCD and core fuses with their raw
+        /// values and the disabled cores they give, and why a fuse was not used.
+        /// </summary>
+        private string GetTopologyReport()
+        {
+            Cpu.CpuTopology t = cpu.info.topology;
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine($"{"CCDs:",-19}{t.ccds} (enabled 0x{t.ccdEnableMap:X2}, disabled 0x{t.ccdDisableMap:X2})");
+            if (t.fuse1 != 0)
+                sb.AppendLine($"{"CCD fuses:",-19}0x{t.fuse1:X8} = 0x{t.ccdsPresent:X8}, 0x{t.fuse2:X8} = 0x{t.ccdsDown:X8}");
+
+            string ccxCores = t.ccxCoreCounts != null && t.ccxCoreCounts.Length > 0
+                ? string.Join(", ", Array.ConvertAll(t.ccxCoreCounts, c => c.ToString()))
+                : "unknown";
+            sb.AppendLine($"{"CCXs:",-19}{t.ccxs} (cores per CCX from CPUID: {ccxCores})");
+            sb.AppendLine($"{"Cores:",-19}{t.cores} of {t.physicalCores} slots, {t.threadsPerCore} thread(s) each, {t.cpuNodes} node(s)");
+
+            if (t.coreFuseAddress != 0)
+            {
+                sb.AppendLine($"{"Core fuse:",-19}0x{t.coreFuseAddress:X8}, mask at bit {t.coreFuseShift}");
+                for (int i = 0; t.coreFuseValues != null && i < t.coreFuseValues.Length; i++)
+                {
+                    string disabled = t.coreDisableMap != null && i < t.coreDisableMap.Length
+                        ? $", disabled cores 0x{t.coreDisableMap[i]:X2}"
+                        : "";
+                    string label = "  CCD " + i + ":";
+                    sb.AppendLine($"{label,-19}0x{t.coreFuseValues[i]:X8}{disabled}");
+                }
+            }
+            else
+            {
+                sb.AppendLine($"{"Core fuse:",-19}not known for this processor");
+            }
+
+            if (!string.IsNullOrEmpty(t.fuseNote))
+                sb.AppendLine($"{"Note:",-19}{t.fuseNote}");
+
+            return sb.ToString().TrimEnd();
         }
 
         private void SaveToFile(bool saveAs = false)
