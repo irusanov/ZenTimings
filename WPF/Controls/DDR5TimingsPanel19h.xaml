@@ -52,7 +52,7 @@
                 <local:TimingRow Label="tRDPRE" Value="{Binding Timings.RDPRE, FallbackValue='N/A'}" />
                 <StackPanel Orientation="Vertical" Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
                     <local:TimingRow Label="CA ODT A" Value="{Binding ApobData.CaOdtA, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
-
+                    <local:TimingRow Label="CA ODT B" Value="{Binding ApobData.CaOdtB, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
                 </StackPanel>
             </StackPanel>
 
@@ -92,7 +92,7 @@
                 <local:TimingRow Label="tWRPRE" Value="{Binding Timings.WRPRE, FallbackValue='N/A'}" />
                 <StackPanel Orientation="Vertical" Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
                     <local:TimingRow Label="CK ODT A" Value="{Binding ApobData.CkOdtA, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
-
+                    <local:TimingRow Label="CK ODT B" Value="{Binding ApobData.CkOdtB, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
                 </StackPanel>
             </StackPanel>
 
@@ -124,7 +124,7 @@
                 <local:TimingRow Label="RttParkDqs" Value="{Binding ApobData.RttParkDqs, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
                 <local:TimingRow Label="Nitro" Value="{Binding Timings.Nitro, FallbackValue='N/A'}" LabelToolTip="RxData/TxData/ControlLine" />
                 <local:TimingRow Label="CS ODT A" Value="{Binding ApobData.CsOdtA, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
-
+                <local:TimingRow Label="CS ODT B" Value="{Binding ApobData.CsOdtB, FallbackValue='N/A', TargetNullValue='N/A', Mode=OneWay}" />
             </StackPanel>
         </StackPanel>
     </Border>
