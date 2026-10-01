@@ -60,6 +60,7 @@ namespace ZenTimings.Windows
         {
             _memoryConfig = CpuSingleton.Instance.memoryConfig;
             await LoadSlotsAsync();
+            await Dispatcher.InvokeAsync(() => SizeToContent = SizeToContent.Manual, System.Windows.Threading.DispatcherPriority.ContextIdle);
         }
 
         private void CopyTab_Click(object sender, RoutedEventArgs e)
