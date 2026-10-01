@@ -188,6 +188,7 @@
         <Setter Property="SizeToContent" Value="WidthAndHeight"/>
         <Setter Property="ShowInTaskbar" Value="False"/>
         <Setter Property="MinWidth" Value="400"/>
+        <Setter Property="MaxWidth" Value="500"/>
         <Setter Property="MinHeight" Value="60"/>
         <Setter Property="IconVisibility" Value="Collapsed"/>
         <Setter Property="ContentTemplate">
