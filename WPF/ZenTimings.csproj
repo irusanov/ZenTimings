@@ -167,6 +167,9 @@
     <Compile Include="Windows\DriverUpdateWindow.xaml.cs">
       <DependentUpon>DriverUpdateWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\ApobInfoWindow.xaml.cs">
+      <DependentUpon>ApobInfoWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\SpdInfoWindow.xaml.cs">
       <DependentUpon>SpdInfoWindow.xaml</DependentUpon>
     </Compile>
@@ -278,6 +281,10 @@
       <DependentUpon>OptionsDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Windows\ApobInfoWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\SpdInfoWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

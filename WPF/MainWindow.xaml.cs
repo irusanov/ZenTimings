@@ -59,6 +59,7 @@ namespace ZenTimings
         private SystemInfoWindow siWnd = null;
         private volatile bool systemInfoWindowOpen;
         private AdvancedTimingsWindow advancedTimingsWnd = null;
+        private ApobInfoWindow apobInfoWnd = null;
         private SensorsWindow sensorsWindw = null;
         private OptionsDialog optionsWnd = null;
         private ExportDialog exportWnd = null;
@@ -331,13 +332,16 @@ namespace ZenTimings
             if (timingsPanel is DDR4TimingsPanel ddr4Panel)
                 ApplyDdr4Vsoc(ddr4Panel, false);
 
-            // DDR4 takes its ODT/RTT/drive strength fields from the BIOS memory controller config; a
-            // report carries it as a byte dump. Too short a dump would read past the Resistances layout.
+            // DDR4 takes its ODT/RTT/drive strength fields from the APOB, or else from the BIOS memory controller
+            // config, which also has the VDIMM / VTT setpoints; a report carries it as a byte dump. Too short a dump
+            // would read past the Resistances layout.
+            bool hasBmcTable = mockData.BiosMemControllerTable != null &&
+                mockData.BiosMemControllerTable.Length >= Marshal.SizeOf(typeof(BiosMemController.Resistances));
             if ((viewModel.MemoryType == MemType.DDR4 || viewModel.MemoryType == MemType.LPDDR4) &&
-                mockData.BiosMemControllerTable != null &&
-                mockData.BiosMemControllerTable.Length >= Marshal.SizeOf(typeof(BiosMemController.Resistances)))
+                (hasBmcTable || GetApobDdr4ChannelConfig() != null))
             {
-                BMC = new BiosMemController { Table = mockData.BiosMemControllerTable };
+                if (hasBmcTable)
+                    BMC = new BiosMemController { Table = mockData.BiosMemControllerTable };
 
                 try
                 {
@@ -441,7 +445,7 @@ namespace ZenTimings
             {
                 ApplyDdr4Vsoc(ddr4Panel, false);
 
-                if (ddr4MemoryConfigApplied && BMC != null)
+                if (ddr4MemoryConfigApplied)
                 {
                     try
                     {
@@ -721,16 +725,30 @@ namespace ZenTimings
 
         // TODO: Handle in DLL or replace with read from memory
         /// <summary>
-        /// Fills the DDR4 panel's rails, ODT, RTT, drive strength and setup fields from
-        /// <see cref="BMC"/>. The live window loads BMC.Table over WMI first; a debug report's
-        /// window loads it from the report's "BIOS: Memory Controller Config" dump.
+        /// The DDR4 ODT, RTT, drive strength and setup settings of the first populated channel from the APOB
+        /// (MEM general configuration), null when the APOB does not have them.
+        /// </summary>
+        private ZenStates.Core.Hardware.Apob.ApobDdr4ChannelConfig GetApobDdr4ChannelConfig()
+        {
+            var apob = isMockWindow ? mockData?.Apob : cpu?.info.apob;
+            return apob?.MemGeneralConfig?.Channels.FirstOrDefault(c => c.IsPopulated);
+        }
+
+        /// <summary>
+        /// Fills the DDR4 panel's rails, ODT, RTT, drive strength and setup fields. ODT, RTT, drive strength and
+        /// setup come from the APOB when it has them, else from <see cref="BMC"/>; VDIMM and VTT from
+        /// <see cref="BMC"/> (VDIMM with the ASUS WMI / SuperIO fallbacks). The live window loads BMC.Table over
+        /// WMI first; a debug report's window loads it from the report's "BIOS: Memory Controller Config" dump.
         /// </summary>
         private void ApplyDdr4MemoryConfig(DDR4TimingsPanel panel)
         {
             if (panel == null)
                 return;
 
-            float vdimm = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVddio) / 1000);
+            // BMC.Config is all zero when the table was not loaded
+            BiosMemController.Resistances bmcConfig = BMC?.Config ?? default(BiosMemController.Resistances);
+
+            float vdimm = Convert.ToSingle(Convert.ToDecimal(bmcConfig.MemVddio) / 1000);
             ddr4BmcVddioValid = vdimm > 0 && vdimm < 3;
 
             float memVddio = vdimm;
@@ -759,7 +777,7 @@ namespace ZenTimings
 
             // Enabled explicitly, like VDIMM above: the label's default binding is WMIPresent, which a
             // debug report's window never has.
-            float vtt = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVtt) / 1000);
+            float vtt = Convert.ToSingle(Convert.ToDecimal(bmcConfig.MemVtt) / 1000);
             if (vtt > 0)
             {
                 panel.rowMemVtt.Value = $"{vtt:F4}V";
@@ -770,9 +788,30 @@ namespace ZenTimings
                 panel.rowMemVtt.IsEnabled = false;
             }
 
+            var apobConfig = GetApobDdr4ChannelConfig();
+            if (apobConfig != null)
+            {
+                SetDdr4ConfigRow(panel.rowProcODT, apobConfig.ProcOdt.ToString());
+
+                SetDdr4ConfigRow(panel.rowClkDrvStren, apobConfig.ClkDrvStren.ToString());
+                SetDdr4ConfigRow(panel.rowAddrCmdDrvStren, apobConfig.AddrCmdDrvStren.ToString());
+                SetDdr4ConfigRow(panel.rowCsOdtDrvStren, apobConfig.CsOdtCmdDrvStren.ToString());
+                SetDdr4ConfigRow(panel.rowCkeDrvStren, apobConfig.CkeDrvStren.ToString());
+
+                SetDdr4ConfigRow(panel.rowRttNom, apobConfig.RttNom.ToString());
+                SetDdr4ConfigRow(panel.rowRttWr, apobConfig.RttWr.ToString());
+                SetDdr4ConfigRow(panel.rowRttPark, apobConfig.RttPark.ToString());
+
+                SetDdr4ConfigRow(panel.rowAddrCmdSetup, apobConfig.AddrCmdSetup.ToString());
+                SetDdr4ConfigRow(panel.rowCsOdtSetup, apobConfig.CsOdtSetup.ToString());
+                SetDdr4ConfigRow(panel.rowCkeSetup, apobConfig.CkeSetup.ToString());
+                return;
+            }
+
+            // Fallback: the APCB config over WMI
             // When ProcODT is 0, then all other resistance values are 0
             // Happens when one DIMM installed in A1 or A2 slot
-            if (BMC.Table == null || ZenStates.Core.Utils.AllZero(BMC.Table) || BMC.Config.ProcODT < 1)
+            if (BMC?.Table == null || ZenStates.Core.Utils.AllZero(BMC.Table) || BMC.Config.ProcODT < 1)
                 // throw new Exception("Failed to read AMD ACPI. Odt, Setup and Drive strength parameters will be empty.");
                 return;
 
@@ -799,9 +838,15 @@ namespace ZenTimings
             panel.rowRttWr.Value = BMC.GetRttWrString(BMC.Config.RttWr);
             panel.rowRttPark.Value = BMC.GetRttString(BMC.Config.RttPark);
 
-            panel.rowAddrCmdSetup.Value = $"{BMC.Config.AddrCmdSetup}";
-            panel.rowCsOdtSetup.Value = $"{BMC.Config.CsOdtSetup}";
-            panel.rowCkeSetup.Value = $"{BMC.Config.CkeSetup}";
+            panel.rowAddrCmdSetup.Value = BMC.GetSetupString(BMC.Config.AddrCmdSetup);
+            panel.rowCsOdtSetup.Value = BMC.GetSetupString(BMC.Config.CsOdtSetup);
+            panel.rowCkeSetup.Value = BMC.GetSetupString(BMC.Config.CkeSetup);
+        }
+
+        private static void SetDdr4ConfigRow(TimingRow row, string value)
+        {
+            row.Value = value;
+            row.IsEnabled = true;
         }
 
         private void ReadDDR4MemoryConfig()
@@ -888,6 +933,19 @@ namespace ZenTimings
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
                 Debug.WriteLine(ex.Message);
+            }
+
+            if (!ddr4MemoryConfigApplied && GetApobDdr4ChannelConfig() != null)
+            {
+                try
+                {
+                    ApplyDdr4MemoryConfig(timingsPanel as DDR4TimingsPanel);
+                    ddr4MemoryConfigApplied = true;
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Could not apply the APOB memory config: {ex.Message}");
+                }
             }
 
             BMC?.Dispose();
@@ -1582,6 +1640,30 @@ namespace ZenTimings
             else
             {
                 advancedTimingsWnd.Activate();
+            }
+        }
+
+        private void ApobInfoToolstripMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (apobInfoWnd != null && apobInfoWnd.IsLoaded)
+            {
+                apobInfoWnd.Activate();
+                return;
+            }
+
+            try
+            {
+                // A window opened from a debug report shows the APOB of the report
+                var apob = isMockWindow ? mockData?.Apob : cpu?.info.apob;
+                apobInfoWnd = new ApobInfoWindow(apob)
+                {
+                    Owner = this
+                };
+                apobInfoWnd.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error opening APOB:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
