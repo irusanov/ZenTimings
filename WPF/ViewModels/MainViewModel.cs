@@ -112,6 +112,7 @@ namespace ZenTimings.ViewModels
         }
         public MemType MemoryType { get; }
         public bool IsDimmTelemetryAvailable => Settings.AdvancedMode && MemoryType == MemType.DDR5;
+        public bool IsSpdInfoAvailable => Settings.AdvancedMode && (MemoryType == MemType.DDR5 || MemoryType == MemType.DDR4);
         public bool ECC { get; set; }
         private bool IsVmiscSupported => CpuFamily >= Cpu.Family.FAMILY_19H;
         public PowerTable PowerTable { get; }
@@ -294,8 +295,8 @@ namespace ZenTimings.ViewModels
         private AodData AodData =>
             mockData != null ? mockData.AodData : CpuSingleton.Instance?.info.aod?.Table?.Data;
 
-        private Ddr5PmicData _ddr5PmicData;
-        public Ddr5PmicData PmicData
+        private Ddr5Pmic _ddr5PmicData;
+        public Ddr5Pmic PmicData
         {
             get => _ddr5PmicData;
             set
@@ -320,14 +321,14 @@ namespace ZenTimings.ViewModels
             return CreateChannelViewModel(timings, PmicData);
         }
 
-        public MainViewModel CreateChannelViewModel(BaseDramTimings timings, Ddr5PmicData pmicData)
+        public MainViewModel CreateChannelViewModel(BaseDramTimings timings, Ddr5Pmic pmicData)
         {
             return CreateChannelViewModel(timings, pmicData, null);
         }
 
         // capacityOverride lets a caller (the All DIMMs window) show that channel's own module capacity
         // in the "Capacity" row instead of the whole kit's TotalCapacity.
-        public MainViewModel CreateChannelViewModel(BaseDramTimings timings, Ddr5PmicData pmicData, Capacity capacityOverride)
+        public MainViewModel CreateChannelViewModel(BaseDramTimings timings, Ddr5Pmic pmicData, Capacity capacityOverride)
         {
             return new MainViewModel(
                 timings,
@@ -350,7 +351,7 @@ namespace ZenTimings.ViewModels
             List<IPlugin> plugins,
             string motherboardLogoName,
             string agesaVersion,
-            Ddr5PmicData pmicData,
+            Ddr5Pmic pmicData,
             MockSystemData mockData = null,
             Capacity capacityOverride = null)
         {

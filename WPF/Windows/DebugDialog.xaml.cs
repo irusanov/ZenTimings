@@ -324,6 +324,57 @@ namespace ZenTimings.Windows
                 AddLine();
             }
 
+            if (cpu.memoryConfig?.Type == DRAM.MemType.DDR4)
+            {
+                // Not "SMBUS Memory Modules": that section is parsed back as DDR5 SPD dumps
+                AddHeading("SMBUS Memory Modules (DDR4 SPD)");
+                AddLine();
+
+                try
+                {
+                    var results = cpu.memoryConfig.ReadAndDecodeAllDdr4();
+                    if (results == null || results.Count == 0)
+                        AddLine("No module SPD could be read.");
+
+                    foreach (var kvp in results ?? new Dictionary<byte, DRAM.DDR4.Spd.Ddr4SpdInfo>())
+                    {
+                        AddLine(string.Format("DIMM at SPD address 0x{0:X2}", kvp.Key));
+                        AddLine(kvp.Value.ToString());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AddLine("<FAILED>");
+                    AddLine(ex.Message);
+                }
+                AddLine();
+            }
+
+            if (cpu.memoryConfig?.Type == DRAM.MemType.DDR4)
+            {
+                AddHeading("SMBUS Memory Module Thermal Sensors");
+                AddLine();
+
+                try
+                {
+                    var sensors = cpu.memoryConfig.Ddr4ThermalSensors;
+                    if (sensors == null || sensors.Count == 0)
+                        AddLine("No module SPD found on the SMBus.");
+
+                    foreach (var kvp in sensors ?? new Dictionary<byte, DRAM.DDR4.Thermal.Ddr4ThermalData>())
+                    {
+                        AddLine(string.Format("DIMM at SPD address 0x{0:X2}", kvp.Key));
+                        AddLine(kvp.Value != null ? kvp.Value.ToString() : "  Thermal sensor: not available");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AddLine("<FAILED>");
+                    AddLine(ex.Message);
+                }
+                AddLine();
+            }
+
             PrintChannels();
 
             // Memory timings info

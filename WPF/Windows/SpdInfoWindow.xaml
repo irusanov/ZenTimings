@@ -1,4 +1,4 @@
-﻿<local:ThemedWindow
+<local:ThemedWindow
     xmlns:local="clr-namespace:ZenTimings"
     x:Class="ZenTimings.Windows.SpdInfoWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -9,29 +9,17 @@
     xmlns:controls="clr-namespace:ZenTimings.Controls"
     mc:Ignorable="d"
     Title="SPD Information"
-    Height="400"
-    Width="450"
-    MinWidth="400"
-    MinHeight="300"
+    Height="700"
+    Width="480"
+    MinWidth="420"
+    MinHeight="320"
     WindowStartupLocation="CenterOwner"
     BorderThickness="1"
+    SizeToContent="WidthAndHeight"
     UseLayoutRounding="True"
     Style="{DynamicResource WindowStyles}">
 
     <Window.Resources>
-        <SolidColorBrush x:Key="SubtleSelectionBrush"
-                         Color="{DynamicResource {x:Static theming:ThemeColors.AccentColor}}"
-                         Opacity="0.15"/>
-
-        <Style x:Key="SpdDataGridRowStyle" TargetType="{x:Type DataGridRow}">
-            <Setter Property="Background" Value="Transparent"/>
-            <Style.Triggers>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="{StaticResource SubtleSelectionBrush}"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
         <Style x:Key="LabelStyle" TargetType="{x:Type TextBlock}">
             <Setter Property="Foreground" Value="{DynamicResource {x:Static theming:ThemeBrushes.ForegroundBrush}}"/>
             <Setter Property="Opacity" Value="0.6"/>
@@ -39,12 +27,63 @@
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="Padding" Value="2,0"/>
         </Style>
-        <Style x:Key="ValueStyle" TargetType="{x:Type TextBlock}">
-            <Setter Property="Foreground" Value="{DynamicResource AccentTextColor}"/>
-            <Setter Property="FontSize" Value="11"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="Padding" Value="2,0"/>
+
+        <!-- Label / value rows of a section -->
+        <Style x:Key="SpdRowsGridStyle" TargetType="{x:Type DataGrid}" BasedOn="{StaticResource SectionDataGridStyle}">
+            <Setter Property="Margin" Value="0,2,0,4"/>
         </Style>
+
+        <Style x:Key="SpdLabelTextStyle" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SectionNameTextStyle}">
+            <Setter Property="Opacity" Value="0.75"/>
+        </Style>
+
+        <DataTemplate x:Key="SpdSectionHeaderTemplate">
+            <TextBlock Text="{Binding}" Style="{StaticResource SectionHeaderTextStyle}"/>
+        </DataTemplate>
+
+        <Style x:Key="SpdSection" TargetType="{x:Type GroupBox}" BasedOn="{StaticResource CollapsibleSectionStyle}">
+            <Setter Property="Margin" Value="0,0,0,8"/>
+            <Setter Property="HeaderTemplate" Value="{StaticResource SpdSectionHeaderTemplate}"/>
+        </Style>
+
+        <!-- Profile header: name on the left, speed and primary timings on the right -->
+        <DataTemplate x:Key="ProfileHeaderTemplate">
+            <DockPanel LastChildFill="True">
+                <TextBlock DockPanel.Dock="Right"
+                           Margin="12,0,2,0"
+                           Text="{Binding Summary}"
+                           Style="{StaticResource SectionHeaderTextStyle}"
+                           Foreground="{DynamicResource AccentTextColor}"/>
+                <TextBlock Text="{Binding Title}"
+                           TextTrimming="CharacterEllipsis"
+                           Style="{StaticResource SectionHeaderTextStyle}"/>
+            </DockPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="ProfileTemplate">
+            <GroupBox Header="{Binding}"
+                      HeaderTemplate="{StaticResource ProfileHeaderTemplate}"
+                      Style="{StaticResource SpdSection}">
+                <StackPanel>
+                    <DataGrid ItemsSource="{Binding Details}"
+                              Style="{StaticResource SpdRowsGridStyle}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Width="120" Binding="{Binding Label}" ElementStyle="{StaticResource SpdLabelTextStyle}"/>
+                            <DataGridTextColumn Width="*" Binding="{Binding Value}" ElementStyle="{StaticResource SectionValueTextStyle}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <DataGrid ItemsSource="{Binding Timings}"
+                              Style="{StaticResource SpdRowsGridStyle}"
+                              HeadersVisibility="Column">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Timing" Width="*" Binding="{Binding Name}" ElementStyle="{StaticResource SectionNameTextStyle}"/>
+                            <DataGridTextColumn Header="Cycles" Width="80" Binding="{Binding Cycles}" ElementStyle="{StaticResource SectionValueTextStyle}"/>
+                            <DataGridTextColumn Header="Value" Width="110" Binding="{Binding Value}" ElementStyle="{StaticResource SpdLabelTextStyle}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </GroupBox>
+        </DataTemplate>
     </Window.Resources>
 
     <Grid>
@@ -81,57 +120,58 @@
                         Content="Dump SPD"
                         Padding="10,4"
                         Click="ButtonDumpSpd_Click"/>
-
             </Grid>
         </Border>
 
         <Border Grid.Row="1" Style="{DynamicResource Separator}"/>
 
-        <!-- Tab control -->
+        <!-- Tabs -->
         <Grid Grid.Row="2" Margin="10">
             <TabControl x:Name="ProfilesTabControl"
                         BorderThickness="0">
 
-            <TabItem x:Name="GeneralTab"
-                     Header="General">
-                <DataGrid x:Name="GeneralGrid"
-                          RowStyle="{StaticResource SpdDataGridRowStyle}"
-                          AutoGenerateColumns="False"
-                          HeadersVisibility="None"
-                          GridLinesVisibility="None"
-                          HorizontalScrollBarVisibility="Auto"
-                          VerticalScrollBarVisibility="Auto"
-                          CanUserAddRows="False"
-                          CanUserDeleteRows="False"
-                          CanUserResizeRows="False"
-                          CanUserResizeColumns="False"
-                          CanUserReorderColumns="False"
-                          CanUserSortColumns="False"
-                          IsReadOnly="True"
-                          Focusable="False"
-                          ScrollViewer.CanContentScroll="True"
-                          FontSize="11">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Width="240" Binding="{Binding Name}">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="Foreground" Value="{DynamicResource TextColor}"/>
-                                    <Setter Property="Opacity" Value="0.75"/>
-                                    <Setter Property="Padding" Value="4,0"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Width="*" Binding="{Binding Value}">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="Foreground" Value="{DynamicResource AccentTextColor}"/>
-                                    <Setter Property="Padding" Value="4,0"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </TabItem>
+                <TabItem x:Name="ModuleTab" Header="Module">
+                    <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                                  VerticalScrollBarVisibility="Auto"
+                                  Padding="0,6,0,0">
+                        <StackPanel>
+                            <GroupBox Header="Module" Style="{StaticResource SpdSection}">
+                                <DataGrid x:Name="ModuleGrid" Style="{StaticResource SpdRowsGridStyle}">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Width="120" Binding="{Binding Label}" ElementStyle="{StaticResource SpdLabelTextStyle}"/>
+                                        <DataGridTextColumn Width="*" Binding="{Binding Value}" ElementStyle="{StaticResource SectionValueTextStyle}"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </GroupBox>
+
+                            <GroupBox x:Name="ComponentsSection" Header="Components" Style="{StaticResource SpdSection}">
+                                <DataGrid x:Name="ComponentsGrid" Style="{StaticResource SpdRowsGridStyle}">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Width="120" Binding="{Binding Label}" ElementStyle="{StaticResource SpdLabelTextStyle}"/>
+                                        <DataGridTextColumn Width="*" Binding="{Binding Value}" ElementStyle="{StaticResource SectionValueTextStyle}"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </GroupBox>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+                <TabItem x:Name="ProfilesTab" Header="Profiles">
+                    <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                                  VerticalScrollBarVisibility="Auto"
+                                  Padding="0,6,0,0">
+                        <StackPanel>
+                            <ItemsControl x:Name="ProfilesList"
+                                          Focusable="False"
+                                          ItemTemplate="{StaticResource ProfileTemplate}"/>
+                            <TextBlock x:Name="NoProfilesText"
+                                       Text="No timing profiles available."
+                                       Style="{StaticResource LabelStyle}"
+                                       Margin="4"
+                                       Visibility="Collapsed"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
             </TabControl>
 
             <Button Panel.ZIndex="1"

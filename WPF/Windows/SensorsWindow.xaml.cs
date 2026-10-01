@@ -9,6 +9,8 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using ZenStates.Core.Hardware;
 using ZenStates.Core.Hardware.DRAM;
+using ZenStates.Core.Hardware.DRAM.DDR4.Spd;
+using ZenStates.Core.Hardware.DRAM.DDR4.Thermal;
 using ZenStates.Core.Hardware.DRAM.DDR5.Pmic;
 using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
 using ZenStates.Core.Hardware.DRAM.DDR5.Thermal;
@@ -501,19 +503,19 @@ namespace ZenTimings.Windows
                     if (spdEntry.Value.ThermalData != null && spdEntry.Value.ThermalData.IsValid)
                         InitializeThermalTelemetry(vm, spdEntry.Value.ThermalData, slotIndex);
 
-                    if (spdEntry.Value.PmicData != null && spdEntry.Value.PmicData.IsValid)
+                    if (spdEntry.Value.Pmic != null && spdEntry.Value.Pmic.IsValid)
                     {
                         vm.HasPmic = true;
-                        vm.PmicVendor = spdEntry.Value.PmicData.VendorName ?? "N/A";
-                        vm.PmicRevision = $"{spdEntry.Value.PmicData.RevisionMajor}.{spdEntry.Value.PmicData.RevisionMinor}";
-                        InitializePmicTelemetry(vm, spdEntry.Value.PmicData, slotIndex);
+                        vm.PmicVendor = spdEntry.Value.Pmic.VendorName ?? "N/A";
+                        vm.PmicRevision = $"{spdEntry.Value.Pmic.RevisionMajor}.{spdEntry.Value.Pmic.RevisionMinor}";
+                        InitializePmicTelemetry(vm, spdEntry.Value.Pmic, slotIndex);
                     }
 
                     var header = new System.Text.StringBuilder($"DIMM {slotIndex}");
                     if (module != null && !string.IsNullOrEmpty(module.Slot))
                         header.Append($"  ·  {module.Slot}");
-                    if (spdEntry.Value.PmicData != null && spdEntry.Value.PmicData.IsValid)
-                        header.Append($"  ·  PMIC 0x{spdEntry.Value.PmicData.I2cAddress:X2}");
+                    if (spdEntry.Value.Pmic != null && spdEntry.Value.Pmic.IsValid)
+                        header.Append($"  ·  PMIC 0x{spdEntry.Value.Pmic.I2cAddress:X2}");
                     vm.Header = header.ToString();
 
                     vms.Add(vm);
@@ -524,23 +526,40 @@ namespace ZenTimings.Windows
 
             if (memoryConfig.Modules != null && memoryConfig.Modules.Count > 0)
             {
+                // DDR4: the module thermal sensors and SPD, in the order of the modules
+                List<Ddr4ThermalData> ddr4Sensors = GetDdr4ThermalSensors();
+                var ddr4Spd = new List<Ddr4SpdInfo>();
+                if (memoryConfig.Ddr4Spd != null)
+                    ddr4Spd.AddRange(memoryConfig.Ddr4Spd.Values);
+                int sensorCount = 0;
+
                 for (int i = 0; i < memoryConfig.Modules.Count; i++)
                 {
                     var module = memoryConfig.Modules[i];
+                    Ddr4ThermalData sensor = i < ddr4Sensors.Count ? ddr4Sensors[i] : null;
+                    Ddr4SpdInfo spd = i < ddr4Spd.Count ? ddr4Spd[i] : null;
+                    bool hasSpd = spd != null && spd.IsValid;
+                    bool hasSensor = sensor != null && sensor.IsValid && sensor.TempSensorEnabled;
+
                     var header = string.IsNullOrEmpty(module.Slot)
                         ? $"DIMM {i}"
                         : $"DIMM {i}  ·  {module.Slot}";
+                    if (hasSensor)
+                        header += $"  ·  TS 0x{sensor.I2cAddress:X2}";
                     var vm = new ModuleViewModel
                     {
                         SectionKey = $"DIMM {i}",
                         Header = header,
-                        PartNumber = module.PartNumber ?? "N/A",
+                        PartNumber = !string.IsNullOrEmpty(module.PartNumber) ? module.PartNumber
+                            : hasSpd && !string.IsNullOrEmpty(spd.ModulePartNumber) ? spd.ModulePartNumber : "N/A",
                         Manufacturer = module.Manufacturer ?? "N/A",
                         Capacity = module.Capacity != null && module.Capacity.SizeInBytes > 0
                             ? module.Capacity.ToString()
                             : "N/A",
                         Rank = module.Rank.ToString(),
-                        MemoryChip = "N/A (DDR4 or no SPD data)",
+                        MemoryChip = hasSpd && !string.IsNullOrEmpty(spd.DramManufacturer)
+                            ? $"{spd.DramManufacturer}, {spd.DieDensityMbit / 1024} Gb x{spd.DeviceWidthBits}"
+                            : "N/A (no SPD data)",
                         HasPmic = false
                     };
 
@@ -551,15 +570,25 @@ namespace ZenTimings.Windows
                         vm.HasLogo = true;
                     }
 
+                    if (hasSensor)
+                    {
+                        InitializeDdr4ThermalTelemetry(vm, sensor, i);
+                        sensorCount++;
+                    }
+
                     vms.Add(vm);
                 }
+
+                if (sensorCount > 0)
+                    return Tuple.Create(vms, $"Loaded {vms.Count} module(s) - {sensorCount} thermal sensor(s)");
+
                 return Tuple.Create(vms, $"Loaded {vms.Count} module(s) - Limited info (no SPD/PMIC data available)");
             }
 
             return Tuple.Create(vms, warning ?? "No memory modules detected");
         }
 
-        private void InitializePmicTelemetry(ModuleViewModel vm, Ddr5PmicData pmicData, int slotIndex)
+        private void InitializePmicTelemetry(ModuleViewModel vm, Ddr5Pmic pmicData, int slotIndex)
         {
             vm.HasTelemetry = true;
 
@@ -611,7 +640,7 @@ namespace ZenTimings.Windows
             // Disable for now, current mode has been fixed and should be close enough. Hwinfo will still switch it.
             //if (!(pmicData.TelemetryReportsPower && pmicData.TelemetryReportsTotalPower))
             //{
-            //    Ddr5PmicReader.SetTotalPowerMode(pmicData.I2cAddress, true);
+            //    (pmicData as Pmic5100)?.SetTotalPowerMode(true);
             //}
 
             AddPmicItem("Total Power", pmicData.TotalW, "W");
@@ -652,6 +681,45 @@ namespace ZenTimings.Windows
             vm.TelemetryItems.Add(item);
         }
 
+        // DDR4 module thermal sensors in the order of the modules; an entry is null for a module without one.
+        private List<Ddr4ThermalData> GetDdr4ThermalSensors()
+        {
+            var list = new List<Ddr4ThermalData>();
+            Dictionary<byte, Ddr4ThermalData> sensors = memoryConfig?.Ddr4ThermalSensors;
+            if (sensors != null)
+                list.AddRange(sensors.Values);
+            return list;
+        }
+
+        private const string Ddr4ThermalSensorName = "DIMM Temp";
+
+        private void InitializeDdr4ThermalTelemetry(ModuleViewModel vm, Ddr4ThermalData thermalData, int slotIndex)
+        {
+            vm.HasTelemetry = true;
+
+            var key = GetPmicSensorKey(slotIndex, Ddr4ThermalSensorName);
+            if (SensorSettings.Instance.HiddenSensors.Contains(key))
+            {
+                vm.HiddenCount++;
+                vm.HiddenKeys.Add(key);
+                return;
+            }
+
+            var item = new TelemetryItemViewModel(Ddr4ThermalSensorName, thermalData.TemperatureC, "°C") { GroupKey = key };
+            item.UpdateThermalAlarm(thermalData.AlarmCritHigh, thermalData.AlarmHigh);
+            vm.TelemetryItems.Add(item);
+        }
+
+        private void UpdateDdr4ThermalTelemetry(ModuleViewModel vm, Ddr4ThermalData thermalData)
+        {
+            var item = vm.TelemetryItems.FirstOrDefault(i => i.Name == Ddr4ThermalSensorName);
+            if (item != null)
+            {
+                item.UpdateValue(thermalData.TemperatureC);
+                item.UpdateThermalAlarm(thermalData.AlarmCritHigh, thermalData.AlarmHigh);
+            }
+        }
+
         internal void RefreshTelemetryGroups()
         {
             if (_isRefreshing || memoryConfig == null)
@@ -671,13 +739,23 @@ namespace ZenTimings.Windows
                             break;
 
                         var vm = moduleViewModels[index];
-                        if (spdEntry.Value.PmicData != null && spdEntry.Value.PmicData.IsValid)
-                            UpdatePmicTelemetry(vm, spdEntry.Value.PmicData);
+                        if (spdEntry.Value.Pmic != null && spdEntry.Value.Pmic.IsValid)
+                            UpdatePmicTelemetry(vm, spdEntry.Value.Pmic);
 
                         if (spdEntry.Value.ThermalData != null && spdEntry.Value.ThermalData.IsValid)
                             UpdateThermalTelemetry(vm, spdEntry.Value.ThermalData);
 
                         index++;
+                    }
+                }
+                else
+                {
+                    List<Ddr4ThermalData> ddr4Sensors = GetDdr4ThermalSensors();
+                    for (int i = 0; i < moduleViewModels.Count && i < ddr4Sensors.Count; i++)
+                    {
+                        Ddr4ThermalData sensor = ddr4Sensors[i];
+                        if (sensor != null && sensor.IsValid && sensor.TempSensorEnabled)
+                            UpdateDdr4ThermalTelemetry(moduleViewModels[i], sensor);
                     }
                 }
             }
@@ -691,7 +769,7 @@ namespace ZenTimings.Windows
             }
         }
 
-        private void UpdatePmicTelemetry(ModuleViewModel vm, Ddr5PmicData pmicData)
+        private void UpdatePmicTelemetry(ModuleViewModel vm, Ddr5Pmic pmicData)
         {
             UpdateTelemetryItem(vm, "VDD (SWA)", pmicData.SwaAdcMv / 1000.0);
             UpdateTelemetryItem(vm, "VDDQ (SWB)", pmicData.SwbAdcMv / 1000.0);

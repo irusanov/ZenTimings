@@ -960,14 +960,14 @@ namespace ZenTimings
             mockData != null ? mockData.SpdInfo : cpu?.memoryConfig?.SpdInfo;
 
         // PMIC of the module at the given index in MemoryModules; SPD entries line up with modules by index.
-        private Ddr5PmicData ModulePmicData(int moduleIndex)
+        private Ddr5Pmic ModulePmicData(int moduleIndex)
         {
             if (mockData != null)
                 return mockData.GetPmicData(moduleIndex);
 
             return ModuleSpdInfo?.Values
                 .Where(d => d.IsValid)
-                .ElementAtOrDefault(moduleIndex)?.PmicData;
+                .ElementAtOrDefault(moduleIndex)?.Pmic;
         }
 
         // Always true live; a debug report has every channel only when it carries the register dump.
@@ -1123,7 +1123,7 @@ namespace ZenTimings
                         plugins[0].Update();
 
                     var voltagesUpdated = false;
-                    if (cpu.memoryConfig?.SpdInfo?.Values != null)
+                    if (cpu.memoryConfig != null && cpu.memoryConfig.HasDimmTelemetry)
                     {
                         // Half the interval: the throttle measures from the start of the previous read, and
                         // a tick that runs a little early would otherwise skip every other refresh.

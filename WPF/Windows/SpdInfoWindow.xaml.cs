@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using ZenStates.Core.Hardware.DRAM;
+using ZenStates.Core.Hardware.DRAM.DDR4.Spd;
 using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
 using ZenTimings.Common;
 using ZenTimings.Utils;
@@ -24,22 +23,37 @@ namespace ZenTimings.Windows
             public int Index { get; set; }
             public byte I2cAddress { get; set; }
             public string Display { get; set; }
+            /// <summary>Ddr5SpdInfo or Ddr4SpdInfo.</summary>
             public object SpdInfo { get; set; }
-        }
-
-        private class GridItem
-        {
-            public string Name { get; set; }
-            public string Value { get; set; }
         }
 
         private MemoryConfig _memoryConfig;
         private readonly List<SlotItem> _slots = new List<SlotItem>();
+        private SpdModuleView _view;
 
         public SpdInfoWindow()
         {
             InitializeComponent();
             Loaded += SpdInfoWindow_Loaded;
+        }
+
+        private bool IsDdr4 => _memoryConfig?.Type == MemType.DDR4;
+
+        // The SPD entries of the installed memory, keyed by SMBus address: Ddr5SpdInfo or Ddr4SpdInfo values
+        private List<KeyValuePair<byte, object>> GetSpdEntries()
+        {
+            if (_memoryConfig == null)
+                return null;
+
+            if (IsDdr4)
+                return _memoryConfig.Ddr4Spd?.Select(e => new KeyValuePair<byte, object>(e.Key, e.Value)).ToList();
+
+            return _memoryConfig.SpdInfo?.Select(e => new KeyValuePair<byte, object>(e.Key, e.Value)).ToList();
+        }
+
+        private static bool IsPartial(object spd)
+        {
+            return (spd as Ddr5SpdInfo)?.IsPartial ?? (spd as Ddr4SpdInfo)?.IsPartial ?? false;
         }
 
         private async void SpdInfoWindow_Loaded(object sender, RoutedEventArgs e)
@@ -50,17 +64,18 @@ namespace ZenTimings.Windows
 
         private void CopyTab_Click(object sender, RoutedEventArgs e)
         {
-            var tab = ProfilesTabControl.SelectedItem as TabItem;
-            if (!(tab?.Content is DataGrid grid))
+            if (_view == null)
                 return;
 
-            // The serial number identifies the exact module, keep it out of text that is meant to be pasted elsewhere
-            var lines = ClipboardUtils.GridToText(grid)
-                .Split(new[] { Environment.NewLine }, StringSplitOptions.None)
-                .Select(l => l.StartsWith("ModuleSerialNumber\t") ? "ModuleSerialNumber\t(hidden)" : l);
+            // The serial number identifies the exact module, the text leaves it out as it is meant to be pasted elsewhere
+            bool profiles = ProfilesTabControl.SelectedItem == ProfilesTab;
+            string body = profiles ? _view.ProfilesText() : _view.ModuleText();
+            if (string.IsNullOrWhiteSpace(body))
+                return;
 
-            string title = $"SPD {(ComboSlots.SelectedItem as SlotItem)?.Display} - {tab.Header}";
-            ClipboardUtils.Copy($"{title}{Environment.NewLine}{string.Join(Environment.NewLine, lines)}", sender as Button);
+            string tab = profiles ? "Profiles" : "Module";
+            string title = $"SPD {(ComboSlots.SelectedItem as SlotItem)?.Display} - {tab}";
+            ClipboardUtils.Copy($"{title}{Environment.NewLine}{Environment.NewLine}{body.TrimEnd()}", sender as Button);
         }
 
         private void ComboSlots_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -100,7 +115,10 @@ namespace ZenTimings.Windows
             {
                 var filePath = dlg.FileName;
                 var address = selected.I2cAddress;
-                success = await Task.Run(() => Ddr5SpdReader.DumpDdr5SpdToFile(address, filePath));
+                bool ddr4 = IsDdr4;
+                success = await Task.Run(() => ddr4
+                    ? Ddr4SpdReader.DumpToFile(address, filePath)
+                    : Ddr5SpdReader.DumpToFile(address, filePath));
             }
             catch (Exception ex)
             {
@@ -129,10 +147,15 @@ namespace ZenTimings.Windows
         {
             var parts = new List<string> { "SPD" };
 
-            if (slot.SpdInfo is Ddr5SpdInfo info)
+            if (slot.SpdInfo is Ddr5SpdInfo ddr5)
             {
-                AddFileNamePart(parts, info.ModuleManufacturer);
-                AddFileNamePart(parts, info.ModulePartNumber);
+                AddFileNamePart(parts, ddr5.ModuleManufacturer);
+                AddFileNamePart(parts, ddr5.ModulePartNumber);
+            }
+            else if (slot.SpdInfo is Ddr4SpdInfo ddr4)
+            {
+                AddFileNamePart(parts, ddr4.ModuleManufacturer);
+                AddFileNamePart(parts, ddr4.ModulePartNumber);
             }
 
             parts.Add($"0x{slot.I2cAddress:X2}");
@@ -165,40 +188,23 @@ namespace ZenTimings.Windows
                 {
                     var result = new List<SlotItem>();
 
-                    var spdByAddress = _memoryConfig?.SpdInfo;
+                    var spdByAddress = GetSpdEntries();
                     if (spdByAddress == null || spdByAddress.Count == 0)
                         return null;
 
-                    bool hasPartial = false;
-                    foreach (var entry in (IEnumerable)spdByAddress)
-                    {
-                        var v = entry.GetType().GetProperty("Value")?.GetValue(entry, null);
-                        if (v == null) continue;
-                        var partialField = v.GetType().GetField("IsPartial");
-                        if (partialField != null && true.Equals(partialField.GetValue(v)))
-                        {
-                            hasPartial = true;
-                            break;
-                        }
-                    }
-
-                    if (hasPartial)
+                    if (spdByAddress.Any(entry => IsPartial(entry.Value)))
                     {
                         Dispatcher.Invoke(() => StatusText.Text = "Partial SPD detected, refreshing…");
                         _memoryConfig.RefreshSpdInfo();
                     }
 
-                    int idx = 0;
-                    foreach (var kvp in (IEnumerable)_memoryConfig.SpdInfo)
+                    var entries = GetSpdEntries();
+                    if (entries == null)
+                        return null;
+
+                    for (int idx = 0; idx < entries.Count; idx++)
                     {
-                        var kvpType = kvp.GetType();
-                        var keyObj = kvpType.GetProperty("Key")?.GetValue(kvp, null);
-                        var valueObj = kvpType.GetProperty("Value")?.GetValue(kvp, null);
-
-                        byte address;
-                        try { address = Convert.ToByte(keyObj); }
-                        catch { idx++; continue; }
-
+                        byte address = entries[idx].Key;
                         var module = (_memoryConfig.Modules != null && idx < _memoryConfig.Modules.Count)
                             ? _memoryConfig.Modules[idx] : null;
                         var slotName = (module != null && !string.IsNullOrEmpty(module.Slot))
@@ -209,9 +215,8 @@ namespace ZenTimings.Windows
                             Index = idx,
                             I2cAddress = address,
                             Display = $"{slotName} (0x{address:X2})",
-                            SpdInfo = valueObj
+                            SpdInfo = entries[idx].Value
                         });
-                        idx++;
                     }
 
                     return result;
@@ -251,209 +256,30 @@ namespace ZenTimings.Windows
         {
             if (slot == null || slot.SpdInfo == null)
             {
-                SetNoDataState("No SPD data available.");
+                ShowView(SpdModuleView.Message("No SPD data available."));
                 return;
             }
 
-            var spdInfo = slot.SpdInfo;
-            var spdType = spdInfo.GetType();
-
-            // Fields to skip from the General tab (handled separately as profile tabs)
-            var skipFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-            {
-                "XmpProfiles", "ExpoProfile1", "ExpoProfile2",
-                "ThermalData", "PmicData", "RawSpd", "IsPartial"
-            };
-
-            var general = new List<GridItem>();
-            var xmpProfiles = new Dictionary<int, List<GridItem>>();
-            var expoProfiles = new Dictionary<int, List<GridItem>>();
-
-            foreach (var field in spdType.GetFields(BindingFlags.Instance | BindingFlags.Public))
-            {
-                if (skipFields.Contains(field.Name))
-                    continue;
-
-                object value;
-                try { value = field.GetValue(spdInfo); }
-                catch { continue; }
-
-                general.Add(new GridItem { Name = field.Name, Value = FormatValue(value) });
-            }
-
-            if (general.Count == 0)
-                general.Add(new GridItem { Name = "Info", Value = "No general fields available." });
-
-            // XMP profiles — XmpProfiles is a Ddr5XmpProfile[]; only include IsValid entries
-            var xmpProfilesField = spdType.GetField("XmpProfiles");
-            if (xmpProfilesField != null)
-            {
-                var arr = xmpProfilesField.GetValue(spdInfo) as Array;
-                if (arr != null)
-                {
-                    for (int i = 0; i < arr.Length; i++)
-                    {
-                        var profile = arr.GetValue(i);
-                        if (profile == null) continue;
-                        var isValidField = profile.GetType().GetField("IsValid");
-                        if (isValidField != null && !true.Equals(isValidField.GetValue(profile))) continue;
-                        xmpProfiles[i + 1] = FieldsToGridItems(profile);
-                    }
-                }
-            }
-
-            // EXPO profiles — ExpoProfile1 and ExpoProfile2 are individual fields; only include IsValid entries
-            foreach (var expoFieldName in new[] { "ExpoProfile1", "ExpoProfile2" })
-            {
-                var expoField = spdType.GetField(expoFieldName);
-                if (expoField == null) continue;
-                var profile = expoField.GetValue(spdInfo);
-                if (profile == null) continue;
-                var isValidField = profile.GetType().GetField("IsValid");
-                if (isValidField != null && !true.Equals(isValidField.GetValue(profile))) continue;
-                int profileNum = expoFieldName == "ExpoProfile1" ? 1 : 2;
-                expoProfiles[profileNum] = FieldsToGridItems(profile);
-            }
-
-            GeneralGrid.ItemsSource = general;
-            RebuildProfileTabs(xmpProfiles, expoProfiles);
+            ShowView(SpdPresenter.Build(slot.SpdInfo));
             StatusText.Text = $"Showing SPD for {slot.Display}";
         }
 
-        private static List<GridItem> FieldsToGridItems(object obj)
+        private void ShowView(SpdModuleView view)
         {
-            var result = new List<GridItem>();
-            if (obj == null) return result;
-            foreach (var field in obj.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public))
-            {
-                object value;
-                try { value = field.GetValue(obj); }
-                catch { continue; }
-                result.Add(new GridItem { Name = field.Name, Value = FormatValue(value) });
-            }
-            return result;
+            _view = view;
+            ModuleGrid.ItemsSource = view.Module;
+            ComponentsGrid.ItemsSource = view.Components;
+            ComponentsSection.Visibility = view.Components.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+            ProfilesList.ItemsSource = view.Profiles;
+            NoProfilesText.Visibility = view.Profiles.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
         }
 
         private void SetNoDataState(string message)
         {
-            GeneralGrid.ItemsSource = new List<GridItem> { new GridItem { Name = "Info", Value = message } };
-            RebuildProfileTabs(new Dictionary<int, List<GridItem>>(), new Dictionary<int, List<GridItem>>());
+            // Clearing the slots raises SelectionChanged, which renders an empty slot: show the message after
             ComboSlots.ItemsSource = null;
+            ShowView(SpdModuleView.Message(message));
             StatusText.Text = message;
-        }
-
-        private void RebuildProfileTabs(
-            Dictionary<int, List<GridItem>> xmpProfiles,
-            Dictionary<int, List<GridItem>> expoProfiles)
-        {
-            while (ProfilesTabControl.Items.Count > 1)
-                ProfilesTabControl.Items.RemoveAt(1);
-
-            if (xmpProfiles.Count == 0)
-            {
-                ProfilesTabControl.Items.Add(CreateProfileTab("XMP", new List<GridItem>
-                {
-                    new GridItem { Name = "Info", Value = "No XMP profiles available." }
-                }));
-            }
-            else
-            {
-                foreach (var profile in xmpProfiles.OrderBy(k => k.Key))
-                    ProfilesTabControl.Items.Add(CreateProfileTab($"XMP {profile.Key}", profile.Value));
-            }
-
-            if (expoProfiles.Count == 0)
-            {
-                ProfilesTabControl.Items.Add(CreateProfileTab("EXPO", new List<GridItem>
-                {
-                    new GridItem { Name = "Info", Value = "No EXPO profiles available." }
-                }));
-            }
-            else
-            {
-                foreach (var profile in expoProfiles.OrderBy(k => k.Key))
-                    ProfilesTabControl.Items.Add(CreateProfileTab($"EXPO {profile.Key}", profile.Value));
-            }
-        }
-
-        private static TabItem CreateProfileTab(string header, List<GridItem> rows)
-        {
-            var nameStyle = new Style(typeof(TextBlock));
-            nameStyle.Setters.Add(new Setter(TextBlock.ForegroundProperty, new System.Windows.DynamicResourceExtension("TextColor")));
-            nameStyle.Setters.Add(new Setter(TextBlock.OpacityProperty, 0.75));
-            nameStyle.Setters.Add(new Setter(TextBlock.PaddingProperty, new Thickness(4, 0, 4, 0)));
-
-            var valueStyle = new Style(typeof(TextBlock));
-            valueStyle.Setters.Add(new Setter(TextBlock.ForegroundProperty, new System.Windows.DynamicResourceExtension("AccentTextColor")));
-            valueStyle.Setters.Add(new Setter(TextBlock.PaddingProperty, new Thickness(4, 0, 4, 0)));
-
-            var grid = new DataGrid
-            {
-                AutoGenerateColumns = false,
-                HeadersVisibility = DataGridHeadersVisibility.None,
-                GridLinesVisibility = DataGridGridLinesVisibility.None,
-                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
-                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-                CanUserAddRows = false,
-                CanUserDeleteRows = false,
-                CanUserResizeRows = false,
-                CanUserResizeColumns = false,
-                CanUserReorderColumns = false,
-                CanUserSortColumns = false,
-                IsReadOnly = true,
-                Focusable = false,
-                FontSize = 11,
-                ItemsSource = rows
-            };
-
-            grid.SetResourceReference(DataGrid.RowStyleProperty, "SpdDataGridRowStyle");
-
-            grid.Columns.Add(new DataGridTextColumn
-            {
-                Width = new DataGridLength(240),
-                Binding = new System.Windows.Data.Binding("Name"),
-                ElementStyle = nameStyle
-            });
-            grid.Columns.Add(new DataGridTextColumn
-            {
-                Width = new DataGridLength(1, DataGridLengthUnitType.Star),
-                Binding = new System.Windows.Data.Binding("Value"),
-                ElementStyle = valueStyle
-            });
-
-            var tab = new TabItem
-            {
-                Header = header,
-                Content = grid
-            };
-
-            return tab;
-        }
-
-        private static string FormatValue(object value)
-        {
-            if (value == null)
-                return "N/A";
-
-            var type = value.GetType();
-            if (type.IsPrimitive || value is string || value is decimal)
-                return value.ToString();
-
-            if (value is IEnumerable enumerable && !(value is string))
-            {
-                var parts = new List<string>();
-                foreach (var item in enumerable)
-                {
-                    if (item == null) continue;
-                    parts.Add(item.ToString());
-                    if (parts.Count >= 8) break;
-                }
-                if (parts.Count == 0)
-                    return "(empty)";
-                return string.Join(", ", parts);
-            }
-
-            return value.ToString();
         }
     }
 }

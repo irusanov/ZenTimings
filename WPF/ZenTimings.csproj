@@ -170,6 +170,7 @@
     <Compile Include="Windows\ApobInfoWindow.xaml.cs">
       <DependentUpon>ApobInfoWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\SpdPresenter.cs" />
     <Compile Include="Windows\SpdInfoWindow.xaml.cs">
       <DependentUpon>SpdInfoWindow.xaml</DependentUpon>
     </Compile>

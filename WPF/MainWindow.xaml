@@ -78,7 +78,7 @@
                                 <MenuItem
                                     Header="SPD"
                                     Click="SpdInfoToolstripMenuItem_Click"
-                                    Visibility="{Binding IsDimmTelemetryAvailable, Mode=OneTime, Converter={StaticResource BoolToVis}}" />
+                                    Visibility="{Binding IsSpdInfoAvailable, Mode=OneTime, Converter={StaticResource BoolToVis}}" />
                                 <MenuItem
                                     Header="APOB"
                                     Click="ApobInfoToolstripMenuItem_Click"

@@ -26,7 +26,7 @@ namespace ZenTimings.Windows
         {
             public ModuleInfo Module;
             public BaseDramTimings Timings;
-            public Ddr5PmicData PmicData;
+            public Ddr5Pmic PmicData;
             /// <summary>This DIMM's own capacity - never another DIMM's, even one sharing its channel.</summary>
             public Capacity Capacity;
         }
@@ -52,7 +52,7 @@ namespace ZenTimings.Windows
             {
                 var channelModules = channel.ToList();
                 BaseDramTimings timings = readTimings(channel.Key);
-                Ddr5PmicData channelPmic = ChannelPmicData(channelModules.Select(m => m.Spd?.PmicData));
+                Ddr5Pmic channelPmic = ChannelPmicData(channelModules.Select(m => m.Spd?.Pmic));
 
                 // One frame per physical DIMM. Two DIMMs sharing this channel get separate frames -
                 // each with its own module description and its own capacity - but the same Timings and
@@ -91,7 +91,7 @@ namespace ZenTimings.Windows
             if (!string.IsNullOrEmpty(spd?.DramManufacturer))
                 detailParts.Add($"{spd.DramManufacturer} {VendorUtils.GetDramDieName(spd.DramManufacturer, spd.DramStepping)}".Trim());
 
-            Ddr5PmicData pmic = spd?.PmicData;
+            Ddr5Pmic pmic = spd?.Pmic;
             if (pmic != null && pmic.IsValid)
                 detailParts.Add($"PMIC {pmic.VendorName} rev {pmic.RevisionMajor}.{pmic.RevisionMinor}");
 
@@ -103,20 +103,20 @@ namespace ZenTimings.Windows
             };
         }
 
-        private static Ddr5PmicData ChannelPmicData(IEnumerable<Ddr5PmicData> pmics)
+        private static Ddr5Pmic ChannelPmicData(IEnumerable<Ddr5Pmic> pmics)
         {
-            List<Ddr5PmicData> validPmics = pmics.Where(pmic => pmic != null && pmic.IsValid).ToList();
+            List<Ddr5Pmic> validPmics = pmics.Where(pmic => pmic != null && pmic.IsValid).ToList();
             if (validPmics.Count == 0)
                 return null;
 
-            Ddr5PmicData first = validPmics[0];
+            Ddr5Pmic first = validPmics[0];
             if (validPmics.All(pmic => SameRails(first, pmic)))
                 return first;
 
             return null;
         }
 
-        private static bool SameRails(Ddr5PmicData left, Ddr5PmicData right)
+        private static bool SameRails(Ddr5Pmic left, Ddr5Pmic right)
         {
             return left.SwaAdcMv == right.SwaAdcMv &&
                    left.SwbAdcMv == right.SwbAdcMv &&
