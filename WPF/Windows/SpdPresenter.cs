@@ -406,6 +406,17 @@ namespace ZenTimings.Windows
                 view.Details.Add(new SpdRow("Voltages", $"VDD {Volts(expo.VddMv)}, VDDQ {Volts(expo.VddqMv)}, VPP {Volts(expo.VppMv)}"));
                 AddDdr5ProfileTimings(view, expo.tCKAVGminPs, expo.CL, expo.tAAminPs, expo.tRCDminPs, expo.tRPminPs, expo.tRASminPs,
                     expo.tRCminPs, expo.tWRminPs, expo.tRFC1minNs, expo.tRFC2minNs, expo.tRFCsbMinNs);
+                if (expo.HasSecondaryTimings)
+                {
+                    AddTiming(view, "tRRD_L", expo.tRRD_L);
+                    AddTiming(view, "tCCD_L", expo.tCCD_L);
+                    AddTiming(view, "tCCD_L_WR", expo.tCCD_L_WR);
+                    AddTiming(view, "tCCD_L_WR2", expo.tCCD_L_WR2);
+                    AddTiming(view, "tFAW", expo.tFAW);
+                    AddTiming(view, "tCCD_L_WTR", expo.tCCD_L_WTR);
+                    AddTiming(view, "tCCD_S_WTR", expo.tCCD_S_WTR);
+                    AddTiming(view, "tRTP", expo.tRTP);
+                }
                 profiles.Add(view);
             }
         }
@@ -516,6 +527,13 @@ namespace ZenTimings.Windows
 
             string value = asNs && ps % 1000 == 0 ? $"{ps / 1000} ns" : $"{ps} ps";
             view.Timings.Add(new SpdTimingRow(name, clocks(ps, tCK), value));
+        }
+
+        // A timing the decoder already converted to clocks (raised to its lower clock limit, where it has one)
+        private static void AddTiming(SpdProfileView view, string name, Ddr5SpdTiming timing)
+        {
+            if (timing != null && timing.IsDefined)
+                view.Timings.Add(new SpdTimingRow(name, timing.Nck, timing.MinNck > 0 ? $"{timing.Ps} ps, min {timing.MinNck} nCK" : $"{timing.Ps} ps"));
         }
 
         private static void AddNs(SpdProfileView view, ClockConverter clocks, int tCK, string name, int ns)
