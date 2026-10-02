@@ -51,16 +51,23 @@
                     <!-- TextBlock Text="Changelog" FontSize="14" FontWeight="Bold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" /-->
                     <TextBlock Text="{Binding Version, Mode=OneWay}" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0,0,0,4" />
 
-                    <controls:ChangelogItem Text="Fix older beta builds can't update from Release channel" />
-                    <controls:ChangelogItem Text="Splash screen now reports core init progress" />
-                    <controls:ChangelogItem Text="Replace BGS Alt with PowerDown and move tCCDL as compound display value" />
-                    <controls:ChangelogItem Text="Show the UCLK to MCLK ratio next to UCLK (idea by @deadfellow34, PR#109 by @b1zya) temporary placed in Tools menu" />
-                    <controls:ChangelogItem Text="Add text decoding for BurstLength and BurstControl in Advanced timings window and debug" />
-                    <controls:ChangelogItem Text="Check if VDDIO from SuperIO is in range, fallback to AOD if not. Can still be wrong if motherboard is not supported" />
-                    <controls:ChangelogItem Text="Improve driver cleanup notification" />
-                    <controls:ChangelogItem Text="Several QoL improvements for Sensors window" />
-                    <controls:ChangelogItem Text="Remove AdonisUI dependency, but keep the existing themes" />
-                    <controls:ChangelogItem Text="Performance improvements" />
+                    <controls:ChangelogItem Text="Fixed older beta builds being unable to update from the Release channel" />
+                    <controls:ChangelogItem Text="Removed the AdonisUI dependency while keeping the existing themes, with refreshed theme colors and more consistent styles across windows" />
+                    <controls:ChangelogItem Text="The splash screen now shows core initialization progress" />
+                    <controls:ChangelogItem Text="Added DDR4 SPD and DIMM thermal sensor support" />
+                    <controls:ChangelogItem Text="Improved DDR5 SPD reading and redesigned the SPD and PMIC window, including EXPO extended timings" />
+                    <controls:ChangelogItem Text="Extended APOB tables (now with DDR4 support) and added a new APOB window under Advanced Info" />
+                    <controls:ChangelogItem Text="Replaced BGS Alt with PowerDown; tCCDL is now shown as part of a combined value" />
+                    <controls:ChangelogItem Text="Optional UCLK to MCLK ratio shown next to UCLK, toggled from the Tools menu (idea by @deadfellow34, PR#109 by @b1zya)" />
+                    <controls:ChangelogItem Text="BurstLength and BurstCtrl are now decoded as readable text in the Advanced Timings window and debug report" />
+                    <controls:ChangelogItem Text="VDDIO read from SuperIO is checked for a valid range, with a fallback to AOD if not. It can still be wrong on unsupported motherboards" />
+                    <controls:ChangelogItem Text="Mismatched timings between channels are highlighted with neutral accent colors" />
+                    <controls:ChangelogItem Text="DIMM info blocks can now be hidden in the Sensors window, plus several other QoL improvements" />
+                    <controls:ChangelogItem Text="Fixed the Advanced Timings window not remembering its size and position" />
+                    <controls:ChangelogItem Text="Improved the driver cleanup notification and fixed it blocking a new instance of the app from starting" />
+                    <controls:ChangelogItem Text="SPD dumps now use a more descriptive filename" />
+                    <controls:ChangelogItem Text="Fixed ASUS WMI resources not being released" />
+                    <controls:ChangelogItem Text="Rendering and performance improvements" />
                 </StackPanel>
             </Grid>
         </ScrollViewer>
