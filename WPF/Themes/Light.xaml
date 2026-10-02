@@ -37,7 +37,5 @@
     <SolidColorBrush x:Key="SuccessBackground" Color="#D4EDDA" />
     <SolidColorBrush x:Key="DisabledColor" Color="#A0A0A0" />
     <SolidColorBrush x:Key="WindowBorderColor" Color="#C4C4C4" />
-    <SolidColorBrush x:Key="TimingMismatchBrush" Color="{StaticResource {x:Static theming:ThemeColors.ErrorColor}}" />
-    <SolidColorBrush x:Key="TimingMismatchBackgroundBrush" Color="{StaticResource {x:Static theming:ThemeColors.ErrorColor}}" Opacity="0.16" />
     <SolidColorBrush x:Key="LiveSnapshotBrush" Color="{StaticResource {x:Static theming:ThemeColors.ErrorColor}}" />
 </ResourceDictionary>

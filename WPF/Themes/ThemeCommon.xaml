@@ -47,8 +47,8 @@
     <SolidColorBrush x:Key="LogoColorAlt" Color="{DynamicResource {x:Static theming:ThemeColors.ForegroundColor}}" />
 
     <!-- Timings that differ between modules, and the live snapshot indicator -->
-    <SolidColorBrush x:Key="TimingMismatchBrush" Color="{DynamicResource {x:Static theming:ThemeColors.WarningColor}}" />
-    <SolidColorBrush x:Key="TimingMismatchBackgroundBrush" Color="{DynamicResource {x:Static theming:ThemeColors.WarningColor}}" Opacity="0.16" />
+    <SolidColorBrush x:Key="TimingMismatchBrush" Color="{DynamicResource {x:Static theming:ThemeColors.AccentColor}}" />
+    <SolidColorBrush x:Key="TimingMismatchBackgroundBrush" Color="{DynamicResource {x:Static theming:ThemeColors.AccentColor}}" Opacity="0.16" />
     <SolidColorBrush x:Key="LiveSnapshotBrush" Color="{DynamicResource {x:Static theming:ThemeColors.WarningColor}}" />
 
 </ResourceDictionary>

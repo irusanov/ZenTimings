@@ -339,17 +339,17 @@ namespace ZenTimings.Export
             }
 
             .mismatch td {
-              background: #fef2f2 !important;
+              background: #fff7ed !important;
             }
 
             .mismatch td.key {
-              color: #991b1b !important;
+              color: #9a3412 !important;
               font-weight: 700;
-              border-left: 3px solid #ef4444;
+              border-left: 3px solid #fed7aa;
             }
 
             .mismatch td.mono {
-              color: #991b1b !important;
+              color: #9a3412 !important;
               font-weight: 700;
             }
 
@@ -1033,7 +1033,7 @@ namespace ZenTimings.Export
                 {
                     string valueText = "null";
                     if (channel.TryGet("timings", out object t) && t is SnapshotObject set && set.TryGet(key, out object scalar))
-                        valueText = SnapshotWriter.Scalar(scalar);
+                        ExtractValueRaw(scalar, out valueText, out _);
                     sb.Append("<td>").Append(FormatScalarHtml(valueText, true)).Append("</td>");
                 }
                 sb.AppendLine("</tr>");

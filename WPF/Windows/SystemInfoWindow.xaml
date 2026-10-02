@@ -36,9 +36,6 @@
             </DockPanel>
         </DataTemplate>
 
-        <SolidColorBrush x:Key="TimingMismatchBrush" Color="{DynamicResource {x:Static theming:ThemeColors.WarningColor}}"/>
-        <SolidColorBrush x:Key="TimingMismatchBackgroundBrush" Color="{DynamicResource {x:Static theming:ThemeColors.WarningColor}}" Opacity="0.16"/>
-
         <Style x:Key="TimingRowStyle" TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource SectionRowStyle}">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsMismatch}" Value="True">
