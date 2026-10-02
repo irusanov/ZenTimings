@@ -57,6 +57,7 @@
                     <controls:ChangelogItem Text="Added DDR4 SPD and DIMM thermal sensor support" />
                     <controls:ChangelogItem Text="Improved DDR5 SPD reading and redesigned the SPD and PMIC window, including EXPO extended timings" />
                     <controls:ChangelogItem Text="Extended APOB tables (now with DDR4 support) and added a new APOB window under Advanced Info" />
+                    <controls:ChangelogItem Text="Added experimental reading of Vref values - available in Debug log and APOB and System windows (Tools -> Advanced Info)" />
                     <controls:ChangelogItem Text="Replaced BGS Alt with PowerDown; tCCDL is now shown as part of a combined value" />
                     <controls:ChangelogItem Text="Optional UCLK to MCLK ratio shown next to UCLK, toggled from the Tools menu (idea by @deadfellow34, PR#109 by @b1zya)" />
                     <controls:ChangelogItem Text="BurstLength and BurstCtrl are now decoded as readable text in the Advanced Timings window and debug report" />
