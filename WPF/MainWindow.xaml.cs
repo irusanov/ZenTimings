@@ -379,6 +379,22 @@ namespace ZenTimings
                 : new LegacyDDR5APUTimingsPanel();
         }
 
+        // The LPDDR5 panel shows the APOB mode registers: Rembrandt with LPDDR5
+        // Other APUs (Phoenix, Krackan, Strix) keep the other panel for now, currently no LPDDR5(X) reports available.
+        private bool UseLpddr5Panel()
+        {
+            //var apob = mockData != null ? mockData.Apob : cpu?.info.apob;
+            Cpu.CodeName? codeName = mockData != null ? mockData.CpuInfo.codeName : cpu?.info.codeName;
+            return codeName == Cpu.CodeName.Rembrandt; // || apob?.ActiveLpddr5ModeRegisters != null;
+        }
+
+        // LPDDR5: the ODT / drive strength / Vref rows come from the APOB mode registers
+        private LPDDR5TimingsPanel CreateLpddr5Panel()
+        {
+            var apob = mockData != null ? mockData.Apob : cpu?.info.apob;
+            return new LPDDR5TimingsPanel(apob?.ActiveLpddr5ModeRegisters);
+        }
+
         // Creates the timings panel the main window shows. The All DIMMs window creates its per-channel panels
         // through the same factory, so they match the main one (AOD source, report data in a mock window).
         private Func<Control> timingsPanelFactory;
@@ -407,6 +423,8 @@ namespace ZenTimings
                     return new DDR4TimingsPanel();
 
                 case MemType.LPDDR5:
+                    if (UseLpddr5Panel())
+                        return CreateLpddr5Panel();
                     return CreateLegacyApuPanel();
 
                 case MemType.DDR5:
@@ -507,6 +525,7 @@ namespace ZenTimings
             // Restart cleans up before shutting down, and the shutdown closes the window, which exits again.
             if (cleanedUp)
                 return;
+
             cleanedUp = true;
             // Publish cleanedUp before reading the refresh flag (the task sets its flag, then reads
             // cleanedUp), so one of the two always sees the other.

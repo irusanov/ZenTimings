@@ -1,0 +1,129 @@
+﻿<UserControl x:Class="ZenTimings.Controls.LPDDR5TimingsPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:converters="clr-namespace:ZenTimings.Converters"
+             xmlns:local="clr-namespace:ZenTimings.Controls"
+             mc:Ignorable="d"
+             d:DesignHeight="480" d:DesignWidth="450">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <converters:FloatToVoltageConverter x:Key="FloatToVoltage" />
+        <converters:FloatToBoolConverter x:Key="FloatToBool" />
+        <converters:FloatToNAConverter x:Key="FloatToNA" />
+    </UserControl.Resources>
+
+    <!-- LPDDR5 (Rembrandt, soldered memory): no gear down, 2T, PDA or DDR5 RTTs; WCK, per bank timings and
+         the LPDDR5 ODT / drive strength / Vrefs of the DRAM from the APOB mode registers instead (no AOD) -->
+
+    <Border Style="{DynamicResource TimingsStyles}">
+        <StackPanel Style="{DynamicResource TimingsStackPanelStyles}">
+            <!-- First Column -->
+            <StackPanel Grid.IsSharedSizeScope="True">
+                <StackPanel.Resources>
+                    <Style TargetType="{x:Type local:TimingRow}">
+                        <Setter Property="ValueMinWidth" Value="60" />
+                    </Style>
+                </StackPanel.Resources>
+
+                <local:TimingRow Label="{Binding MemoryType, FallbackValue='Speed'}" Value="{Binding MemoryFrequencyString, FallbackValue='N/A', StringFormat={}{0:F0}}" />
+                <local:TimingRow Label="BGS" Value="{Binding Timings.BGS, FallbackValue='N/A'}" />
+                <local:TimingRow Label="GDM" Value="{Binding Timings.GDM, FallbackValue='N/A'}" />
+                <TextBlock Style="{DynamicResource DividerTextBlock}" />
+                <local:TimingRow Label="tCL" Value="{Binding Timings.CL, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tRCDWR" Value="{Binding Timings.RCDWR, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tRCDRD" Value="{Binding Timings.RCDRD, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tRP" Value="{Binding Timings.RP, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tRAS" Value="{Binding Timings.RAS, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tRC" Value="{Binding Timings.RC, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tRRDS" Value="{Binding Timings.RRDS, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tRRDL" Value="{Binding Timings.RRDL, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tFAW" Value="{Binding Timings.FAW, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tWTRS" Value="{Binding Timings.WTRS, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tWTRL" Value="{Binding Timings.WTRL, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tWR" Value="{Binding Timings.WR, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tRFC (ns)" Value="{Binding Timings.RFCns, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tRFC" Value="{Binding Timings.RFC, FallbackValue='N/A'}" IsEnabled="{Binding IsRfcEnabled}" />
+                <local:TimingRow Label="tRFC2" Value="{Binding Timings.RFC2, FallbackValue='N/A'}" IsEnabled="{Binding IsRfc2Enabled}" />
+                <local:TimingRow Label="tRFCsb" Value="{Binding Timings.RFCsb, FallbackValue='N/A'}" IsEnabled="{Binding IsRfcsbEnabled}" />
+                <local:TimingRow Label="tMOD" Value="{Binding Timings.MOD, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tMODPDA" Value="{Binding Timings.MODPDA, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tPHYWRD" Value="{Binding Timings.PHYWRD, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tPHYWRL" Value="{Binding Timings.PHYWRL, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tRDPRE" Value="{Binding Timings.RDPRE, FallbackValue='N/A'}" />
+                <!--TextBlock Text="tXP"
+                 TextAlignment="Right"
+                 /-->
+                <!--TextBlock Text="{Binding Timings.XP, FallbackValue='N/A'}"
+                 Style="{DynamicResource ValueStyles}"
+                 /-->
+            </StackPanel>
+            <!-- Second Column -->
+            <StackPanel Grid.IsSharedSizeScope="True">
+                <local:TimingRow Label="Capacity" Value="{Binding TotalCapacity, FallbackValue='N/A'}" />
+                <local:TimingRow Label="BGS Alt" Value="{Binding Timings.BGSAlt, FallbackValue='N/A'}" />
+                <local:TimingRow Label="Cmd2T" Value="{Binding Timings.Cmd2T, FallbackValue='N/A'}" />
+                <TextBlock Style="{DynamicResource DividerTextBlock}" />
+                <local:TimingRow Label="tRDRDSCL" Value="{Binding Timings.RDRDSCL, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tWRWRSCL" Value="{Binding Timings.WRWRSCL, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tCWL" Value="{Binding Timings.CWL, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tRTP" Value="{Binding Timings.RTP, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tRDWR" Value="{Binding Timings.RDWR, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tWRRD" Value="{Binding Timings.WRRD, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tRDRDSC" Value="{Binding Timings.RDRDSC, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tRDRDSD" Value="{Binding Timings.RDRDSD, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tRDRDDD" Value="{Binding Timings.RDRDDD, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tWRWRSC" Value="{Binding Timings.WRWRSC, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tWRWRSD" Value="{Binding Timings.WRWRSD, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tWRWRDD" Value="{Binding Timings.WRWRDD, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tCKE" Value="{Binding Timings.CKE, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tREFI" Value="{Binding Timings.REFI, FallbackValue='N/A'}">
+                    <local:TimingRow.ValueToolTip>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Timings.REFIns, FallbackValue='N/A'}" Padding="0" />
+                            <TextBlock Text="ns" Padding="0" TextAlignment="Left" />
+                        </StackPanel>
+                    </local:TimingRow.ValueToolTip>
+                </local:TimingRow>
+                <local:TimingRow Label="Refresh" Value="{Binding Timings.RefreshMode, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tSTAG" Value="{Binding Timings.STAG, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tMRD" Value="{Binding Timings.MRD, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tMRDPDA" Value="{Binding Timings.MRDPDA, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tPHYRDL" Value="{Binding Timings.PHYRDL, FallbackValue='N/A'}" />
+                <local:TimingRow Label="PowerDown" Value="{Binding Timings.PowerDown, FallbackValue='N/A'}" />
+                <local:TimingRow Label="tWRPRE" Value="{Binding Timings.WRPRE, FallbackValue='N/A'}" />
+            </StackPanel>
+
+            <!-- Third Column -->
+            <StackPanel Grid.IsSharedSizeScope="True" Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                <local:TimingRow Label="MCLK" Value="{Binding PowerTable.MCLK, FallbackValue='N/A', StringFormat='{}{0:F2}', Mode=OneWay, Converter={StaticResource FloatToNA}}" IsEnabled="{Binding PowerTable.MCLK, Mode=OneWay, Converter={StaticResource FloatToBool}}" />
+                <local:TimingRow Label="FCLK" Value="{Binding PowerTable.FCLK, FallbackValue='N/A', StringFormat='{}{0:F2}', Mode=OneWay, Converter={StaticResource FloatToNA}}" IsEnabled="{Binding PowerTable.FCLK, Mode=OneWay, Converter={StaticResource FloatToBool}}" />
+                <local:TimingRow Label="{Binding UclkLabel, FallbackValue='UCLK', Mode=OneWay}" Value="{Binding PowerTable.UCLK, FallbackValue='N/A', StringFormat='{}{0:F2}', Mode=OneWay, Converter={StaticResource FloatToNA}}" IsEnabled="{Binding PowerTable.UCLK, Mode=OneWay, Converter={StaticResource FloatToBool}}" />
+                <TextBlock Style="{DynamicResource DividerTextBlock}" />
+                <local:TimingRow Label="{Binding VsocLabel, FallbackValue='VSOC', Mode=OneWay}" Value="{Binding Vsoc, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" IsEnabled="{Binding Vsoc}" />
+                <local:TimingRow Label="CLDO VDDP" Value="{Binding PowerTable.CLDO_VDDP, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" IsEnabled="{Binding PowerTable.CLDO_VDDP, Mode=OneWay, Converter={StaticResource FloatToBool}}" />
+                <local:TimingRow Label="MEM VDD" Value="{Binding SwaAdcV, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" IsEnabled="{Binding SwaAdcV}" />
+                <local:TimingRow Label="MEM VDDQ" Value="{Binding SwbAdcV, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" IsEnabled="{Binding SwbAdcV}" />
+                <local:TimingRow x:Name="rowApuVddio" Label="{Binding VddioLabel, FallbackValue='CPU VDDIO', Mode=OneWay}" Value="{Binding ApuVddio, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" IsEnabled="{Binding ApuVddio}" />
+                <local:TimingRow Label="MEM VPP" Value="{Binding VppAdcV, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" IsEnabled="{Binding VppAdcV}" />
+                <local:TimingRow x:Name="rowVddMisc" Label="{Binding VmiscLabel, FallbackValue='VDD MISC', Mode=OneWay}" Value="{Binding Vmisc, FallbackValue='N/A', Mode=OneWay, Converter={StaticResource FloatToVoltage}}" IsEnabled="{Binding Vmisc}" />
+                <TextBlock Text="" />
+                <local:TimingRow x:Name="rowDqOdt" Label="DqOdt" Value="N/A" IsEnabled="False" LabelToolTip="DRAM DQ ODT (MR11)" />
+                <local:TimingRow x:Name="rowNtOdt" Label="NtOdt" Value="N/A" IsEnabled="False" LabelToolTip="DRAM non-target DQ ODT (MR11 / MR41)" />
+                <local:TimingRow x:Name="rowCaOdt" Label="CaOdt" Value="N/A" IsEnabled="False" LabelToolTip="DRAM CA ODT (MR11)" />
+                <local:TimingRow x:Name="rowWckOdt" Label="WckOdt" Value="N/A" IsEnabled="False" LabelToolTip="DRAM WCK ODT (MR18)" />
+                <local:TimingRow x:Name="rowCkCsOdt" Label="CK/CS Odt" Value="N/A" IsEnabled="False" LabelToolTip="DRAM CK / CS ODT enabled (MR17 ODTD-CK / ODTD-CS)" />
+                <local:TimingRow x:Name="rowSocOdt" Label="SocOdt" Value="N/A" IsEnabled="False" LabelToolTip="SoC ODT the DRAM is told about (MR17)" />
+                <local:TimingRow x:Name="rowPdds" Label="DramDs" Value="N/A" IsEnabled="False" LabelToolTip="DRAM pull-down drive strength (MR3)" />
+                <TextBlock Text="" />
+                <local:TimingRow x:Name="rowVrefCa" Label="VrefCA" Value="N/A" IsEnabled="False" LabelToolTip="DRAM VrefCA the training starts from (MR12)" />
+                <local:TimingRow x:Name="rowVrefDq" Label="VrefDQ" Value="N/A" IsEnabled="False" LabelToolTip="DRAM VrefDQ the training starts from (MR14 / MR15)" />
+                <TextBlock Text="" />
+                <local:TimingRow Label="WCK:CK" Value="{Binding Timings.WckCkRatio, FallbackValue='N/A'}" LabelToolTip="WCK to CK ratio, the data runs on WCK" />
+                <local:TimingRow Label="Burst" Value="{Binding Timings.BurstLength, FallbackValue='N/A'}" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</UserControl>

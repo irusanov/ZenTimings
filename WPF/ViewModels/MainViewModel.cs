@@ -112,7 +112,8 @@ namespace ZenTimings.ViewModels
         }
         public MemType MemoryType { get; }
         public bool IsDimmTelemetryAvailable => Settings.AdvancedMode && MemoryType == MemType.DDR5;
-        public bool IsSpdInfoAvailable => Settings.AdvancedMode && (MemoryType == MemType.DDR5 || MemoryType == MemType.DDR4);
+        public bool IsSpdInfoAvailable => Settings.AdvancedMode &&
+            (MemoryType == MemType.DDR5 || MemoryType == MemType.LPDDR5 || MemoryType == MemType.DDR4);
         public bool ECC { get; set; }
         private bool IsVmiscSupported => CpuFamily >= Cpu.Family.FAMILY_19H;
         public PowerTable PowerTable { get; }

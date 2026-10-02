@@ -188,6 +188,10 @@ namespace ZenTimings.Windows
             if (FillDdr4Odt())
                 return true;
 
+            // LPDDR5 (Rembrandt): the mode registers of each timing block
+            if (FillLpddr5Odt())
+                return true;
+
             List<ApobData> channels = _apob.ChannelData;
             if (channels == null || channels.Count == 0)
             {
@@ -204,6 +208,27 @@ namespace ZenTimings.Windows
                 return false;
 
             SetupGrid(OdtGrid, "Setting", headers, rows, 150);
+            return true;
+        }
+
+        private bool FillLpddr5Odt()
+        {
+            List<ApobChannelTimings> blocks = _apob.ChannelTimings?.Where(b => b.Lpddr5ModeRegisters != null).ToList();
+            if (blocks == null || blocks.Count == 0)
+                return false;
+
+            var rows = new List<Row> { BlockRow("Data rate", blocks, b => $"{b.DataRate}") };
+            if (_apob.ActiveMemClk > 0)
+                rows.Add(BlockRow("Active", blocks, b => b.IsActive ? "Yes" : "-"));
+
+            List<KeyValuePair<string, string>> names = blocks[0].Lpddr5ModeRegisters.GetSettings();
+            for (int f = 0; f < names.Count; f++)
+            {
+                int index = f;
+                rows.Add(BlockRow(names[f].Key, blocks, b => b.Lpddr5ModeRegisters.GetSettings()[index].Value));
+            }
+
+            SetupGrid(OdtGrid, "Setting", BlockHeaders(blocks), rows, 150);
             return true;
         }
 
@@ -229,8 +254,31 @@ namespace ZenTimings.Windows
                 ChannelRow("CkeDrvStren", channels, c => c.CkeDrvStren)
             };
 
+            // The mode registers of each channel's timing block (the active one, else the first): the starting VrefDQ
+            // and the RTT / driver values the DRAM is programmed with
+            List<ApobDdr4ModeRegisters> registers = channels.Select(c => ChannelModeRegisters(c.Channel)).ToList();
+            ApobDdr4ModeRegisters first = registers.FirstOrDefault(r => r != null);
+            if (first != null)
+            {
+                List<KeyValuePair<string, string>> names = first.GetSettings();
+                for (int f = 0; f < names.Count; f++)
+                {
+                    int index = f;
+                    string[] values = registers.Select(r => r != null ? r.GetSettings()[index].Value : "N/A").ToArray();
+                    rows.Add(new Row { Name = names[f].Key, Values = values, IsMismatch = HasMismatch(values, null) });
+                }
+            }
+
             SetupGrid(OdtGrid, "Setting", channels.Select(c => $"Ch {ChannelLetter(c.Channel)}").ToArray(), rows, 150);
             return true;
+        }
+
+        private ApobDdr4ModeRegisters ChannelModeRegisters(int channel)
+        {
+            List<ApobChannelTimings> blocks = _apob.ChannelTimings?.Where(b => b.Channel == channel && b.Ddr4ModeRegisters != null).ToList();
+            if (blocks == null || blocks.Count == 0)
+                return null;
+            return (blocks.FirstOrDefault(b => b.IsActive) ?? blocks[0]).Ddr4ModeRegisters;
         }
 
         private static Row ChannelRow(string name, IList<ApobDdr4ChannelConfig> channels, Func<ApobDdr4ChannelConfig, ZenStates.Core.Common.EncodedValueBase> value)

@@ -211,11 +211,13 @@ namespace ZenTimings.Windows
                         var slotName = (module != null && !string.IsNullOrEmpty(module.Slot))
                             ? module.Slot : $"DIMM {idx}";
 
+                        // SPDs from the APOB (soldered LPDDR5) are keyed by slot order, not by an address
+                        bool fromApob = entries[idx].Value is Ddr5SpdInfo apobSpd && apobSpd.FromApob;
                         result.Add(new SlotItem
                         {
                             Index = idx,
                             I2cAddress = address,
-                            Display = $"{slotName} (0x{address:X2})",
+                            Display = fromApob ? $"{slotName} (APOB)" : $"{slotName} (0x{address:X2})",
                             SpdInfo = entries[idx].Value
                         });
                     }

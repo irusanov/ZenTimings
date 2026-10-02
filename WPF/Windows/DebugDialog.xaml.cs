@@ -328,6 +328,33 @@ namespace ZenTimings.Windows
                 AddLine();
             }
 
+            if (cpu.memoryConfig?.Type == DRAM.MemType.LPDDR5)
+            {
+                // Soldered LPDDR5: the SPD copies of the APOB (its raw 1/17 entry is in the APOB section). Not "SMBUS
+                // Memory Modules": that section is parsed back as SPD dumps read from the bus.
+                AddHeading("APOB Memory Modules (LPDDR5 SPD)");
+                AddLine();
+
+                try
+                {
+                    var spd = cpu.memoryConfig.SpdInfo;
+                    if (spd == null || spd.Count == 0)
+                        AddLine("No SPD in the APOB.");
+
+                    foreach (KeyValuePair<byte, Ddr5SpdInfo> kvp in spd ?? new Dictionary<byte, Ddr5SpdInfo>())
+                    {
+                        AddLine(string.Format("{0} {1}", kvp.Value.FromApob ? "APOB slot" : "DIMM at I2C address", kvp.Key));
+                        AddLine(kvp.Value.ToString());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AddLine("<FAILED>");
+                    AddLine(ex.Message);
+                }
+                AddLine();
+            }
+
             if (cpu.memoryConfig?.Type == DRAM.MemType.DDR4)
             {
                 // Not "SMBUS Memory Modules": that section is parsed back as DDR5 SPD dumps

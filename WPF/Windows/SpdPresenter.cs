@@ -195,7 +195,11 @@ namespace ZenTimings.Windows
             AddOutline(rows, info.ModuleHeight, info.ModuleThickness, info.ReferenceRawCard, info.HeatSpreader);
 
             if (!info.IsPartial)
-                Add(rows, "Checksum", info.BaseCrcValid ? "OK" : "Bad");
+                Add(rows, "Checksum", info.BaseCrcValid ? "OK" : info.IsMemoryDownLayout && info.BaseCrc == 0 ? "Not set" : "Bad");
+
+            // Soldered LPDDR5 has no SPD device: the copy the BIOS trained with, from the APOB
+            if (info.FromApob)
+                Add(rows, "Source", "APOB (BIOS copy)");
 
             if (info.HasXmp)
                 Add(rows, "XMP", DescribeProfiles($"XMP {info.XmpRevision}", XmpNumbers(info.XmpProfiles)));

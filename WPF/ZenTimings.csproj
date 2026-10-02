@@ -110,6 +110,9 @@
     <Compile Include="Controls\LegacyDDR5APUTimingsPanel.xaml.cs">
       <DependentUpon>LegacyDDR5APUTimingsPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\LPDDR5TimingsPanel.xaml.cs">
+      <DependentUpon>LPDDR5TimingsPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\LegacyDDR5TimingsPanel.xaml.cs">
       <DependentUpon>LegacyDDR5TimingsPanel.xaml</DependentUpon>
     </Compile>
@@ -231,6 +234,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\LegacyDDR5APUTimingsPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\LPDDR5TimingsPanel.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
