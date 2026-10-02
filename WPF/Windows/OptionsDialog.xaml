@@ -1,15 +1,12 @@
-<local:ThemedAdonisWindow
+<local:ThemedWindow
     xmlns:local="clr-namespace:ZenTimings"
     x:Class="ZenTimings.Windows.OptionsDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
-    xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+    xmlns:theming="clr-namespace:ZenTimings.Theming"
     xmlns:controls="clr-namespace:ZenTimings.Controls"
-    adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
     mc:Ignorable="d"
     x:Name="OptionsWindow"
     Title="Options"
@@ -25,7 +22,7 @@
     Style="{DynamicResource WindowStyles}"
     Closing="OptionsWindow_Closing">
 
-    <local:ThemedAdonisWindow.Resources>
+    <local:ThemedWindow.Resources>
         <Style x:Key="SectionHeader" TargetType="TextBlock">
             <Setter Property="Padding" Value="4 3" />
         </Style>
@@ -50,7 +47,7 @@
             <Setter Property="Margin" Value="0 2 5 2" />
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
-        <Style x:Key="SettingToggle" TargetType="ToggleButton" BasedOn="{StaticResource {x:Static adonisUi:Styles.ToggleSwitch}}">
+        <Style x:Key="SettingToggle" TargetType="ToggleButton" BasedOn="{StaticResource {x:Static theming:ThemeStyles.ToggleSwitch}}">
             <Setter Property="Margin" Value="0 2 5 2" />
         </Style>
         <Style x:Key="SettingCombo" TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
@@ -59,7 +56,7 @@
             <Setter Property="Margin" Value="5 4 0 4" />
             <Setter Property="Width" Value="151" />
         </Style>
-    </local:ThemedAdonisWindow.Resources>
+    </local:ThemedWindow.Resources>
 
     <StackPanel x:Name="OptionWindowContent" Margin="4 0">
         <Popup
@@ -139,6 +136,7 @@
                 <controls:NumericTextBox
                     x:Name="numericUpDownRefreshInterval"
                     Minimum="20"
+                    Increment="100"
                     FallbackValue="2000"
                     AllowEmpty="False"
                     Grid.Column="1"
@@ -224,6 +222,7 @@
                 </ComboBox>
 
                 <TextBlock
+                    x:Name="labelCornerRadius"
                     Grid.Column="0"
                     Grid.Row="1"
                     Style="{StaticResource SettingLabel}"
@@ -246,7 +245,7 @@
         <StackPanel Grid.Column="1" Grid.Row="0" Style="{StaticResource SectionPanel}">
             <StackPanel Style="{StaticResource SectionHeaderPanel}">
                 <controls:AppIcon Kind="IconTemperature" Style="{StaticResource SectionIcon}" />
-                <TextBlock Text="Sensors" Style="{StaticResource SectionHeader}" />
+                <TextBlock Text="Sensor Sources" Style="{StaticResource SectionHeader}" />
             </StackPanel>
             <Border Style="{DynamicResource Separator}" />
             <Grid Style="{StaticResource SectionGrid}">
@@ -269,7 +268,7 @@
                     Grid.Column="0"
                     Grid.Row="0"
                     Style="{StaticResource SettingLabel}"
-                    Text="Impedance table source" />
+                    Text="Impedance table" />
                 <ComboBox
                     x:Name="comboBoxImpedanceSource"
                     Grid.ColumnSpan="2"
@@ -285,7 +284,7 @@
                     Grid.Column="0"
                     Grid.Row="1"
                     Style="{StaticResource SettingLabel}"
-                    Text="VSOC source" />
+                    Text="VSOC" />
                 <ComboBox
                     x:Name="comboBoxVsocSensorSource"
                     Grid.Column="1"
@@ -298,7 +297,7 @@
                     Grid.Column="0"
                     Grid.Row="2"
                     Style="{StaticResource SettingLabel}"
-                    Text="VDDIO source" />
+                    Text="VDDIO" />
                 <ComboBox
                     x:Name="comboBoxVddioSensorSource"
                     Grid.Column="1"
@@ -311,7 +310,7 @@
                     Grid.Column="0"
                     Grid.Row="3"
                     Style="{StaticResource SettingLabel}"
-                    Text="VDD MISC source" />
+                    Text="VDD MISC" />
                 <ComboBox
                     x:Name="comboBoxVmiscSensorSource"
                     Grid.Column="1"
@@ -549,7 +548,7 @@
                 Grid.Column="3"
                 Content="Apply"
                 Margin="6 6 0 6"
-                Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
+                Style="{DynamicResource {x:Static theming:ThemeStyles.AccentButton}}"
                 Width="70"
                 Click="ButtonSettingsApply_Click" />
 
@@ -563,4 +562,4 @@
                 Click="ButtonSettingsCancel_Click" />
         </Grid>
     </StackPanel>
-</local:ThemedAdonisWindow>
+</local:ThemedWindow>

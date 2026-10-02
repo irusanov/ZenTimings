@@ -5,9 +5,9 @@ using System.IO;
 using System.Windows;
 using ZenTimings.Settings;
 using Clipboard = System.Windows.Clipboard;
-using MessageBox = AdonisUI.Controls.MessageBox;
-using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
-using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
+using MessageBox = ZenTimings.Theming.MessageBox;
+using MessageBoxButton = ZenTimings.Theming.MessageBoxButton;
+using MessageBoxImage = ZenTimings.Theming.MessageBoxImage;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace ZenTimings.Windows
@@ -15,7 +15,7 @@ namespace ZenTimings.Windows
     /// <summary>
     /// Interaction logic for SaveWindow.xaml
     /// </summary>
-    public partial class SaveWindow : ThemedAdonisWindow, IDisposable
+    public partial class SaveWindow : ThemedWindow, IDisposable
     {
         private readonly Bitmap screenshot;
 

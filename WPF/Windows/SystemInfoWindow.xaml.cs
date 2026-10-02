@@ -18,7 +18,7 @@ namespace ZenTimings.Windows
     /// <summary>
     /// Interaction logic for SystemInfoWindow.xaml
     /// </summary>
-    public partial class SystemInfoWindow : ThemedAdonisWindow
+    public partial class SystemInfoWindow : ThemedWindow
     {
         private class GridItem
         {
@@ -104,6 +104,7 @@ namespace ZenTimings.Windows
                         Header = "Name",
                         Binding = new System.Windows.Data.Binding("PropertyName"),
                         ElementStyle = (System.Windows.Style)this.FindResource("TimingNameTextStyle"),
+                        HeaderStyle = (System.Windows.Style)this.FindResource("SectionGridColumnHeaderStyle"),
                         Width = 150
                     };
                     MemCfgGrid.Columns.Add(nameColumn);
@@ -114,7 +115,8 @@ namespace ZenTimings.Windows
                         {
                             Header = $"DCT {uniqueTimings[i].Key >> 20}",
                             Binding = new System.Windows.Data.Binding($"Values[{i}]"),
-                            ElementStyle = (System.Windows.Style)this.FindResource("TimingValueTextStyle")
+                            ElementStyle = (System.Windows.Style)this.FindResource("TimingValueTextStyle"),
+                            HeaderStyle = (System.Windows.Style)this.FindResource("SectionGridColumnHeaderStyle")
                         };
                         MemCfgGrid.Columns.Add(valueColumn);
                     }
@@ -188,20 +190,25 @@ namespace ZenTimings.Windows
         private void CopySection_Click(object sender, RoutedEventArgs e)
         {
             // The button comes from the header template, the group box that uses it names its grid in Tag
-            if (!(sender is Button button)
-                || !((button.TemplatedParent as FrameworkElement)?.TemplatedParent is GroupBox section)
-                || !(section.Tag is DataGrid grid))
+            if (!(sender is Button button))
+                return;
+
+            DependencyObject parent = button;
+            while (parent != null && !(parent is GroupBox))
+                parent = System.Windows.Media.VisualTreeHelper.GetParent(parent);
+
+            if (!(parent is GroupBox section) || !(section.Tag is DataGrid grid))
                 return;
 
             ClipboardUtils.Copy($"{section.Header}{Environment.NewLine}{ClipboardUtils.GridToText(grid)}", button);
         }
 
-        private void AdonisWindow_Activated(object sender, EventArgs e)
+        private void Window_Activated(object sender, EventArgs e)
         {
             InteropMethods.EmptyWorkingSet(System.Diagnostics.Process.GetCurrentProcess().Handle);
         }
 
-        private void AdonisWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             AppSettings appSettings = AppSettings.Instance;
             if (appSettings.SaveWindowPosition)

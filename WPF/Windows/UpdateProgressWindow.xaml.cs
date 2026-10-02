@@ -5,7 +5,7 @@ using System.Windows.Threading;
 
 namespace ZenTimings.Windows
 {
-    public partial class UpdateProgressWindow : ThemedAdonisWindow
+    public partial class UpdateProgressWindow : ThemedWindow
     {
         public bool IsCancelled { get; private set; }
 

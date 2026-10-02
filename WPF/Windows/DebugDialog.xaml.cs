@@ -16,7 +16,7 @@ using ZenTimings.Export;
 using ZenTimings.Helpers;
 using Application = System.Windows.Application;
 using DRAM = ZenStates.Core.Hardware.DRAM;
-using MessageBox = AdonisUI.Controls.MessageBox;
+using MessageBox = ZenTimings.Theming.MessageBox;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace ZenTimings.Windows
@@ -24,7 +24,7 @@ namespace ZenTimings.Windows
     /// <summary>
     ///     Interaction logic for DebugDialog.xaml
     /// </summary>
-    public partial class DebugDialog : ThemedAdonisWindow
+    public partial class DebugDialog : ThemedWindow
     {
         private readonly AsusWMI AWMI;
         private readonly BiosMemController BMC;
@@ -275,6 +275,10 @@ namespace ZenTimings.Windows
 
             AddLine();
 
+            AddHeading("CPU Topology");
+            AddReport(GetTopologyReport);
+            AddLine();
+
             // DRAM modules info
             AddHeading("Memory Modules");
 
@@ -314,6 +318,84 @@ namespace ZenTimings.Windows
                     {
                         AddLine(string.Format("DIMM at I2C address 0x{0:X2}", kvp.Key));
                         AddLine(kvp.Value.ToString());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AddLine("<FAILED>");
+                    AddLine(ex.Message);
+                }
+                AddLine();
+            }
+
+            if (cpu.memoryConfig?.Type == DRAM.MemType.LPDDR5)
+            {
+                // Soldered LPDDR5: the SPD copies of the APOB (its raw 1/17 entry is in the APOB section). Not "SMBUS
+                // Memory Modules": that section is parsed back as SPD dumps read from the bus.
+                AddHeading("APOB Memory Modules (LPDDR5 SPD)");
+                AddLine();
+
+                try
+                {
+                    var spd = cpu.memoryConfig.SpdInfo;
+                    if (spd == null || spd.Count == 0)
+                        AddLine("No SPD in the APOB.");
+
+                    foreach (KeyValuePair<byte, Ddr5SpdInfo> kvp in spd ?? new Dictionary<byte, Ddr5SpdInfo>())
+                    {
+                        AddLine(string.Format("{0} {1}", kvp.Value.FromApob ? "APOB slot" : "DIMM at I2C address", kvp.Key));
+                        AddLine(kvp.Value.ToString());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AddLine("<FAILED>");
+                    AddLine(ex.Message);
+                }
+                AddLine();
+            }
+
+            if (cpu.memoryConfig?.Type == DRAM.MemType.DDR4)
+            {
+                // Not "SMBUS Memory Modules": that section is parsed back as DDR5 SPD dumps
+                AddHeading("SMBUS Memory Modules (DDR4 SPD)");
+                AddLine();
+
+                try
+                {
+                    var results = cpu.memoryConfig.ReadAndDecodeAllDdr4();
+                    if (results == null || results.Count == 0)
+                        AddLine("No module SPD could be read.");
+
+                    foreach (var kvp in results ?? new Dictionary<byte, DRAM.DDR4.Spd.Ddr4SpdInfo>())
+                    {
+                        AddLine(string.Format("DIMM at SPD address 0x{0:X2}", kvp.Key));
+                        AddLine(kvp.Value.ToString());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AddLine("<FAILED>");
+                    AddLine(ex.Message);
+                }
+                AddLine();
+            }
+
+            if (cpu.memoryConfig?.Type == DRAM.MemType.DDR4)
+            {
+                AddHeading("SMBUS Memory Module Thermal Sensors");
+                AddLine();
+
+                try
+                {
+                    var sensors = cpu.memoryConfig.Ddr4ThermalSensors;
+                    if (sensors == null || sensors.Count == 0)
+                        AddLine("No module SPD found on the SMBus.");
+
+                    foreach (var kvp in sensors ?? new Dictionary<byte, DRAM.DDR4.Thermal.Ddr4ThermalData>())
+                    {
+                        AddLine(string.Format("DIMM at SPD address 0x{0:X2}", kvp.Key));
+                        AddLine(kvp.Value != null ? kvp.Value.ToString() : "  Thermal sensor: not available");
                     }
                 }
                 catch (Exception ex)
@@ -451,6 +533,23 @@ namespace ZenTimings.Windows
                 AddLine("<FAILED>");
             }
 
+            // Strix / Krackan have no SMUFUSE block at 0x5D200; their fuses are looked for around 0x3820AB0
+            if (cpu.ReadDword(0x0005D218) == 0xFFFFFFFF)
+            {
+                AddHeading("SMU: SMUFUSE 0x3820A00");
+                try
+                {
+                    for (uint address = 0x03820A00; address <= 0x03820BFF; address += 4)
+                        AddLine($"0x{address:X8}: 0x{cpu.ReadDword(address):X8}");
+                }
+                catch
+                {
+                    AddLine("<FAILED>");
+                }
+
+                AddLine();
+            }
+
             AddHeading("SMU: SMUFUSE NBSMNIND");
             try
             {
@@ -482,6 +581,48 @@ namespace ZenTimings.Windows
                 SetControlsState();
                 MinimizeFootprint();
             }));
+        }
+
+        /// <summary>
+        /// How the CCD / CCX / core counts were found: the CCXs CPUID reports, the CCD and core fuses with their raw
+        /// values and the disabled cores they give, and why a fuse was not used.
+        /// </summary>
+        private string GetTopologyReport()
+        {
+            Cpu.CpuTopology t = cpu.info.topology;
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine($"{"CCDs:",-19}{t.ccds} (enabled 0x{t.ccdEnableMap:X2}, disabled 0x{t.ccdDisableMap:X2})");
+            if (t.fuse1 != 0)
+                sb.AppendLine($"{"CCD fuses:",-19}0x{t.fuse1:X8} = 0x{t.ccdsPresent:X8}, 0x{t.fuse2:X8} = 0x{t.ccdsDown:X8}");
+
+            string ccxCores = t.ccxCoreCounts != null && t.ccxCoreCounts.Length > 0
+                ? string.Join(", ", Array.ConvertAll(t.ccxCoreCounts, c => c.ToString()))
+                : "unknown";
+            sb.AppendLine($"{"CCXs:",-19}{t.ccxs} (cores per CCX from CPUID: {ccxCores})");
+            sb.AppendLine($"{"Cores:",-19}{t.cores} of {t.physicalCores} slots, {t.threadsPerCore} thread(s) each, {t.cpuNodes} node(s)");
+
+            if (t.coreFuseAddress != 0)
+            {
+                sb.AppendLine($"{"Core fuse:",-19}0x{t.coreFuseAddress:X8}, mask at bit {t.coreFuseShift}");
+                for (int i = 0; t.coreFuseValues != null && i < t.coreFuseValues.Length; i++)
+                {
+                    string disabled = t.coreDisableMap != null && i < t.coreDisableMap.Length
+                        ? $", disabled cores 0x{t.coreDisableMap[i]:X2}"
+                        : "";
+                    string label = "  CCD " + i + ":";
+                    sb.AppendLine($"{label,-19}0x{t.coreFuseValues[i]:X8}{disabled}");
+                }
+            }
+            else
+            {
+                sb.AppendLine($"{"Core fuse:",-19}not known for this processor");
+            }
+
+            if (!string.IsNullOrEmpty(t.fuseNote))
+                sb.AppendLine($"{"Note:",-19}{t.fuseNote}");
+
+            return sb.ToString().TrimEnd();
         }
 
         private void SaveToFile(bool saveAs = false)
@@ -521,8 +662,8 @@ namespace ZenTimings.Windows
                 MessageBox.Show(
                     $"Could not save the debug report to {filePath}:\n{ex.Message}",
                     "Error",
-                    AdonisUI.Controls.MessageBoxButton.OK,
-                    AdonisUI.Controls.MessageBoxImage.Error);
+                    ZenTimings.Theming.MessageBoxButton.OK,
+                    ZenTimings.Theming.MessageBoxImage.Error);
             }
         }
 
@@ -541,8 +682,8 @@ namespace ZenTimings.Windows
                 MessageBox.Show(
                     $"An error occurred while generating the debug report:\n{ex.Message}",
                     "Error",
-                    AdonisUI.Controls.MessageBoxButton.OK,
-                    AdonisUI.Controls.MessageBoxImage.Error);
+                    ZenTimings.Theming.MessageBoxButton.OK,
+                    ZenTimings.Theming.MessageBoxImage.Error);
             }
             finally
             {

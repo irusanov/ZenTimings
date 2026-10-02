@@ -17,7 +17,7 @@ namespace ZenTimings.Windows
     /// <summary>
     /// Interaction logic for OptionsDialog.xaml
     /// </summary>
-    public partial class OptionsDialog : ThemedAdonisWindow
+    public partial class OptionsDialog : ThemedWindow
     {
         internal readonly AppSettings appSettings = AppSettings.Instance;
         internal readonly SystemInfo _systemInfo = CpuSingleton.Instance.systemInfo;
@@ -61,6 +61,12 @@ namespace ZenTimings.Windows
             checkBoxStartMinimized.IsChecked = settings.StartMinimized;
             checkBoxSingleInstance.IsChecked = settings.SingleInstance;
             comboBoxCornerRadius.SelectedIndex = settings.CornerRadius;
+            // Rounded corners are a DWM feature of Windows 11; keep the saved value but grey the option out elsewhere.
+            bool cornersSupported = ZenTimings.Utils.WindowUtils.SupportsCornerPreference;
+            labelCornerRadius.IsEnabled = cornersSupported;
+            comboBoxCornerRadius.IsEnabled = cornersSupported;
+            comboBoxCornerRadius.ToolTip = cornersSupported ? null : "Requires Windows 11";
+            System.Windows.Controls.ToolTipService.SetShowOnDisabled(comboBoxCornerRadius, true);
             numericUpDownRefreshInterval.IsEnabled = settings.AutoRefresh && settings.AdvancedMode;
             numericUpDownRefreshInterval.Text = settings.AutoRefreshInterval.ToString();
             msText.IsEnabled = numericUpDownRefreshInterval.IsEnabled;
@@ -79,8 +85,8 @@ namespace ZenTimings.Windows
         private void LoadVoltageSensorSources(AppSettings settings)
         {
             labelVddioSource.Text = _mainViewModel.CpuFamily >= ZenStates.Core.Cpu.Family.FAMILY_19H
-                ? "VDDIO source"
-                : "VDIMM source";
+                ? "VDDIO"
+                : "VDIMM";
 
             LoadVoltageSensorSources(comboBoxVsocSensorSource, labelVsocSource, MainViewModel.VoltageRail.Vsoc, settings.VsocSensorSource);
             LoadVoltageSensorSources(comboBoxVddioSensorSource, labelVddioSource, MainViewModel.VoltageRail.Vddio, settings.VddioSensorSource);
@@ -153,11 +159,11 @@ namespace ZenTimings.Windows
                 appSettings.AutostartWithWindows = StartupHelper.IsAutostartEnabled();
                 checkBoxAutostart.IsChecked = appSettings.AutostartWithWindows;
                 numericUpDownAutostartDelay.IsEnabled = appSettings.AutostartWithWindows;
-                AdonisUI.Controls.MessageBox.Show(
+                ZenTimings.Theming.MessageBox.Show(
                     "Could not update the Windows startup task.",
                     "Error",
-                    AdonisUI.Controls.MessageBoxButton.OK,
-                    AdonisUI.Controls.MessageBoxImage.Error);
+                    ZenTimings.Theming.MessageBoxButton.OK,
+                    ZenTimings.Theming.MessageBoxImage.Error);
             }
             appSettings.SingleInstance = (bool)checkBoxSingleInstance.IsChecked;
             appSettings.CornerRadius = comboBoxCornerRadius.SelectedIndex;
@@ -234,13 +240,13 @@ namespace ZenTimings.Windows
 
         private void ButtonSettingsReset_Click(object sender, RoutedEventArgs e)
         {
-            var result = AdonisUI.Controls.MessageBox.Show(
+            var result = ZenTimings.Theming.MessageBox.Show(
                 "Reset all application settings to default values?",
                 "Confirm Reset",
-                AdonisUI.Controls.MessageBoxButton.YesNo,
-                AdonisUI.Controls.MessageBoxImage.Warning);
+                ZenTimings.Theming.MessageBoxButton.YesNo,
+                ZenTimings.Theming.MessageBoxImage.Warning);
 
-            if (result != AdonisUI.Controls.MessageBoxResult.Yes)
+            if (result != ZenTimings.Theming.MessageBoxResult.Yes)
                 return;
 
             LoadSettingsToUi(AppSettings.CreateDefaults());

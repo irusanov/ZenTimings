@@ -41,7 +41,7 @@
     <ApplicationIcon>Resources\ZenTimings2022.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <VersionMajor>140</VersionMajor>
+    <VersionMajor>141</VersionMajor>
     <VersionMinor>0</VersionMinor>
     <VersionBase>$(VersionMajor)</VersionBase>
   </PropertyGroup>
@@ -52,12 +52,6 @@
     <PawnIOVersion>2.2.0</PawnIOVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AdonisUI, Version=1.17.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\AdonisUI.1.17.1\lib\net45\AdonisUI.dll</HintPath>
-    </Reference>
-    <Reference Include="AdonisUI.ClassicTheme, Version=1.17.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\AdonisUI.ClassicTheme.1.17.1\lib\net45\AdonisUI.ClassicTheme.dll</HintPath>
-    </Reference>
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="Microsoft.CSharp" />
@@ -116,6 +110,9 @@
     <Compile Include="Controls\LegacyDDR5APUTimingsPanel.xaml.cs">
       <DependentUpon>LegacyDDR5APUTimingsPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\LPDDR5TimingsPanel.xaml.cs">
+      <DependentUpon>LPDDR5TimingsPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\LegacyDDR5TimingsPanel.xaml.cs">
       <DependentUpon>LegacyDDR5TimingsPanel.xaml</DependentUpon>
     </Compile>
@@ -173,6 +170,10 @@
     <Compile Include="Windows\DriverUpdateWindow.xaml.cs">
       <DependentUpon>DriverUpdateWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\ApobInfoWindow.xaml.cs">
+      <DependentUpon>ApobInfoWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\SpdPresenter.cs" />
     <Compile Include="Windows\SpdInfoWindow.xaml.cs">
       <DependentUpon>SpdInfoWindow.xaml</DependentUpon>
     </Compile>
@@ -186,13 +187,22 @@
     <Compile Include="Controls\AppIcon.xaml.cs">
       <DependentUpon>AppIcon.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ChangelogItem.xaml.cs">
+      <DependentUpon>ChangelogItem.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\SensorSettingsWindow.xaml.cs">
       <DependentUpon>SensorSettingsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\ExportDialog.xaml.cs">
       <DependentUpon>ExportDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\ThemedAdonisWindow.cs" />
+    <Compile Include="Windows\ThemedWindow.cs" />
+    <Compile Include="Theming\ChromeWindow.cs" />
+    <Compile Include="Theming\MessageBox.cs" />
+    <Compile Include="Theming\MessageBoxWindow.cs" />
+    <Compile Include="Theming\ThemeAssist.cs" />
+    <Compile Include="Theming\ThemeKeys.cs" />
+    <Compile Include="Theming\ThemeManager.cs" />
     <Compile Include="Utils\WindowUtils.cs" />
     <Compile Include="Utils\XmlUtils.cs" />
     <Compile Include="Windows\AboutDialog.xaml.cs">
@@ -224,6 +234,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\LegacyDDR5APUTimingsPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\LPDDR5TimingsPanel.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -275,6 +289,10 @@
       <DependentUpon>OptionsDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Windows\ApobInfoWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\SpdInfoWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -415,6 +433,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Resource>
+    <Resource Include="Themes\ThemeCommon.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
     <Page Include="Windows\AboutDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -459,6 +481,30 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Theming\Controls.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Theming\ColorSchemes\Dark.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Theming\ColorSchemes\Light.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Theming\ColorSchemes\Shared.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\ChangelogItem.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\AppIcon.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -1,17 +1,14 @@
-<local:ThemedAdonisWindow
+<local:ThemedWindow
     xmlns:local="clr-namespace:ZenTimings"
     x:Class="ZenTimings.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
-    xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+    xmlns:theming="clr-namespace:ZenTimings.Theming"
     xmlns:converters="clr-namespace:ZenTimings.Converters"
     xmlns:controls="clr-namespace:ZenTimings.Controls"
     xmlns:export="clr-namespace:ZenTimings.Export"
-    adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
     mc:Ignorable="d"
     Title="ZenTimings"
     CanSnapToOtherWindows="False"
@@ -20,13 +17,13 @@
     WindowStartupLocation="CenterScreen"
     ResizeMode="CanMinimize"
     FontSize="11"
-    StateChanged="AdonisWindow_StateChanged"
-    SizeChanged="AdonisWindow_SizeChanged"
-    Activated="AdonisWindow_Activated"
-    Loaded="AdonisWindow_Loaded"
+    StateChanged="Window_StateChanged"
+    SizeChanged="Window_SizeChanged"
+    Activated="Window_Activated"
+    Loaded="Window_Loaded"
     UseLayoutRounding="True"
     Style="{DynamicResource WindowStyles}"
-    Closing="AdonisWindow_Closing"
+    Closing="Window_Closing"
     Height="538"
     SizeToContent="WidthAndHeight"
     Language="en-US">
@@ -40,7 +37,7 @@
     </Window.Resources>
 
     <Border>
-        <StackPanel adonisExtensions:LayerExtension.Layer="0">
+        <StackPanel>
             <Border Style="{DynamicResource MainMenuStyles}">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -63,6 +60,12 @@
                                 Header="_Sensors"
                                 Click="TelemetryMonitorToolstripMenuItem_Click"
                                 Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
+                            <MenuItem
+                                Header="UCLK ratio"
+                                IsCheckable="True"
+                                IsChecked="{Binding Settings.ShowUclkRatio, Mode=TwoWay}"
+                                Click="UclkRatioMenuItem_Click"
+                                Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
                             <MenuItem Header="Advanced Info">
                                 <MenuItem
                                     Header="System"
@@ -75,7 +78,11 @@
                                 <MenuItem
                                     Header="SPD"
                                     Click="SpdInfoToolstripMenuItem_Click"
-                                    Visibility="{Binding IsDimmTelemetryAvailable, Mode=OneTime, Converter={StaticResource BoolToVis}}" />
+                                    Visibility="{Binding IsSpdInfoAvailable, Mode=OneTime, Converter={StaticResource BoolToVis}}" />
+                                <MenuItem
+                                    Header="APOB"
+                                    Click="ApobInfoToolstripMenuItem_Click"
+                                    Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
                             </MenuItem>
                             <Separator Foreground="{DynamicResource PanelBackground}" />
                             <MenuItem Header="_Debug">
@@ -259,4 +266,4 @@
             </Border>
         </StackPanel>
     </Border>
-</local:ThemedAdonisWindow>
+</local:ThemedWindow>

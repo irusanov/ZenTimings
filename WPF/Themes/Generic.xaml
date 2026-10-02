@@ -1,0 +1,254 @@
+﻿<!--
+    Default styles of the application's own controls. WPF applies them even when a window sets its own Style
+    (e.g. the themes' WindowStyles), which only adds to or overrides these setters.
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+                    xmlns:t="clr-namespace:ZenTimings.Theming">
+
+    <!-- Window with a title bar drawn by the theme -->
+    <Style TargetType="{x:Type t:ChromeWindow}">
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static t:ThemeBrushes.ForegroundBrush}}"/>
+        <Setter Property="Background" Value="{DynamicResource {x:Static t:ThemeBrushes.BackgroundBrush}}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource WindowBorderColor}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="TitleBarForeground" Value="{DynamicResource {x:Static t:ThemeBrushes.ForegroundBrush}}"/>
+        <!-- Transparent: the title bar shows the window background, gradients included -->
+        <Setter Property="TitleBarBackground" Value="Transparent"/>
+        <Setter Property="WindowButtonHighlightBrush" Value="{DynamicResource {x:Static t:ThemeBrushes.SubtleHoverBrush}}"/>
+        <Setter Property="shell:WindowChrome.WindowChrome">
+            <Setter.Value>
+                <shell:WindowChrome ResizeBorderThickness="{Binding Source={x:Static SystemParameters.WindowResizeBorderThickness}}"
+                                    CaptionHeight="0"
+                                    CornerRadius="0"
+                                    GlassFrameThickness="1, 2, 1, 1"
+                                    NonClientFrameEdges="None"
+                                    UseAeroCaptionButtons="False"/>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type t:ChromeWindow}">
+                    <AdornerDecorator>
+                        <Border x:Name="WindowBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                UseLayoutRounding="True">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="1" Background="{TemplateBinding Background}">
+                                    <ContentPresenter/>
+                                </Border>
+
+                                <Border x:Name="TitleBarBorder"
+                                        Background="{TemplateBinding TitleBarBackground}"
+                                        TextElement.Foreground="{TemplateBinding TitleBarForeground}"
+                                        KeyboardNavigation.TabNavigation="None"
+                                        KeyboardNavigation.DirectionalNavigation="None"
+                                        MinHeight="30">
+                                    <DockPanel x:Name="PART_TitleBar" LastChildFill="True" Background="Transparent">
+
+                                        <!-- Window buttons: rows keep them at the top without shrinking them -->
+                                        <Grid DockPanel.Dock="Right">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition MaxHeight="30"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Button x:Name="PART_MinimizeButton"
+                                                        Style="{DynamicResource {x:Static t:ThemeStyles.WindowButton}}"
+                                                        Foreground="{TemplateBinding TitleBarForeground}"
+                                                        Background="{TemplateBinding WindowButtonHighlightBrush}"
+                                                        ToolTip="Minimize">
+                                                    <ContentControl ContentTemplate="{DynamicResource {x:Static t:ThemeTemplates.WindowMinimize}}"
+                                                                    Width="10" Height="10" Focusable="False" IsTabStop="False"/>
+                                                </Button>
+                                                <Button x:Name="PART_MaximizeRestoreButton"
+                                                        Style="{DynamicResource {x:Static t:ThemeStyles.WindowButton}}"
+                                                        Foreground="{TemplateBinding TitleBarForeground}"
+                                                        Background="{TemplateBinding WindowButtonHighlightBrush}"
+                                                        ToolTip="Maximize">
+                                                    <ContentControl x:Name="MaximizeIcon"
+                                                                    ContentTemplate="{DynamicResource {x:Static t:ThemeTemplates.WindowMaximize}}"
+                                                                    Width="10" Height="10" Focusable="False" IsTabStop="False"/>
+                                                </Button>
+                                                <Button x:Name="PART_CloseButton"
+                                                        Style="{DynamicResource {x:Static t:ThemeStyles.WindowCloseButton}}"
+                                                        Foreground="{TemplateBinding TitleBarForeground}"
+                                                        ToolTip="Close">
+                                                    <ContentControl ContentTemplate="{DynamicResource {x:Static t:ThemeTemplates.WindowClose}}"
+                                                                    Width="10" Height="10" Focusable="False" IsTabStop="False"/>
+                                                </Button>
+                                            </StackPanel>
+                                        </Grid>
+
+                                        <!-- Icon and title, then optional content -->
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Image x:Name="PART_Icon"
+                                                   Source="{TemplateBinding IconSource}"
+                                                   Visibility="{TemplateBinding IconVisibility}"
+                                                   Width="16"
+                                                   Height="16"
+                                                   Margin="8, 0, 0, 0"
+                                                   VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{TemplateBinding Title}"
+                                                       Visibility="{TemplateBinding TitleVisibility}"
+                                                       VerticalAlignment="Center"
+                                                       FontSize="11.5"
+                                                       TextOptions.TextFormattingMode="Display"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       Margin="5, 0, 0, 0"/>
+                                            <ContentPresenter Grid.Column="2"
+                                                              Content="{TemplateBinding TitleBarContent}"
+                                                              HorizontalAlignment="Stretch"
+                                                              VerticalAlignment="Stretch"/>
+                                        </Grid>
+                                    </DockPanel>
+                                </Border>
+                            </Grid>
+                        </Border>
+                    </AdornerDecorator>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsActive" Value="False">
+                            <Setter TargetName="TitleBarBorder" Property="TextElement.Foreground" Value="{DynamicResource {x:Static t:ThemeBrushes.DisabledForegroundBrush}}"/>
+                            <Setter TargetName="PART_MinimizeButton" Property="Foreground" Value="{DynamicResource {x:Static t:ThemeBrushes.DisabledForegroundBrush}}"/>
+                            <Setter TargetName="PART_MaximizeRestoreButton" Property="Foreground" Value="{DynamicResource {x:Static t:ThemeBrushes.DisabledForegroundBrush}}"/>
+                            <Setter TargetName="PART_CloseButton" Property="Foreground" Value="{DynamicResource {x:Static t:ThemeBrushes.DisabledForegroundBrush}}"/>
+                        </Trigger>
+                        <Trigger SourceName="PART_CloseButton" Property="IsMouseOver" Value="True">
+                            <Setter TargetName="PART_CloseButton" Property="Foreground" Value="#ffffff"/>
+                        </Trigger>
+                        <Trigger Property="WindowState" Value="Maximized">
+                            <!-- A maximized window reaches past the screen by its resize border -->
+                            <Setter TargetName="WindowBorder" Property="BorderThickness" Value="{Binding MaximizeBorderThickness, RelativeSource={RelativeSource TemplatedParent}}"/>
+                            <Setter TargetName="WindowBorder" Property="BorderBrush" Value="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}"/>
+                            <Setter TargetName="TitleBarBorder" Property="MinHeight" Value="22"/>
+                            <Setter TargetName="MaximizeIcon" Property="ContentTemplate" Value="{DynamicResource {x:Static t:ThemeTemplates.WindowRestore}}"/>
+                            <Setter TargetName="PART_MaximizeRestoreButton" Property="ToolTip" Value="Restore"/>
+                        </Trigger>
+                        <Trigger Property="ResizeMode" Value="CanMinimize">
+                            <Setter TargetName="PART_MaximizeRestoreButton" Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
+                        <Trigger Property="ResizeMode" Value="NoResize">
+                            <Setter TargetName="PART_MinimizeButton" Property="Visibility" Value="Collapsed"/>
+                            <Setter TargetName="PART_MaximizeRestoreButton" Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
+                        <Trigger Property="WindowStyle" Value="ToolWindow">
+                            <Setter TargetName="PART_MinimizeButton" Property="Visibility" Value="Collapsed"/>
+                            <Setter TargetName="PART_MaximizeRestoreButton" Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
+                        <Trigger Property="WindowStyle" Value="None">
+                            <Setter TargetName="TitleBarBorder" Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="WindowState" Value="Maximized">
+                <Setter Property="shell:WindowChrome.WindowChrome">
+                    <Setter.Value>
+                        <shell:WindowChrome ResizeBorderThickness="0"
+                                            CaptionHeight="0"
+                                            CornerRadius="0"
+                                            GlassFrameThickness="0"
+                                            NonClientFrameEdges="None"
+                                            UseAeroCaptionButtons="False"/>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+            <Trigger Property="WindowStyle" Value="None">
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="shell:WindowChrome.WindowChrome">
+                    <Setter.Value>
+                        <shell:WindowChrome CaptionHeight="0" UseAeroCaptionButtons="False"/>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Message box -->
+    <Style TargetType="{x:Type t:MessageBoxWindow}" BasedOn="{StaticResource {x:Type t:ChromeWindow}}">
+        <Setter Property="ResizeMode" Value="NoResize"/>
+        <Setter Property="WindowStyle" Value="ToolWindow"/>
+        <Setter Property="SizeToContent" Value="WidthAndHeight"/>
+        <Setter Property="ShowInTaskbar" Value="False"/>
+        <Setter Property="MinWidth" Value="400"/>
+        <Setter Property="MaxWidth" Value="500"/>
+        <Setter Property="MinHeight" Value="60"/>
+        <Setter Property="IconVisibility" Value="Collapsed"/>
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate DataType="{x:Type t:MessageBoxModel}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="18"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="18"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="1" Margin="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Image Source="{Binding MessageIcon, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type t:MessageBoxWindow}}}"
+                                   Margin="0, 0, 12, 0"
+                                   Stretch="Uniform"
+                                   MaxHeight="32"
+                                   VerticalAlignment="Top"
+                                   HorizontalAlignment="Left"/>
+                            <TextBox Grid.Column="1"
+                                     Style="{DynamicResource SelectableTextStyle}"
+                                     Text="{Binding Text, Mode=OneWay}"
+                                     MaxWidth="560"
+                                     VerticalAlignment="Center"/>
+                        </Grid>
+
+                        <Border Grid.Row="3"
+                                Background="{DynamicResource {x:Static t:ThemeBrushes.SurfaceBrush}}">
+                            <ItemsControl Margin="30, 12, 6, 12"
+                                          HorizontalAlignment="Right"
+                                          ItemsSource="{Binding Buttons}"
+                                          Focusable="False">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Rows="1"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type t:MessageBoxButtonModel}">
+                                        <Button Content="{Binding Label}"
+                                                IsDefault="{Binding IsDefault, Mode=OneWay}"
+                                                IsCancel="{Binding IsCancel, Mode=OneWay}"
+                                                Command="{Binding ButtonCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type t:MessageBoxWindow}}}"
+                                                CommandParameter="{Binding}"
+                                                MinWidth="78"
+                                                Margin="0, 0, 12, 0"
+                                                Padding="16, 4"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Border>
+                    </Grid>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

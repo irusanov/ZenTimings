@@ -1,4 +1,3 @@
-using AdonisUI.Controls;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -14,10 +13,10 @@ using ZenTimings.Encryption;
 using ZenTimings.Helpers;
 using ZenTimings.Settings;
 using ZenTimings.Windows;
-using MessageBox = AdonisUI.Controls.MessageBox;
-using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
-using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
-using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
+using MessageBox = ZenTimings.Theming.MessageBox;
+using MessageBoxButton = ZenTimings.Theming.MessageBoxButton;
+using MessageBoxImage = ZenTimings.Theming.MessageBoxImage;
+using MessageBoxResult = ZenTimings.Theming.MessageBoxResult;
 
 namespace ZenTimings
 {
@@ -131,7 +130,7 @@ namespace ZenTimings
             {
                 stable = FetchUpdateInfo(updateUrl, signatureUrl);
             }
-            catch (Exception ex) when (UseBetaUpdates)
+            catch (Exception ex) when (UseBetaUpdates && !(ex is CryptographicException))
             {
                 // Beta may still be available, report the stable error only if that fails as well
                 stableError = ex;
@@ -144,6 +143,18 @@ namespace ZenTimings
             try
             {
                 beta = FetchUpdateInfo(betaUpdateUrl, betaSignatureUrl);
+            }
+            catch (CryptographicException ex)
+            {
+                if (stable == null)
+                    throw;
+
+                MessageBox.Show(
+                    ex.Message + Environment.NewLine + Environment.NewLine +
+                    "The beta channel was skipped; checking the stable channel only.",
+                    @"Beta Update Check Failed",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
             }
             catch (Exception ex)
             {

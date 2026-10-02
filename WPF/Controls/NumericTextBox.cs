@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
 namespace ZenTimings.Controls
@@ -14,20 +15,54 @@ namespace ZenTimings.Controls
         private bool _updatingText;
         private bool _updatingValue;
 
+        private ButtonBase increaseButton;
+        private ButtonBase decreaseButton;
+
         public NumericTextBox()
         {
             DataObject.AddPastingHandler(this, OnPasting);
         }
 
-        protected override void OnInitialized(EventArgs e)
+        // The number box template (Theming/Controls.xaml) has up/down buttons with these names.
+        public override void OnApplyTemplate()
         {
-            base.OnInitialized(e);
+            if (increaseButton != null)
+                increaseButton.Click -= IncreaseButton_Click;
+            if (decreaseButton != null)
+                decreaseButton.Click -= DecreaseButton_Click;
 
-            if (Style == null)
-            {
-                Style = FindResource(typeof(TextBox)) as Style;
-            }
+            base.OnApplyTemplate();
+
+            increaseButton = GetTemplateChild("PART_IncreaseButton") as ButtonBase;
+            decreaseButton = GetTemplateChild("PART_DecreaseButton") as ButtonBase;
+
+            if (increaseButton != null)
+                increaseButton.Click += IncreaseButton_Click;
+            if (decreaseButton != null)
+                decreaseButton.Click += DecreaseButton_Click;
         }
+
+        private void IncreaseButton_Click(object sender, RoutedEventArgs e) => Step(1);
+
+        private void DecreaseButton_Click(object sender, RoutedEventArgs e) => Step(-1);
+
+        #region Increment
+
+        public static readonly DependencyProperty IncrementProperty =
+            DependencyProperty.Register(
+                nameof(Increment),
+                typeof(int),
+                typeof(NumericTextBox),
+                new FrameworkPropertyMetadata(1));
+
+        /// <summary>Amount the up/down buttons, arrow keys and mouse wheel add or subtract.</summary>
+        public int Increment
+        {
+            get { return (int)GetValue(IncrementProperty); }
+            set { SetValue(IncrementProperty, value); }
+        }
+
+        #endregion
 
         #region Minimum
 
@@ -154,7 +189,52 @@ namespace ZenTimings.Controls
             if (e.Key == Key.Enter)
                 CommitText();
 
+            if (e.Key == Key.Up || e.Key == Key.Down)
+            {
+                Step(e.Key == Key.Up ? 1 : -1);
+                e.Handled = true;
+                return;
+            }
+
             base.OnPreviewKeyDown(e);
+        }
+
+        protected override void OnMouseWheel(MouseWheelEventArgs e)
+        {
+            // Only while editing, so the wheel still scrolls the page when the pointer merely passes over the box.
+            if (IsKeyboardFocusWithin && e.Delta != 0)
+            {
+                Step(e.Delta > 0 ? 1 : -1);
+                e.Handled = true;
+                return;
+            }
+
+            base.OnMouseWheel(e);
+        }
+
+        /// <summary>Adds <paramref name="direction"/> times <see cref="Increment"/> to the value, within Minimum and Maximum.</summary>
+        public void Step(int direction)
+        {
+            if (IsReadOnly || !IsEnabled)
+                return;
+
+            int current;
+            if (!int.TryParse(Text, out current))
+                current = Value ?? GetFallbackValue();
+
+            long next = (long)current + (long)direction * Math.Max(1, Increment);
+            if (next < Minimum)
+                next = Minimum;
+            if (next > Maximum)
+                next = Maximum;
+
+            int value = (int)next;
+
+            _updatingValue = true;
+            Value = value;
+            _updatingValue = false;
+
+            SetTextInternal(value.ToString());
         }
 
         protected override void OnLostKeyboardFocus(KeyboardFocusChangedEventArgs e)

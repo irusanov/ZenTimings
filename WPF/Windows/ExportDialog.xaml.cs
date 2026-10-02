@@ -59,7 +59,7 @@ namespace ZenTimings.Windows
     /// <summary>
     /// Section selection for a one-off export (Copy / Save) or for the live snapshot file.
     /// </summary>
-    public partial class ExportDialog : ThemedAdonisWindow
+    public partial class ExportDialog : ThemedWindow
     {
         private readonly ExportSettings settings = ExportSettings.Instance;
         private readonly Func<SnapshotOptions, SnapshotFormat, string> generator;

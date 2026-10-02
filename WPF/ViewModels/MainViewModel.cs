@@ -112,6 +112,8 @@ namespace ZenTimings.ViewModels
         }
         public MemType MemoryType { get; }
         public bool IsDimmTelemetryAvailable => Settings.AdvancedMode && MemoryType == MemType.DDR5;
+        public bool IsSpdInfoAvailable => Settings.AdvancedMode &&
+            (MemoryType == MemType.DDR5 || MemoryType == MemType.LPDDR5 || MemoryType == MemType.DDR4);
         public bool ECC { get; set; }
         private bool IsVmiscSupported => CpuFamily >= Cpu.Family.FAMILY_19H;
         public PowerTable PowerTable { get; }
@@ -126,8 +128,8 @@ namespace ZenTimings.ViewModels
 
         // DDR4 doesn't have separate RFCsb, but we can still indicate if it's using normal refresh or FGR
         public bool IsDdr4RfcEnabled => (Timings as Ddr4Timings)?.RefreshMode == BankRefreshMode.NORMAL;
-        public bool IsDdr4Rfc2Enabled => (Timings as Ddr4Timings)?.RefreshMode == BankRefreshMode.FGR && Timings.FGR == 2;
-        public bool IsDdr4Rfc4Enabled => (Timings as Ddr4Timings)?.RefreshMode == BankRefreshMode.FGR && Timings.FGR == 4;
+        public bool IsDdr4Rfc2Enabled => (Timings as Ddr4Timings)?.FgrMultiplier == 2;
+        public bool IsDdr4Rfc4Enabled => (Timings as Ddr4Timings)?.FgrMultiplier == 4;
 
         public string CpuNameShortWithCores
         {
@@ -209,46 +211,61 @@ namespace ZenTimings.ViewModels
             set => SetProperty(ref _ccdlData, value);
         }
 
+        // Voltages are shown with 4 decimals (FloatToVoltageConverter). Rounding them to that before the
+        // equality check skips the binding update, converter call and re-layout for sub-display jitter.
+        private bool SetVoltage(ref float storage, float value, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
+        {
+            return SetProperty(ref storage, (float)Math.Round(value, 4), propertyName);
+        }
+
         private float _swaAdcV;
         public float SwaAdcV
         {
             get => _swaAdcV;
-            set => SetProperty(ref _swaAdcV, value);
+            set => SetVoltage(ref _swaAdcV, value);
         }
 
         private float _swbAdcV;
         public float SwbAdcV
         {
             get => _swbAdcV;
-            set => SetProperty(ref _swbAdcV, value);
+            set => SetVoltage(ref _swbAdcV, value);
         }
 
         private float _vppAdcV;
         public float VppAdcV
         {
             get => _vppAdcV;
-            set => SetProperty(ref _vppAdcV, value);
+            set => SetVoltage(ref _vppAdcV, value);
         }
 
         private float _apuVddio;
         public float ApuVddio
         {
             get => _apuVddio;
-            set => SetProperty(ref _apuVddio, value);
+            set => SetVoltage(ref _apuVddio, value);
         }
 
         private float _vsoc;
         public float Vsoc
         {
             get => _vsoc;
-            set => SetProperty(ref _vsoc, value);
+            set => SetVoltage(ref _vsoc, value);
         }
 
         private float _vmisc;
         public float Vmisc
         {
             get => _vmisc;
-            set => SetProperty(ref _vmisc, value);
+            set => SetVoltage(ref _vmisc, value);
+        }
+
+        // UCLK row label with the memory controller's ratio to MCLK, e.g. "UCLK [1:1]", switched on from Tools
+        private string _uclkLabel = "UCLK";
+        public string UclkLabel
+        {
+            get => _uclkLabel;
+            set => SetProperty(ref _uclkLabel, value);
         }
 
         // Row labels naming the source each rail's value came from, e.g. "VSOC (SMU)" or "VDDIO (AOD)".
@@ -279,8 +296,8 @@ namespace ZenTimings.ViewModels
         private AodData AodData =>
             mockData != null ? mockData.AodData : CpuSingleton.Instance?.info.aod?.Table?.Data;
 
-        private Ddr5PmicData _ddr5PmicData;
-        public Ddr5PmicData PmicData
+        private Ddr5Pmic _ddr5PmicData;
+        public Ddr5Pmic PmicData
         {
             get => _ddr5PmicData;
             set
@@ -305,14 +322,14 @@ namespace ZenTimings.ViewModels
             return CreateChannelViewModel(timings, PmicData);
         }
 
-        public MainViewModel CreateChannelViewModel(BaseDramTimings timings, Ddr5PmicData pmicData)
+        public MainViewModel CreateChannelViewModel(BaseDramTimings timings, Ddr5Pmic pmicData)
         {
             return CreateChannelViewModel(timings, pmicData, null);
         }
 
         // capacityOverride lets a caller (the All DIMMs window) show that channel's own module capacity
         // in the "Capacity" row instead of the whole kit's TotalCapacity.
-        public MainViewModel CreateChannelViewModel(BaseDramTimings timings, Ddr5PmicData pmicData, Capacity capacityOverride)
+        public MainViewModel CreateChannelViewModel(BaseDramTimings timings, Ddr5Pmic pmicData, Capacity capacityOverride)
         {
             return new MainViewModel(
                 timings,
@@ -335,7 +352,7 @@ namespace ZenTimings.ViewModels
             List<IPlugin> plugins,
             string motherboardLogoName,
             string agesaVersion,
-            Ddr5PmicData pmicData,
+            Ddr5Pmic pmicData,
             MockSystemData mockData = null,
             Capacity capacityOverride = null)
         {
@@ -574,7 +591,7 @@ namespace ZenTimings.ViewModels
 
             var selectedSource = GetSelectedVoltageSource(rail);
             float value = ReadVoltageFrom(rail, selectedSource);
-            if (value > 0)
+            if (IsValidReading(rail, selectedSource, value))
             {
                 usedSource = selectedSource;
                 return value;
@@ -586,7 +603,7 @@ namespace ZenTimings.ViewModels
                     continue;
 
                 value = ReadVoltageFrom(rail, source);
-                if (value > 0)
+                if (IsValidReading(rail, source, value))
                 {
                     usedSource = source;
                     return value;
@@ -594,6 +611,39 @@ namespace ZenTimings.ViewModels
             }
 
             return 0;
+        }
+
+        private const float MinSuperIoVddio = 1.08f;
+        private const float MaxSuperIoVddio = 1.65f;
+        private const float MaxSuperIoAodVddioDelta = 0.2f;
+
+        // SuperIO VDDIO readings outside the plausible range, or too far from the AOD VDDIO, are ignored
+        // (so AOD is used instead), unless the user explicitly selected SuperIO as the VDDIO source.
+        // Still unsure about the best reasonable min/max range
+        private bool IsValidReading(VoltageRail rail, VoltageSensorSource source, float value)
+        {
+            if (value <= 0)
+                return false;
+
+            if (rail == VoltageRail.Vddio && source == VoltageSensorSource.SuperIo)
+            {
+                bool sioForced = IsVoltageSourceSelectionSupported && Settings.VddioSensorSource == VoltageSensorSource.SuperIo;
+                if (sioForced)
+                    return true;
+
+                if (value < MinSuperIoVddio || value > MaxSuperIoVddio)
+                    return false;
+
+                // Only an AOD value that is set and plausible itself is used to judge the SuperIO reading
+                float aodVddio = ReadVoltageFrom(VoltageRail.Vddio, VoltageSensorSource.Aod);
+                if (aodVddio >= MinSuperIoVddio && aodVddio <= MaxSuperIoVddio &&
+                    Math.Abs(value - aodVddio) > MaxSuperIoAodVddioDelta)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private static string VoltageLabel(string name, string plainLabel, VoltageSensorSource? source)
@@ -608,6 +658,24 @@ namespace ZenTimings.ViewModels
                 case VoltageSensorSource.Aod: return name + " (AOD)";
                 default: return plainLabel;
             }
+        }
+
+        // The memory controller runs at MCLK or at half of it, any other reading is not a ratio it has.
+        // Compared within half a percent, the clocks come out of the power table as measured values.
+        private static string UclkRatioLabel(float uclk, float mclk)
+        {
+            if (uclk <= 0 || mclk <= 0)
+                return "UCLK";
+
+            float ratio = uclk / mclk;
+
+            if (Math.Abs(ratio - 1.0f) < 0.005f)
+                return "UCLK [1:1]";
+
+            if (Math.Abs(ratio - 0.5f) < 0.005f)
+                return "UCLK [1:2]";
+
+            return "UCLK";
         }
 
         // Call after CpuSingleton.Instance.systemInfo.UpdateSensors() to refresh the live sensor readings.
@@ -628,6 +696,14 @@ namespace ZenTimings.ViewModels
 
             Vmisc = ReadVoltage(VoltageRail.Vmisc, out source);
             VmiscLabel = VoltageLabel("MISC", "VDD MISC", source);
+
+            RefreshUclkLabel();
+        }
+
+        // Also called on its own when the Tools item is switched, the clocks it needs are already read
+        public void RefreshUclkLabel()
+        {
+            UclkLabel = Settings.ShowUclkRatio ? UclkRatioLabel(PowerTable?.UCLK ?? 0, PowerTable?.MCLK ?? 0) : "UCLK";
         }
     }
 }

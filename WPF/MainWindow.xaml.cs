@@ -1,4 +1,3 @@
-using AdonisUI.Controls;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -35,10 +34,12 @@ using ZenTimings.ViewModels;
 using ZenTimings.Windows;
 using static ZenTimings.Helpers.DriverCleaner;
 using Forms = System.Windows.Forms;
-using MessageBox = AdonisUI.Controls.MessageBox;
-using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
-using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
-using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
+using MessageBox = ZenTimings.Theming.MessageBox;
+using MessageBoxButtons = ZenTimings.Theming.MessageBoxButtons;
+using MessageBoxModel = ZenTimings.Theming.MessageBoxModel;
+using MessageBoxButton = ZenTimings.Theming.MessageBoxButton;
+using MessageBoxImage = ZenTimings.Theming.MessageBoxImage;
+using MessageBoxResult = ZenTimings.Theming.MessageBoxResult;
 //using OpenHardwareMonitor.Hardware;
 
 namespace ZenTimings
@@ -46,7 +47,7 @@ namespace ZenTimings
     /// <summary>
     ///     Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : ThemedAdonisWindow
+    public partial class MainWindow : ThemedWindow
     {
         private readonly AsusWMI AsusWmi = new AsusWMI();
         private readonly List<BiosACPIFunction> biosFunctions = new List<BiosACPIFunction>();
@@ -56,7 +57,9 @@ namespace ZenTimings
         private readonly AppSettings settings = AppSettings.Instance;
         private readonly List<IPlugin> plugins = new List<IPlugin>();
         private SystemInfoWindow siWnd = null;
+        private volatile bool systemInfoWindowOpen;
         private AdvancedTimingsWindow advancedTimingsWnd = null;
+        private ApobInfoWindow apobInfoWnd = null;
         private SensorsWindow sensorsWindw = null;
         private OptionsDialog optionsWnd = null;
         private ExportDialog exportWnd = null;
@@ -127,14 +130,14 @@ namespace ZenTimings
             else
             {
                 {
-                    AdonisUI.Controls.MessageBoxResult result = AdonisUI.Controls.MessageBox.Show(
+                    ZenTimings.Theming.MessageBoxResult result = ZenTimings.Theming.MessageBox.Show(
                         "PawnIO is not installed, do you want to install it?",
                         nameof(ZenTimings),
-                        AdonisUI.Controls.MessageBoxButton.OKCancel,
-                        AdonisUI.Controls.MessageBoxImage.Warning
+                        ZenTimings.Theming.MessageBoxButton.OKCancel,
+                        ZenTimings.Theming.MessageBoxImage.Warning
                     );
 
-                    if (result == AdonisUI.Controls.MessageBoxResult.OK)
+                    if (result == ZenTimings.Theming.MessageBoxResult.OK)
                     {
                         SplashWindow.Stop();
                         if (!DriverHelper.InstallPawnIO())
@@ -164,7 +167,10 @@ namespace ZenTimings
                 CheckForDriver();
 
                 SplashWindow.Loading("Core");
+                // Core initialization does most of the startup work; show each of its stages.
+                CpuSingleton.InitProgress = stage => SplashWindow.Loading($"Core: {stage}");
                 cpu = CpuSingleton.Instance;
+                CpuSingleton.InitProgress = null;
 
                 if (cpu.info.family.Equals(Cpu.Family.UNSUPPORTED))
                 {
@@ -282,6 +288,8 @@ namespace ZenTimings
                 SetWindowTitle();
                 UpdateLiveSnapshotIndicator();
                 RestoreWindowPosition();
+
+                ShowChangelog();
             }
             catch (Exception ex)
             {
@@ -294,6 +302,18 @@ namespace ZenTimings
         private static void TerminateStartup()
         {
             Environment.Exit(0);
+        }
+
+        private void ShowChangelog()
+        {
+            if (!settings.NotifiedChangelog.Equals(AssemblyVersion))
+            {
+                SplashWindow.HideIfOpen();
+                new Changelog().ShowDialog();
+                settings.NotifiedChangelog = AssemblyVersion;
+                settings.Save();
+                SplashWindow.ShowIfOpen();
+            }
         }
 
         private MainWindow(MainViewModel viewModel, MockSystemData mockData)
@@ -312,13 +332,16 @@ namespace ZenTimings
             if (timingsPanel is DDR4TimingsPanel ddr4Panel)
                 ApplyDdr4Vsoc(ddr4Panel, false);
 
-            // DDR4 takes its ODT/RTT/drive strength fields from the BIOS memory controller config; a
-            // report carries it as a byte dump. Too short a dump would read past the Resistances layout.
+            // DDR4 takes its ODT/RTT/drive strength fields from the APOB, or else from the BIOS memory controller
+            // config, which also has the VDIMM / VTT setpoints; a report carries it as a byte dump. Too short a dump
+            // would read past the Resistances layout.
+            bool hasBmcTable = mockData.BiosMemControllerTable != null &&
+                mockData.BiosMemControllerTable.Length >= Marshal.SizeOf(typeof(BiosMemController.Resistances));
             if ((viewModel.MemoryType == MemType.DDR4 || viewModel.MemoryType == MemType.LPDDR4) &&
-                mockData.BiosMemControllerTable != null &&
-                mockData.BiosMemControllerTable.Length >= Marshal.SizeOf(typeof(BiosMemController.Resistances)))
+                (hasBmcTable || GetApobDdr4ChannelConfig() != null))
             {
-                BMC = new BiosMemController { Table = mockData.BiosMemControllerTable };
+                if (hasBmcTable)
+                    BMC = new BiosMemController { Table = mockData.BiosMemControllerTable };
 
                 try
                 {
@@ -356,6 +379,22 @@ namespace ZenTimings
                 : new LegacyDDR5APUTimingsPanel();
         }
 
+        // The LPDDR5 panel shows the APOB mode registers: Rembrandt with LPDDR5
+        // Other APUs (Phoenix, Krackan, Strix) keep the other panel for now, currently no LPDDR5(X) reports available.
+        private bool UseLpddr5Panel()
+        {
+            //var apob = mockData != null ? mockData.Apob : cpu?.info.apob;
+            Cpu.CodeName? codeName = mockData != null ? mockData.CpuInfo.codeName : cpu?.info.codeName;
+            return codeName == Cpu.CodeName.Rembrandt; // || apob?.ActiveLpddr5ModeRegisters != null;
+        }
+
+        // LPDDR5: the ODT / drive strength / Vref rows come from the APOB mode registers
+        private LPDDR5TimingsPanel CreateLpddr5Panel()
+        {
+            var apob = mockData != null ? mockData.Apob : cpu?.info.apob;
+            return new LPDDR5TimingsPanel(apob?.ActiveLpddr5ModeRegisters);
+        }
+
         // Creates the timings panel the main window shows. The All DIMMs window creates its per-channel panels
         // through the same factory, so they match the main one (AOD source, report data in a mock window).
         private Func<Control> timingsPanelFactory;
@@ -384,6 +423,8 @@ namespace ZenTimings
                     return new DDR4TimingsPanel();
 
                 case MemType.LPDDR5:
+                    if (UseLpddr5Panel())
+                        return CreateLpddr5Panel();
                     return CreateLegacyApuPanel();
 
                 case MemType.DDR5:
@@ -422,7 +463,7 @@ namespace ZenTimings
             {
                 ApplyDdr4Vsoc(ddr4Panel, false);
 
-                if (ddr4MemoryConfigApplied && BMC != null)
+                if (ddr4MemoryConfigApplied)
                 {
                     try
                     {
@@ -484,6 +525,7 @@ namespace ZenTimings
             // Restart cleans up before shutting down, and the shutdown closes the window, which exits again.
             if (cleanedUp)
                 return;
+
             cleanedUp = true;
             // Publish cleanedUp before reading the refresh flag (the task sets its flag, then reads
             // cleanedUp), so one of the two always sees the other.
@@ -506,6 +548,7 @@ namespace ZenTimings
                 TryCleanup(() => plugin?.Close());
 
             TryCleanup(() => sensorsWindw?.Close());
+            TryCleanup(() => advancedTimingsWnd?.Close());
             TryCleanup(() => optionsWnd?.Close());
             TryCleanup(() => exportWnd?.Close());
             TryCleanup(() => _notifyIcon?.Dispose());
@@ -701,16 +744,30 @@ namespace ZenTimings
 
         // TODO: Handle in DLL or replace with read from memory
         /// <summary>
-        /// Fills the DDR4 panel's rails, ODT, RTT, drive strength and setup fields from
-        /// <see cref="BMC"/>. The live window loads BMC.Table over WMI first; a debug report's
-        /// window loads it from the report's "BIOS: Memory Controller Config" dump.
+        /// The DDR4 ODT, RTT, drive strength and setup settings of the first populated channel from the APOB
+        /// (MEM general configuration), null when the APOB does not have them.
+        /// </summary>
+        private ZenStates.Core.Hardware.Apob.ApobDdr4ChannelConfig GetApobDdr4ChannelConfig()
+        {
+            var apob = isMockWindow ? mockData?.Apob : cpu?.info.apob;
+            return apob?.MemGeneralConfig?.Channels.FirstOrDefault(c => c.IsPopulated);
+        }
+
+        /// <summary>
+        /// Fills the DDR4 panel's rails, ODT, RTT, drive strength and setup fields. ODT, RTT, drive strength and
+        /// setup come from the APOB when it has them, else from <see cref="BMC"/>; VDIMM and VTT from
+        /// <see cref="BMC"/> (VDIMM with the ASUS WMI / SuperIO fallbacks). The live window loads BMC.Table over
+        /// WMI first; a debug report's window loads it from the report's "BIOS: Memory Controller Config" dump.
         /// </summary>
         private void ApplyDdr4MemoryConfig(DDR4TimingsPanel panel)
         {
             if (panel == null)
                 return;
 
-            float vdimm = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVddio) / 1000);
+            // BMC.Config is all zero when the table was not loaded
+            BiosMemController.Resistances bmcConfig = BMC?.Config ?? default(BiosMemController.Resistances);
+
+            float vdimm = Convert.ToSingle(Convert.ToDecimal(bmcConfig.MemVddio) / 1000);
             ddr4BmcVddioValid = vdimm > 0 && vdimm < 3;
 
             float memVddio = vdimm;
@@ -739,7 +796,7 @@ namespace ZenTimings
 
             // Enabled explicitly, like VDIMM above: the label's default binding is WMIPresent, which a
             // debug report's window never has.
-            float vtt = Convert.ToSingle(Convert.ToDecimal(BMC.Config.MemVtt) / 1000);
+            float vtt = Convert.ToSingle(Convert.ToDecimal(bmcConfig.MemVtt) / 1000);
             if (vtt > 0)
             {
                 panel.rowMemVtt.Value = $"{vtt:F4}V";
@@ -750,9 +807,30 @@ namespace ZenTimings
                 panel.rowMemVtt.IsEnabled = false;
             }
 
+            var apobConfig = GetApobDdr4ChannelConfig();
+            if (apobConfig != null)
+            {
+                SetDdr4ConfigRow(panel.rowProcODT, apobConfig.ProcOdt.ToString());
+
+                SetDdr4ConfigRow(panel.rowClkDrvStren, apobConfig.ClkDrvStren.ToString());
+                SetDdr4ConfigRow(panel.rowAddrCmdDrvStren, apobConfig.AddrCmdDrvStren.ToString());
+                SetDdr4ConfigRow(panel.rowCsOdtDrvStren, apobConfig.CsOdtCmdDrvStren.ToString());
+                SetDdr4ConfigRow(panel.rowCkeDrvStren, apobConfig.CkeDrvStren.ToString());
+
+                SetDdr4ConfigRow(panel.rowRttNom, apobConfig.RttNom.ToString());
+                SetDdr4ConfigRow(panel.rowRttWr, apobConfig.RttWr.ToString());
+                SetDdr4ConfigRow(panel.rowRttPark, apobConfig.RttPark.ToString());
+
+                SetDdr4ConfigRow(panel.rowAddrCmdSetup, apobConfig.AddrCmdSetup.ToString());
+                SetDdr4ConfigRow(panel.rowCsOdtSetup, apobConfig.CsOdtSetup.ToString());
+                SetDdr4ConfigRow(panel.rowCkeSetup, apobConfig.CkeSetup.ToString());
+                return;
+            }
+
+            // Fallback: the APCB config over WMI
             // When ProcODT is 0, then all other resistance values are 0
             // Happens when one DIMM installed in A1 or A2 slot
-            if (BMC.Table == null || ZenStates.Core.Utils.AllZero(BMC.Table) || BMC.Config.ProcODT < 1)
+            if (BMC?.Table == null || ZenStates.Core.Utils.AllZero(BMC.Table) || BMC.Config.ProcODT < 1)
                 // throw new Exception("Failed to read AMD ACPI. Odt, Setup and Drive strength parameters will be empty.");
                 return;
 
@@ -779,9 +857,15 @@ namespace ZenTimings
             panel.rowRttWr.Value = BMC.GetRttWrString(BMC.Config.RttWr);
             panel.rowRttPark.Value = BMC.GetRttString(BMC.Config.RttPark);
 
-            panel.rowAddrCmdSetup.Value = $"{BMC.Config.AddrCmdSetup}";
-            panel.rowCsOdtSetup.Value = $"{BMC.Config.CsOdtSetup}";
-            panel.rowCkeSetup.Value = $"{BMC.Config.CkeSetup}";
+            panel.rowAddrCmdSetup.Value = BMC.GetSetupString(BMC.Config.AddrCmdSetup);
+            panel.rowCsOdtSetup.Value = BMC.GetSetupString(BMC.Config.CsOdtSetup);
+            panel.rowCkeSetup.Value = BMC.GetSetupString(BMC.Config.CkeSetup);
+        }
+
+        private static void SetDdr4ConfigRow(TimingRow row, string value)
+        {
+            row.Value = value;
+            row.IsEnabled = true;
         }
 
         private void ReadDDR4MemoryConfig()
@@ -870,6 +954,19 @@ namespace ZenTimings
                 Debug.WriteLine(ex.Message);
             }
 
+            if (!ddr4MemoryConfigApplied && GetApobDdr4ChannelConfig() != null)
+            {
+                try
+                {
+                    ApplyDdr4MemoryConfig(timingsPanel as DDR4TimingsPanel);
+                    ddr4MemoryConfigApplied = true;
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Could not apply the APOB memory config: {ex.Message}");
+                }
+            }
+
             BMC?.Dispose();
         }
 
@@ -882,14 +979,14 @@ namespace ZenTimings
             mockData != null ? mockData.SpdInfo : cpu?.memoryConfig?.SpdInfo;
 
         // PMIC of the module at the given index in MemoryModules; SPD entries line up with modules by index.
-        private Ddr5PmicData ModulePmicData(int moduleIndex)
+        private Ddr5Pmic ModulePmicData(int moduleIndex)
         {
             if (mockData != null)
                 return mockData.GetPmicData(moduleIndex);
 
             return ModuleSpdInfo?.Values
                 .Where(d => d.IsValid)
-                .ElementAtOrDefault(moduleIndex)?.PmicData;
+                .ElementAtOrDefault(moduleIndex)?.Pmic;
         }
 
         // Always true live; a debug report has every channel only when it carries the register dump.
@@ -922,11 +1019,10 @@ namespace ZenTimings
                 return false;
 
             bool temp;
-            // Refresh until driver is opened
-            do
-            {
-                temp = cpu.io.IsInpOutDriverOpen();
-            } while (!temp && timer.Elapsed.TotalMilliseconds < 5000);
+            // Refresh until driver is opened. This runs on the UI thread, so keep the splash painted
+            // while waiting instead of spinning; a tight loop left it frozen (black) for 5 s.
+            while (!(temp = cpu.io.IsInpOutDriverOpen()) && timer.Elapsed.TotalMilliseconds < 5000)
+                SplashWindow.Wait(20);
 
             timer.Stop();
 
@@ -964,7 +1060,11 @@ namespace ZenTimings
             {
                 status = cpu.RefreshPowerTable();
                 if (status != SMU.Status.OK)
-                    Thread.Sleep(200);  // It's ok to block the current thread
+                {
+                    // Runs on the UI thread: wait with the splash kept responsive, and show how long it's been.
+                    SplashWindow.Loading($"Reading power table ({(int)timer.Elapsed.TotalSeconds}s)");
+                    SplashWindow.Wait(200);
+                }
             } while (status != SMU.Status.OK && timer.Elapsed.TotalMilliseconds < timeout);
 
             timer.Stop();
@@ -1014,13 +1114,22 @@ namespace ZenTimings
                     if (cleanedUp)
                         return;
 
+                    bool isDdr4 = cpu.memoryConfig.Type == MemType.DDR4 || cpu.memoryConfig.Type == MemType.LPDDR4;
+
                     var hasAsusDramVoltage = false;
                     float asusDramVoltage = 0;
                     if (AsusWmi != null && AsusWmi.Status == 1)
                     {
-                        AsusWmi.UpdateSensors();
                         AsusSensorInfo sensor = AsusWmi.FindSensorByName("DRAM Voltage");
-                        hasAsusDramVoltage = sensor != null && AsusWMI.TryParseSensorValue(sensor.Value, out asusDramVoltage) && asusDramVoltage > 0 && asusDramVoltage < 3;
+
+                        // Every ASUS sensor is its own WMI method call, so all of them are read only while
+                        // something shows them. Otherwise the main window needs just the DRAM voltage, on DDR4.
+                        if (systemInfoWindowOpen || (ExportSettings.Instance.LiveSnapshotEnabled && LiveSnapshot.IsDue))
+                            AsusWmi.UpdateSensors();
+                        else if (isDdr4)
+                            AsusWmi.UpdateSensor(sensor);
+
+                        hasAsusDramVoltage = isDdr4 && sensor != null && AsusWMI.TryParseSensorValue(sensor.Value, out asusDramVoltage) && asusDramVoltage > 0 && asusDramVoltage < 3;
                     }
 
                     //ReadDDR4MemoryConfig();
@@ -1028,10 +1137,16 @@ namespace ZenTimings
                     cpu.systemInfo?.UpdateSensors();
                     var hasSuperIoDramVoltage = TryReadDdr4SuperIoDramVoltage(out var superIoDramVoltage);
 
+                    // SVI2 is read here, off the UI thread; the UI update below only shows the reading.
+                    if (isDdr4 && mockData == null && plugins.Count > 0)
+                        plugins[0].Update();
+
                     var voltagesUpdated = false;
-                    if (cpu.memoryConfig?.SpdInfo?.Values != null)
+                    if (cpu.memoryConfig != null && cpu.memoryConfig.HasDimmTelemetry)
                     {
-                        voltagesUpdated = cpu.memoryConfig.RefreshTelemetry(settings.AutoRefreshInterval);
+                        // Half the interval: the throttle measures from the start of the previous read, and
+                        // a tick that runs a little early would otherwise skip every other refresh.
+                        voltagesUpdated = cpu.memoryConfig.RefreshTelemetry(settings.AutoRefreshInterval / 2);
                     }
 
                     Interlocked.Exchange(ref refreshReadingHardware, 0);
@@ -1081,7 +1196,8 @@ namespace ZenTimings
 
                             lastMclk = newMclk;
 
-                            ReadSVI();
+                            if (timingsPanel is DDR4TimingsPanel ddr4Panel && isDdr4)
+                                ApplyDdr4Vsoc(ddr4Panel, false);
                             // SetFrequencyString();
                             // RefreshSensors();
                         }
@@ -1123,12 +1239,21 @@ namespace ZenTimings
 
         public void HandleError(string message, string title = "Error")
         {
-            MessageBox.Show(
-                message,
-                title,
-                MessageBoxButton.OK,
-                MessageBoxImage.Error
-            );
+            // The splash is topmost and could cover the message box during startup.
+            SplashWindow.HideIfOpen();
+            try
+            {
+                MessageBox.Show(
+                    message,
+                    title,
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
+            }
+            finally
+            {
+                SplashWindow.ShowIfOpen();
+            }
         }
 
         private AllDimmsWindow allDimmsWnd;
@@ -1331,7 +1456,7 @@ namespace ZenTimings
             }
         }
 
-        private void AdonisWindow_StateChanged(object sender, EventArgs e)
+        private void Window_StateChanged(object sender, EventArgs e)
         {
             // A debug report's window has no tray icon and nothing to refresh.
             if (isMockWindow || _notifyIcon == null)
@@ -1367,13 +1492,13 @@ namespace ZenTimings
             MinimizeFootprint();
         }
 
-        private void AdonisWindow_SizeChanged(object sender, SizeChangedEventArgs e) => MinimizeFootprint();
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e) => MinimizeFootprint();
 
-        private void AdonisWindow_Activated(object sender, EventArgs e) => MinimizeFootprint();
+        private void Window_Activated(object sender, EventArgs e) => MinimizeFootprint();
 
         private void ExitToolStripMenuItem_Click(object sender, RoutedEventArgs e) => ExitApplication();
 
-        private void AdonisWindow_Loaded(object sender, RoutedEventArgs e)
+        private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             this.Topmost = true;
 
@@ -1407,19 +1532,6 @@ namespace ZenTimings
             HwndSource source = HwndSource.FromHwnd(handle);
 
             source?.AddHook(WndProc);
-            //#if !DEBUG
-            if (!settings.NotifiedChangelog.Equals(AssemblyVersion))
-            {
-                Changelog changelogWindow = new Changelog()
-                {
-                    Owner = Application.Current.MainWindow
-                };
-                changelogWindow.ShowDialog();
-                settings.NotifiedChangelog = AssemblyVersion;
-                settings.Save();
-            }
-
-            //#endif
             //#if BETA
             //            MessageBox.Show("This is a BETA version of the application. Some functions might be working incorrectly.\n\n" +
             //                    "Please report if something is not working as expected.", "Beta version", MessageBoxButton.OK);
@@ -1524,6 +1636,13 @@ namespace ZenTimings
                 Left = sysInfoWindowLeft
             };
 
+            SystemInfoWindow shownWnd = siWnd;
+            shownWnd.Closed += (s, args) =>
+            {
+                if (ReferenceEquals(siWnd, shownWnd))
+                    systemInfoWindowOpen = false;
+            };
+            systemInfoWindowOpen = true;
             siWnd.Show();
         }
 
@@ -1540,6 +1659,30 @@ namespace ZenTimings
             else
             {
                 advancedTimingsWnd.Activate();
+            }
+        }
+
+        private void ApobInfoToolstripMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (apobInfoWnd != null && apobInfoWnd.IsLoaded)
+            {
+                apobInfoWnd.Activate();
+                return;
+            }
+
+            try
+            {
+                // A window opened from a debug report shows the APOB of the report
+                var apob = isMockWindow ? mockData?.Apob : cpu?.info.apob;
+                apobInfoWnd = new ApobInfoWindow(apob)
+                {
+                    Owner = this
+                };
+                apobInfoWnd.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error opening APOB:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1698,6 +1841,12 @@ namespace ZenTimings
             OpenSensorsWindow();
         }
 
+        private void UclkRatioMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            settings.Save();
+            mainViewModel.RefreshUclkLabel();
+        }
+
         private void SpdInfoToolstripMenuItem_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -1714,7 +1863,7 @@ namespace ZenTimings
             }
         }
 
-        private void AdonisWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (isMockWindow)
             {
@@ -1969,7 +2118,13 @@ namespace ZenTimings
             }
 
             exportWnd = new ExportDialog(
-                (options, selectedFormat) => SnapshotWriter.Write(SnapshotBuilder.Build(GetSnapshotSource(), options), selectedFormat),
+                (options, selectedFormat) =>
+                {
+                    // The refresh reads only the ASUS sensor it needs, so read them all for the export.
+                    if (mockData == null && AsusWmi != null && AsusWmi.Status == 1)
+                        AsusWmi.UpdateSensors();
+                    return SnapshotWriter.Write(SnapshotBuilder.Build(GetSnapshotSource(), options), selectedFormat);
+                },
                 format,
                 false,
                 SnapshotBuilder.GetUnavailableSections(GetSnapshotSource()))

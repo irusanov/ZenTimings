@@ -7,7 +7,9 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Themes/Base.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Themes/AppIcons.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/Resources.xaml" />
+                <!-- Base colors until the selected theme is applied (the theme is merged on top at startup) -->
+                <ResourceDictionary Source="pack://application:,,,/Theming/ColorSchemes/Dark.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Theming/Controls.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

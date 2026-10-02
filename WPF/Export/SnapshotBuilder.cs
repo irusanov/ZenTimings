@@ -10,6 +10,8 @@ using ZenStates.Core;
 using ZenStates.Core.Common;
 using ZenStates.Core.Hardware;
 using ZenStates.Core.Hardware.DRAM;
+using ZenStates.Core.Hardware.DRAM.DDR4.Spd;
+using ZenStates.Core.Hardware.DRAM.DDR4.Thermal;
 using ZenStates.Core.Hardware.DRAM.DDR5.Pmic;
 using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
 using ZenStates.Core.Hardware.DRAM.DDR5.Thermal;
@@ -52,7 +54,8 @@ namespace ZenTimings.Export
 
         /// <summary>
         /// The application has a data source for these sections with one memory generation only:
-        /// SPD, PMIC and DIMM sensors are read for DDR5 / LPDDR5, the register fields exist in Ddr5Timings only,
+        /// SPD, PMIC and DIMM sensors are read for DDR5 / LPDDR5 (SPD and DIMM sensors also for DDR4, the
+        /// module thermal sensor only), the register fields exist in Ddr5Timings only,
         /// the AOD and APOB layouts in the core describe DDR5 platforms, and the BIOS memory controller table
         /// is requested for DDR4 / LPDDR4 only.
         /// </summary>
@@ -65,11 +68,13 @@ namespace ZenTimings.Export
             switch (section)
             {
                 case SnapshotSections.Spd:
+                    return ddr5 || type == MemType.DDR4;
                 case SnapshotSections.Registers:
                 case SnapshotSections.Aod:
                 case SnapshotSections.Apob:
-                case SnapshotSections.DimmTelemetry:
                     return ddr5;
+                case SnapshotSections.DimmTelemetry:
+                    return ddr5 || type == MemType.DDR4;
                 case SnapshotSections.BiosController:
                     return !ddr5;
                 default:
@@ -403,9 +408,65 @@ namespace ZenTimings.Export
             }
         }
 
+        private static List<KeyValuePair<byte, Ddr4SpdInfo>> GetDdr4SpdEntries(MemoryConfig mc)
+        {
+            // Replaced as a whole when the SPD window reads the full SPD, never modified
+            Dictionary<byte, Ddr4SpdInfo> spd = mc?.Ddr4Spd;
+            return spd != null
+                ? spd.Where(e => e.Value != null && e.Value.IsValid).ToList()
+                : new List<KeyValuePair<byte, Ddr4SpdInfo>>();
+        }
+
+        private object BuildDdr4Spd(MemoryConfig mc)
+        {
+            var entries = GetDdr4SpdEntries(mc);
+            if (entries.Count == 0)
+            {
+                Missing("static.spd", "not_present", "No DDR4 module SPD could be read");
+                return null;
+            }
+
+            var result = new List<object>();
+            for (int i = 0; i < entries.Count; i++)
+            {
+                Ddr4SpdInfo info = entries[i].Value;
+                string path = $"static.spd[{i}]";
+                var module = i < mc.Modules.Count ? mc.Modules[i] : null;
+
+                var item = new SnapshotObject()
+                    .Add("module_index", i)
+                    .Add("slot", Text(module?.Slot))
+                    .Add("i2c_address_hex", entries[i].Key.ToString("X2"));
+
+                SnapshotObject fields = ReflectObject(info, 0, SpdSkippedFields);
+                if (info.IsPartial)
+                    fields = WithoutDefaults(fields);
+                AddSerial(fields, "ModuleSerialNumber", info.ModuleSerialNumber, $"{path}.info.ModuleSerialNumber");
+                item.Add("info", fields);
+
+                if (info.IsPartial)
+                    Missing(path, "partial", "info only lists the fields read at startup and the XMP profiles are not loaded, open Tools > Advanced Info > SPD to load the full SPD");
+
+                var xmp = new List<object>();
+                if (info.XmpProfiles != null)
+                {
+                    foreach (var profile in info.XmpProfiles)
+                    {
+                        if (profile != null && profile.IsValid)
+                            xmp.Add(ReflectObject(profile, 0, null));
+                    }
+                }
+                item.Add("xmp_profiles", info.IsPartial ? null : (object)xmp);
+
+                result.Add(item);
+            }
+
+            return result;
+        }
+
         private static readonly HashSet<string> SpdSkippedFields = new HashSet<string>
         {
-            "RawSpd", "XmpProfiles", "ExpoProfile1", "ExpoProfile2", "ThermalData", "PmicData", "ModuleSerialNumber"
+            "RawSpd", "XmpProfiles", "ExpoProfile1", "ExpoProfile2", "ThermalData", "Pmic", "ModuleSerialNumber"
         };
 
         // Live PMIC values belong to readings.dimm, RawRegisters is a raw dump
@@ -413,8 +474,10 @@ namespace ZenTimings.Export
         {
             "RawRegisters", "CurrentLimitRaw", "VinBulkMv", "SwaAdcMv", "SwbAdcMv", "SwcAdcMv", "Vout18AdcMv", "Vout10AdcMv",
             "SwaTelemetryRaw", "SwbTelemetryRaw", "SwcTelemetryRaw", "SwaW", "SwbW", "SwcW", "TotalW",
-            "PmicTemperature", "VinBulkOverVoltage", "SwaPowerGoodFault", "SwbPowerGoodFault", "SwcPowerGoodFault",
+            "PmicTemperature", "VinBulkOverVoltage", "SwaPowerGoodFault", "SwbPowerGoodFault", "SwcPowerGoodFault", "PowerGoodFault",
             "HighTemperatureWarning", "CriticalTemperatureShutdown", "PecError", "ParityError",
+            "Vout18PowerGoodFault", "SwaHighCurrentWarning", "SwbHighCurrentWarning", "SwcHighCurrentWarning",
+            "SwaOverVoltage", "SwbOverVoltage", "SwcOverVoltage",
 
             // The state of the ADC input selector, it changes with every telemetry read
             "AdcEnabled", "AdcSelectedInput",
@@ -429,7 +492,10 @@ namespace ZenTimings.Export
             var entries = GetSpdEntries(cpu);
             if (entries.Count == 0)
             {
-                Missing("static.spd", "not_present", "SPD data is only read for DDR5 modules");
+                if (mc?.Type == MemType.DDR4)
+                    return BuildDdr4Spd(mc);
+
+                Missing("static.spd", "not_present", "SPD data is only read for DDR5 and DDR4 modules");
                 return null;
             }
 
@@ -473,7 +539,7 @@ namespace ZenTimings.Export
                 }
                 item.Add("expo_profiles", info.IsPartial ? null : (object)expo);
 
-                Ddr5PmicData pmic = info.PmicData;
+                Ddr5Pmic pmic = info.Pmic;
                 item.Add("pmic", pmic != null && pmic.IsValid ? ReflectObject(pmic, 0, PmicSkippedFields) : null);
 
                 Ddr5ThermalData thermal = info.ThermalData;
@@ -500,7 +566,7 @@ namespace ZenTimings.Export
 
         // Members of the DDR4 / DDR5 classes which are regular timings. Everything else those classes declare
         // is a raw memory controller register field.
-        private static readonly HashSet<string> DerivedTimingNames = new HashSet<string> { "RFCsb", "RFC4", "RFCns", "Nitro" };
+        private static readonly HashSet<string> DerivedTimingNames = new HashSet<string> { "RFCsb", "RFC4", "RFCns", "Nitro", "FgrMultiplier", "FgrOnTheFly" };
 
         private static bool IsRegister(Member member)
         {
@@ -756,14 +822,17 @@ namespace ZenTimings.Export
             var entries = GetSpdEntries(cpu);
             if (entries.Count == 0)
             {
-                Missing("readings.dimm", "not_present", "DIMM telemetry is only available for DDR5 modules");
+                if (mc?.Type == MemType.DDR4)
+                    return BuildDdr4DimmTelemetry(mc);
+
+                Missing("readings.dimm", "not_present", "DIMM telemetry is only available for DDR5 modules and DDR4 modules with a thermal sensor");
                 return null;
             }
 
             var result = new List<object>();
             for (int i = 0; i < entries.Count; i++)
             {
-                Ddr5PmicData pmic = entries[i].Value.PmicData;
+                Ddr5Pmic pmic = entries[i].Value.Pmic;
                 Ddr5ThermalData thermal = entries[i].Value.ThermalData;
                 var module = i < mc.Modules.Count ? mc.Modules[i] : null;
                 string path = $"readings.dimm[{i}]";
@@ -789,7 +858,7 @@ namespace ZenTimings.Export
                         .Add("pmic_high_temp", pmic.HighTemperatureWarning)
                         .Add("pmic_critical_shutdown", pmic.CriticalTemperatureShutdown)
                         .Add("pmic_vin_over_voltage", pmic.VinBulkOverVoltage)
-                        .Add("pmic_power_good_fault", pmic.SwaPowerGoodFault || pmic.SwbPowerGoodFault || pmic.SwcPowerGoodFault);
+                        .Add("pmic_power_good_fault", pmic.PowerGoodFault);
                 }
                 else
                 {
@@ -812,6 +881,55 @@ namespace ZenTimings.Export
             }
 
             return result;
+        }
+
+        // DDR4: the module thermal sensor (TSOD) is the only live source on the module
+        private object BuildDdr4DimmTelemetry(MemoryConfig mc)
+        {
+            List<Ddr4ThermalData> sensors = GetDdr4ThermalSensors(mc);
+            if (sensors.Count == 0)
+            {
+                Missing("readings.dimm", "not_present", "No module SPD was found on the SMBus");
+                return null;
+            }
+
+            var result = new List<object>();
+            for (int i = 0; i < sensors.Count; i++)
+            {
+                Ddr4ThermalData sensor = sensors[i];
+                var module = i < mc.Modules.Count ? mc.Modules[i] : null;
+                string path = $"readings.dimm[{i}]";
+
+                var item = new SnapshotObject()
+                    .Add("module_index", i)
+                    .Add("slot", Text(module?.Slot));
+
+                if (sensor != null && sensor.IsValid && sensor.TempSensorEnabled)
+                {
+                    item.Add("dimm_temp_c", sensor.TemperatureC)
+                        .Add("dimm_temp_alarm_high", sensor.AlarmHigh)
+                        .Add("dimm_temp_alarm_crit_high", sensor.AlarmCritHigh)
+                        .Add("dimm_temp_limit_high_c", sensor.TempMaxMilliC > 0 ? (object)(sensor.TempMaxMilliC / 1000.0) : null)
+                        .Add("dimm_temp_limit_crit_c", sensor.TempCritMilliC > 0 ? (object)(sensor.TempCritMilliC / 1000.0) : null)
+                        .Add("thermal_sensor_address", $"0x{sensor.I2cAddress:X2}")
+                        .Add("thermal_sensor_vendor", Text(sensor.Vendor));
+                }
+                else
+                {
+                    item.Add("dimm_temp_c", null);
+                    Missing($"{path}.dimm_temp_c", "not_supported", "The module has no thermal sensor, or it is shut down");
+                }
+
+                result.Add(item);
+            }
+
+            return result;
+        }
+
+        private static List<Ddr4ThermalData> GetDdr4ThermalSensors(MemoryConfig mc)
+        {
+            Dictionary<byte, Ddr4ThermalData> sensors = mc?.Ddr4ThermalSensors;
+            return sensors != null ? sensors.Values.ToList() : new List<Ddr4ThermalData>();
         }
 
         private static object ParseTemperature(string value)
@@ -913,7 +1031,12 @@ namespace ZenTimings.Export
                 });
             }
 
-            foreach (FieldInfo field in type.GetFields(BindingFlags.Instance | BindingFlags.Public))
+            // Declaration order, the fields of a base class (e.g. the SPD fields common to all memory types) first
+            var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public)
+                .OrderBy(f => InheritanceDepth(f.DeclaringType))
+                .ThenBy(f => f.MetadataToken);
+
+            foreach (FieldInfo field in fields)
             {
                 if (field.FieldType == typeof(byte[]))
                     continue;
@@ -923,6 +1046,14 @@ namespace ZenTimings.Export
             }
 
             return result.ToArray();
+        }
+
+        private static int InheritanceDepth(Type type)
+        {
+            int depth = 0;
+            for (Type t = type.BaseType; t != null; t = t.BaseType)
+                depth++;
+            return depth;
         }
 
         private SnapshotObject ReflectObject(object obj, int depth, ICollection<string> skip)
@@ -999,6 +1130,12 @@ namespace ZenTimings.Export
             if (value is CommandRateProp)
                 return Text(value.ToString());
 
+            if (value is BurstLengthProp burstLength)
+                return new SnapshotObject().Add("raw", (uint)burstLength).Add("text", Text(burstLength.ToString()));
+
+            if (value is BurstCtrlProp burstCtrl)
+                return new SnapshotObject().Add("raw", (uint)burstCtrl).Add("text", Text(burstCtrl.ToString()));
+
             if (value is BankRefreshMode refreshMode)
                 return refreshMode.Name;
 
@@ -1063,7 +1200,7 @@ namespace ZenTimings.Export
 
                 // The refresh timings and the way the active one is chosen differ between the generations
                 legend.Add("refresh", ddr4
-                    ? "Only one refresh timing is in use: RFC when RefreshMode is NORMAL, otherwise RFC2 or RFC4, FGR says which one (2 or 4). RFCns is the active one in nanoseconds."
+                    ? "Only one refresh timing is in use: RFC when RefreshMode is NORMAL, otherwise RFC2 or RFC4, FgrMultiplier says which one (2 or 4; FGR is the raw mode, 1/5 = 2x, 2/6 = 4x). RFCns is the active one in nanoseconds."
                     : "Only one refresh timing is in use: RFC when RefreshMode is NORMAL, otherwise RFC2, together with RFCsb when it is MIXED. RFCns is the active one in nanoseconds (active timing = RFCns x MCLK in GHz), the inactive ones keep their BIOS values.");
 
                 legend.Add("not_tunable", "PHYRDL, PHYWRL and PHYWRD are results of memory training, a PHYRDL difference between channels is common. SD and DD variants (RDRDSD, RDRDDD, WRWRSD, WRWRDD) only matter with two ranks or two DIMMs per channel.");
@@ -1088,7 +1225,7 @@ namespace ZenTimings.Export
                 legend.Add("sensors", "Read from the sensor chip of the motherboard. Names like Voltage #6 are inputs the application has no label for, what they measure is unknown. A null value means nothing is connected or the reading is invalid. min and max are counted since the application started.");
 
             if (options.Has(SnapshotSections.DimmTelemetry))
-                legend.Add("dimm", "Measured on the module by its PMIC and SPD hub: vdd, vddq and vpp are actual voltages, unlike the set points in aod.");
+                legend.Add("dimm", "Measured on the module by its PMIC and SPD hub: vdd, vddq and vpp are actual voltages, unlike the set points in aod. On DDR4 only the module thermal sensor is read (dimm_temp_c).");
 
             if (options.Has(SnapshotSections.Spd))
                 legend.Add("spd", "What the module reports about itself: JEDEC, XMP and EXPO profiles are what it is rated for, not what is applied. Times ending with Ps are picoseconds, with Ns nanoseconds. When IsPartial is true only the fields read at startup are listed, the SPD window in ZenTimings loads the rest. In pmic the set points are decoded two ways, ...Mv (JEDEC 7-bit) and ...Mv8bit (vendor extension used in HighVoltageMode), compare them with the measured voltages in readings.dimm to see which one applies.");
@@ -1145,10 +1282,19 @@ namespace ZenTimings.Export
                     return GetMembers(memory.Timings[0].Value.GetType()).Any(IsRegister) ? null : "No register fields are read for this memory type";
 
                 case SnapshotSections.Spd:
+                    if (memory?.Type == MemType.DDR4)
+                        return GetDdr4SpdEntries(memory).Count == 0 ? "No SPD data was read from the modules" : null;
                     return GetSpdEntries(cpu).Count == 0 ? "No SPD data was read from the modules" : null;
 
                 case SnapshotSections.DimmTelemetry:
-                    return GetSpdEntries(cpu).Any(e => (e.Value.PmicData != null && e.Value.PmicData.IsValid)
+                    if (memory?.Type == MemType.DDR4)
+                    {
+                        return GetDdr4ThermalSensors(memory).Any(s => s != null && s.IsValid && s.TempSensorEnabled)
+                            ? null
+                            : "The modules have no thermal sensor";
+                    }
+
+                    return GetSpdEntries(cpu).Any(e => (e.Value.Pmic != null && e.Value.Pmic.IsValid)
                         || (e.Value.ThermalData != null && e.Value.ThermalData.IsValid))
                         ? null
                         : "The modules report no PMIC or temperature data";

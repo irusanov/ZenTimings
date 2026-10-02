@@ -1,26 +1,26 @@
-<local:ThemedAdonisWindow
+<local:ThemedWindow
     xmlns:local="clr-namespace:ZenTimings"
     x:Class="ZenTimings.Windows.AdvancedTimingsWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-    xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+    xmlns:theming="clr-namespace:ZenTimings.Theming"
     xmlns:controls="clr-namespace:ZenTimings.Controls"
-    adonisExtensions:CursorSpotlightExtension.RelativeSpotlightSize="0"
     mc:Ignorable="d"
     Title="Advanced Timings"
     Height="520"
+    Width="760"
     MinHeight="320"
-    SizeToContent="Width"
+    MinWidth="360"
     WindowStartupLocation="CenterOwner"
     BorderThickness="1"
     UseLayoutRounding="True"
+	SnapIdentifier="AdvancedTimingsWindow"
     Style="{DynamicResource WindowStyles}">
 
     <Window.Resources>
-        <SolidColorBrush x:Key="SubtleSelectionBrush" Color="{DynamicResource {x:Static adonisUi:Colors.AccentColor}}" Opacity="0.15"/>
+        <SolidColorBrush x:Key="SubtleSelectionBrush" Color="{DynamicResource {x:Static theming:ThemeColors.AccentColor}}" Opacity="0.15"/>
 
         <Style x:Key="TimingRowStyle" TargetType="{x:Type DataGridRow}">
             <Setter Property="Focusable" Value="False"/>
@@ -35,9 +35,22 @@
             </Style.Triggers>
         </Style>
 
+        <!-- Cell text starts 1px (the cell border) + 3px (TextBlock padding) = 4px into the column, and the
+             headers use 4px left padding, so header and cell text line up. The code-behind sizes the columns
+             from these paddings (NameCellExtra, ValueCellExtra), keep them in sync. -->
+        <Style x:Key="TimingNameHeaderStyle" TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource SectionGridColumnHeaderStyle}">
+            <Setter Property="Padding" Value="4,2,6,2" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+        </Style>
+
+        <Style x:Key="TimingValueHeaderStyle" TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource SectionGridColumnHeaderStyle}">
+            <Setter Property="Padding" Value="4,2,3,2" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+        </Style>
+
         <Style x:Key="TimingNameTextStyle" TargetType="{x:Type TextBlock}">
             <Setter Property="Foreground" Value="{DynamicResource TextColor}" />
-            <Setter Property="Padding" Value="6,0,10,0" />
+            <Setter Property="Padding" Value="3,0,6,0" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsMismatch}" Value="True">
                     <Setter Property="Foreground" Value="{StaticResource TimingMismatchBrush}" />
@@ -48,7 +61,7 @@
 
         <Style x:Key="TimingValueTextStyle" TargetType="{x:Type TextBlock}">
             <Setter Property="Foreground" Value="{DynamicResource AccentTextColor}" />
-            <Setter Property="Padding" Value="8,0,8,0" />
+            <Setter Property="Padding" Value="3,0,3,0" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsMismatch}" Value="True">
                     <Setter Property="Foreground" Value="{StaticResource TimingMismatchBrush}" />
@@ -63,6 +76,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
@@ -109,12 +123,6 @@
                               Margin="0,0,10,0"
                               Checked="DifferencesOnlyCheckBox_Changed"
                               Unchecked="DifferencesOnlyCheckBox_Changed" />
-                    <CheckBox x:Name="ExtendedTimingsCheckBox"
-                              Content="Extended"
-                              VerticalAlignment="Center"
-                              IsChecked="True"
-                              Checked="ExtendedTimingsCheckBox_Changed"
-                              Unchecked="ExtendedTimingsCheckBox_Changed" />
                     <Button Style="{DynamicResource IconButtonStyle}"
                             Margin="10,0,0,0"
                             ToolTip="Copy the shown timings to clipboard"
@@ -123,56 +131,42 @@
 							DockPanel.Dock="Right">
                         <controls:AppIcon Kind="IconCopy" IconWidth="11" IconHeight="11" Fill="{DynamicResource TextColor}" />
                     </Button>
+                    <Button Style="{DynamicResource IconButtonStyle}"
+                            Margin="10,0,0,0"
+                            Click="AutoFit_Click"
+                            HorizontalAlignment="Right"
+                            DockPanel.Dock="Right">
+                        <Button.ToolTip>
+                            <TextBlock MaxWidth="280" TextWrapping="Wrap">
+                                <Run FontWeight="SemiBold" Text="Auto-fit" /><LineBreak />
+                                <Run Text="Resizes the window to show all shown timings without scrolling. It grows taller first, up to the height of the screen, and only adds columns side by side when one column can't hold them all. Takes the search and Differences only filters into account." />
+                            </TextBlock>
+                        </Button.ToolTip>
+                        <controls:AppIcon Kind="IconAutoFit" IconWidth="11" IconHeight="11" Fill="{DynamicResource TextColor}" />
+                    </Button>
                 </DockPanel>
             </Grid>
         </Border>
 
-        <Grid Grid.Row="2" Margin="8">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition x:Name="BaseTimingsColumn" Width="*" />
-                <ColumnDefinition x:Name="TimingsSplitterColumn" Width="8" />
-                <ColumnDefinition x:Name="ExtendedTimingsColumn" Width="*" />
-            </Grid.ColumnDefinitions>
-
-            <DataGrid
-                Grid.Column="0"
-                Name="BaseTimingsGrid"
-                AutoGenerateColumns="False"
-                HeadersVisibility="Column"
-                GridLinesVisibility="None"
-                HorizontalScrollBarVisibility="Auto"
-                VerticalScrollBarVisibility="Auto"
-                Focusable="False"
-                IsReadOnly="True"
-                CanUserAddRows="False"
-                CanUserDeleteRows="False"
-                CanUserResizeRows="False"
-                RowStyle="{StaticResource TimingRowStyle}"
-                FontSize="11" />
-
-            <DataGrid
-                Grid.Column="2"
-                Name="ExtendedTimingsGrid"
-                AutoGenerateColumns="False"
-                HeadersVisibility="Column"
-                GridLinesVisibility="None"
-                HorizontalScrollBarVisibility="Auto"
-                VerticalScrollBarVisibility="Auto"
-                Focusable="False"
-                IsReadOnly="True"
-                CanUserAddRows="False"
-                CanUserDeleteRows="False"
-                CanUserResizeRows="False"
-                RowStyle="{StaticResource TimingRowStyle}"
-                FontSize="11" />
+        <!-- Timing columns are created in code: rows that don't fit the height of one column flow into the next,
+             as many columns as the width allows. Only the last column scrolls vertically. -->
+        <Grid Grid.Row="2"
+              x:Name="TimingsHost"
+              Margin="8"
+              ClipToBounds="True"
+              SizeChanged="TimingsHost_SizeChanged">
+            <StackPanel x:Name="TimingsPanels" Orientation="Horizontal" />
         </Grid>
 
-        <Border Grid.Row="3" Style="{DynamicResource BottomPanelStyles}">
+        <Border Grid.Row="3" Style="{DynamicResource Separator}"/>
+
+        <!-- Status bar -->
+        <Border Grid.Row="4" Style="{DynamicResource BottomPanelStyles}">
             <TextBlock x:Name="StatusText"
                        Text="Ready"
                        Foreground="{DynamicResource TextColor}"
-                       Opacity="0.8"
+                       Opacity="0.75"
                        VerticalAlignment="Center" />
         </Border>
     </Grid>
-</local:ThemedAdonisWindow>
+</local:ThemedWindow>

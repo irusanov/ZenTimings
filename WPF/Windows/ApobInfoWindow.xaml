@@ -1,0 +1,239 @@
+<local:ThemedWindow
+    xmlns:local="clr-namespace:ZenTimings"
+    xmlns:theming="clr-namespace:ZenTimings.Theming"
+    x:Class="ZenTimings.Windows.ApobInfoWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="clr-namespace:ZenTimings.Controls"
+    mc:Ignorable="d"
+    Title="APOB Info"
+    SnapIdentifier="ApobInfoWindow"
+    Height="600"
+    Width="720"
+    MinHeight="300"
+    WindowStartupLocation="CenterOwner"
+    BorderThickness="1"
+    UseLayoutRounding="True"
+    Style="{DynamicResource WindowStyles}"
+    SizeToContent="Width"
+    Activated="Window_Activated"
+    Icon="/ZenTimings;component/Resources/new-icon/16.png">
+
+    <Window.Resources>
+        <!-- Section header with a button that copies the grid the section names in its Tag -->
+        <DataTemplate x:Key="CopyHeaderTemplate">
+            <DockPanel>
+                <TextBlock Text="{Binding}" Style="{StaticResource SectionHeaderTextStyle}" />
+                <Button Style="{DynamicResource IconButtonStyle}"
+                        Margin="4,0,0,0"
+                        ToolTip="Copy to clipboard"
+                        Click="CopySection_Click"
+                        DockPanel.Dock="Right"
+                        HorizontalAlignment="Right">
+                    <controls:AppIcon Kind="IconCopy" IconWidth="11" IconHeight="11" Fill="{DynamicResource TextColor}" />
+                </Button>
+            </DockPanel>
+        </DataTemplate>
+
+        <SolidColorBrush x:Key="MismatchBrush" Color="{DynamicResource {x:Static theming:ThemeColors.WarningColor}}"/>
+        <SolidColorBrush x:Key="MismatchBackgroundBrush" Color="{DynamicResource {x:Static theming:ThemeColors.WarningColor}}" Opacity="0.16"/>
+
+        <!-- Rows whose values differ between channels of the same memory P-state -->
+        <Style x:Key="ApobRowStyle" TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource SectionRowStyle}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsMismatch}" Value="True">
+                    <Setter Property="Background" Value="{StaticResource MismatchBackgroundBrush}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ApobNameTextStyle" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SectionNameTextStyle}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsMismatch}" Value="True">
+                    <Setter Property="Foreground" Value="{StaticResource MismatchBrush}" />
+                    <Setter Property="FontWeight" Value="Bold" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsTentative}" Value="True">
+                    <Setter Property="FontStyle" Value="Italic" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ApobValueTextStyle" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SectionValueTextStyle}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsMismatch}" Value="True">
+                    <Setter Property="Foreground" Value="{StaticResource MismatchBrush}" />
+                    <Setter Property="FontWeight" Value="SemiBold" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="LabelStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static theming:ThemeBrushes.ForegroundBrush}}"/>
+            <Setter Property="Opacity" Value="0.75"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="2,0"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <ScrollViewer Grid.Row="0" Padding="0" Margin="0" HorizontalScrollBarVisibility="Auto">
+            <StackPanel CanVerticallyScroll="False">
+                <GroupBox
+                    x:Name="OverviewSection"
+                    Header="Overview"
+                    Style="{StaticResource CollapsibleSectionStyle}" HeaderTemplate="{StaticResource CopyHeaderTemplate}"
+                    Tag="{x:Reference OverviewGrid}">
+                    <DataGrid
+                        Name="OverviewGrid"
+                        Style="{StaticResource SectionDataGridStyle}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Width="170" Binding="{Binding Name}" ElementStyle="{StaticResource SectionNameTextStyle}" />
+                            <DataGridTextColumn Width="auto" Binding="{Binding Value}" ElementStyle="{StaticResource SectionValueTextStyle}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+
+                <GroupBox
+                    x:Name="TimingsSection"
+                    Header="Channel Timings"
+                    Style="{StaticResource CollapsibleSectionStyle}" HeaderTemplate="{StaticResource CopyHeaderTemplate}"
+                    Tag="{x:Reference TimingsGrid}">
+                    <DataGrid
+                        Name="TimingsGrid"
+                        Style="{StaticResource SectionDataGridStyle}"
+                        HeadersVisibility="Column"
+                        RowStyle="{StaticResource ApobRowStyle}" />
+                </GroupBox>
+
+                <GroupBox
+                    x:Name="OdtSection"
+                    Header="ODT &amp; Drive Strength"
+                    Style="{StaticResource CollapsibleSectionStyle}" HeaderTemplate="{StaticResource CopyHeaderTemplate}"
+                    Tag="{x:Reference OdtGrid}">
+                    <DataGrid
+                        Name="OdtGrid"
+                        Style="{StaticResource SectionDataGridStyle}"
+                        HeadersVisibility="Column"
+                        RowStyle="{StaticResource ApobRowStyle}" />
+                </GroupBox>
+
+                <GroupBox
+                    x:Name="TrainingOdtSection"
+                    Header="ODT &amp; Drive Strength per Timing Block"
+                    Style="{StaticResource CollapsibleSectionStyle}" HeaderTemplate="{StaticResource CopyHeaderTemplate}"
+                    Tag="{x:Reference TrainingOdtGrid}">
+                    <DataGrid
+                        Name="TrainingOdtGrid"
+                        Style="{StaticResource SectionDataGridStyle}"
+                        HeadersVisibility="Column"
+                        RowStyle="{StaticResource ApobRowStyle}" />
+                </GroupBox>
+
+                <GroupBox
+                    x:Name="MemorySettingsSection"
+                    Header="Memory Settings"
+                    Style="{StaticResource CollapsibleSectionStyle}" HeaderTemplate="{StaticResource CopyHeaderTemplate}"
+                    Tag="{x:Reference MemorySettingsGrid}">
+                    <DataGrid
+                        Name="MemorySettingsGrid"
+                        Style="{StaticResource SectionDataGridStyle}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Width="190" Binding="{Binding Name}" ElementStyle="{StaticResource SectionNameTextStyle}" />
+                            <DataGridTextColumn Width="auto" Binding="{Binding Value}" ElementStyle="{StaticResource SectionValueTextStyle}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+
+                <GroupBox
+                    x:Name="DimmSection"
+                    Header="DIMMs"
+                    Style="{StaticResource CollapsibleSectionStyle}" HeaderTemplate="{StaticResource CopyHeaderTemplate}"
+                    Tag="{x:Reference DimmGrid}">
+                    <DataGrid
+                        Name="DimmGrid"
+                        Style="{StaticResource SectionDataGridStyle}"
+                        HeadersVisibility="Column" />
+                </GroupBox>
+
+                <GroupBox
+                    x:Name="ProfileSection"
+                    Header="Memory Profile (EXPO)"
+                    Style="{StaticResource CollapsibleSectionStyle}" HeaderTemplate="{StaticResource CopyHeaderTemplate}"
+                    Tag="{x:Reference ProfileGrid}">
+                    <DataGrid
+                        Name="ProfileGrid"
+                        Style="{StaticResource SectionDataGridStyle}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Width="170" Binding="{Binding Name}" ElementStyle="{StaticResource SectionNameTextStyle}" />
+                            <DataGridTextColumn Width="auto" Binding="{Binding Value}" ElementStyle="{StaticResource SectionValueTextStyle}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+
+                <GroupBox
+                    x:Name="MemoryMapSection"
+                    Header="Memory Map"
+                    Style="{StaticResource CollapsibleSectionStyle}" HeaderTemplate="{StaticResource CopyHeaderTemplate}"
+                    Tag="{x:Reference MemoryMapGrid}">
+                    <DataGrid
+                        Name="MemoryMapGrid"
+                        Style="{StaticResource SectionDataGridStyle}"
+                        HeadersVisibility="Column" />
+                </GroupBox>
+
+                <GroupBox
+                    x:Name="CoreMapSection"
+                    Header="Core Map"
+                    Style="{StaticResource CollapsibleSectionStyle}" HeaderTemplate="{StaticResource CopyHeaderTemplate}"
+                    Tag="{x:Reference CoreMapGrid}">
+                    <DataGrid
+                        Name="CoreMapGrid"
+                        Style="{StaticResource SectionDataGridStyle}"
+                        HeadersVisibility="Column" />
+                </GroupBox>
+
+                <GroupBox
+                    x:Name="EventLogSection"
+                    Header="Event Log"
+                    Style="{StaticResource CollapsibleSectionStyle}" HeaderTemplate="{StaticResource CopyHeaderTemplate}"
+                    Tag="{x:Reference EventLogGrid}">
+                    <DataGrid
+                        Name="EventLogGrid"
+                        Style="{StaticResource SectionDataGridStyle}"
+                        HeadersVisibility="Column" />
+                </GroupBox>
+
+                <GroupBox
+                    x:Name="EntriesSection"
+                    Header="APOB Entries"
+                    Style="{StaticResource CollapsibleSectionStyle}" HeaderTemplate="{StaticResource CopyHeaderTemplate}"
+                    Tag="{x:Reference EntriesGrid}">
+                    <DataGrid
+                        Name="EntriesGrid"
+                        Style="{StaticResource SectionDataGridStyle}"
+                        HeadersVisibility="Column" />
+                </GroupBox>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Border Grid.Row="1" Style="{DynamicResource Separator}"/>
+
+        <!-- Status bar -->
+        <Border Grid.Row="2" Style="{DynamicResource BottomPanelStyles}">
+            <TextBlock x:Name="StatusText"
+                       Text="Ready"
+                       Style="{StaticResource LabelStyle}"
+                       TextTrimming="CharacterEllipsis"/>
+        </Border>
+    </Grid>
+</local:ThemedWindow>

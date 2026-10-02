@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Management;
@@ -12,6 +12,7 @@ namespace ZenTimings.Common
         private const string className = "ASUSHW";
         private string instanceName = "";
         private ManagementObject instance;
+        private readonly object sync = new object();
 
         public List<AsusSensorInfo> sensors = new List<AsusSensorInfo>();
 
@@ -87,9 +88,11 @@ namespace ZenTimings.Common
             uint data = 0;
             try
             {
-                ManagementBaseObject res = WMI.InvokeMethod(mo, methodName, inParamName, arg);
-                if (res != null)
-                    data = (uint)res["Data"];
+                using (ManagementBaseObject res = WMI.InvokeMethod(mo, methodName, inParamName, arg))
+                {
+                    if (res != null)
+                        data = (uint)res["Data"];
+                }
             }
             catch
             {
@@ -142,16 +145,18 @@ namespace ZenTimings.Common
             AsusSensorInfo sensor = new AsusSensorInfo();
             try
             {
-                ManagementBaseObject res = WMI.InvokeMethod(instance, "sensor_get_info", "Index", index);
-                if (res != null)
+                using (ManagementBaseObject res = WMI.InvokeMethod(instance, "sensor_get_info", "Index", index))
                 {
-                    sensor.Index = index;
-                    sensor.DataType = (AsusSensorDataType)res["Data_Type"];
-                    sensor.Location = (AsusSensorLocation)res["Location"];
-                    sensor.Name = (string)res["Name"];
-                    sensor.Source = (AsusSensorSource)res["Source"];
-                    sensor.Type = (AsusSensorType)res["Type"];
-                    sensor.Value = GetSensorFormattedValue(sensor);
+                    if (res != null)
+                    {
+                        sensor.Index = index;
+                        sensor.DataType = (AsusSensorDataType)res["Data_Type"];
+                        sensor.Location = (AsusSensorLocation)res["Location"];
+                        sensor.Name = (string)res["Name"];
+                        sensor.Source = (AsusSensorSource)res["Source"];
+                        sensor.Type = (AsusSensorType)res["Type"];
+                        sensor.Value = GetSensorFormattedValue(sensor);
+                    }
                 }
             }
             catch
@@ -162,12 +167,33 @@ namespace ZenTimings.Common
             return sensor;
         }
 
+        // Update all sensors
         public void UpdateSensors()
         {
-            UpdateBuffer(AsusSensorSource.SIO);
-            UpdateBuffer(AsusSensorSource.EC);
+            List<AsusSensorInfo> list = sensors;
+            if (list == null)
+                return;
 
-            foreach (AsusSensorInfo sensor in sensors) sensor.Value = GetSensorFormattedValue(sensor);
+            lock (sync)
+            {
+                UpdateBuffer(AsusSensorSource.SIO);
+                UpdateBuffer(AsusSensorSource.EC);
+
+                foreach (AsusSensorInfo sensor in list) sensor.Value = GetSensorFormattedValue(sensor);
+            }
+        }
+
+        // Update a single sensor
+        public void UpdateSensor(AsusSensorInfo sensor)
+        {
+            if (sensor == null || sensors == null)
+                return;
+
+            lock (sync)
+            {
+                UpdateBuffer(sensor.Source);
+                sensor.Value = GetSensorFormattedValue(sensor);
+            }
         }
 
         public AsusSensorInfo FindSensorByName(string name) => sensors?.Find(x => x.Name == name);

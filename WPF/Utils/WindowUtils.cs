@@ -8,6 +8,33 @@ namespace ZenTimings.Utils
 {
     internal static class WindowUtils
     {
+        // DWMWA_WINDOW_CORNER_PREFERENCE (33) and DWMWA_BORDER_COLOR (34) exist from Windows 11 (build 22000).
+        private const int Windows11Build = 22000;
+        private static readonly Lazy<int> osBuild = new Lazy<int>(GetOsBuild);
+
+        /// <summary>
+        /// True when the OS supports DWM rounded corners and border colors (Windows 11 or newer).
+        /// </summary>
+        public static bool SupportsCornerPreference => osBuild.Value >= Windows11Build;
+
+        // Environment.OSVersion is capped at 6.2.9200 unless the app manifest declares Windows 10 support,
+        // so read the real build number from ntdll.
+        private static int GetOsBuild()
+        {
+            try
+            {
+                var info = new OSVERSIONINFOEX { dwOSVersionInfoSize = Marshal.SizeOf(typeof(OSVERSIONINFOEX)) };
+                if (RtlGetVersion(ref info) == 0)
+                    return info.dwBuildNumber;
+            }
+            catch
+            {
+                // Fall through to the managed value.
+            }
+
+            return Environment.OSVersion.Version.Build;
+        }
+
         // Workaround for Windows 11 system border overriding application window border
         public static void RemoveSystemBorderAndRadius(System.Windows.Window window)
         {
@@ -36,6 +63,9 @@ namespace ZenTimings.Utils
 
         public static void SetCornerPreference(System.Windows.Window window, int preference = 0)
         {
+            if (!SupportsCornerPreference)
+                return;
+
             var hwnd = new WindowInteropHelper(window).Handle;
             if (hwnd == IntPtr.Zero)
                 return;
@@ -103,6 +133,26 @@ namespace ZenTimings.Utils
             DWMWCP_ROUND = 2,
             DWMWCP_ROUNDSMALL = 3
         }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        private struct OSVERSIONINFOEX
+        {
+            public int dwOSVersionInfoSize;
+            public int dwMajorVersion;
+            public int dwMinorVersion;
+            public int dwBuildNumber;
+            public int dwPlatformId;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+            public string szCSDVersion;
+            public ushort wServicePackMajor;
+            public ushort wServicePackMinor;
+            public ushort wSuiteMask;
+            public byte wProductType;
+            public byte wReserved;
+        }
+
+        [DllImport("ntdll.dll")]
+        private static extern int RtlGetVersion(ref OSVERSIONINFOEX versionInfo);
 
         [DllImport("dwmapi.dll")]
         private static extern int DwmSetWindowAttribute(

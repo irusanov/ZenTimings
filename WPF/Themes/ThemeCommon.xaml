@@ -1,0 +1,54 @@
+<!--
+    Application colors every theme merges. They default to the theme's palette (ThemeColors), so a theme only
+    lists the ones that should look different. DynamicResource keeps them in step with the palette the theme
+    defines on top of this dictionary.
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:theming="clr-namespace:ZenTimings.Theming;assembly=ZenTimings">
+
+    <!-- Text -->
+    <SolidColorBrush x:Key="TextColor" Color="{DynamicResource {x:Static theming:ThemeColors.ForegroundColor}}" />
+    <SolidColorBrush x:Key="AccentTextColor" Color="{DynamicResource {x:Static theming:ThemeColors.AccentColor}}" />
+    <SolidColorBrush x:Key="SecondaryTextBrush" Color="{DynamicResource {x:Static theming:ThemeColors.SecondaryForegroundColor}}" />
+    <SolidColorBrush x:Key="DisabledColor" Color="{DynamicResource {x:Static theming:ThemeColors.DisabledForegroundColor}}" />
+
+    <!-- Panels of the main window -->
+    <SolidColorBrush x:Key="PanelBackground" Color="{DynamicResource {x:Static theming:ThemeColors.BackgroundColor}}" />
+    <SolidColorBrush x:Key="BottomPanelBackground" Color="{DynamicResource {x:Static theming:ThemeColors.BackgroundColor}}" />
+    <SolidColorBrush x:Key="MainMenuPanelBackground" Color="{DynamicResource {x:Static theming:ThemeColors.BackgroundColor}}" />
+    <SolidColorBrush x:Key="MenuItemBackground" Color="{DynamicResource {x:Static theming:ThemeColors.BackgroundColor}}" />
+    <SolidColorBrush x:Key="ContentBackground" Color="Transparent" />
+    <SolidColorBrush x:Key="SeparatorColor" Color="{DynamicResource {x:Static theming:ThemeColors.BorderColor}}" />
+    <SolidColorBrush x:Key="SuccessBackground" Color="#327B56" />
+
+    <!-- Sensors window sections -->
+    <SolidColorBrush x:Key="SensorGroupHeaderBackground" Color="{DynamicResource {x:Static theming:ThemeColors.BorderColor}}" />
+    <SolidColorBrush x:Key="SensorGroupHeaderForeground" Color="{DynamicResource {x:Static theming:ThemeColors.ForegroundColor}}" />
+    <SolidColorBrush x:Key="SensorGroupBackground" Color="{DynamicResource {x:Static theming:ThemeColors.BackgroundColor}}" />
+    <SolidColorBrush x:Key="SensorModuleInfoBackground" Color="{DynamicResource {x:Static theming:ThemeColors.SurfaceColor}}" />
+    <SolidColorBrush x:Key="SensorModuleInfoBorder" Color="Transparent" />
+    <SolidColorBrush x:Key="SensorColumnHeaderBackground" Color="{DynamicResource {x:Static theming:ThemeColors.BackgroundColor}}" />
+    <SolidColorBrush x:Key="SensorColumnHeaderForeground" Color="{DynamicResource {x:Static theming:ThemeColors.SecondaryForegroundColor}}" />
+    <SolidColorBrush x:Key="SensorColumnHeaderBorder" Color="{DynamicResource {x:Static theming:ThemeColors.BorderColor}}" />
+    <SolidColorBrush x:Key="SensorRowDivider" Color="{DynamicResource {x:Static theming:ThemeColors.BorderColor}}" Opacity="0.15" />
+
+    <!-- Window frame -->
+    <SolidColorBrush x:Key="WindowBorderColor" Color="{DynamicResource {x:Static theming:ThemeColors.BorderColor}}" />
+    <Thickness x:Key="WindowBorderThickness">1</Thickness>
+
+    <Style x:Key="WindowStyles" TargetType="{x:Type Window}">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{DynamicResource WindowBorderColor}" />
+    </Style>
+
+    <!-- Vendor logos drawn in the text color -->
+    <SolidColorBrush x:Key="LogoColor" Color="{DynamicResource {x:Static theming:ThemeColors.ForegroundColor}}" />
+    <SolidColorBrush x:Key="LogoColorAlt" Color="{DynamicResource {x:Static theming:ThemeColors.ForegroundColor}}" />
+
+    <!-- Timings that differ between modules, and the live snapshot indicator -->
+    <SolidColorBrush x:Key="TimingMismatchBrush" Color="{DynamicResource {x:Static theming:ThemeColors.AccentColor}}" />
+    <SolidColorBrush x:Key="TimingMismatchBackgroundBrush" Color="{DynamicResource {x:Static theming:ThemeColors.AccentColor}}" Opacity="0.16" />
+    <SolidColorBrush x:Key="LiveSnapshotBrush" Color="{DynamicResource {x:Static theming:ThemeColors.WarningColor}}" />
+
+</ResourceDictionary>
