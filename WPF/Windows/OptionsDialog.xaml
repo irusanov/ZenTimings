@@ -159,14 +159,25 @@
                     Style="{StaticResource SettingToggle}"
                     Content="Check for updates" />
 
-                <ToggleButton
-                    x:Name="checkBoxBetaUpdates"
+                <TextBlock
+                    x:Name="labelReleaseChannel"
                     Grid.Column="0"
                     Grid.Row="3"
-                    Grid.ColumnSpan="3"
-                    Style="{StaticResource SettingToggle}"
-                    Content="Receive Beta updates"
-                    IsEnabled="{Binding IsChecked, ElementName=checkBoxCheckUpdate}"/>
+                    Style="{StaticResource SettingLabel}"
+                    Text="Release channel"
+                    IsEnabled="{Binding IsChecked, ElementName=checkBoxCheckUpdate}" />
+
+                <ComboBox
+                    x:Name="comboBoxReleaseChannel"
+                    Grid.Column="1"
+                    Grid.Row="3"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource SettingCombo}"
+                    IsEnabled="{Binding IsChecked, ElementName=checkBoxCheckUpdate}">
+                    <ComboBoxItem Content="Release" ToolTip="Stable releases only" />
+                    <ComboBoxItem Content="Beta" ToolTip="Beta releases only" />
+                    <ComboBoxItem Content="Any" ToolTip="Stable and beta releases, whichever is newer" />
+                </ComboBox>
 
                 <ToggleButton
                     x:Name="checkBoxSingleInstance"

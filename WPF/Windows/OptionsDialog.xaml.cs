@@ -51,7 +51,7 @@ namespace ZenTimings.Windows
             checkBoxAutoRefresh.IsEnabled = settings.AdvancedMode;
             checkBoxAdvancedMode.IsChecked = settings.AdvancedMode;
             checkBoxCheckUpdate.IsChecked = settings.CheckForUpdates;
-            checkBoxBetaUpdates.IsChecked = settings.ParticipateInBetaUpdates;
+            comboBoxReleaseChannel.SelectedIndex = (int)settings.UpdateReleaseChannel;
             checkBoxSavePosition.IsChecked = settings.SaveWindowPosition;
             checkBoxWindowSnapping.IsChecked = settings.EnableWindowSnapping;
             checkBoxMinimizeToTray.IsChecked = settings.MinimizeToTray;
@@ -146,7 +146,7 @@ namespace ZenTimings.Windows
             appSettings.AutoRefreshInterval = Convert.ToInt32(numericUpDownRefreshInterval.Text);
             appSettings.AdvancedMode = (bool)checkBoxAdvancedMode.IsChecked;
             appSettings.CheckForUpdates = (bool)checkBoxCheckUpdate.IsChecked;
-            appSettings.ParticipateInBetaUpdates = (bool)checkBoxBetaUpdates.IsChecked;
+            appSettings.UpdateReleaseChannel = (ReleaseChannel)comboBoxReleaseChannel.SelectedIndex;
             appSettings.SaveWindowPosition = (bool)checkBoxSavePosition.IsChecked;
             appSettings.EnableWindowSnapping = (bool)checkBoxWindowSnapping.IsChecked;
             appSettings.MinimizeToTray = (bool)checkBoxMinimizeToTray.IsChecked;

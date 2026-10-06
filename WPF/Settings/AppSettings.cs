@@ -66,6 +66,17 @@ namespace ZenTimings.Settings
             APOB
         }
 
+        /// <summary>Which update feed the updater checks.</summary>
+        public enum ReleaseChannel : int
+        {
+            /// <summary>Stable releases only.</summary>
+            Release,
+            /// <summary>Beta releases only.</summary>
+            Beta,
+            /// <summary>Both feeds; the newer version wins.</summary>
+            Any,
+        }
+
         public enum VoltageSensorSource : int
         {
             Auto = -1,
@@ -214,10 +225,27 @@ namespace ZenTimings.Settings
         public string ScreenshotSaveLocation { get; set; } = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Screenshots");
         public bool CheckForUpdates { get; set; } = true;
 #if BETA
-        public bool ParticipateInBetaUpdates { get; set; } = true;
+        public ReleaseChannel UpdateReleaseChannel { get; set; } = ReleaseChannel.Any;
 #else
-        public bool ParticipateInBetaUpdates { get; set; } = false;
+        public ReleaseChannel UpdateReleaseChannel { get; set; } = ReleaseChannel.Release;
 #endif
+
+        /// <summary>
+        /// Migration only: reads the old on/off beta setting from settings files written before
+        /// <see cref="UpdateReleaseChannel"/> existed (on maps to Any, off to Release). Never written back.
+        /// </summary>
+        [Browsable(false)]
+        public bool? ParticipateInBetaUpdates
+        {
+            get => null;
+            set
+            {
+                if (value.HasValue)
+                    UpdateReleaseChannel = value.Value ? ReleaseChannel.Any : ReleaseChannel.Release;
+            }
+        }
+
+        public bool ShouldSerializeParticipateInBetaUpdates() => false;
         public string UpdaterSkippedVersion { get; set; } = "";
         public string DriverUpdateLastSkippedVersion { get; set; } = "";
         public string UpdaterRemindLaterAt { get; set; } = "";
