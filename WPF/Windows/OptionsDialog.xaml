@@ -174,7 +174,7 @@
                     Grid.ColumnSpan="2"
                     Style="{StaticResource SettingCombo}"
                     IsEnabled="{Binding IsChecked, ElementName=checkBoxCheckUpdate}">
-                    <ComboBoxItem Content="Release" ToolTip="Stable releases only" />
+                    <ComboBoxItem Content="Stable" ToolTip="Stable releases only" />
                     <ComboBoxItem Content="Beta" ToolTip="Beta releases only" />
                     <ComboBoxItem Content="Any" ToolTip="Stable and beta releases, whichever is newer" />
                 </ComboBox>

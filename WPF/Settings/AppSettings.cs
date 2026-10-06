@@ -70,7 +70,7 @@ namespace ZenTimings.Settings
         public enum ReleaseChannel : int
         {
             /// <summary>Stable releases only.</summary>
-            Release,
+            Stable,
             /// <summary>Beta releases only.</summary>
             Beta,
             /// <summary>Both feeds; the newer version wins.</summary>
@@ -227,7 +227,7 @@ namespace ZenTimings.Settings
 #if BETA
         public ReleaseChannel UpdateReleaseChannel { get; set; } = ReleaseChannel.Any;
 #else
-        public ReleaseChannel UpdateReleaseChannel { get; set; } = ReleaseChannel.Release;
+        public ReleaseChannel UpdateReleaseChannel { get; set; } = ReleaseChannel.Stable;
 #endif
 
         /// <summary>
@@ -241,7 +241,7 @@ namespace ZenTimings.Settings
             set
             {
                 if (value.HasValue)
-                    UpdateReleaseChannel = value.Value ? ReleaseChannel.Any : ReleaseChannel.Release;
+                    UpdateReleaseChannel = value.Value ? ReleaseChannel.Any : ReleaseChannel.Stable;
             }
         }
 
