@@ -156,8 +156,6 @@
     <Compile Include="Converters\FloatToVoltageConverter.cs" />
     <Compile Include="Converters\DDR5ToVisConverter.cs" />
     <Compile Include="Converters\PhoenixToVisConverter.cs" />
-    <Compile Include="Encryption\AesEncryption.cs" />
-    <Compile Include="Encryption\EncryptionKeys.cs" />
     <Compile Include="Plugin\IPlugin.cs" />
     <Compile Include="Plugin\OHWMPlugin.cs" />
     <Compile Include="Plugin\SVI2Plugin.cs" />
