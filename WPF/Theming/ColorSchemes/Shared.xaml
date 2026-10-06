@@ -19,11 +19,21 @@
     <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.AccentForegroundBrush}" Color="{DynamicResource {x:Static t:ThemeColors.AccentForegroundColor}}"/>
     <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.SuccessBrush}" Color="{DynamicResource {x:Static t:ThemeColors.SuccessColor}}"/>
     <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.WarningBrush}" Color="{DynamicResource {x:Static t:ThemeColors.WarningColor}}"/>
+    <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.WarningForegroundBrush}" Color="{DynamicResource {x:Static t:ThemeColors.WarningForegroundColor}}"/>
     <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.ErrorBrush}" Color="{DynamicResource {x:Static t:ThemeColors.ErrorColor}}"/>
+    <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.ErrorForegroundBrush}" Color="{DynamicResource {x:Static t:ThemeColors.ErrorForegroundColor}}"/>
 
     <!-- Accent states -->
     <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.AccentHoverBrush}" Color="{DynamicResource {x:Static t:ThemeColors.AccentColor}}" Opacity="0.9"/>
     <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.AccentPressedBrush}" Color="{DynamicResource {x:Static t:ThemeColors.AccentColor}}" Opacity="0.8"/>
+
+    <!-- Warning states -->
+    <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.WarningHoverBrush}" Color="{DynamicResource {x:Static t:ThemeColors.WarningColor}}" Opacity="0.9"/>
+    <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.WarningPressedBrush}" Color="{DynamicResource {x:Static t:ThemeColors.WarningColor}}" Opacity="0.8"/>
+
+    <!-- Error states -->
+    <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.ErrorHoverBrush}" Color="{DynamicResource {x:Static t:ThemeColors.ErrorColor}}" Opacity="0.9"/>
+    <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.ErrorPressedBrush}" Color="{DynamicResource {x:Static t:ThemeColors.ErrorColor}}" Opacity="0.8"/>
 
     <!-- Sizes -->
     <CornerRadius x:Key="{x:Static t:ThemeDimensions.CornerRadius}">0</CornerRadius>
