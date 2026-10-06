@@ -50,7 +50,7 @@ namespace ZenTimings
             }
         }
 
-        private static bool UseBetaUpdates => AppSettings.Instance.ParticipateInBetaUpdates;
+        private static AppSettings.ReleaseChannel Channel => AppSettings.Instance.UpdateReleaseChannel;
 
         public void CheckForUpdate(bool manualUpdate = false, bool suppressNetworkErrorDialog = false)
         {
@@ -118,11 +118,20 @@ namespace ZenTimings
             }
         }
 
-        // Stable is always checked. With beta updates enabled the beta channel is checked too and the newer one wins,
-        // so beta users also get a stable release that is newer than the last beta.
+        // Release checks the stable feed only and Beta the beta feed only. Any checks both and the newer one wins,
+        // so those users also get a stable release that is newer than the last beta.
         private UpdaterArgs FetchLatestUpdateInfo(out bool isBeta)
         {
             isBeta = false;
+            var channel = Channel;
+
+            if (channel == AppSettings.ReleaseChannel.Beta)
+            {
+                isBeta = true;
+                return FetchUpdateInfo(betaUpdateUrl, betaSignatureUrl);
+            }
+
+            bool checkBeta = channel == AppSettings.ReleaseChannel.Any;
             Exception stableError = null;
             UpdaterArgs stable = null;
 
@@ -130,13 +139,13 @@ namespace ZenTimings
             {
                 stable = FetchUpdateInfo(updateUrl, signatureUrl);
             }
-            catch (Exception ex) when (UseBetaUpdates && !(ex is CryptographicException))
+            catch (Exception ex) when (checkBeta && !(ex is CryptographicException))
             {
                 // Beta may still be available, report the stable error only if that fails as well
                 stableError = ex;
             }
 
-            if (!UseBetaUpdates)
+            if (!checkBeta)
                 return stable;
 
             UpdaterArgs beta = null;

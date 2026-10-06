@@ -175,6 +175,62 @@
         </Style.Triggers>
     </Style>
 
+    <Style x:Key="{x:Static t:ThemeStyles.WarningButton}" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static t:ThemeBrushes.WarningForegroundBrush}}"/>
+        <Setter Property="Background" Value="{DynamicResource {x:Static t:ThemeBrushes.WarningBrush}}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static t:ThemeBrushes.WarningBrush}}"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource {x:Static t:ThemeBrushes.WarningHoverBrush}}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static t:ThemeBrushes.WarningHoverBrush}}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{DynamicResource {x:Static t:ThemeBrushes.WarningPressedBrush}}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static t:ThemeBrushes.WarningPressedBrush}}"/>
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static t:ThemeBrushes.WarningForegroundBrush}}"/>
+            </Trigger>
+            <Trigger Property="IsDefault" Value="True">
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static t:ThemeBrushes.WarningBrush}}"/>
+            </Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static t:ThemeBrushes.WarningHoverBrush}}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static t:ThemeBrushes.DisabledForegroundBrush}}"/>
+                <Setter Property="Background" Value="{DynamicResource {x:Static t:ThemeBrushes.WarningBrush}}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static t:ThemeBrushes.WarningBrush}}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="{x:Static t:ThemeStyles.DangerButton}" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static t:ThemeBrushes.ErrorForegroundBrush}}"/>
+        <Setter Property="Background" Value="{DynamicResource {x:Static t:ThemeBrushes.ErrorBrush}}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static t:ThemeBrushes.ErrorBrush}}"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource {x:Static t:ThemeBrushes.ErrorHoverBrush}}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static t:ThemeBrushes.ErrorHoverBrush}}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{DynamicResource {x:Static t:ThemeBrushes.ErrorPressedBrush}}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static t:ThemeBrushes.ErrorPressedBrush}}"/>
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static t:ThemeBrushes.ErrorForegroundBrush}}"/>
+            </Trigger>
+            <Trigger Property="IsDefault" Value="True">
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static t:ThemeBrushes.ErrorBrush}}"/>
+            </Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static t:ThemeBrushes.ErrorHoverBrush}}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static t:ThemeBrushes.DisabledForegroundBrush}}"/>
+                <Setter Property="Background" Value="{DynamicResource {x:Static t:ThemeBrushes.ErrorBrush}}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static t:ThemeBrushes.ErrorBrush}}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <Style x:Key="{x:Static t:ThemeStyles.WindowButton}" TargetType="Button">
         <Setter Property="Foreground" Value="{DynamicResource {x:Static t:ThemeBrushes.ForegroundBrush}}"/>
         <Setter Property="Background" Value="{DynamicResource {x:Static t:ThemeBrushes.SubtleHoverBrush}}"/>

@@ -22,7 +22,9 @@
     <Color x:Key="{x:Static t:ThemeColors.AccentForegroundColor}">#FFFFFF</Color>
     <Color x:Key="{x:Static t:ThemeColors.SuccessColor}">#4CC38A</Color>
     <Color x:Key="{x:Static t:ThemeColors.WarningColor}">#FFC107</Color>
+    <Color x:Key="{x:Static t:ThemeColors.WarningForegroundColor}">#1A1A1A</Color>
     <Color x:Key="{x:Static t:ThemeColors.ErrorColor}">#FF6B6B</Color>
+    <Color x:Key="{x:Static t:ThemeColors.ErrorForegroundColor}">#1A1A1A</Color>
 
     <!-- Interaction layers: translucent fills that suit any background of a dark theme -->
     <SolidColorBrush x:Key="{x:Static t:ThemeBrushes.ControlFillBrush}" Color="#0FFFFFFF"/>
