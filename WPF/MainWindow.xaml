@@ -199,20 +199,8 @@
             <Border Style="{DynamicResource BottomPanelStyles}">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition>
-                            <ColumnDefinition.Style>
-                                <Style TargetType="ColumnDefinition">
-                                    <Setter Property="Width" Value="312" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Settings.AdvancedMode}" Value="False">
-                                            <Setter Property="Width" Value="240" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ColumnDefinition.Style>
-                        </ColumnDefinition>
-                        <ColumnDefinition Width="5" />
                         <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="auto" />
                     </Grid.ColumnDefinitions>
 
                     <DockPanel Grid.Column="0">
@@ -228,7 +216,7 @@
                     </DockPanel>
 
                     <StackPanel 
-                        Grid.Column="2"
+                        Grid.Column="1"
                         Orientation="Horizontal"
                         HorizontalAlignment="Right"
                         Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}">
@@ -237,9 +225,10 @@
                         <TextBlock
                             Text="ECC"
                             Style="{DynamicResource ValueStyles}"
-                            Visibility="{Binding ECC, Mode=OneWay, Converter={StaticResource BoolToVis}}"
                             TextAlignment="Right"
                             Margin="0,0,5,0"
+                            MinWidth="35"
+                            Visibility="{Binding ECC, Mode=OneWay, Converter={StaticResource BoolToVis}}"
                             IsEnabled="True"
                             ToolTip="Error-Correcting Code memory detected"
                         />
