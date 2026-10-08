@@ -1,0 +1,226 @@
+﻿<local:ThemedWindow
+    xmlns:local="clr-namespace:ZenTimings"
+    x:Class="ZenTimings.Windows.SendReportDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:theming="clr-namespace:ZenTimings.Theming"
+    xmlns:controls="clr-namespace:ZenTimings.Controls"
+    mc:Ignorable="d"
+    Title="Send to Developer"
+    Width="500"
+    SizeToContent="Height"
+    ResizeMode="NoResize"
+    WindowStartupLocation="CenterOwner"
+    Icon="/ZenTimings;component/Resources/new-icon/16.png"
+    ShowInTaskbar="False"
+    BorderThickness="1"
+    UseLayoutRounding="True"
+    Style="{DynamicResource WindowStyles}"
+    Closing="Window_Closing">
+
+    <local:ThemedWindow.Resources>
+        <Style x:Key="FieldLabel" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="0 0 0 4" />
+        </Style>
+        <Style x:Key="Hint" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static theming:ThemeBrushes.SecondaryForegroundBrush}}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+        <Style x:Key="Placeholder" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static theming:ThemeBrushes.DisabledForegroundBrush}}" />
+            <Setter Property="IsHitTestVisible" Value="False" />
+            <Setter Property="Margin" Value="10 5 10 0" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource {x:Static theming:ThemeBrushes.SurfaceBrush}}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static theming:ThemeBrushes.BorderBrush}}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource {x:Static theming:ThemeDimensions.CornerRadius}}" />
+            <Setter Property="Padding" Value="12 10" />
+            <Setter Property="Margin" Value="0 12 0 0" />
+        </Style>
+        <Style x:Key="IconBadge" TargetType="Border">
+            <Setter Property="Width" Value="40" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="CornerRadius" Value="20" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+        </Style>
+    </local:ThemedWindow.Resources>
+
+    <Grid>
+        <!-- Form -->
+        <StackPanel x:Name="FormView" Margin="20 18 20 16">
+
+            <Grid Margin="0 0 0 16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Border Style="{StaticResource IconBadge}" Background="{DynamicResource {x:Static theming:ThemeBrushes.AccentBrush}}">
+                    <controls:AppIcon Kind="IconSend" IconWidth="18" IconHeight="18"
+                                      HorizontalAlignment="Center" VerticalAlignment="Center" Margin="3 0 0 0"
+                                      Fill="{DynamicResource {x:Static theming:ThemeBrushes.AccentForegroundBrush}}" />
+                </Border>
+                <StackPanel Grid.Column="1" Margin="12 0 0 0" VerticalAlignment="Center">
+                    <TextBlock Text="Send debug report" FontSize="16" FontWeight="SemiBold" />
+                    <TextBlock Style="{StaticResource Hint}" Margin="0 2 0 0"
+                               Text="The report goes directly to the ZenTimings developer and helps track down your issue." />
+                </StackPanel>
+            </Grid>
+
+            <!-- Description -->
+            <TextBlock Style="{StaticResource FieldLabel}" Text="What happened?" />
+            <Grid>
+                <TextBox x:Name="DescriptionBox"
+                         Height="100"
+                         AcceptsReturn="True"
+                         TextWrapping="Wrap"
+                         VerticalContentAlignment="Top"
+                         VerticalScrollBarVisibility="Auto"
+                         SpellCheck.IsEnabled="True"
+                         TextChanged="DescriptionBox_TextChanged" />
+                <TextBlock x:Name="DescriptionPlaceholder" Style="{StaticResource Placeholder}"
+                           Text="Describe the problem: what you did, what you expected and what happened instead." />
+            </Grid>
+
+            <!-- Email -->
+            <TextBlock Style="{StaticResource FieldLabel}" Text="Email (optional)" Margin="0 12 0 4" />
+            <Grid>
+                <TextBox x:Name="EmailBox" TextChanged="EmailBox_TextChanged" />
+                <TextBlock x:Name="EmailPlaceholder"
+                           Style="{StaticResource Placeholder}"
+                           Height="24"
+                           Text="Only needed if you'd like a reply" />
+            </Grid>
+
+            <!-- Screenshot -->
+            <Border Style="{StaticResource Card}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel VerticalAlignment="Center">
+                        <ToggleButton x:Name="ScreenshotToggle"
+                                      Style="{DynamicResource {x:Static theming:ThemeStyles.ToggleSwitch}}"
+                                      Content="Include screenshot"
+                                      Checked="ScreenshotToggle_Changed"
+                                      Unchecked="ScreenshotToggle_Changed" />
+                        <TextBlock x:Name="ScreenshotHint" Style="{StaticResource Hint}" Margin="0 4 12 0"
+                                   Text="A picture of the main window, so the developer sees what you see." />
+                    </StackPanel>
+                    <Border x:Name="ScreenshotFrame"
+                            Grid.Column="1"
+                            BorderBrush="{DynamicResource {x:Static theming:ThemeBrushes.BorderBrush}}"
+                            BorderThickness="1"
+                            VerticalAlignment="Center">
+                        <Image x:Name="ScreenshotImage" MaxHeight="72" MaxWidth="120" Stretch="Uniform"
+                               RenderOptions.BitmapScalingMode="HighQuality" />
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- Report -->
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <controls:AppIcon Kind="IconFile" IconWidth="16" IconHeight="16" VerticalAlignment="Center"
+                                          Fill="{DynamicResource {x:Static theming:ThemeBrushes.SecondaryForegroundBrush}}" />
+                        <StackPanel Grid.Column="1" Margin="8 0" VerticalAlignment="Center">
+                            <TextBlock Text="debug-report.txt" />
+                            <TextBlock x:Name="ReportSizeText" Style="{StaticResource Hint}" FontSize="11" />
+                        </StackPanel>
+                        <Button x:Name="TogglePreviewButton" Grid.Column="2" Content="Show" MinWidth="70"
+                                Click="TogglePreviewButton_Click" />
+                    </Grid>
+                    <TextBox x:Name="ReportPreview"
+                             Visibility="Collapsed"
+                             Margin="0 10 0 0"
+                             Height="200"
+                             IsReadOnly="True"
+                             TextWrapping="NoWrap"
+                             VerticalContentAlignment="Top"
+                             VerticalScrollBarVisibility="Auto"
+                             HorizontalScrollBarVisibility="Auto"
+                             FontFamily="Consolas"
+                             FontSize="11" />
+                </StackPanel>
+            </Border>
+
+            <TextBlock Style="{StaticResource Hint}" FontSize="11" Margin="0 10 0 0"
+                       Text="Only what is shown above is sent. Serial numbers are included only if 'Print serial numbers' was enabled when the report was generated." />
+
+            <!-- Error -->
+            <Border x:Name="ErrorPanel" Visibility="Collapsed" Margin="0 12 0 0" Padding="10 8"
+                    BorderThickness="1"
+                    BorderBrush="{DynamicResource {x:Static theming:ThemeBrushes.ErrorBrush}}"
+                    CornerRadius="{DynamicResource {x:Static theming:ThemeDimensions.CornerRadius}}">
+                <TextBlock x:Name="ErrorText" TextWrapping="Wrap"
+                           Foreground="{DynamicResource {x:Static theming:ThemeBrushes.ErrorBrush}}" />
+            </Border>
+
+            <!-- Buttons -->
+            <Grid Margin="0 16 0 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel x:Name="BusyPanel" Orientation="Horizontal" VerticalAlignment="Center" Visibility="Visible">
+                    <ProgressBar IsIndeterminate="True" Width="120" Height="8" VerticalAlignment="Center" />
+                    <TextBlock Style="{StaticResource Hint}" Text="Sending..." Margin="8 0 0 0" VerticalAlignment="Center" />
+                </StackPanel>
+                <Button x:Name="SendButton" Grid.Column="1" Content="Send" MinWidth="80" Margin="0 0 8 0"
+                        IsEnabled="False"
+                        Style="{DynamicResource {x:Static theming:ThemeStyles.AccentButton}}"
+                        Click="SendButton_Click" />
+                <Button x:Name="CancelButton" Grid.Column="2" Content="Cancel" MinWidth="80" IsCancel="True"
+                        Click="CancelButton_Click" />
+            </Grid>
+        </StackPanel>
+
+        <!-- Sent -->
+        <StackPanel x:Name="SuccessView" Visibility="Collapsed" Margin="28 28 28 20">
+            <Border Style="{StaticResource IconBadge}" Width="56" Height="56" CornerRadius="28" HorizontalAlignment="Center"
+                    Background="{DynamicResource {x:Static theming:ThemeBrushes.SuccessBrush}}">
+                <controls:AppIcon Kind="IconCheck" IconWidth="28" IconHeight="28"
+                                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                                  Fill="{DynamicResource {x:Static theming:ThemeBrushes.BackgroundBrush}}" />
+            </Border>
+            <TextBlock Text="Report sent" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0 14 0 0" />
+            <TextBlock x:Name="SuccessText" Style="{StaticResource Hint}" TextAlignment="Center" Margin="0 4 0 0"
+                       Text="Thank you! The developer will look into it." />
+
+            <Border Style="{StaticResource Card}" Margin="0 18 0 0" HorizontalAlignment="Center">
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Style="{StaticResource Hint}" FontSize="11" Text="Reference ID" />
+                        <TextBox x:Name="ReferenceIdText" Style="{DynamicResource SelectableTextStyle}"
+                                 FontFamily="Consolas" FontSize="14" TextWrapping="NoWrap" />
+                    </StackPanel>
+                    <Button x:Name="CopyIdButton" Margin="16 0 0 0" VerticalAlignment="Center" Padding="8 4"
+                            ToolTip="Copy reference ID" Click="CopyIdButton_Click">
+                        <controls:AppIcon x:Name="CopyIdIcon" Kind="IconCopy" IconWidth="14" IconHeight="14"
+                                          Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                    </Button>
+                </StackPanel>
+            </Border>
+            <TextBlock Style="{StaticResource Hint}" FontSize="11" TextAlignment="Center" Margin="0 8 0 0"
+                       Text="Mention this ID if you reach out about the issue on GitHub or the forums." />
+
+            <Button Content="Close" MinWidth="90" HorizontalAlignment="Center" Margin="0 20 0 0" IsDefault="True"
+                    Style="{DynamicResource {x:Static theming:ThemeStyles.AccentButton}}"
+                    Click="CloseButton_Click" />
+        </StackPanel>
+    </Grid>
+</local:ThemedWindow>

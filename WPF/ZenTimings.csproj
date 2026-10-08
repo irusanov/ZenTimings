@@ -127,6 +127,7 @@
     <Compile Include="Helpers\StartupHelper.cs" />
     <Compile Include="Helpers\SecureDirectoryHelper.cs" />
     <Compile Include="Helpers\CrashLog.cs" />
+    <Compile Include="Helpers\DebugReportSender.cs" />
     <Compile Include="Utils\VendorUtils.cs" />
     <Compile Include="Utils\VisualCapture.cs" />
     <Compile Include="Utils\ClipboardUtils.cs" />
@@ -211,6 +212,9 @@
     </Compile>
     <Compile Include="Windows\DebugDialog.xaml.cs">
       <DependentUpon>DebugDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\SendReportDialog.xaml.cs">
+      <DependentUpon>SendReportDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\SaveScreenshotWindow.xaml.cs">
       <DependentUpon>SaveScreenshotWindow.xaml</DependentUpon>
@@ -448,6 +452,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\DriverUpdateWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\SendReportDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
