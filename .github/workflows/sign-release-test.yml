@@ -1,4 +1,4 @@
-name: Sign Release
+name: Test Sign
 
 # Manually triggered only - you run this from the Actions tab when you're
 # ready to cut a release. It does NOT publish a GitHub Release itself;
