@@ -14,6 +14,7 @@ using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
 using ZenTimings.Common;
 using ZenTimings.Export;
 using ZenTimings.Helpers;
+using ZenTimings.Utils;
 using Application = System.Windows.Application;
 using DRAM = ZenStates.Core.Hardware.DRAM;
 using MessageBox = ZenTimings.Theming.MessageBox;
@@ -432,16 +433,19 @@ namespace ZenTimings.Windows
             AddReport(() => cpu.info.aod?.GetReport() ?? "AOD: not available");
 
             // Configured DRAM memory controller settings from BIOS
-            AddHeading("BIOS: Memory Controller Config");
-            try
+            if (BMC?.Table != null)
             {
-                for (var i = 0; i < BMC.Table.Length; i++)
-                    AddLine($"Index {i:D3}: {BMC.Table[i]:X2} ({BMC.Table[i]})");
-            }
-            catch (Exception ex)
-            {
-                AddLine("<FAILED>");
-                AddLine(ex.Message);
+                AddHeading("BIOS: Memory Controller Config");
+                try
+                {
+                    for (var i = 0; i < BMC.Table.Length; i++)
+                        AddLine($"Index {i:D3}: {BMC.Table[i]:X2} ({BMC.Table[i]})");
+                }
+                catch (Exception ex)
+                {
+                    AddLine("<FAILED>");
+                    AddLine(ex.Message);
+                }
             }
 
             // SMU power table
@@ -697,8 +701,7 @@ namespace ZenTimings.Windows
             System.Windows.Media.Imaging.BitmapSource screenshot = null;
             try
             {
-                if (Owner is FrameworkElement owner && owner.ActualWidth > 0 && owner.ActualHeight > 0)
-                    screenshot = ZenTimings.Utils.VisualCapture.Render(owner);
+                screenshot = WindowUtils.CaptureMainWindow();
             }
             catch
             {

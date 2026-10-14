@@ -212,8 +212,9 @@ namespace ZenTimings.Utils
             {
                 var name = info.CpuName ?? string.Empty;
 
-                if (Contains(name, "Eng Sample"))
+                if (name.Contains("Eng Sample"))
                 {
+                    name = name.ToLower().Replace("amd eng sample", "AMD ES").Replace("eng sample", "AMD ES");
                     return $"{name} | {info.CodeName} | 0x{info.CpuId:X6}";
                 }
 

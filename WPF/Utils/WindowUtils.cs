@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace ZenTimings.Utils
 {
@@ -117,6 +118,32 @@ namespace ZenTimings.Utils
         }
 
         public static uint ToColorRef(byte r, byte g, byte b) => (uint)(r | (g << 8) | (b << 16));
+
+        // Renders the main window's visual tree (not the screen), so windows covering it do not matter.
+        // Returns null when the window is hidden (e.g. minimized to the tray) or cannot be rendered.
+        internal static BitmapSource CaptureMainWindow()
+        {
+            try
+            {
+                Window main = Application.Current?.MainWindow;
+                if (main == null || !main.IsVisible || main.WindowState == WindowState.Minimized)
+                    return null;
+
+                var root = VisualTreeHelper.GetChildrenCount(main) > 0
+                    ? VisualTreeHelper.GetChild(main, 0) as FrameworkElement
+                    : null;
+                FrameworkElement target = root ?? main;
+                if (target.ActualWidth < 1 || target.ActualHeight < 1)
+                    return null;
+
+                return VisualCapture.Render(target);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Main window capture failed: {ex.Message}");
+                return null;
+            }
+        }
 
         private const int DWMWA_BORDER_COLOR = 34;
         private const uint DWMWA_COLOR_DEFAULT = 0xFFFFFFFF;
