@@ -54,6 +54,7 @@ namespace ZenTimings.Windows
             buttonDebugCancel.IsEnabled = enabled;
             buttonDebugSave.IsEnabled = enabled;
             buttonDebugSaveAs.IsEnabled = enabled;
+            buttonDebugSend.IsEnabled = enabled;
             buttonDebug.IsEnabled = enabled;
             textBoxDebugOutput.IsEnabled = enabled;
             CheckPrintSerials.IsEnabled = enabled;
@@ -689,6 +690,22 @@ namespace ZenTimings.Windows
             {
                 SetControlsState();
             }
+        }
+
+        private void ButtonDebugSend_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Media.Imaging.BitmapSource screenshot = null;
+            try
+            {
+                if (Owner is FrameworkElement owner && owner.ActualWidth > 0 && owner.ActualHeight > 0)
+                    screenshot = ZenTimings.Utils.VisualCapture.Render(owner);
+            }
+            catch
+            {
+                // send without a screenshot
+            }
+
+            new SendReportDialog(textBoxDebugOutput.Text, screenshot) { Owner = this }.ShowDialog();
         }
 
         private void ButtonDebugCancel_Click(object sender, RoutedEventArgs e)

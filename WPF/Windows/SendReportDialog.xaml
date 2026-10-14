@@ -176,7 +176,7 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <StackPanel x:Name="BusyPanel" Orientation="Horizontal" VerticalAlignment="Center" Visibility="Visible">
+                <StackPanel x:Name="BusyPanel" Orientation="Horizontal" VerticalAlignment="Center" Visibility="Collapsed">
                     <ProgressBar IsIndeterminate="True" Width="120" Height="8" VerticalAlignment="Center" />
                     <TextBlock Style="{StaticResource Hint}" Text="Sending..." Margin="8 0 0 0" VerticalAlignment="Center" />
                 </StackPanel>
