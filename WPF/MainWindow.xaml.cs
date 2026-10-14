@@ -209,8 +209,12 @@ namespace ZenTimings
                 SplashWindow.Loading("Memory modules");
                 ReadMemoryModulesInfo(memoryConfig?.Modules);
 
+                memoryConfig.SpdInfoLoaded += MemoryConfig_SpdInfoLoaded;
+                if (memoryConfig.IsSpdInfoLoaded)
+                    MemoryConfig_SpdInfoLoaded(memoryConfig, EventArgs.Empty);
+
                 SplashWindow.Loading("Sensors");
-                cpu.systemInfo?.UpdateSensors();
+                new Task(() => cpu.systemInfo?.UpdateSensors()).Start();
 
                 // Motherboard logo
                 SplashWindow.Loading("Resources");
@@ -557,6 +561,16 @@ namespace ZenTimings
                 return;
 
             TryCleanup(() => AsusWmi?.Dispose());
+
+            // The startup SPD read may still be on the bus; let it finish before the core goes away
+            TryCleanup(() =>
+            {
+                if (cpu?.memoryConfig != null)
+                {
+                    cpu.memoryConfig.SpdInfoLoaded -= MemoryConfig_SpdInfoLoaded;
+                    cpu.memoryConfig.WaitForSpdInfo(CleanupRefreshWaitMs);
+                }
+            });
             TryCleanup(() => cpu?.Dispose());
 
             if (settings.AutoUninstallDriver)
@@ -1589,6 +1603,43 @@ namespace ZenTimings
                 saveWnd.Owner = Application.Current.MainWindow;
                 saveWnd.ShowDialog();
                 screenshot.Dispose();
+            }
+        }
+
+        // Raised by the core on its SPD thread; the UI work runs on the dispatcher once the window is up.
+        private void MemoryConfig_SpdInfoLoaded(object sender, EventArgs e)
+        {
+            if (cleanedUp)
+                return;
+
+            Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(ApplySpdInfo));
+        }
+
+        // Rebuilds the module list (the manufacturer and its logo come from the SPD) and shows the PMIC data of the
+        // selected module. Live only; a report window has its SPD from the start.
+        private void ApplySpdInfo()
+        {
+            if (cleanedUp || mockData != null || cpu?.memoryConfig == null)
+                return;
+
+            try
+            {
+                int selected = comboBoxPartNumber.SelectedIndex;
+
+                comboBoxPartNumber.SelectionChanged -= ComboBoxPartNumber_SelectionChanged;
+                comboBoxPartNumber.Items.Clear();
+                ReadMemoryModulesInfo(cpu.memoryConfig.Modules);
+
+                // ReadMemoryModulesInfo selects the first module; going back to another one reloads its timings too
+                if (selected > 0 && selected < comboBoxPartNumber.Items.Count)
+                    comboBoxPartNumber.SelectedIndex = selected;
+
+                if (mainViewModel != null)
+                    mainViewModel.PmicData = ModulePmicData(Math.Max(0, comboBoxPartNumber.SelectedIndex));
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Applying the SPD info failed: {ex.Message}");
             }
         }
 

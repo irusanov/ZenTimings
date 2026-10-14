@@ -281,7 +281,8 @@ namespace ZenTimings.Windows
             AddReport(GetTopologyReport);
             AddLine();
 
-            // DRAM modules info
+            // DRAM modules info. The SPD is read in the background at startup; a report taken right away waits for it.
+            memoryConfig?.WaitForSpdInfo(5000);
             AddHeading("Memory Modules");
 
             try

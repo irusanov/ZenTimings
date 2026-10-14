@@ -340,6 +340,8 @@ namespace ZenTimings.Export
         private SnapshotObject BuildMemory(Cpu cpu)
         {
             MemoryConfig mc = cpu.GetMemoryConfig();
+            // The SPD (manufacturers, PMIC) is read in the background at startup; a snapshot taken right away waits for it
+            mc?.WaitForSpdInfo(5000);
             var smbios = SystemInfo.SMBios;
             var devices = smbios?.MemoryDevices?.Where(d => d.Size > 0).ToList();
             var modules = new List<object>();
