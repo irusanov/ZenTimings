@@ -1,0 +1,52 @@
+<Window xmlns="https://github.com/avaloniaui"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		x:Class="ZenTimings.Linux.MainWindow"
+		Title="ZenTimings" Width="440" SizeToContent="Height" CanResize="False"
+		Background="#1F2029" Foreground="#D1D4C9" FontSize="12">
+  <Window.Styles>
+	<Style Selector="Border.separator">
+	  <Setter Property="Height" Value="1" />
+	  <Setter Property="Background" Value="#14151A" />
+	</Style>
+	<Style Selector="MenuItem">
+	  <Setter Property="Foreground" Value="#D1D4C9" />
+	</Style>
+	<Style Selector="ComboBox">
+	  <Setter Property="Background" Value="#2A2B37" />
+	  <Setter Property="BorderBrush" Value="#1AFFFFFF" />
+	  <Setter Property="CornerRadius" Value="2" />
+	  <Setter Property="HorizontalAlignment" Value="Stretch" />
+	</Style>
+	<Style Selector="Button">
+	  <Setter Property="Background" Value="#2A2B37" />
+	  <Setter Property="BorderBrush" Value="#1AFFFFFF" />
+	  <Setter Property="CornerRadius" Value="2" />
+	</Style>
+  </Window.Styles>
+  <StackPanel>
+	<Menu Background="Transparent">
+	  <MenuItem Header="_File">
+		<MenuItem Header="E_xit" x:Name="ExitItem" />
+	  </MenuItem>
+	</Menu>
+	<Border Padding="12,8">
+	  <StackPanel Spacing="1">
+		<TextBlock x:Name="CpuText" />
+		<TextBlock x:Name="BoardText" />
+		<TextBlock x:Name="BiosText" />
+	  </StackPanel>
+	</Border>
+	<Border Classes="separator" />
+	<Border Padding="4,8">
+	  <Grid x:Name="TimingsGrid" ColumnDefinitions="*,*,*" />
+	</Border>
+	<Border Classes="separator" />
+	<Border Padding="8,8,8,4">
+	  <Grid ColumnDefinitions="*,Auto">
+		<ComboBox x:Name="ModuleCombo" />
+		<Button Grid.Column="1" x:Name="AllButton" Content="All" Margin="4,0,0,0" IsEnabled="False" />
+	  </Grid>
+	</Border>
+	<TextBlock x:Name="StatusText" Opacity="0.55" FontSize="10" TextWrapping="Wrap" Margin="10,0,10,8" />
+  </StackPanel>
+</Window>
