@@ -621,40 +621,10 @@ namespace ZenTimings
             {
                 foreach (MemoryModule module in modules)
                 {
-                    var moduleLogoName = VendorUtils.GetMemoryModuleLogo(module);
-                    if (moduleLogoName != null)
+                    string logo = VendorUtils.GetMemoryModuleLogo(module);
+                    if (logo != null)
                     {
-                        var stackPanel = new StackPanel
-                        {
-                            Orientation = Orientation.Horizontal
-                        };
-
-                        var image = new Image
-                        {
-                            Height = 18,
-                            Margin = new Thickness(5, 0, 5, 0)
-                        };
-
-                        image.SetResourceReference(Image.SourceProperty, moduleLogoName);
-
-                        var moduleStrings = module.ToString().Split(':');
-
-                        var textBlock = new TextBlock
-                        {
-                            Text = $"{moduleStrings[0]}: ",
-                            VerticalAlignment = VerticalAlignment.Center
-                        };
-
-                        var textBlock2 = new TextBlock
-                        {
-                            Text = moduleStrings[1].Trim(),
-                            VerticalAlignment = VerticalAlignment.Center
-                        };
-
-                        stackPanel.Children.Add(textBlock);
-                        stackPanel.Children.Add(image);
-                        stackPanel.Children.Add(textBlock2);
-                        comboBoxPartNumber.Items.Add(stackPanel);
+                        comboBoxPartNumber.Items.Add(CreateModuleItemWithLogo(module, logo, settings.AdvancedMode));
                     }
                     else
                     {
@@ -678,6 +648,46 @@ namespace ZenTimings
                     comboBoxPartNumber.IsEnabled = true;
                 }
             }
+        }
+
+        /// <summary>"A1: [logo] G.Skill F5-6000J3038F16G (16GB, DR)", the vendor name in advanced mode only.</summary>
+        private static StackPanel CreateModuleItemWithLogo(MemoryModule module, string logoResourceKey, bool withVendor)
+        {
+            var image = new Image
+            {
+                Height = 18,
+                Margin = new Thickness(5, 0, 5, 0)
+            };
+            image.SetResourceReference(Image.SourceProperty, logoResourceKey);
+
+            var stackPanel = new StackPanel { Orientation = Orientation.Horizontal };
+            stackPanel.Children.Add(new TextBlock
+            {
+                Text = $"{module.Slot}: ",
+                VerticalAlignment = VerticalAlignment.Center
+            });
+            stackPanel.Children.Add(image);
+            stackPanel.Children.Add(new TextBlock
+            {
+                Text = GetModuleDescription(module, withVendor),
+                VerticalAlignment = VerticalAlignment.Center
+            });
+            return stackPanel;
+        }
+
+        // The part of MemoryModule.ToString() after the slot, built from the fields so that a ':' in the part number
+        // cannot split it. The vendor is left out when it is unknown or the part number already starts with it.
+        private static string GetModuleDescription(MemoryModule module, bool withVendor)
+        {
+            string partNumber = module.PartNumber?.Trim() ?? string.Empty;
+            string details = $"({module.Capacity}, {module.Rank})";
+            string description = partNumber.Length > 0 ? $"{partNumber} {details}" : details;
+
+            if (!withVendor)
+                return description;
+
+            string vendor = VendorUtils.GetModuleVendorPrefix(module);
+            return vendor == null ? description : $"{vendor} {description}";
         }
 
         private void RefreshSensors()

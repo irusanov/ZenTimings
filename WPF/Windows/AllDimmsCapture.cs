@@ -15,6 +15,10 @@ namespace ZenTimings.Windows
     /// </summary>
     internal static class AllDimmsCapture
     {
+        // Spaces inside a part ("G.Skill F5-6000J3038F16G", "SK Hynix C-Die") do not break, so a line that is too
+        // wide wraps between parts. A part wider than the line still breaks, as TextWrapping.Wrap allows.
+        private const char NoBreakSpace = '\u00A0';
+
         internal sealed class ModuleInfo
         {
             public string LogoResourceName;
@@ -74,8 +78,9 @@ namespace ZenTimings.Windows
 
         private static ModuleInfo Describe(MemoryModule module, Ddr5SpdInfo spd)
         {
-            string vendor = !string.IsNullOrEmpty(module.Manufacturer) ? module.Manufacturer : null;
-            string vendorAndPart = string.Join(" ", new[] { vendor, module.PartNumber }.Where(s => !string.IsNullOrEmpty(s)));
+            // "G.Skill F5-6000J3038F16G", not the JEP106 "G Skill Intl" or an "Unknown (Bank n, Code 0xnn)" placeholder
+            string vendor = VendorUtils.GetModuleVendorPrefix(module);
+            string vendorAndPart = string.Join(" ", new[] { vendor, module.PartNumber?.Trim() }.Where(s => !string.IsNullOrEmpty(s)));
 
             var line1Parts = new List<string>();
             if (!string.IsNullOrEmpty(module.Slot))
@@ -88,8 +93,12 @@ namespace ZenTimings.Windows
 
             var detailParts = new List<string>();
 
+            // DRAM maker shortened the same way ("Micron Technology" -> "Micron"); an unknown one is shown as reported
             if (!string.IsNullOrEmpty(spd?.DramManufacturer))
-                detailParts.Add($"{spd.DramManufacturer} {VendorUtils.GetDramDieName(spd.DramManufacturer, spd.DramStepping)}".Trim());
+            {
+                string dramVendor = VendorUtils.GetMemoryVendorName(spd.DramManufacturer) ?? spd.DramManufacturer;
+                detailParts.Add($"{dramVendor} {VendorUtils.GetDramDieName(spd.DramManufacturer, spd.DramStepping)}".Trim());
+            }
 
             Ddr5Pmic pmic = spd?.Pmic;
             if (pmic != null && pmic.IsValid)
@@ -98,8 +107,8 @@ namespace ZenTimings.Windows
             return new ModuleInfo
             {
                 LogoResourceName = VendorUtils.GetMemoryModuleLogo(module),
-                VendorLine = string.Join(" ", line1Parts.Select(part => part.Replace(' ', ' '))),
-                DetailLine = string.Join("  ·  ", detailParts.Select(part => part.Replace(' ', ' '))),
+                VendorLine = string.Join(" ", line1Parts.Select(part => part.Replace(' ', NoBreakSpace))),
+                DetailLine = string.Join("  ·  ", detailParts.Select(part => part.Replace(' ', NoBreakSpace))),
             };
         }
 

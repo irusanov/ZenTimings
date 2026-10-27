@@ -7,6 +7,7 @@ using ZenStates.Core.Hardware.DRAM.DDR4.Profiles;
 using ZenStates.Core.Hardware.DRAM.DDR4.Spd;
 using ZenStates.Core.Hardware.DRAM.DDR5.Profiles;
 using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
+using ZenTimings.Utils;
 
 namespace ZenTimings.Windows
 {
@@ -614,14 +615,8 @@ namespace ZenTimings.Windows
             return prefix == null ? list : $"{prefix.Trim()}: {list}";
         }
 
-        // JEP106 names carry legal suffixes ("Rambus Inc", "Richtek Power"); the first word is enough in a list
-        private static readonly string[] VendorSuffixes =
-        {
-            " Inc.", " Inc", " Corporation", " Corp.", " Corp", " Co., Ltd.", " Co. Ltd.", " Co., Ltd", " Ltd.", " Ltd",
-            " Limited", " LLC", " GmbH", " AG", " S.A.", " B.V.", " Technology Group", " Technologies", " Technology",
-            " Electronics", " Semiconductor", " Power"
-        };
-
+        // JEP106 names carry legal suffixes ("Rambus Inc", "Richtek Power"), which a list does not need. The
+        // "Unknown (Bank n, Code 0xnn)" / "Invalid" placeholders are kept, as the IDs in them are worth seeing here.
         private static string ShortVendor(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -630,22 +625,7 @@ namespace ZenTimings.Windows
             if (name.StartsWith("Invalid", StringComparison.Ordinal) || name.StartsWith("Unknown", StringComparison.Ordinal))
                 return name;
 
-            string result = name.Trim().TrimEnd(',');
-            bool changed = true;
-            while (changed)
-            {
-                changed = false;
-                foreach (string suffix in VendorSuffixes)
-                {
-                    if (result.Length > suffix.Length && result.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
-                    {
-                        result = result.Substring(0, result.Length - suffix.Length).TrimEnd(',', ' ');
-                        changed = true;
-                    }
-                }
-            }
-
-            return result;
+            return VendorUtils.TrimCompanySuffixes(name);
         }
 
         #endregion

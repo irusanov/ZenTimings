@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Text.RegularExpressions;
 using ZenStates.Core.Hardware;
 using ZenStates.Core.Hardware.DRAM;
 
@@ -224,6 +227,130 @@ namespace ZenTimings.Utils
             {
                 return "Error getting CPU name";
             }
+        }
+
+        // Brands whose JEP106 / SMBIOS name reads badly when shortened ("G Skill Intl", "G.SKILL" -> "G.Skill"),
+        // matched at the start of the name with spaces and punctuation removed
+        private static readonly KeyValuePair<string, string>[] MemoryVendorBrands =
+        {
+            new KeyValuePair<string, string>("gskill", "G.Skill"),
+            new KeyValuePair<string, string>("origincode", "Origin Code"),
+            new KeyValuePair<string, string>("biwin", "BIWIN"),
+            new KeyValuePair<string, string>("colorful", "Colorful"),
+            new KeyValuePair<string, string>("teamgroup", "TeamGroup"),
+            new KeyValuePair<string, string>("patriotmemory", "Patriot"),
+        };
+
+        // Manufacturer strings that name no vendor: the JEP106 lookup's "Unknown (Bank n, Code 0xnn)" and SMBIOS fillers
+        private static readonly string[] VendorPlaceholders =
+        {
+            "Unknown", "Undefined", "Invalid", "Not Specified", "Not Available", "To Be Filled", "Manufacturer", "N/A",
+        };
+
+        // Legal suffixes of JEP106 names ("Rambus Inc", "Netac Technology Co Ltd"), removed until none is left
+        private static readonly string[] CompanySuffixes =
+        {
+            " Inc.", " Inc", " Corporation", " Corp.", " Corp", " Co., Ltd.", " Co. Ltd.", " Co., Ltd", " Ltd.", " Ltd",
+            " Co.", " Co", " Limited", " LLC", " GmbH", " AG", " S.A.", " B.V.", " Technology Group", " Technologies",
+            " Technology", " Electronics", " Semiconductor", " Power"
+        };
+
+        /// <summary>
+        /// The vendor name to show before a module's part number: <see cref="GetMemoryVendorName"/> of its manufacturer,
+        /// or null when that names no vendor or the part number already starts with it ("Corsair CMK32GX5M2B5600C36").
+        /// </summary>
+        internal static string GetModuleVendorPrefix(MemoryModule module)
+        {
+            string vendor = GetMemoryVendorName(module?.Manufacturer);
+            if (vendor == null)
+                return null;
+
+            string partNumber = module.PartNumber?.Trim() ?? string.Empty;
+            return partNumber.StartsWith(vendor, StringComparison.OrdinalIgnoreCase) ? null : vendor;
+        }
+
+        /// <summary>
+        /// A short vendor name for a module's manufacturer (from SMBIOS, or the JEP106 name from its SPD): the brand of a
+        /// known vendor, otherwise the name without "(...)" and company suffixes. Null when it names no vendor.
+        /// </summary>
+        internal static string GetMemoryVendorName(string manufacturer)
+        {
+            if (string.IsNullOrWhiteSpace(manufacturer))
+                return null;
+
+            string name = manufacturer.Trim();
+            if (IsVendorPlaceholder(name))
+                return null;
+
+            string key = LettersAndDigits(name);
+            foreach (var brand in MemoryVendorBrands)
+            {
+                if (key.StartsWith(brand.Key, StringComparison.Ordinal))
+                    return brand.Value;
+            }
+
+            // "Biwin Semiconductor (HK) Co Ltd" -> "Biwin Semiconductor Co Ltd"
+            name = Regex.Replace(name, @"\s*\([^)]*\)", string.Empty).Trim();
+            name = TrimCompanySuffixes(name);
+            return name.Length > 0 ? name : null;
+        }
+
+        /// <summary>The name without trailing legal suffixes, e.g. "Micron Technology" -> "Micron".</summary>
+        internal static string TrimCompanySuffixes(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return string.Empty;
+
+            string result = name.Trim().TrimEnd(',');
+            bool changed = true;
+            while (changed)
+            {
+                changed = false;
+                foreach (string suffix in CompanySuffixes)
+                {
+                    if (result.Length > suffix.Length && result.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+                    {
+                        result = result.Substring(0, result.Length - suffix.Length).TrimEnd(',', ' ');
+                        changed = true;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private static bool IsVendorPlaceholder(string name)
+        {
+            foreach (string placeholder in VendorPlaceholders)
+            {
+                if (StartsWith(name, placeholder))
+                    return true;
+            }
+
+            // Some BIOSes report the raw JEP106 ID, e.g. "0x04CD" or "04CD000000000000"
+            string id = StartsWith(name, "0x") ? name.Substring(2) : name;
+            if (id.Length < 4)
+                return false;
+
+            foreach (char c in id)
+            {
+                if (!Uri.IsHexDigit(c))
+                    return false;
+            }
+
+            return true;
+        }
+
+        private static string LettersAndDigits(string value)
+        {
+            var sb = new StringBuilder(value.Length);
+            foreach (char c in value)
+            {
+                if (char.IsLetterOrDigit(c))
+                    sb.Append(char.ToLowerInvariant(c));
+            }
+
+            return sb.ToString();
         }
 
         private static bool IsAsusMotherboard(SystemInfo info) =>
