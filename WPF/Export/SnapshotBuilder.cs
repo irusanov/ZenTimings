@@ -1203,7 +1203,7 @@ namespace ZenTimings.Export
                 // The refresh timings and the way the active one is chosen differ between the generations
                 legend.Add("refresh", ddr4
                     ? "Only one refresh timing is in use: RFC when RefreshMode is NORMAL, otherwise RFC2 or RFC4, FgrMultiplier says which one (2 or 4; FGR is the raw mode, 1/5 = 2x, 2/6 = 4x). RFCns is the active one in nanoseconds."
-                    : "Only one refresh timing is in use: RFC when RefreshMode is NORMAL, otherwise RFC2, together with RFCsb when it is MIXED. RFCns is the active one in nanoseconds (active timing = RFCns x MCLK in GHz), the inactive ones keep their BIOS values.");
+                    : "All-bank refreshes use RFC (FGR 0) or RFC2 (FGR 1) when RefreshMode is NORMAL, FGR or MIXED, same-bank refreshes use RFCsb when it is MIXED or PBONLY. RFCns is the all-bank one in nanoseconds, RFCsb with PBONLY (active timing = RFCns x MCLK in GHz), the inactive ones keep their BIOS values.");
 
                 legend.Add("not_tunable", "PHYRDL, PHYWRL and PHYWRD are results of memory training, a PHYRDL difference between channels is common. SD and DD variants (RDRDSD, RDRDDD, WRWRSD, WRWRDD) only matter with two ranks or two DIMMs per channel.");
 

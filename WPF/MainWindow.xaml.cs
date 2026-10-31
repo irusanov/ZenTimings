@@ -168,9 +168,9 @@ namespace ZenTimings
 
                 SplashWindow.Loading("Core");
                 // Core initialization does most of the startup work; show each of its stages.
-                CpuSingleton.InitProgress = stage => SplashWindow.Loading($"Core: {stage}");
+                //CpuSingleton.InitProgress = stage => SplashWindow.Loading($"Core: {stage}");
                 cpu = CpuSingleton.Instance;
-                CpuSingleton.InitProgress = null;
+                //CpuSingleton.InitProgress = null;
 
                 if (cpu.info.family.Equals(Cpu.Family.UNSUPPORTED))
                 {
@@ -341,6 +341,7 @@ namespace ZenTimings
             // would read past the Resistances layout.
             bool hasBmcTable = mockData.BiosMemControllerTable != null &&
                 mockData.BiosMemControllerTable.Length >= Marshal.SizeOf(typeof(BiosMemController.Resistances));
+
             if ((viewModel.MemoryType == MemType.DDR4 || viewModel.MemoryType == MemType.LPDDR4) &&
                 (hasBmcTable || GetApobDdr4ChannelConfig() != null))
             {
