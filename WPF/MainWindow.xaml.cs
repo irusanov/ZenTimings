@@ -178,12 +178,16 @@ namespace ZenTimings
                 }
                 else if (cpu.info.codeName.Equals(Cpu.CodeName.Unsupported))
                 {
-                    MessageBox.Show(
-                        "CPU model is not supported.\nPlease run a debug report and send to the developer.",
-                        "Unsupported CPU Model",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Warning
-                    );
+                    SplashWindow.HideIfOpen();
+                    try
+                    {
+                        ProblemReport.ShowError("CPU model is not supported.", "Unsupported CPU Model", null, null,
+                            MessageBoxImage.Warning, "Continue");
+                    }
+                    finally
+                    {
+                        SplashWindow.ShowIfOpen();
+                    }
                 }
 
                 if (!cpu.RyzenSmu.IsLoaded)
@@ -261,6 +265,10 @@ namespace ZenTimings
                     }
                 }
 
+                // What the reports sent from error boxes and menus include from this window
+                ProblemReport.BiosMemController = BMC;
+                ProblemReport.AsusWmi = AsusWmi;
+
                 mainViewModel = new MainViewModel(
                     timings,
                     memoryType,
@@ -297,7 +305,7 @@ namespace ZenTimings
             }
             catch (Exception ex)
             {
-                HandleError(ex.Message);
+                HandleError(ex.Message, "Error", ex);
                 ExitApplication();
                 TerminateStartup();
             }
@@ -495,6 +503,7 @@ namespace ZenTimings
             notifyIcon.ContextMenuStrip = new Forms.ContextMenuStrip();
             notifyIcon.ContextMenuStrip.Items.Add($"{AssemblyProduct} v{AssemblyVersion}", null, OnAppContextMenuItemClick);
             notifyIcon.ContextMenuStrip.Items.Add("-");
+            notifyIcon.ContextMenuStrip.Items.Add("Report a problem...", null, (object sender, EventArgs e) => ProblemReport.ShowSendDialog(this));
             notifyIcon.ContextMenuStrip.Items.Add("Exit", null, (object sender, EventArgs e) => ExitApplication());
 
             return notifyIcon;
@@ -1262,18 +1271,27 @@ namespace ZenTimings
             return result;
         }
 
-        public void HandleError(string message, string title = "Error")
+        /// <param name="exception">Attached to the report when one is sent, null for none.</param>
+        /// <param name="offerReport">Offer to send a debug report; false for errors a report can't help with.</param>
+        public void HandleError(string message, string title = "Error", Exception exception = null, bool offerReport = true)
         {
             // The splash is topmost and could cover the message box during startup.
             SplashWindow.HideIfOpen();
             try
             {
-                MessageBox.Show(
-                    message,
-                    title,
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error
-                );
+                if (offerReport)
+                {
+                    ProblemReport.ShowError(message, title, exception, this);
+                }
+                else
+                {
+                    MessageBox.Show(
+                        message,
+                        title,
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error
+                    );
+                }
             }
             finally
             {
@@ -1341,7 +1359,7 @@ namespace ZenTimings
             }
             catch (Exception ex)
             {
-                HandleError($"Could not restart {nameof(ZenTimings)}.\n{ex.Message}");
+                HandleError($"Could not restart {nameof(ZenTimings)}.\n{ex.Message}", offerReport: false);
             }
 
             Application.Current.Shutdown();
@@ -1523,6 +1541,8 @@ namespace ZenTimings
 
         private void ExitToolStripMenuItem_Click(object sender, RoutedEventArgs e) => ExitApplication();
 
+        private void ReportProblemMenuItem_Click(object sender, RoutedEventArgs e) => ProblemReport.ShowSendDialog(this);
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             this.Topmost = true;
@@ -1566,6 +1586,9 @@ namespace ZenTimings
 
             if (settings.AdvancedMode && settings.AutoOpenTelemetry)
                 OpenSensorsWindowAfterFirstRender();
+
+            // Once the window is up and idle: offer a report when the last run ended with a crash
+            Dispatcher.BeginInvoke(new Action(() => ProblemReport.OfferAfterCrash(this)), DispatcherPriority.ApplicationIdle);
 
             //new Thread(() =>
             //{
@@ -2152,7 +2175,7 @@ namespace ZenTimings
             Task.Run(() =>
             {
                 if (!LiveSnapshot.WriteNow(source))
-                    Dispatcher.Invoke(() => HandleError($"Could not write the live snapshot file.\n{LiveSnapshot.LastError}", "Live snapshot"));
+                    Dispatcher.Invoke(() => HandleError($"Could not write the live snapshot file.\n{LiveSnapshot.LastError}", "Live snapshot", offerReport: false));
             });
         }
 

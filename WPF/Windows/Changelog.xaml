@@ -51,9 +51,24 @@
                     <!-- TextBlock Text="Changelog" FontSize="14" FontWeight="Bold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" /-->
                     <TextBlock Text="{Binding Version, Mode=OneWay}" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0,0,0,4" />
 
-                    <controls:ChangelogItem Text="Removed unused code to (hopefully) fix latest AV definitions flagging the release" />
-                    <controls:ChangelogItem Text="Add MAG B650 TOMAHAWK WIFI (MS-7D75) to the supported SuperIO list" />
+                    <TextBlock Text="Application" FontWeight="SemiBold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0,6,0,2" />
+                    <controls:ChangelogItem Text="Send debug reports directly from the Debug dialog" />
+                    <controls:ChangelogItem Text="Debug screenshot and UI improvements" />
+                    <controls:ChangelogItem Text="Modules dropdown stretches to the available width" />
+                    <controls:ChangelogItem Text="Faster startup: SPD and DIMM telemetry are read in the background" />
+                    <controls:ChangelogItem Text="Extended SPD decoding (tCCD groups) and short vendor names for memory modules" />
+                    <controls:ChangelogItem Text="DDR5 / LPDDR5: only the refresh timings in use are highlighted (tRFC, tRFC2, tRFCsb)" />
                     <controls:ChangelogItem Text="Replace beta update option checkbox to a dropdown" />
+                    <controls:ChangelogItem Text="Removed unused code to (hopefully) fix latest AV definitions flagging the release" />
+
+                    <TextBlock Text="Core" FontWeight="SemiBold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0,10,0,2" />
+                    <controls:ChangelogItem Text="tRFC is read from the populated DIMM (fixes wrong tRFC2 / tRFC4 with a single DIMM per channel in the second slot)" />
+                    <controls:ChangelogItem Text="APUs: timings and memory frequency follow the active memory P-state" />
+                    <controls:ChangelogItem Text="DDR5: fixed refresh mode detection (Normal, FGR, Mixed, Per-Bank Only) and tRFC in ns" />
+                    <controls:ChangelogItem Text="DDR5: fixed tWRWRSD above 15, Nitro values of 4, BGS and rank detection" />
+                    <controls:ChangelogItem Text="APOB: the active timing block comes from the active memory P-state; more robust channel and P-state grouping" />
+                    <controls:ChangelogItem Text="Improved power table refresh and state tracking" />
+                    <controls:ChangelogItem Text="SuperIO: added ROG CROSSHAIR X870E GLACIAL and MAG B650 TOMAHAWK WIFI (MS-7D75), updated ROG STRIX B850-I GAMING WIFI" />
                 </StackPanel>
             </Grid>
         </ScrollViewer>

@@ -127,18 +127,24 @@ namespace ZenTimings
                 }
 
                 showingError = true;
+                string logHint = CrashLog.LastPath != null ? $"\n\nDetails were written to {CrashLog.LastPath}" : "";
+                string message = $"An unexpected error occurred: {args.Exception.Message}{logHint}";
                 try
                 {
-                    string logHint = CrashLog.LastPath != null ? $"\n\nDetails were written to {CrashLog.LastPath}" : "";
-                    MessageBox.Show(
-                        $"An unexpected error occurred: {args.Exception.Message}{logHint}",
-                        "ZenTimings",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Error);
+                    // Offers to send a report with the exception attached
+                    ProblemReport.ShowError(message, "ZenTimings", args.Exception);
                 }
                 catch
                 {
-                    // Nothing more can be done if the message box itself fails.
+                    // The themed box or the send dialog failed too (a broken theme): fall back to the plain box
+                    try
+                    {
+                        MessageBox.Show(message, "ZenTimings", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    catch
+                    {
+                        // Nothing more can be done if the message box itself fails.
+                    }
                 }
                 finally
                 {

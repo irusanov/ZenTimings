@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
@@ -136,6 +137,80 @@ namespace ZenTimings.Helpers
 
             var match = Regex.Match(json, "\"" + Regex.Escape(name) + "\"\\s*:\\s*\"((?:[^\"\\\\]|\\\\.)*)\"");
             return match.Success ? Regex.Unescape(match.Groups[1].Value) : null;
+        }
+    }
+
+    /// <summary>
+    /// Keeps a copy of each report sent, so the user can find the reference ID and what was sent with it: a folder
+    /// per report under "Sent Reports" next to the executable (the app is portable), or under
+    /// %LOCALAPPDATA%\ZenTimings when that folder isn't writable.
+    /// </summary>
+    internal static class SentReportArchive
+    {
+        public const string FolderName = "Sent Reports";
+
+        /// <summary>
+        /// Saves the report, the screenshot (when sent) and a summary with the reference ID.
+        /// </summary>
+        /// <returns>The folder the copy is in.</returns>
+        /// <exception cref="IOException">Neither location could be written.</exception>
+        public static string Save(string referenceId, DebugReportSubmission submission)
+        {
+            DateTime sentAt = DateTime.Now;
+            string name = sentAt.ToString("yyyy-MM-dd_HH-mm-ss", CultureInfo.InvariantCulture) + "_" + SafeName(referenceId);
+
+            Exception lastError = null;
+            foreach (string root in new[]
+            {
+                AppDomain.CurrentDomain.BaseDirectory,
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ZenTimings"),
+            })
+            {
+                try
+                {
+                    string folder = Path.Combine(root, FolderName, name);
+                    Directory.CreateDirectory(folder);
+
+                    File.WriteAllText(Path.Combine(folder, "debug-report.txt"), submission.Report ?? "", Encoding.UTF8);
+                    if (submission.ScreenshotPng != null && submission.ScreenshotPng.Length > 0)
+                        File.WriteAllBytes(Path.Combine(folder, "screenshot.png"), submission.ScreenshotPng);
+                    File.WriteAllText(Path.Combine(folder, "report-info.txt"), BuildInfo(referenceId, sentAt, submission), Encoding.UTF8);
+
+                    return folder;
+                }
+                catch (Exception ex)
+                {
+                    lastError = ex;
+                }
+            }
+
+            throw new IOException("The sent report could not be saved: " + lastError?.Message, lastError);
+        }
+
+        private static string BuildInfo(string referenceId, DateTime sentAt, DebugReportSubmission submission)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine($"Reference ID: {referenceId}");
+            sb.AppendLine($"Sent:         {sentAt.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}");
+            sb.AppendLine($"Screenshot:   {(submission.ScreenshotPng != null && submission.ScreenshotPng.Length > 0 ? "screenshot.png" : "not sent")}");
+            if (!string.IsNullOrEmpty(submission.Email))
+                sb.AppendLine($"Email:        {submission.Email}");
+            sb.AppendLine();
+            sb.AppendLine("Description:");
+            sb.AppendLine(string.IsNullOrEmpty(submission.Description) ? "(none)" : submission.Description);
+            return sb.ToString();
+        }
+
+        private static string SafeName(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return "report";
+
+            char[] invalid = Path.GetInvalidFileNameChars();
+            var sb = new StringBuilder(text.Length);
+            foreach (char ch in text)
+                sb.Append(Array.IndexOf(invalid, ch) >= 0 ? '_' : ch);
+            return sb.ToString();
         }
     }
 }

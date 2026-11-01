@@ -95,6 +95,7 @@
                         <MenuItem Header="_Help">
                             <MenuItem Header="_About" Click="AboutToolStripMenuItem_Click" />
                             <MenuItem Header="Changelog" Click="MenuItem_Click_5" />
+                            <MenuItem Header="_Report a problem..." Click="ReportProblemMenuItem_Click" />
                             <Separator Foreground="{DynamicResource PanelBackground}" />
                             <MenuItem Header="Discord" Click="MenuItem_Click_2" />
                             <MenuItem Header="GitHub" Click="MenuItem_Click_3" />

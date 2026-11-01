@@ -44,6 +44,27 @@
             <Setter Property="Padding" Value="12 10" />
             <Setter Property="Margin" Value="0 12 0 0" />
         </Style>
+        <!-- Busy spinner: an accent arc turning over a faint ring, animated only while visible -->
+        <Style x:Key="Spinner" TargetType="Grid">
+            <Setter Property="Width" Value="16" />
+            <Setter Property="Height" Value="16" />
+            <Setter Property="RenderTransformOrigin" Value="0.5 0.5" />
+            <Style.Triggers>
+                <Trigger Property="IsVisible" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard x:Name="SpinnerTurn">
+                            <Storyboard Timeline.DesiredFrameRate="60">
+                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                                                 From="0" To="360" Duration="0:0:0.9" RepeatBehavior="Forever" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <StopStoryboard BeginStoryboardName="SpinnerTurn" />
+                    </Trigger.ExitActions>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
         <Style x:Key="IconBadge" TargetType="Border">
             <Setter Property="Width" Value="40" />
             <Setter Property="Height" Value="40" />
@@ -125,6 +146,29 @@
                 </Grid>
             </Border>
 
+            <!-- Error details, when the dialog was opened after an error -->
+            <Border x:Name="ErrorDetailsCard" Style="{StaticResource Card}" Visibility="Collapsed">
+                <StackPanel>
+                    <ToggleButton x:Name="ErrorDetailsToggle"
+                                  Style="{DynamicResource {x:Static theming:ThemeStyles.ToggleSwitch}}"
+                                  Content="Include error details"
+                                  IsChecked="True"
+                                  Checked="ErrorDetailsToggle_Changed"
+                                  Unchecked="ErrorDetailsToggle_Changed" />
+                    <TextBlock Style="{StaticResource Hint}" Margin="0 4 0 0"
+                               Text="The error message and the matching crash log lines, added to the end of the report." />
+                    <TextBox x:Name="ErrorDetailsText"
+                             Margin="0 8 0 0"
+                             MaxHeight="90"
+                             IsReadOnly="True"
+                             TextWrapping="NoWrap"
+                             VerticalContentAlignment="Top"
+                             VerticalScrollBarVisibility="Auto"
+                             HorizontalScrollBarVisibility="Auto"
+                             FontFamily="Consolas"
+                             FontSize="11" />
+                </StackPanel>
+            </Border>
             <!-- Report -->
             <Border Style="{StaticResource Card}">
                 <StackPanel>
@@ -143,6 +187,9 @@
                         <Button x:Name="TogglePreviewButton" Grid.Column="2" Content="Show" MinWidth="70"
                                 Click="TogglePreviewButton_Click" />
                     </Grid>
+                    <TextBlock x:Name="AdvancedModeHint" Style="{StaticResource Hint}" FontSize="11" Margin="0 8 0 0"
+                               Visibility="Collapsed"
+                               Text="Advanced Mode is off, so the power table, APOB, AOD and AGESA data are not in the report." />
                     <TextBox x:Name="ReportPreview"
                              Visibility="Collapsed"
                              Margin="0 10 0 0"
@@ -176,10 +223,21 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <StackPanel x:Name="BusyPanel" Orientation="Horizontal" VerticalAlignment="Center" Visibility="Collapsed">
-                    <ProgressBar IsIndeterminate="True" Width="120" Height="8" VerticalAlignment="Center" />
-                    <TextBlock Style="{StaticResource Hint}" Text="Sending..." Margin="8 0 0 0" VerticalAlignment="Center" />
-                </StackPanel>
+                <DockPanel x:Name="BusyPanel" VerticalAlignment="Center" Margin="0 0 12 0" Visibility="Collapsed">
+                    <!-- The transform is set here, not in the style: a style's transform is frozen and can't be animated -->
+                    <Grid DockPanel.Dock="Left" Style="{StaticResource Spinner}" VerticalAlignment="Center">
+                        <Grid.RenderTransform>
+                            <RotateTransform Angle="0" />
+                        </Grid.RenderTransform>
+                        <Ellipse Stroke="{DynamicResource {x:Static theming:ThemeBrushes.SecondaryForegroundBrush}}"
+                                 StrokeThickness="2" Opacity="0.25" />
+                        <Path Data="M 8,1 A 7,7 0 0 1 15,8"
+                              Stroke="{DynamicResource {x:Static theming:ThemeBrushes.AccentBrush}}"
+                              StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                    </Grid>
+                    <TextBlock x:Name="BusyText" Style="{StaticResource Hint}" Text="Sending..." Margin="8 0 0 0"
+                               VerticalAlignment="Center" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
+                </DockPanel>
                 <Button x:Name="SendButton" Grid.Column="1" Content="Send" MinWidth="80" Margin="0 0 8 0"
                         IsEnabled="False"
                         Style="{DynamicResource {x:Static theming:ThemeStyles.AccentButton}}"
@@ -217,6 +275,25 @@
             </Border>
             <TextBlock Style="{StaticResource Hint}" FontSize="11" TextAlignment="Center" Margin="0 8 0 0"
                        Text="Mention this ID if you reach out about the issue on GitHub or the forums." />
+
+            <!-- Where the copy of the sent report was saved -->
+            <Border x:Name="SavedCard" Style="{StaticResource Card}" Margin="0 14 0 0" Visibility="Collapsed">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <controls:AppIcon Kind="IconFile" IconWidth="16" IconHeight="16" VerticalAlignment="Center"
+                                      Fill="{DynamicResource {x:Static theming:ThemeBrushes.SecondaryForegroundBrush}}" />
+                    <StackPanel Grid.Column="1" Margin="8 0" VerticalAlignment="Center">
+                        <TextBlock x:Name="SavedTitle" Text="A copy of the report was saved" />
+                        <TextBlock x:Name="SavedPathText" Style="{StaticResource Hint}" FontSize="11" />
+                    </StackPanel>
+                    <Button x:Name="OpenSavedFolderButton" Grid.Column="2" Content="Open folder" MinWidth="90"
+                            VerticalAlignment="Center" Click="OpenSavedFolderButton_Click" />
+                </Grid>
+            </Border>
 
             <Button Content="Close" MinWidth="90" HorizontalAlignment="Center" Margin="0 20 0 0" IsDefault="True"
                     Style="{DynamicResource {x:Static theming:ThemeStyles.AccentButton}}"

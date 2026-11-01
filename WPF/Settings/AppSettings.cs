@@ -273,6 +273,7 @@ namespace ZenTimings.Settings
         public double AdvancedTimingsWindowWidth { get; set; }
         public double AdvancedTimingsWindowHeight { get; set; }
         public string NotifiedChangelog { get; set; } = "";
+        public string LastCrashOffered { get; set; } = "";
         public bool SingleInstance { get; set; } = true;
         public bool AutoOpenTelemetry { get; set; } = false;
         public bool ShowUclkRatio { get; set; } = false;
