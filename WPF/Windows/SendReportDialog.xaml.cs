@@ -8,6 +8,9 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using ZenStates.Core.Common;
@@ -190,6 +193,65 @@ namespace ZenTimings.Windows
         {
             if (ScreenshotImage != null)
                 ScreenshotImage.Opacity = ScreenshotToggle.IsChecked == true ? 1.0 : 0.35;
+        }
+
+        private void ScreenshotFrame_Click(object sender, RoutedEventArgs e)
+        {
+            ShowScreenshot();
+        }
+
+        /// <summary>
+        /// Opens the screenshot in a window of its own, at the size of the main window it was taken of, scaled
+        /// down only when it does not fit the screen. A click on the picture or Escape closes it.
+        /// </summary>
+        private void ShowScreenshot()
+        {
+            if (screenshot == null)
+                return;
+
+            var image = new Image
+            {
+                Source = screenshot,
+                MaxWidth = screenshot.Width,
+                MaxHeight = screenshot.Height,
+                Stretch = Stretch.Uniform,
+                StretchDirection = StretchDirection.DownOnly,
+                Cursor = Cursors.Hand,
+                ToolTip = "Click or press Esc to close",
+            };
+            RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.HighQuality);
+
+            Rect area = SystemParameters.WorkArea;
+            var viewer = new ThemedWindow
+            {
+                Title = "Screenshot",
+                Icon = Icon,
+                Content = image,
+                SizeToContent = SizeToContent.WidthAndHeight,
+                ResizeMode = ResizeMode.NoResize,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                ShowInTaskbar = false,
+                UseLayoutRounding = true,
+                BorderThickness = new Thickness(1),
+                MaxWidth = area.Width * 0.9,
+                MaxHeight = area.Height * 0.9,
+                CanSnapToOtherWindows = false,
+            };
+            viewer.SetResourceReference(StyleProperty, "WindowStyles");
+            if (IsVisible)
+                viewer.Owner = this;
+
+            image.MouseLeftButtonUp += (s, args) => viewer.Close();
+            viewer.PreviewKeyDown += (s, args) =>
+            {
+                if (args.Key == Key.Escape)
+                {
+                    args.Handled = true;
+                    viewer.Close();
+                }
+            };
+
+            viewer.ShowDialog();
         }
 
         private void TogglePreviewButton_Click(object sender, RoutedEventArgs e)

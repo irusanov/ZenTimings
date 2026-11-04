@@ -135,14 +135,38 @@
                         <TextBlock x:Name="ScreenshotHint" Style="{StaticResource Hint}" Margin="0 4 12 0"
                                    Text="A picture of the main window, so the developer sees what you see." />
                     </StackPanel>
-                    <Border x:Name="ScreenshotFrame"
+                    <!-- The thumbnail opens the full screenshot -->
+                    <Button x:Name="ScreenshotFrame"
                             Grid.Column="1"
-                            BorderBrush="{DynamicResource {x:Static theming:ThemeBrushes.BorderBrush}}"
-                            BorderThickness="1"
-                            VerticalAlignment="Center">
+                            VerticalAlignment="Center"
+                            Cursor="Hand"
+                            FocusVisualStyle="{x:Null}"
+                            ToolTip="View the full screenshot"
+                            AutomationProperties.Name="View the full screenshot"
+                            Click="ScreenshotFrame_Click">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="Frame"
+                                        Background="Transparent"
+                                        BorderBrush="{DynamicResource {x:Static theming:ThemeBrushes.BorderBrush}}"
+                                        BorderThickness="1">
+                                    <ContentPresenter />
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Frame" Property="BorderBrush"
+                                                Value="{DynamicResource {x:Static theming:ThemeBrushes.AccentBrush}}" />
+                                    </Trigger>
+                                    <Trigger Property="IsKeyboardFocused" Value="True">
+                                        <Setter TargetName="Frame" Property="BorderBrush"
+                                                Value="{DynamicResource {x:Static theming:ThemeBrushes.AccentBrush}}" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
                         <Image x:Name="ScreenshotImage" MaxHeight="72" MaxWidth="120" Stretch="Uniform"
                                RenderOptions.BitmapScalingMode="HighQuality" />
-                    </Border>
+                    </Button>
                 </Grid>
             </Border>
 
