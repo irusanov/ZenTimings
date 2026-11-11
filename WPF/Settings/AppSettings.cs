@@ -106,8 +106,10 @@ namespace ZenTimings.Settings
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
+                string backup = BackupUnreadableFile();
                 MessageBox.Show(
-                    "Invalid or outdated settings file!\nSettings will be reset to defaults and any custom settings will be lost.",
+                    "Invalid or outdated settings file!\nSettings will be reset to defaults and any custom settings will be lost." +
+                    (backup != null ? "\n\nThe old file was kept as " + backup : string.Empty),
                     "Error",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
@@ -116,17 +118,38 @@ namespace ZenTimings.Settings
             return Create();
         }
 
+        // The file is replaced with defaults when it can't be read, so the old one is kept for the user to look at or repair
+        private static string BackupUnreadableFile()
+        {
+            try
+            {
+                string backup = Filename + ".bak";
+                File.Copy(Filename, backup, true);
+                return backup;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
         public void Save()
         {
             try
             {
-                if (!DriverHelper.IsPawnIoInstalled)
+                // Without the driver the app does not start, so a file made now would only hold defaults. An existing
+                // one is saved as usual.
+                if (!DriverHelper.IsPawnIoInstalled && !File.Exists(Filename))
+                {
+                    Debug.WriteLine("Settings not saved: PawnIO is not installed and there is no settings file yet.");
                     return;
+                }
 
                 Version = new Version(VersionMajor, VersionMinor).ToString();
 
                 string xmlContent = XmlUtils.SerializeToXml<AppSettings>(this);
-                File.WriteAllText(Filename, xmlContent);
+                XmlUtils.WriteAllTextAtomic(Filename, xmlContent);
             }
             catch (Exception ex)
             {
