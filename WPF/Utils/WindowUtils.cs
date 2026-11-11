@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
@@ -12,6 +13,50 @@ namespace ZenTimings.Utils
         // DWMWA_WINDOW_CORNER_PREFERENCE (33) and DWMWA_BORDER_COLOR (34) exist from Windows 11 (build 22000).
         private const int Windows11Build = 22000;
         private static readonly Lazy<int> osBuild = new Lazy<int>(GetOsBuild);
+
+        // DWM's corner radius on Windows 11, in pixels at 96 DPI: DWMWCP_ROUND and DWMWCP_ROUNDSMALL.
+        private const double RoundRadius = 8;
+        private const double RoundSmallRadius = 4;
+
+        // The corner preference last set on each window. DWM has no documented getter for it, and a window
+        // without an entry has the default (rounded).
+        private static readonly ConditionalWeakTable<Window, StrongBox<int>> cornerPreferences =
+            new ConditionalWeakTable<Window, StrongBox<int>>();
+
+        private static void RememberCornerPreference(Window window, int preference)
+        {
+            cornerPreferences.GetValue(window, _ => new StrongBox<int>()).Value = preference;
+        }
+
+        /// <summary>
+        /// The radius, in physical pixels, that DWM rounds the window's corners with; 0 when they are square
+        /// (before Windows 11, maximized, layered, or rounding turned off).
+        /// </summary>
+        public static double GetCornerRadiusPixels(Window window)
+        {
+            if (window == null || !SupportsCornerPreference || window.WindowState == WindowState.Maximized ||
+                window.AllowsTransparency)
+                return 0;
+
+            int preference = cornerPreferences.TryGetValue(window, out StrongBox<int> stored)
+                ? stored.Value
+                : (int)DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_DEFAULT;
+
+            double radius;
+            switch ((DWM_WINDOW_CORNER_PREFERENCE)preference)
+            {
+                case DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_DONOTROUND:
+                    return 0;
+                case DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUNDSMALL:
+                    radius = RoundSmallRadius;
+                    break;
+                default:
+                    radius = RoundRadius;
+                    break;
+            }
+
+            return radius * VisualTreeHelper.GetDpi(window).DpiScaleX;
+        }
 
         /// <summary>
         /// True when the OS supports DWM rounded corners and border colors (Windows 11 or newer).
@@ -55,11 +100,12 @@ namespace ZenTimings.Utils
             if (hwnd == IntPtr.Zero)
                 return;
             var preference = DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_DONOTROUND;
-            DwmSetWindowAttribute(
-                hwnd,
-                DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE,
-                ref preference,
-                Marshal.SizeOf(typeof(int)));
+            if (DwmSetWindowAttribute(
+                    hwnd,
+                    DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE,
+                    ref preference,
+                    Marshal.SizeOf(typeof(int))) == 0)
+                RememberCornerPreference(window, (int)preference);
         }
 
         public static void SetCornerPreference(System.Windows.Window window, int preference = 0)
@@ -78,11 +124,12 @@ namespace ZenTimings.Utils
 
             DWM_WINDOW_CORNER_PREFERENCE cornerPreference = (DWM_WINDOW_CORNER_PREFERENCE)preference;
 
-            DwmSetWindowAttribute(
-                hwnd,
-                DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE,
-                ref cornerPreference,
-                Marshal.SizeOf(typeof(int)));
+            if (DwmSetWindowAttribute(
+                    hwnd,
+                    DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE,
+                    ref cornerPreference,
+                    Marshal.SizeOf(typeof(int))) == 0)
+                RememberCornerPreference(window, preference);
         }
 
         public static void SetBorderColor(Window window, uint borderColor)

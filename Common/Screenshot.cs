@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
 namespace ZenTimings.Common
@@ -92,6 +93,16 @@ namespace ZenTimings.Common
 
         private Bitmap CaptureWindow(IntPtr hWnd)
         {
+            return CaptureWindow(hWnd, 0);
+        }
+
+        /// <summary>
+        /// Captures a window from the screen. With a corner radius (in physical pixels) the pixels outside the
+        /// window's rounded corners are made transparent, so the desktop or windows behind those corners don't
+        /// show in the image. The color of those pixels is kept; only their alpha changes.
+        /// </summary>
+        public Bitmap CaptureWindow(IntPtr hWnd, double cornerRadius)
+        {
             RECT region;
 
             if (Environment.OSVersion.Version.Major < 6)
@@ -104,7 +115,98 @@ namespace ZenTimings.Common
                     Marshal.SizeOf(typeof(RECT))) != 0) GetWindowRect(hWnd, out region);
             }
 
-            return CaptureRegion(Rectangle.FromLTRB(region.left, region.top, region.right, region.bottom));
+            Bitmap capture = CaptureRegion(Rectangle.FromLTRB(region.left, region.top, region.right, region.bottom));
+            if (cornerRadius < 0.5)
+                return capture;
+
+            try
+            {
+                return ClipCorners(capture, cornerRadius);
+            }
+            finally
+            {
+                capture.Dispose();
+            }
+        }
+
+        // Supersampling per axis for the corner coverage, so the clipped edge is antialiased like DWM's.
+        private const int CornerSamples = 4;
+
+        private static Bitmap ClipCorners(Bitmap source, double radius)
+        {
+            int width = source.Width;
+            int height = source.Height;
+            radius = Math.Min(radius, Math.Min(width, height) / 2.0);
+
+            // The capture has no alpha channel (32bppRgb); drawing it into an ARGB bitmap makes it opaque.
+            var result = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+            using (Graphics g = Graphics.FromImage(result))
+            {
+                g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
+                g.DrawImage(source, new Rectangle(0, 0, width, height));
+            }
+
+            int size = (int)Math.Ceiling(radius);
+            if (size <= 0)
+                return result;
+
+            // Coverage of the top-left corner; the other three corners are its mirror images.
+            var coverage = new byte[size, size];
+            const int samples = CornerSamples * CornerSamples;
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    int inside = 0;
+                    for (int sy = 0; sy < CornerSamples; sy++)
+                    {
+                        double py = y + (sy + 0.5) / CornerSamples;
+                        for (int sx = 0; sx < CornerSamples; sx++)
+                        {
+                            double px = x + (sx + 0.5) / CornerSamples;
+                            double dx = radius - px;
+                            double dy = radius - py;
+                            if (px >= radius || py >= radius || dx * dx + dy * dy <= radius * radius)
+                                inside++;
+                        }
+                    }
+
+                    coverage[x, y] = (byte)(inside * 255 / samples);
+                }
+            }
+
+            BitmapData data = result.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadWrite,
+                PixelFormat.Format32bppArgb);
+            try
+            {
+                int stride = data.Stride;
+                var pixels = new byte[stride * height];
+                Marshal.Copy(data.Scan0, pixels, 0, pixels.Length);
+
+                for (int y = 0; y < size; y++)
+                {
+                    for (int x = 0; x < size; x++)
+                    {
+                        byte alpha = coverage[x, y];
+                        if (alpha == 255)
+                            continue;
+
+                        // Byte order in memory is B, G, R, A.
+                        pixels[y * stride + x * 4 + 3] = alpha;
+                        pixels[y * stride + (width - 1 - x) * 4 + 3] = alpha;
+                        pixels[(height - 1 - y) * stride + x * 4 + 3] = alpha;
+                        pixels[(height - 1 - y) * stride + (width - 1 - x) * 4 + 3] = alpha;
+                    }
+                }
+
+                Marshal.Copy(pixels, 0, data.Scan0, pixels.Length);
+            }
+            finally
+            {
+                result.UnlockBits(data);
+            }
+
+            return result;
         }
 
         public Bitmap CaptureActiveWindow()

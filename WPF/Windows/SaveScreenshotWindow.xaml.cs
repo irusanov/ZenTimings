@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Windows;
@@ -69,7 +70,7 @@ namespace ZenTimings.Windows
                     }
                     path = Path.Combine(directory, filename);
                 }
-                screenshot.Save(path);
+                screenshot.Save(path, ImageFormat.Png);
             }
             catch (Exception ex)
             {
@@ -105,8 +106,16 @@ namespace ZenTimings.Windows
         {
             try
             {
+                // The plain bitmap format has no transparency, so the rounded corners are lost there; programs
+                // that read "PNG" from the clipboard (browsers, Discord, Office) get them as the saved file has.
+                var data = new DataObject();
+                data.SetData(DataFormats.Bitmap, screenshot);
+                var png = new MemoryStream();
+                screenshot.Save(png, ImageFormat.Png);
+                data.SetData("PNG", png, false);
+
                 // Throws when another program (a clipboard manager, RDP) holds the clipboard.
-                Clipboard.SetDataObject(screenshot, true);
+                Clipboard.SetDataObject(data, true);
                 statusStrip1.Visibility = Visibility.Visible;
             }
             catch (Exception ex)
