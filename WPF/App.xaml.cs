@@ -180,7 +180,7 @@ namespace ZenTimings
 
                 try
                 {
-                    DriverCleaner.Cleanup(notificationLevel);
+                    DriverCleaner.Cleanup(notificationLevel, GetParentProcessId(e.Args));
                 }
                 finally
                 {
@@ -192,6 +192,15 @@ namespace ZenTimings
             DriverCleanerNotification.WaitForPending();
 
             Environment.Exit(0);
+        }
+
+        // The ZenTimings process that started the cleanup; it may still be exiting while the cleanup
+        // runs, so it must not count as another program using the driver.
+        private static int GetParentProcessId(string[] args)
+        {
+            string value = args.FirstOrDefault(a => a.StartsWith("/parent:", StringComparison.OrdinalIgnoreCase))?.Substring("/parent:".Length);
+
+            return int.TryParse(value, out int parentId) ? parentId : 0;
         }
 
         private static NotificationLevel GetNotificationLevel(string[] args)
@@ -319,6 +328,9 @@ namespace ZenTimings
             {
                 string exePath = Process.GetCurrentProcess().MainModule.FileName;
                 string arguments = "/driver-cleanup /notifications:" + notificationLevel.ToString().ToLowerInvariant();
+
+                using (Process current = Process.GetCurrentProcess())
+                    arguments += " /parent:" + current.Id;
 
                 Process.Start(new ProcessStartInfo
                 {

@@ -121,6 +121,7 @@
     </Compile>
     <Compile Include="Helpers\DriverCleaner.cs" />
     <Compile Include="Helpers\DriverHelper.cs" />
+    <Compile Include="Helpers\InpOutUsage.cs" />
     <Compile Include="Encryption\UpdaterEncryption.cs" />
     <Compile Include="Common\ObservableObject.cs" />
     <Compile Include="Helpers\DriverCleanerNotification.cs" />

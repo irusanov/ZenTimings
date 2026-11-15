@@ -110,8 +110,17 @@ namespace ZenTimings.Helpers
             All,
         }
 
-        internal static void Cleanup(NotificationLevel notificationLevel)
+        internal static void Cleanup(NotificationLevel notificationLevel, int parentProcessId = 0)
         {
+            /*
+                * Another program (e.g. VainViewer) may be using the driver. Leave it
+                * installed: the next ZenTimings exit will clean up once it is gone.
+                */
+            if (SkipBecauseInUse(notificationLevel, parentProcessId))
+                return;
+
+            bool waitedForPending = false;
+
             IntPtr scm = IntPtr.Zero;
             IntPtr service = IntPtr.Zero;
 
@@ -237,6 +246,7 @@ namespace ZenTimings.Helpers
                     DateTime deadline = DateTime.UtcNow.AddMilliseconds(StopTimeoutMs);
 
                     WaitUntilStable(service, deadline);
+                    waitedForPending = true;
 
                     if (!QueryStatus(service, out status))
                     {
@@ -291,6 +301,17 @@ namespace ZenTimings.Helpers
                     */
                 if (status.dwCurrentState == SERVICE_RUNNING)
                 {
+                    /*
+                        * A service that was still starting is most likely being started by
+                        * another program, which may not have opened the device when we checked
+                        * at the top. Check again before stopping it. Otherwise the check at the
+                        * top was only moments ago and is not repeated, to keep the cleanup fast.
+                        * A stop request is not harmless while the driver is in use, since
+                        * Windows may refuse new opens of the device once an unload is pending.
+                        */
+                    if (waitedForPending && SkipBecauseInUse(notificationLevel, parentProcessId))
+                        return;
+
                     SERVICE_STATUS controlStatus;
 
                     if (!ControlService(service, SERVICE_CONTROL_STOP, out controlStatus))
@@ -372,6 +393,19 @@ namespace ZenTimings.Helpers
 
             if (notificationLevel > NotificationLevel.Error)
                 DriverCleanerNotification.Show("ZenTimings", "The inpoutx64 driver was successfully removed.");
+        }
+
+        private static bool SkipBecauseInUse(NotificationLevel notificationLevel, int parentProcessId)
+        {
+            string user;
+
+            if (!InpOutUsage.IsUsedByOtherProcess(parentProcessId, out user))
+                return false;
+
+            if (notificationLevel > NotificationLevel.None)
+                DriverCleanerNotification.Show("ZenTimings", "The inpoutx64 driver was left installed because " + user + " is using it.", true);
+
+            return true;
         }
 
         private static bool QueryStatus(IntPtr service, out SERVICE_STATUS_PROCESS status)
