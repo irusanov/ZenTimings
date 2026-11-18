@@ -49,7 +49,6 @@ namespace ZenTimings
     /// </summary>
     public partial class MainWindow : ThemedWindow
     {
-        private readonly AsusWMI AsusWmi = new AsusWMI();
         private readonly List<BiosACPIFunction> biosFunctions = new List<BiosACPIFunction>();
         private readonly BiosMemController BMC;
         private readonly Cpu cpu;
@@ -58,6 +57,11 @@ namespace ZenTimings
         private readonly List<IPlugin> plugins = new List<IPlugin>();
         private SystemInfoWindow siWnd = null;
         private volatile bool systemInfoWindowOpen;
+        private volatile bool sensorsWindowOpen;
+
+        // The ASUS WMI sensors from the core; a debug report's window has those rebuilt from the report,
+        // whose values don't change
+        private AsusWmiHardware AsusWmi => isMockWindow ? mockData?.AsusWmi : cpu?.systemInfo?.GetAsusWmi();
         private AdvancedTimingsWindow advancedTimingsWnd = null;
         private ApobInfoWindow apobInfoWnd = null;
         private SensorsWindow sensorsWindw = null;
@@ -257,17 +261,10 @@ namespace ZenTimings
                     }
                     //plugins.Add(new OHWMPlugin());
                     //plugins[1].Open();
-
-                    if (!AsusWmi.Init())
-                    {
-                        AsusWmi.Dispose();
-                        AsusWmi = null;
-                    }
                 }
 
                 // What the reports sent from error boxes and menus include from this window
                 ProblemReport.BiosMemController = BMC;
-                ProblemReport.AsusWmi = AsusWmi;
 
                 mainViewModel = new MainViewModel(
                     timings,
@@ -570,8 +567,6 @@ namespace ZenTimings
             if (refreshStillRunning)
                 return;
 
-            TryCleanup(() => AsusWmi?.Dispose());
-
             // The startup SPD read may still be on the bus; let it finish before the core goes away
             TryCleanup(() =>
             {
@@ -809,10 +804,11 @@ namespace ZenTimings
 
             // ASUS WMI reads the machine this runs on, so it is live only; the SuperIO fallback reads
             // the report's replayed sensors in a debug report's window.
-            if (!hasMemVddio && mockData == null && AsusWmi != null && AsusWmi.Status == 1)
+            AsusWmiHardware asusWmi = AsusWmi;
+            if (!hasMemVddio && asusWmi != null)
             {
-                AsusSensorInfo sensor = AsusWmi.FindSensorByName("DRAM Voltage");
-                hasMemVddio = sensor != null && AsusWMI.TryParseSensorValue(sensor.Value, out memVddio) && memVddio > 0 && memVddio < 3;
+                memVddio = asusWmi.FindSensor("DRAM Voltage")?.Value ?? 0;
+                hasMemVddio = memVddio > 0 && memVddio < 3;
             }
 
             if (!hasMemVddio)
@@ -1152,18 +1148,20 @@ namespace ZenTimings
 
                     var hasAsusDramVoltage = false;
                     float asusDramVoltage = 0;
-                    if (AsusWmi != null && AsusWmi.Status == 1)
+                    AsusWmiHardware asusWmi = AsusWmi;
+                    if (asusWmi != null)
                     {
-                        AsusSensorInfo sensor = AsusWmi.FindSensorByName("DRAM Voltage");
+                        Sensor sensor = asusWmi.FindSensor("DRAM Voltage");
 
                         // Every ASUS sensor is its own WMI method call, so all of them are read only while
                         // something shows them. Otherwise the main window needs just the DRAM voltage, on DDR4.
-                        if (systemInfoWindowOpen || (ExportSettings.Instance.LiveSnapshotEnabled && LiveSnapshot.IsDue))
-                            AsusWmi.UpdateSensors();
-                        else if (isDdr4)
-                            AsusWmi.UpdateSensor(sensor);
+                        if (systemInfoWindowOpen || sensorsWindowOpen || (ExportSettings.Instance.LiveSnapshotEnabled && LiveSnapshot.IsDue))
+                            asusWmi.Update();
+                        else if (isDdr4 && sensor != null)
+                            asusWmi.Update(sensor);
 
-                        hasAsusDramVoltage = isDdr4 && sensor != null && AsusWMI.TryParseSensorValue(sensor.Value, out asusDramVoltage) && asusDramVoltage > 0 && asusDramVoltage < 3;
+                        asusDramVoltage = sensor?.Value ?? 0;
+                        hasAsusDramVoltage = isDdr4 && asusDramVoltage > 0 && asusDramVoltage < 3;
                     }
 
                     //ReadDDR4MemoryConfig();
@@ -1470,7 +1468,7 @@ namespace ZenTimings
                 Window parent = Application.Current.MainWindow;
                 if (parent != null)
                 {
-                    DebugDialog debugWnd = new DebugDialog(BMC, AsusWmi)
+                    DebugDialog debugWnd = new DebugDialog(BMC)
                     {
                         Owner = parent,
                         Width = parent.Width,
@@ -1712,7 +1710,7 @@ namespace ZenTimings
                 sysInfoWindowWidth = settings.SysInfoWindowWidth;
             }
 
-            siWnd = new SystemInfoWindow(cpu.memoryConfig, BMC?.Config, AsusWmi?.sensors)
+            siWnd = new SystemInfoWindow(cpu.memoryConfig, BMC?.Config, AsusWmi)
             {
                 Width = sysInfoWindowWidth,
                 Height = sysInfoWindowHeight,
@@ -1721,6 +1719,7 @@ namespace ZenTimings
                 Left = sysInfoWindowLeft
             };
 
+            // The refresh reads all ASUS WMI sensors while this window shows them
             SystemInfoWindow shownWnd = siWnd;
             shownWnd.Closed += (s, args) =>
             {
@@ -1905,6 +1904,15 @@ namespace ZenTimings
                         Left = telemetryWindowLeft,
                         ShowActivated = activate
                     };
+
+                    // The refresh reads all ASUS WMI sensors only while a window shows them
+                    Windows.SensorsWindow shownSensorsWnd = sensorsWindw;
+                    shownSensorsWnd.Closed += (s, args) =>
+                    {
+                        if (ReferenceEquals(sensorsWindw, shownSensorsWnd))
+                            sensorsWindowOpen = false;
+                    };
+                    sensorsWindowOpen = true;
                     sensorsWindw.Show();
 
                     if (startMinimized)
@@ -2162,7 +2170,7 @@ namespace ZenTimings
             return new SnapshotSource
             {
                 BiosMemConfig = BMC?.Config,
-                AsusSensors = AsusWmi?.sensors,
+                AsusWmi = AsusWmi,
                 Plugins = plugins,
                 LastRefreshUtc = lastRefreshUtc,
                 AutoRefreshActive = autoRefreshActive ?? PowerCfgTimer.IsEnabled,
@@ -2206,8 +2214,7 @@ namespace ZenTimings
                 (options, selectedFormat) =>
                 {
                     // The refresh reads only the ASUS sensor it needs, so read them all for the export.
-                    if (mockData == null && AsusWmi != null && AsusWmi.Status == 1)
-                        AsusWmi.UpdateSensors();
+                    AsusWmi?.Update();
                     return SnapshotWriter.Write(SnapshotBuilder.Build(GetSnapshotSource(), options), selectedFormat);
                 },
                 format,

@@ -948,19 +948,20 @@ namespace ZenTimings.Export
 
         private object BuildAsusWmi()
         {
-            if (source.AsusSensors == null || source.AsusSensors.Count == 0)
+            AsusWmiHardware asusWmi = source.AsusWmi;
+            if (asusWmi == null || !asusWmi.HasSensors)
             {
                 Missing("readings.asus_wmi", "not_present", "this system has no ASUS sensor interface (WMI class ASUSHW), it only exists on some older ASUS boards");
                 return null;
             }
 
             var result = new List<object>();
-            foreach (var sensor in source.AsusSensors.ToList())
+            foreach (Sensor sensor in asusWmi.Sensors)
             {
                 result.Add(new SnapshotObject()
                     .Add("name", Text(sensor.Name))
-                    .Add("type", sensor.Type.ToString())
-                    .Add("value", Text(sensor.Value)));
+                    .Add("type", asusWmi.GetInfo(sensor)?.Type.ToString())
+                    .Add("value", Text(asusWmi.FormatValue(sensor))));
             }
 
             return result;
@@ -1321,7 +1322,7 @@ namespace ZenTimings.Export
                     return hasChip || hasPlugin ? null : "No supported sensor chip was detected on this board";
 
                 case SnapshotSections.AsusWmi:
-                    return source.AsusSensors == null || source.AsusSensors.Count == 0 ? "This system has no ASUS sensor interface (WMI class ASUSHW), it only exists on some older ASUS boards" : null;
+                    return source.AsusWmi == null || !source.AsusWmi.HasSensors ? "This system has no ASUS sensor interface (WMI class ASUSHW), it only exists on some older ASUS boards" : null;
 
                 default:
                     return null;

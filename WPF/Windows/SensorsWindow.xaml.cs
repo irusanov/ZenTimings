@@ -316,7 +316,7 @@ namespace ZenTimings.Windows
             ConfigureAutoRefresh();
         }
 
-        // Shows a message when neither memory module telemetry nor SuperIO sensors are available.
+        // Shows a message when neither memory module telemetry nor sensor groups (SVI3, SuperIO, ASUS WMI) are available.
         private void UpdateNoSensorsMessage()
         {
             bool hasAnySensors = moduleViewModels.Count > 0 || sensorGroupViewModels.Count > 0;

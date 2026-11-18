@@ -26,9 +26,6 @@ namespace ZenTimings.Helpers
         /// <summary>DDR4: the BIOS memory controller config of the main window, for the report; null when not loaded.</summary>
         public static BiosMemController BiosMemController { get; set; }
 
-        /// <summary>The ASUS WMI sensors of the main window, for the report; null when not loaded.</summary>
-        public static AsusWMI AsusWmi { get; set; }
-
         /// <summary>
         /// Opens the send dialog, which builds the report. One at a time: a second request while it is open is ignored.
         /// </summary>
@@ -54,7 +51,7 @@ namespace ZenTimings.Helpers
                 }
 
                 // Only a core that exists: after a failed start, creating one could fail again
-                var generator = new DebugReportGenerator(CpuSingleton.Existing, BiosMemController, AsusWmi);
+                var generator = new DebugReportGenerator(CpuSingleton.Existing, BiosMemController);
                 var dialog = new SendReportDialog(() => generator.GenerateAsync(), screenshot, errorDetails, description);
                 if (owner != null && owner.IsVisible)
                     dialog.Owner = owner;

@@ -17,16 +17,14 @@ namespace ZenTimings.Windows
     /// </summary>
     public partial class DebugDialog : ThemedWindow
     {
-        private readonly AsusWMI AWMI;
         private readonly BiosMemController BMC;
         private readonly Cpu cpu;
 
-        public DebugDialog(BiosMemController biosMemCtrl, AsusWMI asusWmi)
+        public DebugDialog(BiosMemController biosMemCtrl)
         {
             InitializeComponent();
             cpu = CpuSingleton.Instance;
             BMC = biosMemCtrl;
-            AWMI = asusWmi;
         }
 
         private void SetControlsState(bool enabled = true)
@@ -85,7 +83,7 @@ namespace ZenTimings.Windows
         private async void ButtonDebug_Click(object sender, RoutedEventArgs e)
         {
             bool printSerialNumbers = CheckPrintSerials.IsChecked == true;
-            var generator = new DebugReportGenerator(cpu, BMC, AWMI);
+            var generator = new DebugReportGenerator(cpu, BMC);
 
             SetControlsState(false);
             try

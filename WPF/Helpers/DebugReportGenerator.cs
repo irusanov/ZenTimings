@@ -38,7 +38,6 @@ namespace ZenTimings.Helpers
 
         private readonly Cpu cpu;
         private readonly BiosMemController bmc;
-        private readonly AsusWMI asusWmi;
         private readonly object syncRoot = new object();
         private readonly StringBuilder result = new StringBuilder();
         private DRAM.MemoryConfig memoryConfig;
@@ -46,12 +45,10 @@ namespace ZenTimings.Helpers
 
         /// <param name="cpu">The core, null when it could not be created (only the fallback report is built then).</param>
         /// <param name="biosMemController">DDR4: the memory controller config read from the BIOS, if loaded.</param>
-        /// <param name="asusWmi">ASUS WMI sensors, if loaded.</param>
-        public DebugReportGenerator(Cpu cpu, BiosMemController biosMemController = null, AsusWMI asusWmi = null)
+        public DebugReportGenerator(Cpu cpu, BiosMemController biosMemController = null)
         {
             this.cpu = cpu;
             bmc = biosMemController;
-            this.asusWmi = asusWmi;
         }
 
         /// <summary>The exception that ended the report early, null when it ran to the end.</summary>
@@ -612,19 +609,18 @@ namespace ZenTimings.Helpers
             PrintWmiFunctions();
             AddLine();
 
-            if (asusWmi != null && asusWmi.Status == 1)
+            // One section, headed and laid out as in the reports before the sensors moved to the core, so
+            // loading a report reads old and new ones alike (DebugReportParser.ParseAsusWmi)
+            AsusWmiHardware asusWmi = cpu.systemInfo?.GetAsusWmi();
+            if (asusWmi != null)
             {
-                AddHeading("ASUS WMI");
-                try
+                AddHeading(AsusWmiHardware.GroupName);
+                AddReport(() =>
                 {
-                    foreach (var sensor in asusWmi.sensors)
-                        AddLine($"{sensor.Name + ": ",-25}{sensor.Value}");
-                }
-                catch
-                {
-                    AddLine("<FAILED>");
-                }
-
+                    // The refresh reads only the sensor it needs, so read them all for the report
+                    asusWmi.Update();
+                    return asusWmi.GetReport().TrimEnd();
+                });
                 AddLine();
             }
 
@@ -696,6 +692,8 @@ namespace ZenTimings.Helpers
 
             AddLine();
             AddReport(() => Mmio.Instance.GetReport());
+            AddLine();
+            AddReport(() => cpu.GetBclkMeasurementReport());
         }
 
         /// <summary>
