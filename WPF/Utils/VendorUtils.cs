@@ -23,7 +23,7 @@ namespace ZenTimings.Utils
 
         internal static bool IsTufMotherboard(SystemInfo info) =>
             IsAsusMotherboard(info) &&
-            StartsWith(info?.MbVendor, "tuf");
+            StartsWith(info?.MbName, "tuf");
 
         internal static string GetMotherboardLink(SystemInfo info)
         {
