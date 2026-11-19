@@ -107,6 +107,12 @@ namespace ZenTimings.Theming
 
         public MessageBoxResult Result { get; set; }
 
+        /// <summary>
+        /// Shows the message box as a window of its own: with a taskbar button and without an owner. For a prompt
+        /// that is shown while the application has no other window in the taskbar (e.g. during startup).
+        /// </summary>
+        public bool ShowInTaskbar { get; set; }
+
         /// <summary>The button that closed the message box, null when it was closed otherwise.</summary>
         public MessageBoxButtonModel ButtonPressed { get; set; }
 
@@ -168,7 +174,12 @@ namespace ZenTimings.Theming
         {
             var window = new MessageBoxWindow(model);
 
-            owner = owner ?? ActiveWindow();
+            // A standalone prompt has no owner: an owned window follows its owner (a topmost one included)
+            if (!model.ShowInTaskbar)
+                owner = owner ?? ActiveWindow();
+            else
+                owner = null;
+
             if (owner != null && owner.IsVisible && !ReferenceEquals(owner, window))
             {
                 window.Owner = owner;

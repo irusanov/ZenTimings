@@ -134,12 +134,56 @@ namespace ZenTimings
             else
             {
                 {
-                    ZenTimings.Theming.MessageBoxResult result = ZenTimings.Theming.MessageBox.Show(
-                        "PawnIO is not installed, do you want to install it?",
-                        nameof(ZenTimings),
-                        ZenTimings.Theming.MessageBoxButton.OKCancel,
-                        ZenTimings.Theming.MessageBoxImage.Warning
-                    );
+                    string bundledVersion = "";
+                    try
+                    {
+                        bundledVersion = " " + DriverHelper.BundledVersion;
+                    }
+                    catch
+                    {
+                        // The version is only shown in the prompt
+                    }
+
+                    const string pawnIoUrl = "https://github.com/namazso/PawnIO";
+                    ZenTimings.Theming.MessageBoxResult result;
+
+                    // The splash is topmost and has no taskbar button; the prompt is shown as a normal window instead
+                    SplashWindow.HideIfOpen();
+                    do
+                    {
+                        result = ZenTimings.Theming.MessageBox.Show(
+                            new ZenTimings.Theming.MessageBoxModel
+                            {
+                                Caption = "PawnIO driver required",
+                                Text = "ZenTimings reads the memory timings and sensors through the PawnIO driver, " +
+                                    "which is not installed on this system." + Environment.NewLine + Environment.NewLine +
+                                    $"Install the bundled PawnIO{bundledVersion} now? The PawnIO installer will open, " +
+                                    "and ZenTimings restarts when it finishes." + Environment.NewLine + Environment.NewLine +
+                                    "Without the driver ZenTimings cannot run and will exit." + Environment.NewLine + Environment.NewLine +
+                                    "PawnIO is open source: " + pawnIoUrl,
+                                Icon = ZenTimings.Theming.MessageBoxImage.Information,
+                                ShowInTaskbar = true,
+                                Buttons = new[]
+                                {
+                                    ZenTimings.Theming.MessageBoxButtons.Ok("Install PawnIO"),
+                                    ZenTimings.Theming.MessageBoxButtons.Custom("Open GitHub page"),
+                                    ZenTimings.Theming.MessageBoxButtons.Cancel("Exit"),
+                                },
+                            });
+
+                        // The link button opens the page and asks again
+                        if (result == ZenTimings.Theming.MessageBoxResult.Custom)
+                        {
+                            try
+                            {
+                                Process.Start(new ProcessStartInfo(pawnIoUrl) { UseShellExecute = true });
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine($"Could not open {pawnIoUrl}: {ex.Message}");
+                            }
+                        }
+                    } while (result == ZenTimings.Theming.MessageBoxResult.Custom);
 
                     if (result == ZenTimings.Theming.MessageBoxResult.OK)
                     {
