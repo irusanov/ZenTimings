@@ -217,9 +217,9 @@ namespace ZenTimings
 
                 SplashWindow.Loading("Core");
                 // Core initialization does most of the startup work; show each of its stages.
-                //CpuSingleton.InitProgress = stage => SplashWindow.Loading($"Core: {stage}");
+                CpuSingleton.InitProgress = stage => SplashWindow.Loading($"Core: {stage}");
                 cpu = CpuSingleton.Instance;
-                //CpuSingleton.InitProgress = null;
+                CpuSingleton.InitProgress = null;
 
                 if (cpu.info.family.Equals(Cpu.Family.UNSUPPORTED))
                 {
@@ -334,6 +334,11 @@ namespace ZenTimings
                 );
 
                 DataContext = mainViewModel;
+
+                // The memory side BCLK is measured in the background after start. With the power table the next refresh
+                // picks it up through MCLK; without it the frequency is only read here, so it is updated on the event.
+                if (cpu.bclk != null)
+                    cpu.bclk.MemoryBclkChanged += Bclk_MemoryBclkChanged;
 
                 SplashWindow.Loading("Done");
 
@@ -655,6 +660,12 @@ namespace ZenTimings
                     MemoryConfig config = cpu.memoryConfig;
                     WaitWhileBusy(() => !config.IsSpdInfoLoaded, CleanupRefreshWaitMs);
                 }
+            });
+
+            TryCleanup(() =>
+            {
+                if (cpu?.bclk != null)
+                    cpu.bclk.MemoryBclkChanged -= Bclk_MemoryBclkChanged;
             });
 
             TryCleanup(() => cpu?.Dispose());
@@ -1486,6 +1497,17 @@ namespace ZenTimings
             {
                 SplashWindow.ShowIfOpen();
             }
+        }
+
+        private void Bclk_MemoryBclkChanged(object sender, EventArgs e)
+        {
+            // Raised on the measurement thread
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                BaseDramTimings timings = mainViewModel?.Timings;
+                if (timings != null && mockData == null)
+                    mainViewModel.MemoryFrequency = timings.Frequency;
+            }));
         }
 
         private AllDimmsWindow allDimmsWnd;

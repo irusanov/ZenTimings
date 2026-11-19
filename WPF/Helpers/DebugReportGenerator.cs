@@ -693,7 +693,7 @@ namespace ZenTimings.Helpers
             AddLine();
             AddReport(() => Mmio.Instance.GetReport());
             AddLine();
-            AddReport(() => cpu.GetBclkMeasurementReport());
+            AddReport(() => cpu.bclk?.GetMeasurementReport() ?? string.Empty);
         }
 
         /// <summary>
