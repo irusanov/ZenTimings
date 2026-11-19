@@ -619,14 +619,19 @@ namespace ZenTimings
             Microsoft.Win32.SystemEvents.PowerModeChanged -= SystemEvents_PowerModeChanged;
             StopAutoRefresh();
 
-            // A refresh that already started keeps reading the hardware on a background thread. Let it
-            // finish before the core goes away; it doesn't need the UI thread for that part.
-            for (int waited = 0; Volatile.Read(ref refreshReadingHardware) != 0 && waited < CleanupRefreshWaitMs; waited += RefreshWaitStepMs)
-                Thread.Sleep(RefreshWaitStepMs);
+            // Nothing in the window may be used while the waits below keep the dispatcher running
+            TryCleanup(() => IsEnabled = false);
 
-            // Still reading: disposing the core or removing the driver under it could fault. The
+            // A refresh that already started keeps reading the hardware on a background thread, and so does a live
+            // snapshot that was building when Cleanup began. Let them finish before the core goes away; they don't need
+            // the UI thread for that part, and the window keeps painting meanwhile instead of freezing.
+            // Still reading after the limit: disposing the core or removing the driver under it could fault. The
             // process is exiting anyway, and Windows releases what it holds.
-            bool refreshStillRunning = Volatile.Read(ref refreshReadingHardware) != 0;
+            WaitWhileBusy(
+                () => Volatile.Read(ref refreshReadingHardware) != 0 || Volatile.Read(ref snapshotsRunning) != 0,
+                CleanupRefreshWaitMs);
+
+            bool refreshStillRunning = Volatile.Read(ref refreshReadingHardware) != 0 || Volatile.Read(ref snapshotsRunning) != 0;
 
             // Each step on its own, so one failure doesn't skip the rest (or the shutdown after it).
             foreach (IPlugin plugin in plugins)
@@ -647,15 +652,53 @@ namespace ZenTimings
                 if (cpu?.memoryConfig != null)
                 {
                     cpu.memoryConfig.SpdInfoLoaded -= MemoryConfig_SpdInfoLoaded;
-                    cpu.memoryConfig.WaitForSpdInfo(CleanupRefreshWaitMs);
+                    MemoryConfig config = cpu.memoryConfig;
+                    WaitWhileBusy(() => !config.IsSpdInfoLoaded, CleanupRefreshWaitMs);
                 }
             });
+
             TryCleanup(() => cpu?.Dispose());
 
             if (settings.AutoUninstallDriver)
             {
                 TryCleanup(() => App.CleanupDriverIfLastInstance((NotificationLevel)settings.AutoUninstallDriverNotificationLevel));
             }
+        }
+
+        // Waits until stillBusy() turns false or the limit passes. On the UI thread the dispatcher keeps running while
+        // it waits (a sleep here froze the window for up to the whole limit); the poll is the same 20 ms step as before.
+        private void WaitWhileBusy(Func<bool> stillBusy, int limitMs)
+        {
+            var budget = Stopwatch.StartNew();
+
+            if (stillBusy() && Dispatcher.CheckAccess() && !Dispatcher.HasShutdownStarted)
+            {
+                var frame = new DispatcherFrame();
+                var poll = new DispatcherTimer(DispatcherPriority.Normal, Dispatcher)
+                {
+                    Interval = TimeSpan.FromMilliseconds(RefreshWaitStepMs)
+                };
+                poll.Tick += (s, e) =>
+                {
+                    if (!stillBusy() || budget.ElapsedMilliseconds >= limitMs)
+                        frame.Continue = false;
+                };
+
+                poll.Start();
+                try
+                {
+                    Dispatcher.PushFrame(frame);
+                }
+                finally
+                {
+                    poll.Stop();
+                }
+            }
+
+            // Off the UI thread, or the dispatcher stopped before the work finished (the window was closed while
+            // waiting): the rest of the limit is slept off, so the core never goes away under a running read
+            while (stillBusy() && budget.ElapsedMilliseconds < limitMs)
+                Thread.Sleep(RefreshWaitStepMs);
         }
 
         private static void TryCleanup(Action step)
@@ -2309,14 +2352,60 @@ namespace ZenTimings
             if (!ExportSettings.Instance.LiveSnapshotEnabled || !LiveSnapshot.IsDue)
                 return;
 
-            Task.Run(async () =>
-            {
-                // Wait for that refresh to finish so that the snapshot holds the new values
-                for (int waited = 0; Volatile.Read(ref isRefreshing) != 0 && waited < RefreshWaitLimitMs; waited += RefreshWaitStepMs)
-                    await Task.Delay(RefreshWaitStepMs);
+            // The one that is still writing is enough, the next tick asks again
+            if (Volatile.Read(ref snapshotsRunning) != 0)
+                return;
 
+            // Waits for that refresh to finish so that the snapshot holds the new values
+            RunSnapshotTask(() =>
+            {
                 lastRefreshUtc = DateTime.UtcNow;
                 LiveSnapshot.Update(GetSnapshotSource(true));
+            });
+        }
+
+        // Number of snapshot tasks that have not finished; Cleanup waits for them like for a refresh.
+        private int snapshotsRunning;
+
+        // A snapshot reads what the refresh writes (BMC, ASUS sensors, the plugins), so it runs in the refresh's own slot:
+        // it waits until no refresh is running, takes the slot, and the next tick skips while it holds it. It does not
+        // start once Cleanup has begun, and Cleanup waits for one that has.
+        private void RunSnapshotTask(Action work)
+        {
+            if (cleanedUp)
+                return;
+
+            Interlocked.Increment(ref snapshotsRunning);
+            Task.Run(() =>
+            {
+                bool hasSlot = false;
+                try
+                {
+                    for (int waited = 0; waited < RefreshWaitLimitMs && !cleanedUp; waited += RefreshWaitStepMs)
+                    {
+                        if (Interlocked.CompareExchange(ref isRefreshing, 1, 0) == 0)
+                        {
+                            hasSlot = true;
+                            break;
+                        }
+
+                        Thread.Sleep(RefreshWaitStepMs);
+                    }
+
+                    // A refresh that outlasts the wait skips this snapshot; the next one is not far off
+                    if (hasSlot && !cleanedUp)
+                        work();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Live snapshot failed: {ex.Message}");
+                }
+                finally
+                {
+                    if (hasSlot)
+                        Interlocked.Exchange(ref isRefreshing, 0);
+                    Interlocked.Decrement(ref snapshotsRunning);
+                }
             });
         }
 
@@ -2362,10 +2451,15 @@ namespace ZenTimings
         private void UpdateLiveSnapshot()
         {
             SnapshotSource source = GetSnapshotSource();
-            Task.Run(() =>
+            RunSnapshotTask(() =>
             {
+                // Not Invoke: Cleanup on the UI thread may be waiting for this task
                 if (!LiveSnapshot.WriteNow(source))
-                    Dispatcher.Invoke(() => HandleError($"Could not write the live snapshot file.\n{LiveSnapshot.LastError}", "Live snapshot", offerReport: false));
+                    Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        if (!cleanedUp)
+                            HandleError($"Could not write the live snapshot file.\n{LiveSnapshot.LastError}", "Live snapshot", offerReport: false);
+                    }));
             });
         }
 
