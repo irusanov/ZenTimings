@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Security;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using System.Text;
 
 namespace ZenTimings.Helpers
@@ -18,6 +21,72 @@ namespace ZenTimings.Helpers
         public const string AutostartArgument = "/autostart";
 
         private static string ExecutablePath => Process.GetCurrentProcess().MainModule.FileName;
+
+        /// <summary>
+        /// The task starts the exe elevated at every logon, so whoever can replace it (or a DLL next to it) gets
+        /// administrator rights then. Looks at the exe, its folder and the folders above it for write access of a
+        /// normal user: Everyone, Users, Authenticated Users, Interactive and the current user, which includes owning
+        /// the folder. Returns the first path found that such a user can change, or null. Deny entries are not
+        /// weighed, so the answer errs on the side of reporting; null also when the permissions can't be read.
+        /// </summary>
+        public static string FindUserWritableLocation()
+        {
+            try
+            {
+                SecurityIdentifier me = WindowsIdentity.GetCurrent().User;
+                var weak = new List<SecurityIdentifier>
+                {
+                    new SecurityIdentifier(WellKnownSidType.WorldSid, null),
+                    new SecurityIdentifier(WellKnownSidType.BuiltinUsersSid, null),
+                    new SecurityIdentifier(WellKnownSidType.AuthenticatedUserSid, null),
+                    new SecurityIdentifier(WellKnownSidType.InteractiveSid, null),
+                };
+                if (me != null)
+                    weak.Add(me);
+
+                // The exe itself, its folder (files can be added there too), and the folders above it, which matter
+                // only as far as they let the folder be removed or its permissions changed
+                const FileSystemRights fileRights = FileSystemRights.WriteData | FileSystemRights.AppendData |
+                    FileSystemRights.Delete | FileSystemRights.ChangePermissions | FileSystemRights.TakeOwnership;
+                const FileSystemRights folderRights = fileRights | FileSystemRights.DeleteSubdirectoriesAndFiles;
+                const FileSystemRights parentRights = FileSystemRights.DeleteSubdirectoriesAndFiles |
+                    FileSystemRights.ChangePermissions | FileSystemRights.TakeOwnership;
+
+                var exe = new FileInfo(ExecutablePath);
+                if (HasUserAccess(exe.GetAccessControl(), weak, me, fileRights))
+                    return exe.FullName;
+
+                bool first = true;
+                for (DirectoryInfo dir = exe.Directory; dir != null; dir = dir.Parent)
+                {
+                    if (HasUserAccess(dir.GetAccessControl(), weak, me, first ? folderRights : parentRights))
+                        return dir.FullName;
+                    first = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Could not check the permissions of the install folder: " + ex.Message);
+            }
+
+            return null;
+        }
+
+        private static bool HasUserAccess(FileSystemSecurity security, List<SecurityIdentifier> weak, SecurityIdentifier me, FileSystemRights rights)
+        {
+            foreach (FileSystemAccessRule rule in security.GetAccessRules(true, true, typeof(SecurityIdentifier)))
+            {
+                // Entries that only apply to what is inside the folder do not give access to the folder itself
+                if (rule.AccessControlType != AccessControlType.Allow || (rule.PropagationFlags & PropagationFlags.InheritOnly) != 0)
+                    continue;
+
+                if ((rule.FileSystemRights & rights) != 0 && weak.Contains((SecurityIdentifier)rule.IdentityReference))
+                    return true;
+            }
+
+            // The owner can always rewrite the permissions
+            return me != null && me.Equals(security.GetOwner(typeof(SecurityIdentifier)));
+        }
 
         /// <summary>
         /// Creates or removes the autostart scheduled task.
