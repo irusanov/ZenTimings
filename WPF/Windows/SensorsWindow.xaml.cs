@@ -453,12 +453,25 @@ namespace ZenTimings.Windows
             SectionsScroll.InvalidateMeasure();
         }
 
+        // The core reads the SPD / PMIC / thermal data on its own thread at startup. A window opened early (auto-open at
+        // startup) would build the modules from nothing, or from the APOB copy that has no telemetry, and never rebuild.
+        private const int SpdLoadWaitMs = 10000;
+
         // Runs entirely on a thread-pool thread
         private Tuple<List<ModuleViewModel>, string> BuildModuleViewModels()
         {
             var vms = new List<ModuleViewModel>();
             Dictionary<byte, Ddr5SpdInfo> spdInfo = null;
             string warning = null;
+
+            try
+            {
+                memoryConfig.WaitForSpdInfo(SpdLoadWaitMs);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Sensors: waiting for the SPD data failed: {ex.Message}");
+            }
 
             try
             {

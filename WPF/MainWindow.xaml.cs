@@ -260,10 +260,21 @@ namespace ZenTimings
                 var timings = ReadTimings();
 
                 SplashWindow.Loading("Memory modules");
+
+                // The SPD read (only the init subset; the SPD window reads the rest) started with the core and ran next to
+                // the rest of its startup. What is left of it is waited for here, so the module names, their logos and the
+                // PMIC data are in the first frame instead of the module list changing right after the window opens.
+                memoryConfig?.WaitForSpdInfo(SpdStartupWaitMs);
+                // When the SPD read is already done here, the module list below is built from the full data and there is
+                // nothing to apply later; a second rebuild would only make the window change right after it opens.
+                bool spdLoadedBeforeModules = memoryConfig.IsSpdInfoLoaded;
                 ReadMemoryModulesInfo(memoryConfig?.Modules);
 
+                if (spdLoadedBeforeModules)
+                    Interlocked.Exchange(ref spdInfoHandled, 1);
+
                 memoryConfig.SpdInfoLoaded += MemoryConfig_SpdInfoLoaded;
-                if (memoryConfig.IsSpdInfoLoaded)
+                if (!spdLoadedBeforeModules && memoryConfig.IsSpdInfoLoaded)
                     MemoryConfig_SpdInfoLoaded(memoryConfig, EventArgs.Empty);
 
                 SplashWindow.Loading("Sensors");
@@ -1757,10 +1768,18 @@ namespace ZenTimings
             }
         }
 
+        private const int SpdStartupWaitMs = 8000;
+
+        // Subscribing and then checking IsSpdInfoLoaded can deliver the same load twice (the event fires between the two)
+        private int spdInfoHandled;
+
         // Raised by the core on its SPD thread; the UI work runs on the dispatcher once the window is up.
         private void MemoryConfig_SpdInfoLoaded(object sender, EventArgs e)
         {
             if (cleanedUp)
+                return;
+
+            if (Interlocked.Exchange(ref spdInfoHandled, 1) != 0)
                 return;
 
             Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(ApplySpdInfo));
