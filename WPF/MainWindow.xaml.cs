@@ -587,6 +587,23 @@ namespace ZenTimings
         // the bus always finishes before the core is disposed.
         private const int CleanupRefreshWaitMs = 6000;
 
+        // Raised on the SystemEvents thread. The power table in DRAM is not kept up to date by the SMU across sleep, so
+        // after a resume it can show values from before it; the core marks it stale until it has changed.
+        private void SystemEvents_PowerModeChanged(object sender, Microsoft.Win32.PowerModeChangedEventArgs e)
+        {
+            if (e.Mode != Microsoft.Win32.PowerModes.Resume || cleanedUp)
+                return;
+
+            try
+            {
+                cpu?.powerTable?.InvalidateAfterResume();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Resume: could not invalidate the power table: {ex.Message}");
+            }
+        }
+
         private void Cleanup()
         {
             // Restart cleans up before shutting down, and the shutdown closes the window, which exits again.
@@ -598,7 +615,8 @@ namespace ZenTimings
             // cleanedUp), so one of the two always sees the other.
             Thread.MemoryBarrier();
 
-            // Nothing may tick into the core once it is disposed.
+            // Nothing may tick into the core once it is disposed. (A static event, so it would keep the window alive.)
+            Microsoft.Win32.SystemEvents.PowerModeChanged -= SystemEvents_PowerModeChanged;
             StopAutoRefresh();
 
             // A refresh that already started keeps reading the hardware on a background thread. Let it
@@ -1711,6 +1729,8 @@ namespace ZenTimings
             //#endif
             MinimizeFootprint();
             InitLiveSnapshot();
+
+            Microsoft.Win32.SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
 
             if (settings.AdvancedMode && settings.AutoOpenTelemetry)
                 OpenSensorsWindowAfterFirstRender();
