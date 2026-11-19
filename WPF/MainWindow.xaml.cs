@@ -1169,9 +1169,37 @@ namespace ZenTimings
         }
 
         private int isRefreshing = 0;
+        /// <summary>
+        /// After a memory P-state switch: the APOB timing blocks of the new P-state become the active ones, and the
+        /// values taken from them (ODT, drive strengths, Vrefs, CCD_L) follow the timings.
+        /// </summary>
+        private void UpdateApobForActivePstate()
+        {
+            var apob = cpu?.info.apob;
+            if (apob == null || !apob.IsValid || mainViewModel?.Timings == null)
+                return;
+
+            apob.UpdateActiveTimings(mainViewModel.Timings);
+
+            mainViewModel.ApobExtendedData = apob.ExtendedData;
+            mainViewModel.ApobData = new ApobDataView(mainViewModel.ApobMainData, apob.ExtendedData, apob.ExtendedDataPerPstate);
+            mainViewModel.CcdlData = apob.CcdlData;
+
+            if (timingsPanel is LPDDR5TimingsPanel lpddr5Panel)
+                lpddr5Panel.SetModeRegisters(apob.ActiveLpddr5ModeRegisters);
+        }
+
+        // How long a refresh waits for the PCI bus mutex before skipping the memory P-state check for one tick
+        private const int PstateCheckLockTimeoutMs = 500;
+
         private void PowerCfgTimer_Tick(object sender, EventArgs e)
         {
             if (Interlocked.Exchange(ref isRefreshing, 1) == 1) return;
+
+            // UI state the background read needs, taken here on the UI thread: which module is selected and the
+            // timings object shown for it
+            int selectedIndex = comboBoxPartNumber?.SelectedIndex ?? 0;
+            BaseDramTimings shownTimings = mainViewModel?.Timings;
 
             // Run refresh operation in a new task
             Task.Run(() =>
@@ -1226,6 +1254,54 @@ namespace ZenTimings
                         voltagesUpdated = cpu.memoryConfig.RefreshTelemetry(settings.AutoRefreshInterval / 2);
                     }
 
+                    // The memory P-state and the timings are read here too, off the UI thread: the timings read waits
+                    // up to 5 s for the PCI bus mutex, which other tools hold. The UI update below only publishes them.
+                    float newMclk = cpu.powerTable?.MCLK ?? 0;
+                    BaseDramTimings refreshedTimings = null;
+                    bool timingsRead = false;
+                    bool timingsCurrent = false;
+                    try
+                    {
+                        var modules = cpu.memoryConfig.Modules;
+
+                        // SelectedIndex is -1 with nothing selected, which ?? does not catch, and a stale
+                        // index can outlive a shorter module list
+                        MemoryModule module = modules != null && selectedIndex >= 0 && selectedIndex < modules.Count
+                            ? modules[selectedIndex]
+                            : null;
+                        uint dctOffset = module?.DctOffset ?? 0;
+
+                        // APUs switch memory P-state with load, and P-states can share MCLK (Rembrandt: P0 to P2 at
+                        // 800), so the P-state is checked too. Its register is read under the bus mutex like the
+                        // timings; while another tool holds the bus the check waits for the next tick.
+                        bool pstateChanged = false;
+                        if (shownTimings is Ddr5Timings shownDdr5 && Mutexes.WaitPciBus(PstateCheckLockTimeoutMs))
+                        {
+                            try
+                            {
+                                pstateChanged = shownDdr5.MemPstateChanged(dctOffset);
+                            }
+                            finally
+                            {
+                                Mutexes.ReleasePciBus();
+                            }
+                        }
+
+                        if (newMclk != lastMclk || pstateChanged)
+                        {
+                            refreshedTimings = ReadTimings(dctOffset);
+                            timingsRead = true;
+                        }
+
+                        timingsCurrent = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        // Bus busy past the timeout, or the read failed. The sensors are still shown below, and with
+                        // lastMclk left as it was the timings are tried again on the next tick.
+                        Debug.WriteLine($"Refresh: reading the timings failed: {ex.Message}");
+                    }
+
                     Interlocked.Exchange(ref refreshReadingHardware, 0);
 
                     if (cleanedUp)
@@ -1238,19 +1314,16 @@ namespace ZenTimings
                             if (cleanedUp)
                                 return;
 
-                            var newMclk = cpu.powerTable.MCLK;
-
-                            if (newMclk != lastMclk)
+                            // Published only while the module they were read for is still the selected one; a
+                            // selection made in the meantime has loaded its own timings
+                            if (timingsRead && (comboBoxPartNumber?.SelectedIndex ?? 0) == selectedIndex)
                             {
-                                var modules = cpu.memoryConfig.Modules;
-                                int selectedIndex = comboBoxPartNumber?.SelectedIndex ?? 0;
-                                MemoryModule module = modules?.Count > 0 ? modules[selectedIndex] : null;
-                                mainViewModel.Timings = ReadTimings(module?.DctOffset ?? 0);
-                                //Dictionary<byte, Ddr5SpdInfo> results = Ddr5SpdDecoder.ReadAndDecodeAll(CpuSingleton.Instance.SmbusPiix4);
+                                mainViewModel.Timings = refreshedTimings;
+                                UpdateApobForActivePstate();
                             }
 
                             if (voltagesUpdated)
-                                mainViewModel.PmicData = ModulePmicData(comboBoxPartNumber?.SelectedIndex ?? 0);
+                                mainViewModel.PmicData = ModulePmicData(Math.Max(0, comboBoxPartNumber?.SelectedIndex ?? 0));
 
                             if (cpu.memoryConfig.Type == MemType.DDR4 || cpu.memoryConfig.Type == MemType.LPDDR4)
                             {
@@ -1271,7 +1344,8 @@ namespace ZenTimings
 
                             mainViewModel.RefreshSensors();
 
-                            lastMclk = newMclk;
+                            if (timingsCurrent)
+                                lastMclk = newMclk;
 
                             if (timingsPanel is DDR4TimingsPanel ddr4Panel && isDdr4)
                                 ApplyDdr4Vsoc(ddr4Panel, false);

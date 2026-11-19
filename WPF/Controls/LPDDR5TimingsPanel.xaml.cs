@@ -26,8 +26,22 @@ namespace ZenTimings.Controls
         {
             InitializeComponent();
 
+            if (modeRegisters != null)
+                SetModeRegisters(modeRegisters);
+        }
+
+        /// <summary>
+        /// Shows the mode registers of another APOB timing block, after the memory controller switched memory
+        /// P-state; null leaves the rows N/A.
+        /// </summary>
+        public void SetModeRegisters(ApobLpddr5ModeRegisters modeRegisters)
+        {
             if (modeRegisters == null)
+            {
+                foreach (TimingRow row in new[] { rowDqOdt, rowNtOdt, rowCaOdt, rowWckOdt, rowCkCsOdt, rowSocOdt, rowPdds, rowVrefCa, rowVrefDq })
+                    SetRow(row, null);
                 return;
+            }
 
             SetRow(rowDqOdt, modeRegisters.DqOdt.ToString());
             SetRow(rowNtOdt, modeRegisters.NtDqOdt.ToString());

@@ -401,7 +401,7 @@ namespace ZenTimings.ViewModels
                 ApobMainData = apob.Data;
                 ApobExtendedData = apob.ExtendedData;
                 CcdlData = apob.CcdlData;
-                ApobData = new ApobDataView(ApobMainData, ApobExtendedData);
+                ApobData = new ApobDataView(ApobMainData, ApobExtendedData, apob.ExtendedDataPerPstate);
             }
 
             AgesaVersion = mockData != null ? (mockData.AgesaVersion ?? agesaVersion) : agesaVersion;

@@ -26,7 +26,7 @@
                 </StackPanel.Resources>
 
                 <local:TimingRow Label="{Binding MemoryType, FallbackValue='Speed'}" Value="{Binding MemoryFrequencyString, FallbackValue='N/A', StringFormat={}{0:F0}}" />
-                <local:TimingRow Label="BGS" Value="{Binding Timings.BGS, FallbackValue='N/A'}" />
+                <local:TimingRow Label="DF PState" Value="{Binding Timings.MemPstate, StringFormat='P{0}', FallbackValue='N/A'}" LabelToolTip="Memory P-state the memory controller runs (P0 = full speed); APUs switch to lower ones at idle" />
                 <local:TimingRow Label="GDM" Value="{Binding Timings.GDM, FallbackValue='N/A'}" />
                 <TextBlock Style="{DynamicResource DividerTextBlock}" />
                 <local:TimingRow Label="tCL" Value="{Binding Timings.CL, FallbackValue='N/A'}" />
