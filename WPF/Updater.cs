@@ -3,9 +3,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Xml.Serialization;
 using ZenTimings.Common;
@@ -52,23 +54,84 @@ namespace ZenTimings
 
         private static AppSettings.ReleaseChannel Channel => AppSettings.Instance.UpdateReleaseChannel;
 
+        /// <summary>What the update feeds returned.</summary>
+        private sealed class FetchResult
+        {
+            public UpdaterArgs Args;
+            public bool IsBeta;
+            /// <summary>Set when the beta feed was skipped; shown to the user before the result is used.</summary>
+            public string BetaWarning;
+        }
+
+        /// <summary>Checks for an update and waits for the answer of the server. Used on startup.</summary>
         public void CheckForUpdate(bool manualUpdate = false, bool suppressNetworkErrorDialog = false)
         {
             if (!manualUpdate) SplashWindow.Loading("Checking for updates...");
 
             manual = manualUpdate;
 
+            FetchResult result = null;
+            Exception error = null;
             try
             {
-                UpdaterArgs updaterArgs = FetchLatestUpdateInfo(out bool isBeta);
-                if (updaterArgs == null)
+                result = FetchLatestUpdateInfo();
+            }
+            catch (Exception ex)
+            {
+                error = ex;
+            }
+
+            CompleteCheck(result, error, suppressNetworkErrorDialog);
+        }
+
+        /// <summary>
+        /// The manual check. The server is asked on a background thread, so the UI stays responsive while it
+        /// answers or times out; the result and the errors are shown the same way as by <see cref="CheckForUpdate"/>.
+        /// </summary>
+        public async Task CheckForUpdateAsync()
+        {
+            manual = true;
+
+            FetchResult result = null;
+            Exception error = null;
+            try
+            {
+                result = await Task.Run(() => FetchLatestUpdateInfo());
+            }
+            catch (Exception ex)
+            {
+                error = ex;
+            }
+
+            CompleteCheck(result, error, false);
+        }
+
+        // Runs on the UI thread: it shows the dialogs
+        private void CompleteCheck(FetchResult result, Exception error, bool suppressNetworkErrorDialog)
+        {
+            try
+            {
+                // Rethrown here, so a failed download ends in the same handlers as an error of the steps below
+                if (error != null)
+                    ExceptionDispatchInfo.Capture(error).Throw();
+
+                if (result.BetaWarning != null)
+                {
+                    MessageBox.Show(
+                        result.BetaWarning,
+                        @"Beta Update Check Failed",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                }
+
+                if (result.Args == null)
                 {
                     if (manual)
                         OnUpdateCheckCompleteEvent(new EventArgs());
                     return;
                 }
 
-                ProcessUpdateInfo(updaterArgs, isBeta);
+                ProcessUpdateInfo(result.Args, result.IsBeta);
             }
             catch (WebException ex)
             {
@@ -120,18 +183,26 @@ namespace ZenTimings
 
         // Release checks the stable feed only and Beta the beta feed only. Any checks both and the newer one wins,
         // so those users also get a stable release that is newer than the last beta.
-        private UpdaterArgs FetchLatestUpdateInfo(out bool isBeta)
+        // May run on a background thread: it shows nothing itself.
+        private FetchResult FetchLatestUpdateInfo()
         {
-            isBeta = false;
+            var result = new FetchResult();
             var channel = Channel;
 
             if (channel == AppSettings.ReleaseChannel.Beta)
             {
-                isBeta = true;
-                return FetchUpdateInfo(betaUpdateUrl, betaSignatureUrl);
+                result.IsBeta = true;
+                result.Args = FetchUpdateInfo(betaUpdateUrl, betaSignatureUrl);
+                return result;
             }
 
             bool checkBeta = channel == AppSettings.ReleaseChannel.Any;
+
+            // The feeds are independent, so they are fetched together: the check waits for the slower one, not for both
+            Task<UpdaterArgs> betaTask = checkBeta
+                ? Task.Run(() => FetchUpdateInfo(betaUpdateUrl, betaSignatureUrl))
+                : null;
+
             Exception stableError = null;
             UpdaterArgs stable = null;
 
@@ -145,25 +216,24 @@ namespace ZenTimings
                 stableError = ex;
             }
 
+            result.Args = stable;
+
             if (!checkBeta)
-                return stable;
+                return result;
 
             UpdaterArgs beta = null;
             try
             {
-                beta = FetchUpdateInfo(betaUpdateUrl, betaSignatureUrl);
+                // GetResult rethrows the original exception, not an AggregateException
+                beta = betaTask.GetAwaiter().GetResult();
             }
             catch (CryptographicException ex)
             {
                 if (stable == null)
                     throw;
 
-                MessageBox.Show(
-                    ex.Message + Environment.NewLine + Environment.NewLine +
-                    "The beta channel was skipped; checking the stable channel only.",
-                    @"Beta Update Check Failed",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
+                result.BetaWarning = ex.Message + Environment.NewLine + Environment.NewLine +
+                    "The beta channel was skipped; checking the stable channel only.";
             }
             catch (Exception ex)
             {
@@ -172,25 +242,27 @@ namespace ZenTimings
                     throw stableError;
             }
 
-            if (beta == null)
-                return stable;
-            if (stable == null || new Version(beta.Version) > new Version(stable.Version))
+            if (beta != null && (stable == null || new Version(beta.Version) > new Version(stable.Version)))
             {
-                isBeta = true;
-                return beta;
+                result.IsBeta = true;
+                result.Args = beta;
             }
 
-            return stable;
+            return result;
         }
 
         private UpdaterArgs FetchUpdateInfo(string xmlUrl, string sigUrl)
         {
             // After upgrading to .NET 4.7.2, the best supported TLS version is automatically negotiated, so we don't need to force TLS 1.2 anymore.
             //ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
+            // A WebClient runs one request at a time, so the signature gets its own. It is fetched on a pool thread:
+            // an async WebClient call started here would complete on the UI thread, which is waiting for it.
             using (var client = new TimeoutWebClient())
+            using (var signatureClient = new TimeoutWebClient())
             {
+                Task<byte[]> signatureTask = Task.Run(() => signatureClient.DownloadData(sigUrl));
                 byte[] xmlData = client.DownloadData(xmlUrl);
-                byte[] signature = client.DownloadData(sigUrl);
+                byte[] signature = signatureTask.GetAwaiter().GetResult();
 
                 if (!UpdaterSignature.Verify(xmlData, signature))
                 {

@@ -15,6 +15,7 @@ namespace ZenTimings.Windows
     {
         private static Updater updater => (Application.Current as App)?.updater;
         private DispatcherTimer notificationTimer;
+        private bool checkingUpdate;
 
         public AboutDialog()
         {
@@ -94,9 +95,29 @@ namespace ZenTimings.Windows
             e.Handled = true;
         }
 
-        private void CheckUpdateBtn_Click(object sender, RoutedEventArgs e)
+        private async void CheckUpdateBtn_Click(object sender, RoutedEventArgs e)
         {
-            updater?.CheckForUpdate(true);
+            if (updater == null || checkingUpdate)
+                return;
+
+            // The server may take seconds to answer or time out. The check runs in the background meanwhile, with
+            // the button showing it and keeping its width.
+            checkingUpdate = true;
+            object content = CheckUpdateBtn.Content;
+            CheckUpdateBtn.MinWidth = CheckUpdateBtn.ActualWidth;
+            CheckUpdateBtn.Content = "Checking...";
+            CheckUpdateBtn.IsEnabled = false;
+
+            try
+            {
+                await updater.CheckForUpdateAsync();
+            }
+            finally
+            {
+                CheckUpdateBtn.Content = content;
+                CheckUpdateBtn.IsEnabled = true;
+                checkingUpdate = false;
+            }
         }
 
         private void Updater_UpdateCheckCompleteEvent(object sender, EventArgs e)
