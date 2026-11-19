@@ -1819,9 +1819,11 @@ namespace ZenTimings
         private void ButtonScreenshot_Click(object sender, RoutedEventArgs e)
         {
             Screenshot screenshot = new Screenshot();
+            // The window itself rather than the foreground one, with the area outside its rounded corners
+            // (Windows 11) left transparent instead of showing what is behind it.
             System.Drawing.Bitmap bitmap = (settings.ScreenshotMode == AppSettings.ScreenshotType.Desktop)
                 ? screenshot.CaptureDekstop()
-                : screenshot.CaptureActiveWindow();
+                : screenshot.CaptureWindow(new WindowInteropHelper(this).Handle, WindowUtils.GetCornerRadiusPixels(this));
 
             using (SaveWindow saveWnd = new SaveWindow(bitmap))
             {
