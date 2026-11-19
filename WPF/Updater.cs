@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 using System.Xml.Serialization;
 using ZenTimings.Common;
 using ZenTimings.Encryption;
@@ -388,6 +389,12 @@ namespace ZenTimings
             var progressWindow = new UpdateProgressWindow();
             progressWindow.Show();
 
+            // The download waits in a message loop, so the main window would take input in the middle of the update
+            Window owner = Application.Current?.MainWindow;
+            bool lockOwner = owner != null && owner.IsLoaded && owner.IsEnabled;
+            if (lockOwner)
+                owner.IsEnabled = false;
+
             try
             {
                 return DownloadAndApplyUpdateCore(downloadUrl, checksumUrl, zipSignatureUrl, installedVersion, progressWindow);
@@ -396,6 +403,11 @@ namespace ZenTimings
             {
                 progressWindow.CloseFromUpdater();
                 throw;
+            }
+            finally
+            {
+                if (lockOwner)
+                    owner.IsEnabled = true;
             }
         }
 
@@ -458,7 +470,7 @@ namespace ZenTimings
                 progressWindow.SetStatus("Downloading update...");
                 progressWindow.SetProgress(0, "Connecting...");
 
-                var downloadComplete = new ManualResetEvent(false);
+                var downloadFrame = new DispatcherFrame();
                 Exception downloadError = null;
                 bool downloadCancelled = false;
                 byte[] downloadedData = null;
@@ -486,25 +498,27 @@ namespace ZenTimings
                         downloadError = e.Error;
                     else
                         downloadedData = e.Result;
-                    downloadComplete.Set();
+                    downloadFrame.Continue = false;
                 };
 
-                client.DownloadDataAsync(new Uri(downloadUrl));
-
-                // Pump WPF messages while waiting for download to complete
+                // Cancelling is also checked on a timer, as the progress events stop when the connection stalls
                 bool cancelRequested = false;
-                while (!downloadComplete.WaitOne(50))
+                var cancelTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
+                cancelTimer.Tick += (sender, e) =>
                 {
                     if (progressWindow.IsCancelled && !cancelRequested)
                     {
                         cancelRequested = true;
                         client.CancelAsync();
                     }
+                };
+                cancelTimer.Start();
 
-                    Application.Current.Dispatcher.Invoke(
-                        System.Windows.Threading.DispatcherPriority.Background,
-                        new Action(delegate { }));
-                }
+                client.DownloadDataAsync(new Uri(downloadUrl));
+
+                // A message loop until the download completes; it ends the frame
+                Dispatcher.PushFrame(downloadFrame);
+                cancelTimer.Stop();
 
                 if (progressWindow.IsCancelled || downloadCancelled)
                 {
