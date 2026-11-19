@@ -626,6 +626,13 @@ namespace ZenTimings
             sb.AppendLine("    goto wait");
             sb.AppendLine(")");
             sb.AppendLine($"xcopy /s /y /q \"{sourceDir}\\*\" \"{appDir}\\\"");
+            // A failed copy keeps the downloaded files (and says so) instead of deleting them
+            sb.AppendLine("if errorlevel 1 (");
+            sb.AppendLine($"    echo xcopy failed with exit code %errorlevel% > \"{Path.Combine(workDir, "update_failed.txt")}\"");
+            sb.AppendLine($"    msg * /time:60 \"ZenTimings could not be updated, copying the files failed. The downloaded update was kept in {workDir}\" 2>NUL");
+            sb.AppendLine($"    start \"\" \"{Path.Combine(appDir, "ZenTimings.exe")}\"");
+            sb.AppendLine("    exit /b 1");
+            sb.AppendLine(")");
             sb.AppendLine($"start \"\" \"{Path.Combine(appDir, "ZenTimings.exe")}\"");
             sb.AppendLine($"rmdir /s /q \"{workDir}\"");
 
