@@ -83,6 +83,10 @@
                                     Header="APOB"
                                     Click="ApobInfoToolstripMenuItem_Click"
                                     Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
+                                <MenuItem
+                                    Header="APCB"
+                                    Click="ApcbInfoToolstripMenuItem_Click"
+                                    Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
                             </MenuItem>
                             <Separator Foreground="{DynamicResource PanelBackground}" />
                             <MenuItem Header="_Debug">

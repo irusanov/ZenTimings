@@ -64,6 +64,7 @@ namespace ZenTimings
         private AsusWmiHardware AsusWmi => isMockWindow ? mockData?.AsusWmi : cpu?.systemInfo?.GetAsusWmi();
         private AdvancedTimingsWindow advancedTimingsWnd = null;
         private ApobInfoWindow apobInfoWnd = null;
+        private ApcbInfoWindow apcbInfoWnd = null;
         private SensorsWindow sensorsWindw = null;
         private OptionsDialog optionsWnd = null;
         private ExportDialog exportWnd = null;
@@ -1811,6 +1812,30 @@ namespace ZenTimings
             catch (Exception ex)
             {
                 MessageBox.Show($"Error opening APOB:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void ApcbInfoToolstripMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (apcbInfoWnd != null && apcbInfoWnd.IsLoaded)
+            {
+                apcbInfoWnd.Activate();
+                return;
+            }
+
+            try
+            {
+                // The APCB is read from the SPI flash of the running system; a debug report has none
+                var apob = isMockWindow ? mockData?.Apob : cpu?.info.apob;
+                apcbInfoWnd = new ApcbInfoWindow(apob)
+                {
+                    Owner = this
+                };
+                apcbInfoWnd.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error opening APCB:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
