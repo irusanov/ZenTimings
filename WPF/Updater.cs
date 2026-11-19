@@ -17,7 +17,9 @@ using ZenTimings.Settings;
 using ZenTimings.Windows;
 using MessageBox = ZenTimings.Theming.MessageBox;
 using MessageBoxButton = ZenTimings.Theming.MessageBoxButton;
+using MessageBoxButtons = ZenTimings.Theming.MessageBoxButtons;
 using MessageBoxImage = ZenTimings.Theming.MessageBoxImage;
+using MessageBoxModel = ZenTimings.Theming.MessageBoxModel;
 using MessageBoxResult = ZenTimings.Theming.MessageBoxResult;
 
 namespace ZenTimings
@@ -27,6 +29,7 @@ namespace ZenTimings
         public event EventHandler UpdateCheckCompleteEvent;
 
         private static bool manual;
+        private static readonly object DisableCheckButtonId = new object();
         private static string ChangelogText { get; set; }
         private static readonly UpdaterPersistenceProvider persistence = new UpdaterPersistenceProvider();
 
@@ -140,8 +143,7 @@ namespace ZenTimings
                 if (!suppressNetworkErrorDialog)
                 {
                     string message = "There is a problem reaching the update server. Please check your internet connection and try again later.";
-                    MessageBox.Show(message, @"Update Check Failed",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    ShowCheckFailed(message);
                 }
                 //else
                 //{
@@ -154,8 +156,7 @@ namespace ZenTimings
 
                 //if (manual)
                 {
-                    MessageBox.Show(ex.Message, @"Update Check Failed",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    ShowCheckFailed(ex.Message);
                 }
                 //else
                 //{
@@ -168,17 +169,49 @@ namespace ZenTimings
 
                 //if (manual)
                 {
-                    MessageBox.Show(
-                        $"An error occurred while checking for updates:\n{ex.Message}",
-                        @"Update Check Failed",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Error);
+                    ShowCheckFailed($"An error occurred while checking for updates:\n{ex.Message}");
                 }
                 //else
                 //{
                 //    SplashWindow.Loading("Update check failed");
                 //}
             }
+        }
+
+        /// <summary>
+        /// Shows an update check error. After the automatic check on startup the dialog also offers to turn that
+        /// check off, e.g. on a PC without a network connection, and saves the setting when the user takes it.
+        /// </summary>
+        private static void ShowCheckFailed(string message)
+        {
+            const string caption = "Update Check Failed";
+            AppSettings settings = AppSettings.Instance;
+
+            if (manual || !settings.CheckForUpdates)
+            {
+                MessageBox.Show(message, caption, MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var model = new MessageBoxModel
+            {
+                Text = message + "\n\nThe check on startup can be turned off here, and back on in Options.",
+                Caption = caption,
+                Icon = MessageBoxImage.Error,
+                Buttons = new[]
+                {
+                    MessageBoxButtons.Custom("Don't check on startup", DisableCheckButtonId),
+                    MessageBoxButtons.Ok(),
+                },
+            };
+
+            MessageBox.Show(model);
+
+            if (model.ButtonPressed == null || !ReferenceEquals(model.ButtonPressed.Id, DisableCheckButtonId))
+                return;
+
+            settings.CheckForUpdates = false;
+            settings.Save();
         }
 
         // Release checks the stable feed only and Beta the beta feed only. Any checks both and the newer one wins,
