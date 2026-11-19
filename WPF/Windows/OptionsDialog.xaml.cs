@@ -79,6 +79,7 @@ namespace ZenTimings.Windows
             if (notificationLevelIndex > comboBoxDriverNotification.Items.Count - 1)
                 notificationLevelIndex = comboBoxDriverNotification.Items.Count - 1;
             comboBoxDriverNotification.SelectedIndex = notificationLevelIndex;
+            checkBoxShowInpOutDriverError.IsChecked = settings.ShowInpOutDriverError;
             LoadVoltageSensorSources(settings);
         }
 
@@ -200,6 +201,7 @@ namespace ZenTimings.Windows
                 appSettings.ImpedanceTableSrc = (ImpedanceTableSource)comboBoxImpedanceSource.SelectedIndex;
             appSettings.AutoUninstallDriver = (bool)checkBoxAutoUninstallDriver.IsChecked;
             appSettings.AutoUninstallDriverNotificationLevel = comboBoxDriverNotification.SelectedIndex - 1;
+            appSettings.ShowInpOutDriverError = (bool)checkBoxShowInpOutDriverError.IsChecked;
             if (_mainViewModel.IsVoltageSourceSelectionSupported)
             {
                 appSettings.VsocSensorSource = GetSelectedVoltageSensorSource(comboBoxVsocSensorSource, appSettings.VsocSensorSource);

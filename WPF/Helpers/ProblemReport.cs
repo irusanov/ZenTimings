@@ -73,37 +73,47 @@ namespace ZenTimings.Helpers
         public static bool ShowError(string message, string caption = "Error", Exception exception = null, Window owner = null,
             MessageBoxImage icon = MessageBoxImage.Error, string closeLabel = "Close")
         {
-            if (!offeredErrors.Add(GetSignature(message, caption, exception)))
-            {
-                MessageBox.Show(owner, new MessageBoxModel
-                {
-                    Text = message,
-                    Caption = caption,
-                    Icon = icon,
-                    Buttons = new[] { MessageBoxButtons.Ok(closeLabel) },
-                });
-                return false;
-            }
+            MessageBoxButtonModel pressed = ShowErrorWithButtons(message, caption, exception, owner, null, icon, closeLabel);
+            return pressed != null && ReferenceEquals(pressed.Id, SendButtonId);
+        }
+
+        /// <summary>
+        /// <see cref="ShowError(string, string, Exception, Window, MessageBoxImage, string)"/> with buttons of the
+        /// caller's own between the send button and Close, e.g. "Don't show again". They are shown whether or not
+        /// the report is offered.
+        /// </summary>
+        /// <param name="extraButtons">Buttons to add, null for none. The caller compares the result with them.</param>
+        /// <returns>
+        /// The button that closed the box, null when it was closed otherwise. When it is the send button, the send
+        /// dialog has already been shown.
+        /// </returns>
+        public static MessageBoxButtonModel ShowErrorWithButtons(string message, string caption, Exception exception, Window owner,
+            IEnumerable<MessageBoxButtonModel> extraButtons, MessageBoxImage icon = MessageBoxImage.Error, string closeLabel = "Close")
+        {
+            bool offerReport = offeredErrors.Add(GetSignature(message, caption, exception));
+
+            var buttons = new List<MessageBoxButtonModel>();
+            if (offerReport)
+                buttons.Add(MessageBoxButtons.Custom("Send report...", SendButtonId));
+            if (extraButtons != null)
+                buttons.AddRange(extraButtons);
+            buttons.Add(MessageBoxButtons.Ok(closeLabel));
 
             var model = new MessageBoxModel
             {
-                Text = message + "\n\nYou can send a debug report to the developer to help fix this.",
+                Text = offerReport ? message + "\n\nYou can send a debug report to the developer to help fix this." : message,
                 Caption = caption,
                 Icon = icon,
-                Buttons = new[]
-                {
-                    MessageBoxButtons.Custom("Send report...", SendButtonId),
-                    MessageBoxButtons.Ok(closeLabel),
-                },
+                Buttons = buttons,
             };
 
             MessageBox.Show(owner, model);
 
-            if (model.ButtonPressed == null || !ReferenceEquals(model.ButtonPressed.Id, SendButtonId))
-                return false;
+            MessageBoxButtonModel pressed = model.ButtonPressed;
+            if (pressed != null && ReferenceEquals(pressed.Id, SendButtonId))
+                ShowSendDialog(owner, BuildDetails(message, exception), $"{caption}: {FirstLine(message)}");
 
-            ShowSendDialog(owner, BuildDetails(message, exception), $"{caption}: {FirstLine(message)}");
-            return true;
+            return pressed;
         }
 
         /// <summary>

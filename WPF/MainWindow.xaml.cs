@@ -37,6 +37,7 @@ using Forms = System.Windows.Forms;
 using MessageBox = ZenTimings.Theming.MessageBox;
 using MessageBoxButtons = ZenTimings.Theming.MessageBoxButtons;
 using MessageBoxModel = ZenTimings.Theming.MessageBoxModel;
+using MessageBoxButtonModel = ZenTimings.Theming.MessageBoxButtonModel;
 using MessageBoxButton = ZenTimings.Theming.MessageBoxButton;
 using MessageBoxImage = ZenTimings.Theming.MessageBoxImage;
 using MessageBoxResult = ZenTimings.Theming.MessageBoxResult;
@@ -300,9 +301,9 @@ namespace ZenTimings
                     }
                     // I/O driver currently used for APOB, AOD and Agesa version
                     SplashWindow.Loading("IO Driver");
-                    if (!WaitForInpoutDriverLoad())
+                    if (!WaitForInpoutDriverLoad() && settings.ShowInpOutDriverError)
                     {
-                        HandleError("I/O driver is not responding or not loaded.");
+                        ShowInpOutDriverError();
                     }
 
                     SplashWindow.Loading("Plugins");
@@ -1469,6 +1470,39 @@ namespace ZenTimings
             if (result == default(BitmapFrame)) result = decoder.Frames.OrderBy(f => f.Width).First();
 
             return result;
+        }
+
+        /// <summary>
+        /// The I/O driver error at startup, with "Don't show again", which turns it off
+        /// (<see cref="AppSettings.ShowInpOutDriverError"/>, back on in Options).
+        /// </summary>
+        private void ShowInpOutDriverError()
+        {
+            var dontShowAgain = MessageBoxButtons.Custom("Don't show again");
+
+            // The splash is topmost and could cover the message box during startup.
+            SplashWindow.HideIfOpen();
+            try
+            {
+                MessageBoxButtonModel pressed = ProblemReport.ShowErrorWithButtons(
+                    "I/O driver is not responding or not loaded.\n\n" +
+                    "Information that needs it, such as AOD and the AGESA version, is not shown. " +
+                    "You can turn this message back on in Options.",
+                    "Error",
+                    null,
+                    this,
+                    new[] { dontShowAgain });
+
+                if (ReferenceEquals(pressed, dontShowAgain))
+                {
+                    settings.ShowInpOutDriverError = false;
+                    settings.Save();
+                }
+            }
+            finally
+            {
+                SplashWindow.ShowIfOpen();
+            }
         }
 
         /// <param name="exception">Attached to the report when one is sent, null for none.</param>

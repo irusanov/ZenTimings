@@ -281,6 +281,8 @@ namespace ZenTimings.Settings
         public bool StartMinimized { get; set; }
         public bool AutoUninstallDriver { get; set; } = true;
         public int AutoUninstallDriverNotificationLevel { get; set; } = (int)NotificationLevel.All;
+        /// <summary>Show the error at startup when the inpoutx64 driver can't be loaded (e.g. blocked by the system).</summary>
+        public bool ShowInpOutDriverError { get; set; } = true;
         public double WindowLeft { get; set; } = -1;
         public double WindowTop { get; set; } = -1;
         public double SysInfoWindowLeft { get; set; } = -1;
