@@ -13,6 +13,7 @@ namespace ZenTimings.ViewModels
         private double maxValue = double.MinValue;
         private double sum = 0;
         private int count = 0;
+        private bool hasCurrentValue;
 
         // The texts the view shows. Change notifications are raised only when one of them actually
         // changes, so a steady sensor costs no binding or layout work on a refresh.
@@ -86,6 +87,19 @@ namespace ZenTimings.ViewModels
             }
         }
 
+        private string valueFormat;
+
+        /// <summary>Numeric format of the values (e.g. "F0" for a count), null for the default by unit.</summary>
+        public string ValueFormat
+        {
+            get => valueFormat;
+            set
+            {
+                valueFormat = value;
+                UpdateTexts(hasCurrentValue);
+            }
+        }
+
         public string Current => currentText;
         public string Min => minText;
         public string Max => maxText;
@@ -98,7 +112,8 @@ namespace ZenTimings.ViewModels
             (minValue == double.MaxValue || minValue == 0) &&
             (maxValue == double.MinValue || maxValue == 0);
 
-        public TelemetryItemViewModel(string name, double initialValue, string unit = "")
+        /// <param name="initialValue">Null when the sensor has no value yet (not measured): shown as "-" and not recorded.</param>
+        public TelemetryItemViewModel(string name, double? initialValue, string unit = "")
         {
             Name = name;
             this.unit = unit;
@@ -113,9 +128,26 @@ namespace ZenTimings.ViewModels
             UpdateValue(initialValue ? 1.0 : 0.0);
         }
 
+        /// <summary>
+        /// A sensor without a value (not read or measured yet) shows "-" as the current value and is left out of min, max
+        /// and average, so a sensor that starts empty does not record a 0.
+        /// </summary>
+        public void UpdateValue(double? value)
+        {
+            if (value.HasValue)
+            {
+                UpdateValue(value.Value);
+                return;
+            }
+
+            hasCurrentValue = false;
+            SetText(ref currentText, "-", nameof(Current));
+        }
+
         public void UpdateValue(double value)
         {
             currentValue = value;
+            hasCurrentValue = true;
 
             if (value < minValue)
             {
@@ -159,6 +191,17 @@ namespace ZenTimings.ViewModels
 
         public void ResetStats()
         {
+            if (!hasCurrentValue)
+            {
+                // Nothing measured yet: back to "never recorded"
+                minValue = double.MaxValue;
+                maxValue = double.MinValue;
+                sum = 0;
+                count = 0;
+                UpdateTexts(false);
+                return;
+            }
+
             minValue = currentValue;
             maxValue = currentValue;
             sum = currentValue;
@@ -185,8 +228,10 @@ namespace ZenTimings.ViewModels
             if (_isBoolean)
                 return value >= 0.5 ? "Yes" : "No";
 
-            string format = unit == "°C" ? "F2" : unit == "RPM" ? "F0" : "F3";
-            return $"{value.ToString(format, CultureInfo.InvariantCulture)} {unit}";
+            // Clocks are measured to 0.01 MHz; a third decimal would only widen the column
+            string format = valueFormat ?? (unit == "°C" || unit == "MHz" ? "F2" : unit == "RPM" ? "F0" : "F3");
+            string text = value.ToString(format, CultureInfo.InvariantCulture);
+            return string.IsNullOrEmpty(unit) ? text : $"{text} {unit}";
         }
 
         protected void OnPropertyChanged(string propertyName)

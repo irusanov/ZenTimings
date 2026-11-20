@@ -15,6 +15,7 @@ using ZenStates.Core.Hardware.DRAM.DDR5.Pmic;
 using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
 using ZenStates.Core.Hardware.DRAM.DDR5.Thermal;
 using ZenTimings.Common;
+using ZenTimings.Helpers;
 using ZenTimings.Settings;
 using ZenTimings.Utils;
 using ZenTimings.ViewModels;
@@ -226,37 +227,61 @@ namespace ZenTimings.Windows
             if (!(sender is System.Windows.Controls.GridSplitter splitter) || !(splitter.Tag is string column))
                 return;
 
+            double idealWidth = GetIdealColumnWidth(column);
+            if (idealWidth <= 0)
+                return;
+
+            SetColumnWidth(column, idealWidth);
+            e.Handled = true;
+        }
+
+        private double MeasureCellText(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return 0;
+
             var typeface = new System.Windows.Media.Typeface(FontFamily, FontStyle, FontWeight, FontStretch);
             double dpi = System.Windows.Media.VisualTreeHelper.GetDpi(this).PixelsPerDip;
+            var formatted = new System.Windows.Media.FormattedText(
+                text,
+                System.Globalization.CultureInfo.CurrentCulture,
+                FlowDirection.LeftToRight,
+                typeface,
+                11.0,
+                System.Windows.Media.Brushes.Black,
+                dpi);
 
-            double Measure(string text)
+            return formatted.WidthIncludingTrailingWhitespace;
+        }
+
+        private IEnumerable<TelemetryItemViewModel> AllTelemetryItems()
+        {
+            foreach (ModuleViewModel module in moduleViewModels)
+                foreach (TelemetryItemViewModel item in module.TelemetryItems)
+                    yield return item;
+
+            foreach (SensorGroupViewModel group in sensorGroupViewModels)
+                foreach (TelemetryItemViewModel item in group.TelemetryItems)
+                    yield return item;
+        }
+
+        private static string GetColumnText(TelemetryItemViewModel item, string column)
+        {
+            switch (column)
             {
-                if (string.IsNullOrEmpty(text))
-                    return 0;
-
-                var formatted = new System.Windows.Media.FormattedText(
-                    text,
-                    System.Globalization.CultureInfo.CurrentCulture,
-                    FlowDirection.LeftToRight,
-                    typeface,
-                    11.0,
-                    System.Windows.Media.Brushes.Black,
-                    dpi);
-
-                return formatted.WidthIncludingTrailingWhitespace;
+                case "Sensor": return item.Name;
+                case "Current": return item.Current;
+                case "Min": return item.Min;
+                case "Max": return item.Max;
+                case "Average": return item.Average;
+                default: return null;
             }
+        }
 
-            IEnumerable<TelemetryItemViewModel> AllTelemetryItems()
-            {
-                foreach (ModuleViewModel module in moduleViewModels)
-                    foreach (TelemetryItemViewModel item in module.TelemetryItems)
-                        yield return item;
-
-                foreach (SensorGroupViewModel group in sensorGroupViewModels)
-                    foreach (TelemetryItemViewModel item in group.TelemetryItems)
-                        yield return item;
-            }
-
+        // The width that fits the widest currently displayed content of a column, across every section, and its
+        // header; 0 for an unknown column.
+        private double GetIdealColumnWidth(string column)
+        {
             double contentWidth;
             double headerWidth;
             double minWidth;
@@ -265,41 +290,79 @@ namespace ZenTimings.Windows
             {
                 case "Sensor":
                     // Icon (11) + its right margin (4) + the cell text's own padding (3 left, 3 right)
-                    contentWidth = AllTelemetryItems().Select(i => Measure(i.Name)).DefaultIfEmpty(0).Max() + 11 + 4 + 6;
-                    headerWidth = Measure("Sensor") + 16;
+                    contentWidth = AllTelemetryItems().Select(i => MeasureCellText(i.Name)).DefaultIfEmpty(0).Max() + 11 + 4 + 6;
+                    headerWidth = MeasureCellText("Sensor") + 16;
                     minWidth = 60;
                     break;
                 case "Current":
-                    contentWidth = AllTelemetryItems().Select(i => Measure(i.Current)).DefaultIfEmpty(0).Max() + 6;
-                    headerWidth = Measure("Current") + 16;
-                    minWidth = 40;
-                    break;
                 case "Min":
-                    contentWidth = AllTelemetryItems().Select(i => Measure(i.Min)).DefaultIfEmpty(0).Max() + 6;
-                    headerWidth = Measure("Min") + 16;
-                    minWidth = 40;
-                    break;
                 case "Max":
-                    contentWidth = AllTelemetryItems().Select(i => Measure(i.Max)).DefaultIfEmpty(0).Max() + 6;
-                    headerWidth = Measure("Max") + 16;
+                case "Average":
+                    contentWidth = AllTelemetryItems().Select(i => MeasureCellText(GetColumnText(i, column))).DefaultIfEmpty(0).Max() + 6;
+                    headerWidth = MeasureCellText(column) + 16;
                     minWidth = 40;
                     break;
                 default:
-                    return;
+                    return 0;
             }
 
             // +8px buffer for DataGridCell's own default padding/chrome, which can't be measured directly here.
-            double idealWidth = Math.Max(Math.Max(contentWidth + 8, headerWidth), minWidth);
+            return Math.Max(Math.Max(contentWidth + 8, headerWidth), minWidth);
+        }
 
+        private double GetColumnWidth(string column)
+        {
             switch (column)
             {
-                case "Sensor": Columns.SensorColumnWidth = idealWidth; break;
-                case "Current": Columns.CurrentColumnWidth = idealWidth; break;
-                case "Min": Columns.MinColumnWidth = idealWidth; break;
-                case "Max": Columns.MaxColumnWidth = idealWidth; break;
+                case "Sensor": return Columns.SensorColumnWidth;
+                case "Current": return Columns.CurrentColumnWidth;
+                case "Min": return Columns.MinColumnWidth;
+                case "Max": return Columns.MaxColumnWidth;
+                case "Average": return Columns.AverageColumnWidth;
+                default: return 0;
             }
+        }
 
-            e.Handled = true;
+        private void SetColumnWidth(string column, double width)
+        {
+            switch (column)
+            {
+                case "Sensor": Columns.SensorColumnWidth = width; break;
+                case "Current": Columns.CurrentColumnWidth = width; break;
+                case "Min": Columns.MinColumnWidth = width; break;
+                case "Max": Columns.MaxColumnWidth = width; break;
+                case "Average": Columns.AverageColumnWidth = width; break;
+            }
+        }
+
+        private static readonly string[] ValueColumns = { "Current", "Min", "Max", "Average" };
+
+        // Longest text (in characters) each value column has been checked for, so the measuring only runs when a
+        // longer value shows up.
+        private readonly Dictionary<string, int> fittedTextLength = new Dictionary<string, int>();
+
+        // The value columns have fixed pixel widths and their text is right-aligned, so a value wider than the
+        // column loses its first digits (102.00 MHz shown as 02.00 MHz). Grows a column when its content no longer
+        // fits; never shrinks it, so a manual resize sticks unless something would be cut off.
+        private void GrowValueColumnsToFit()
+        {
+            foreach (string column in ValueColumns)
+            {
+                int longest = AllTelemetryItems()
+                    .Select(i => GetColumnText(i, column)?.Length ?? 0)
+                    .DefaultIfEmpty(0)
+                    .Max();
+
+                fittedTextLength.TryGetValue(column, out int fitted);
+                if (longest <= fitted)
+                    continue;
+
+                fittedTextLength[column] = longest;
+
+                double ideal = GetIdealColumnWidth(column);
+                if (ideal > GetColumnWidth(column))
+                    SetColumnWidth(column, Math.Ceiling(ideal));
+            }
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
@@ -835,6 +898,7 @@ namespace ZenTimings.Windows
         {
             RefreshTelemetryGroups();
             RefreshSensorGroups();
+            GrowValueColumnsToFit();
         }
 
         private void CopyGroup_Click(object sender, RoutedEventArgs e)
@@ -899,13 +963,10 @@ namespace ZenTimings.Windows
             sensorGroupViewModels.Clear();
             sensorTelemetryLinks.Clear();
 
-            var systemInfo = CpuSingleton.Instance?.systemInfo;
-            if (systemInfo == null)
-                return;
-
             var hiddenSensors = SensorSettings.Instance.HiddenSensors;
+            var systemInfo = CpuSingleton.Instance?.systemInfo;
 
-            foreach (var group in systemInfo.SensorGroups)
+            foreach (var group in systemInfo?.SensorGroups ?? Enumerable.Empty<SensorGroup>())
             {
                 var groupVm = new SensorGroupViewModel { Header = group.Name };
                 int hiddenCount = 0;
@@ -935,6 +996,46 @@ namespace ZenTimings.Windows
                     sensorGroupViewModels.Add(groupVm);
                 }
             }
+
+            // Last, after every hardware section
+            AddWheaGroup(hiddenSensors);
+        }
+
+        private const string WheaGroupName = "WHEA";
+
+        // Filled from WheaErrorMonitor on each refresh, so the section goes through the same update, hide and copy
+        // paths as the core sensor groups
+        private readonly Sensor wheaErrorsSensor = new Sensor("Errors since boot", 0, SensorType.Factor);
+
+        private void AddWheaGroup(ICollection<string> hiddenSensors)
+        {
+            WheaErrorMonitor monitor = WheaErrorMonitor.Instance;
+            if (!monitor.IsAvailable)
+                return;
+
+            wheaErrorsSensor.Value = monitor.Count;
+
+            var groupVm = new SensorGroupViewModel { Header = WheaGroupName };
+            string key = GetSensorKey(WheaGroupName, wheaErrorsSensor.Name);
+
+            if (hiddenSensors.Contains(key))
+            {
+                groupVm.HiddenCount = 1;
+                groupVm.HiddenKeys.Add(key);
+            }
+            else
+            {
+                var item = new TelemetryItemViewModel(wheaErrorsSensor.Name, GetSensorDisplayValue(wheaErrorsSensor), "")
+                {
+                    GroupKey = key,
+                    ValueFormat = "F0",
+                };
+                groupVm.TelemetryItems.Add(item);
+                sensorTelemetryLinks.Add(new SensorTelemetryLink(wheaErrorsSensor, item));
+            }
+
+            ApplySectionState(groupVm);
+            sensorGroupViewModels.Add(groupVm);
         }
 
         private static string GetSensorKey(string chipName, string sensorName) => $"{chipName}|{sensorName}";
@@ -1311,13 +1412,13 @@ namespace ZenTimings.Windows
 
         private void RefreshSensorGroups()
         {
-            var systemInfo = CpuSingleton.Instance?.systemInfo;
-            if (systemInfo == null || sensorTelemetryLinks.Count == 0)
+            if (sensorTelemetryLinks.Count == 0)
                 return;
 
             try
             {
-                //systemInfo.UpdateSensors();
+                // Only reads the count the monitor keeps; nothing is queried here
+                wheaErrorsSensor.Value = WheaErrorMonitor.Instance.Count;
 
                 foreach (var link in sensorTelemetryLinks)
                 {
@@ -1330,9 +1431,13 @@ namespace ZenTimings.Windows
             }
         }
 
-        private static double GetSensorDisplayValue(Sensor sensor)
+        // Null while the sensor has no value (e.g. a measured clock before its first measurement), so it is not recorded as 0.
+        private static double? GetSensorDisplayValue(Sensor sensor)
         {
-            var value = sensor.Value ?? 0;
+            if (!sensor.Value.HasValue)
+                return null;
+
+            double value = sensor.Value.Value;
             return sensor.SensorType == SensorType.Fan ? Math.Round(value) : value;
         }
 
