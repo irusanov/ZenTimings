@@ -37,6 +37,7 @@ using Forms = System.Windows.Forms;
 using MessageBox = ZenTimings.Theming.MessageBox;
 using MessageBoxButtons = ZenTimings.Theming.MessageBoxButtons;
 using MessageBoxModel = ZenTimings.Theming.MessageBoxModel;
+using MessageBoxButtonModel = ZenTimings.Theming.MessageBoxButtonModel;
 using MessageBoxButton = ZenTimings.Theming.MessageBoxButton;
 using MessageBoxImage = ZenTimings.Theming.MessageBoxImage;
 using MessageBoxResult = ZenTimings.Theming.MessageBoxResult;
@@ -49,7 +50,6 @@ namespace ZenTimings
     /// </summary>
     public partial class MainWindow : ThemedWindow
     {
-        private readonly AsusWMI AsusWmi = new AsusWMI();
         private readonly List<BiosACPIFunction> biosFunctions = new List<BiosACPIFunction>();
         private readonly BiosMemController BMC;
         private readonly Cpu cpu;
@@ -58,8 +58,14 @@ namespace ZenTimings
         private readonly List<IPlugin> plugins = new List<IPlugin>();
         private SystemInfoWindow siWnd = null;
         private volatile bool systemInfoWindowOpen;
+        private volatile bool sensorsWindowOpen;
+
+        // The ASUS WMI sensors from the core; a debug report's window has those rebuilt from the report,
+        // whose values don't change
+        private AsusWmiHardware AsusWmi => isMockWindow ? mockData?.AsusWmi : cpu?.systemInfo?.GetAsusWmi();
         private AdvancedTimingsWindow advancedTimingsWnd = null;
         private ApobInfoWindow apobInfoWnd = null;
+        private ApcbInfoWindow apcbInfoWnd = null;
         private SensorsWindow sensorsWindw = null;
         private OptionsDialog optionsWnd = null;
         private ExportDialog exportWnd = null;
@@ -79,7 +85,10 @@ namespace ZenTimings
             "CPU VDDIO",
             "VDIMM",
             "VDDIO",
-            "CPU VDDIO Memory"
+            "CPU VDDIO Memory",
+            // Boards with a separate rail per DIMM pair (ROG ZENITH EXTREME, ZENITH II EXTREME)
+            "DIMM A/B",
+            "DIMM C/D"
         };
 
         private readonly string AssemblyProduct = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(
@@ -130,12 +139,56 @@ namespace ZenTimings
             else
             {
                 {
-                    ZenTimings.Theming.MessageBoxResult result = ZenTimings.Theming.MessageBox.Show(
-                        "PawnIO is not installed, do you want to install it?",
-                        nameof(ZenTimings),
-                        ZenTimings.Theming.MessageBoxButton.OKCancel,
-                        ZenTimings.Theming.MessageBoxImage.Warning
-                    );
+                    string bundledVersion = "";
+                    try
+                    {
+                        bundledVersion = " " + DriverHelper.BundledVersion;
+                    }
+                    catch
+                    {
+                        // The version is only shown in the prompt
+                    }
+
+                    const string pawnIoUrl = "https://github.com/namazso/PawnIO";
+                    ZenTimings.Theming.MessageBoxResult result;
+
+                    // The splash is topmost and has no taskbar button; the prompt is shown as a normal window instead
+                    SplashWindow.HideIfOpen();
+                    do
+                    {
+                        result = ZenTimings.Theming.MessageBox.Show(
+                            new ZenTimings.Theming.MessageBoxModel
+                            {
+                                Caption = "PawnIO driver required",
+                                Text = "ZenTimings reads the memory timings and sensors through the PawnIO driver, " +
+                                    "which is not installed on this system." + Environment.NewLine + Environment.NewLine +
+                                    $"Install the bundled PawnIO{bundledVersion} now? The PawnIO installer will open, " +
+                                    "and ZenTimings restarts when it finishes." + Environment.NewLine + Environment.NewLine +
+                                    "Without the driver ZenTimings cannot run and will exit." + Environment.NewLine + Environment.NewLine +
+                                    "PawnIO is open source: " + pawnIoUrl,
+                                Icon = ZenTimings.Theming.MessageBoxImage.Information,
+                                ShowInTaskbar = true,
+                                Buttons = new[]
+                                {
+                                    ZenTimings.Theming.MessageBoxButtons.Ok("Install PawnIO"),
+                                    ZenTimings.Theming.MessageBoxButtons.Custom("Open GitHub page"),
+                                    ZenTimings.Theming.MessageBoxButtons.Cancel("Exit"),
+                                },
+                            });
+
+                        // The link button opens the page and asks again
+                        if (result == ZenTimings.Theming.MessageBoxResult.Custom)
+                        {
+                            try
+                            {
+                                Process.Start(new ProcessStartInfo(pawnIoUrl) { UseShellExecute = true });
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine($"Could not open {pawnIoUrl}: {ex.Message}");
+                            }
+                        }
+                    } while (result == ZenTimings.Theming.MessageBoxResult.Custom);
 
                     if (result == ZenTimings.Theming.MessageBoxResult.OK)
                     {
@@ -178,12 +231,16 @@ namespace ZenTimings
                 }
                 else if (cpu.info.codeName.Equals(Cpu.CodeName.Unsupported))
                 {
-                    MessageBox.Show(
-                        "CPU model is not supported.\nPlease run a debug report and send to the developer.",
-                        "Unsupported CPU Model",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Warning
-                    );
+                    SplashWindow.HideIfOpen();
+                    try
+                    {
+                        ProblemReport.ShowError("CPU model is not supported.", "Unsupported CPU Model", null, null,
+                            MessageBoxImage.Warning, "Continue");
+                    }
+                    finally
+                    {
+                        SplashWindow.ShowIfOpen();
+                    }
                 }
 
                 if (!cpu.RyzenSmu.IsLoaded)
@@ -207,10 +264,25 @@ namespace ZenTimings
                 var timings = ReadTimings();
 
                 SplashWindow.Loading("Memory modules");
+
+                // The SPD read (only the init subset; the SPD window reads the rest) started with the core and ran next to
+                // the rest of its startup. What is left of it is waited for here, so the module names, their logos and the
+                // PMIC data are in the first frame instead of the module list changing right after the window opens.
+                memoryConfig?.WaitForSpdInfo(SpdStartupWaitMs);
+                // When the SPD read is already done here, the module list below is built from the full data and there is
+                // nothing to apply later; a second rebuild would only make the window change right after it opens.
+                bool spdLoadedBeforeModules = memoryConfig.IsSpdInfoLoaded;
                 ReadMemoryModulesInfo(memoryConfig?.Modules);
 
+                if (spdLoadedBeforeModules)
+                    Interlocked.Exchange(ref spdInfoHandled, 1);
+
+                memoryConfig.SpdInfoLoaded += MemoryConfig_SpdInfoLoaded;
+                if (!spdLoadedBeforeModules && memoryConfig.IsSpdInfoLoaded)
+                    MemoryConfig_SpdInfoLoaded(memoryConfig, EventArgs.Empty);
+
                 SplashWindow.Loading("Sensors");
-                cpu.systemInfo?.UpdateSensors();
+                new Task(() => cpu.systemInfo?.UpdateSensors()).Start();
 
                 // Motherboard logo
                 SplashWindow.Loading("Resources");
@@ -232,9 +304,9 @@ namespace ZenTimings
                     }
                     // I/O driver currently used for APOB, AOD and Agesa version
                     SplashWindow.Loading("IO Driver");
-                    if (!WaitForInpoutDriverLoad())
+                    if (!WaitForInpoutDriverLoad() && settings.ShowInpOutDriverError)
                     {
-                        HandleError("I/O driver is not responding or not loaded.");
+                        ShowInpOutDriverError();
                     }
 
                     SplashWindow.Loading("Plugins");
@@ -249,13 +321,10 @@ namespace ZenTimings
                     }
                     //plugins.Add(new OHWMPlugin());
                     //plugins[1].Open();
-
-                    if (!AsusWmi.Init())
-                    {
-                        AsusWmi.Dispose();
-                        AsusWmi = null;
-                    }
                 }
+
+                // What the reports sent from error boxes and menus include from this window
+                ProblemReport.BiosMemController = BMC;
 
                 mainViewModel = new MainViewModel(
                     timings,
@@ -269,6 +338,11 @@ namespace ZenTimings
                 );
 
                 DataContext = mainViewModel;
+
+                // The memory side BCLK is measured in the background after start. With the power table the next refresh
+                // picks it up through MCLK; without it the frequency is only read here, so it is updated on the event.
+                if (cpu.bclk != null)
+                    cpu.bclk.MemoryBclkChanged += Bclk_MemoryBclkChanged;
 
                 SplashWindow.Loading("Done");
 
@@ -293,7 +367,7 @@ namespace ZenTimings
             }
             catch (Exception ex)
             {
-                HandleError(ex.Message);
+                HandleError(ex.Message, "Error", ex);
                 ExitApplication();
                 TerminateStartup();
             }
@@ -337,6 +411,7 @@ namespace ZenTimings
             // would read past the Resistances layout.
             bool hasBmcTable = mockData.BiosMemControllerTable != null &&
                 mockData.BiosMemControllerTable.Length >= Marshal.SizeOf(typeof(BiosMemController.Resistances));
+
             if ((viewModel.MemoryType == MemType.DDR4 || viewModel.MemoryType == MemType.LPDDR4) &&
                 (hasBmcTable || GetApobDdr4ChannelConfig() != null))
             {
@@ -490,6 +565,7 @@ namespace ZenTimings
             notifyIcon.ContextMenuStrip = new Forms.ContextMenuStrip();
             notifyIcon.ContextMenuStrip.Items.Add($"{AssemblyProduct} v{AssemblyVersion}", null, OnAppContextMenuItemClick);
             notifyIcon.ContextMenuStrip.Items.Add("-");
+            notifyIcon.ContextMenuStrip.Items.Add("Report a problem...", null, (object sender, EventArgs e) => ProblemReport.ShowSendDialog(this));
             notifyIcon.ContextMenuStrip.Items.Add("Exit", null, (object sender, EventArgs e) => ExitApplication());
 
             return notifyIcon;
@@ -520,6 +596,23 @@ namespace ZenTimings
         // the bus always finishes before the core is disposed.
         private const int CleanupRefreshWaitMs = 6000;
 
+        // Raised on the SystemEvents thread. The power table in DRAM is not kept up to date by the SMU across sleep, so
+        // after a resume it can show values from before it; the core marks it stale until it has changed.
+        private void SystemEvents_PowerModeChanged(object sender, Microsoft.Win32.PowerModeChangedEventArgs e)
+        {
+            if (e.Mode != Microsoft.Win32.PowerModes.Resume || cleanedUp)
+                return;
+
+            try
+            {
+                cpu?.powerTable?.InvalidateAfterResume();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Resume: could not invalidate the power table: {ex.Message}");
+            }
+        }
+
         private void Cleanup()
         {
             // Restart cleans up before shutting down, and the shutdown closes the window, which exits again.
@@ -531,17 +624,23 @@ namespace ZenTimings
             // cleanedUp), so one of the two always sees the other.
             Thread.MemoryBarrier();
 
-            // Nothing may tick into the core once it is disposed.
+            // Nothing may tick into the core once it is disposed. (A static event, so it would keep the window alive.)
+            Microsoft.Win32.SystemEvents.PowerModeChanged -= SystemEvents_PowerModeChanged;
             StopAutoRefresh();
 
-            // A refresh that already started keeps reading the hardware on a background thread. Let it
-            // finish before the core goes away; it doesn't need the UI thread for that part.
-            for (int waited = 0; Volatile.Read(ref refreshReadingHardware) != 0 && waited < CleanupRefreshWaitMs; waited += RefreshWaitStepMs)
-                Thread.Sleep(RefreshWaitStepMs);
+            // Nothing in the window may be used while the waits below keep the dispatcher running
+            TryCleanup(() => IsEnabled = false);
 
-            // Still reading: disposing the core or removing the driver under it could fault. The
+            // A refresh that already started keeps reading the hardware on a background thread, and so does a live
+            // snapshot that was building when Cleanup began. Let them finish before the core goes away; they don't need
+            // the UI thread for that part, and the window keeps painting meanwhile instead of freezing.
+            // Still reading after the limit: disposing the core or removing the driver under it could fault. The
             // process is exiting anyway, and Windows releases what it holds.
-            bool refreshStillRunning = Volatile.Read(ref refreshReadingHardware) != 0;
+            WaitWhileBusy(
+                () => Volatile.Read(ref refreshReadingHardware) != 0 || Volatile.Read(ref snapshotsRunning) != 0,
+                CleanupRefreshWaitMs);
+
+            bool refreshStillRunning = Volatile.Read(ref refreshReadingHardware) != 0 || Volatile.Read(ref snapshotsRunning) != 0;
 
             // Each step on its own, so one failure doesn't skip the rest (or the shutdown after it).
             foreach (IPlugin plugin in plugins)
@@ -556,13 +655,65 @@ namespace ZenTimings
             if (refreshStillRunning)
                 return;
 
-            TryCleanup(() => AsusWmi?.Dispose());
+            // The startup SPD read may still be on the bus; let it finish before the core goes away
+            TryCleanup(() =>
+            {
+                if (cpu?.memoryConfig != null)
+                {
+                    cpu.memoryConfig.SpdInfoLoaded -= MemoryConfig_SpdInfoLoaded;
+                    MemoryConfig config = cpu.memoryConfig;
+                    WaitWhileBusy(() => !config.IsSpdInfoLoaded, CleanupRefreshWaitMs);
+                }
+            });
+
+            TryCleanup(() =>
+            {
+                if (cpu?.bclk != null)
+                    cpu.bclk.MemoryBclkChanged -= Bclk_MemoryBclkChanged;
+            });
+
             TryCleanup(() => cpu?.Dispose());
 
             if (settings.AutoUninstallDriver)
             {
                 TryCleanup(() => App.CleanupDriverIfLastInstance((NotificationLevel)settings.AutoUninstallDriverNotificationLevel));
             }
+        }
+
+        // Waits until stillBusy() turns false or the limit passes. On the UI thread the dispatcher keeps running while
+        // it waits (a sleep here froze the window for up to the whole limit); the poll is the same 20 ms step as before.
+        private void WaitWhileBusy(Func<bool> stillBusy, int limitMs)
+        {
+            var budget = Stopwatch.StartNew();
+
+            if (stillBusy() && Dispatcher.CheckAccess() && !Dispatcher.HasShutdownStarted)
+            {
+                var frame = new DispatcherFrame();
+                var poll = new DispatcherTimer(DispatcherPriority.Normal, Dispatcher)
+                {
+                    Interval = TimeSpan.FromMilliseconds(RefreshWaitStepMs)
+                };
+                poll.Tick += (s, e) =>
+                {
+                    if (!stillBusy() || budget.ElapsedMilliseconds >= limitMs)
+                        frame.Continue = false;
+                };
+
+                poll.Start();
+                try
+                {
+                    Dispatcher.PushFrame(frame);
+                }
+                finally
+                {
+                    poll.Stop();
+                }
+            }
+
+            // Off the UI thread, or the dispatcher stopped before the work finished (the window was closed while
+            // waiting): the rest of the limit is slept off, so the core never goes away under a running read
+            while (stillBusy() && budget.ElapsedMilliseconds < limitMs)
+                Thread.Sleep(RefreshWaitStepMs);
         }
 
         private static void TryCleanup(Action step)
@@ -607,40 +758,10 @@ namespace ZenTimings
             {
                 foreach (MemoryModule module in modules)
                 {
-                    var moduleLogoName = VendorUtils.GetMemoryModuleLogo(module);
-                    if (moduleLogoName != null)
+                    string logo = VendorUtils.GetMemoryModuleLogo(module);
+                    if (logo != null)
                     {
-                        var stackPanel = new StackPanel
-                        {
-                            Orientation = Orientation.Horizontal
-                        };
-
-                        var image = new Image
-                        {
-                            Height = 18,
-                            Margin = new Thickness(5, 0, 5, 0)
-                        };
-
-                        image.SetResourceReference(Image.SourceProperty, moduleLogoName);
-
-                        var moduleStrings = module.ToString().Split(':');
-
-                        var textBlock = new TextBlock
-                        {
-                            Text = $"{moduleStrings[0]}: ",
-                            VerticalAlignment = VerticalAlignment.Center
-                        };
-
-                        var textBlock2 = new TextBlock
-                        {
-                            Text = moduleStrings[1].Trim(),
-                            VerticalAlignment = VerticalAlignment.Center
-                        };
-
-                        stackPanel.Children.Add(textBlock);
-                        stackPanel.Children.Add(image);
-                        stackPanel.Children.Add(textBlock2);
-                        comboBoxPartNumber.Items.Add(stackPanel);
+                        comboBoxPartNumber.Items.Add(CreateModuleItemWithLogo(module, logo, settings.AdvancedMode));
                     }
                     else
                     {
@@ -664,6 +785,46 @@ namespace ZenTimings
                     comboBoxPartNumber.IsEnabled = true;
                 }
             }
+        }
+
+        /// <summary>"A1: [logo] G.Skill F5-6000J3038F16G (16GB, DR)", the vendor name in advanced mode only.</summary>
+        private static StackPanel CreateModuleItemWithLogo(MemoryModule module, string logoResourceKey, bool withVendor)
+        {
+            var image = new Image
+            {
+                Height = 18,
+                Margin = new Thickness(5, 0, 5, 0)
+            };
+            image.SetResourceReference(Image.SourceProperty, logoResourceKey);
+
+            var stackPanel = new StackPanel { Orientation = Orientation.Horizontal };
+            stackPanel.Children.Add(new TextBlock
+            {
+                Text = $"{module.Slot}: ",
+                VerticalAlignment = VerticalAlignment.Center
+            });
+            stackPanel.Children.Add(image);
+            stackPanel.Children.Add(new TextBlock
+            {
+                Text = GetModuleDescription(module, withVendor),
+                VerticalAlignment = VerticalAlignment.Center
+            });
+            return stackPanel;
+        }
+
+        // The part of MemoryModule.ToString() after the slot, built from the fields so that a ':' in the part number
+        // cannot split it. The vendor is left out when it is unknown or the part number already starts with it.
+        private static string GetModuleDescription(MemoryModule module, bool withVendor)
+        {
+            string partNumber = module.PartNumber?.Trim() ?? string.Empty;
+            string details = $"({module.Capacity}, {module.Rank})";
+            string description = partNumber.Length > 0 ? $"{partNumber} {details}" : details;
+
+            if (!withVendor)
+                return description;
+
+            string vendor = VendorUtils.GetModuleVendorPrefix(module);
+            return vendor == null ? description : $"{vendor} {description}";
         }
 
         private void RefreshSensors()
@@ -775,10 +936,11 @@ namespace ZenTimings
 
             // ASUS WMI reads the machine this runs on, so it is live only; the SuperIO fallback reads
             // the report's replayed sensors in a debug report's window.
-            if (!hasMemVddio && mockData == null && AsusWmi != null && AsusWmi.Status == 1)
+            AsusWmiHardware asusWmi = AsusWmi;
+            if (!hasMemVddio && asusWmi != null)
             {
-                AsusSensorInfo sensor = AsusWmi.FindSensorByName("DRAM Voltage");
-                hasMemVddio = sensor != null && AsusWMI.TryParseSensorValue(sensor.Value, out memVddio) && memVddio > 0 && memVddio < 3;
+                memVddio = asusWmi.FindSensor("DRAM Voltage")?.Value ?? 0;
+                hasMemVddio = memVddio > 0 && memVddio < 3;
             }
 
             if (!hasMemVddio)
@@ -1094,9 +1256,37 @@ namespace ZenTimings
         }
 
         private int isRefreshing = 0;
+        /// <summary>
+        /// After a memory P-state switch: the APOB timing blocks of the new P-state become the active ones, and the
+        /// values taken from them (ODT, drive strengths, Vrefs, CCD_L) follow the timings.
+        /// </summary>
+        private void UpdateApobForActivePstate()
+        {
+            var apob = cpu?.info.apob;
+            if (apob == null || !apob.IsValid || mainViewModel?.Timings == null)
+                return;
+
+            apob.UpdateActiveTimings(mainViewModel.Timings);
+
+            mainViewModel.ApobExtendedData = apob.ExtendedData;
+            mainViewModel.ApobData = new ApobDataView(mainViewModel.ApobMainData, apob.ExtendedData, apob.ExtendedDataPerPstate);
+            mainViewModel.CcdlData = apob.CcdlData;
+
+            if (timingsPanel is LPDDR5TimingsPanel lpddr5Panel)
+                lpddr5Panel.SetModeRegisters(apob.ActiveLpddr5ModeRegisters);
+        }
+
+        // How long a refresh waits for the PCI bus mutex before skipping the memory P-state check for one tick
+        private const int PstateCheckLockTimeoutMs = 500;
+
         private void PowerCfgTimer_Tick(object sender, EventArgs e)
         {
             if (Interlocked.Exchange(ref isRefreshing, 1) == 1) return;
+
+            // UI state the background read needs, taken here on the UI thread: which module is selected and the
+            // timings object shown for it
+            int selectedIndex = comboBoxPartNumber?.SelectedIndex ?? 0;
+            BaseDramTimings shownTimings = mainViewModel?.Timings;
 
             // Run refresh operation in a new task
             Task.Run(() =>
@@ -1118,18 +1308,20 @@ namespace ZenTimings
 
                     var hasAsusDramVoltage = false;
                     float asusDramVoltage = 0;
-                    if (AsusWmi != null && AsusWmi.Status == 1)
+                    AsusWmiHardware asusWmi = AsusWmi;
+                    if (asusWmi != null)
                     {
-                        AsusSensorInfo sensor = AsusWmi.FindSensorByName("DRAM Voltage");
+                        Sensor sensor = asusWmi.FindSensor("DRAM Voltage");
 
                         // Every ASUS sensor is its own WMI method call, so all of them are read only while
                         // something shows them. Otherwise the main window needs just the DRAM voltage, on DDR4.
-                        if (systemInfoWindowOpen || (ExportSettings.Instance.LiveSnapshotEnabled && LiveSnapshot.IsDue))
-                            AsusWmi.UpdateSensors();
-                        else if (isDdr4)
-                            AsusWmi.UpdateSensor(sensor);
+                        if (systemInfoWindowOpen || sensorsWindowOpen || (ExportSettings.Instance.LiveSnapshotEnabled && LiveSnapshot.IsDue))
+                            asusWmi.Update();
+                        else if (isDdr4 && sensor != null)
+                            asusWmi.Update(sensor);
 
-                        hasAsusDramVoltage = isDdr4 && sensor != null && AsusWMI.TryParseSensorValue(sensor.Value, out asusDramVoltage) && asusDramVoltage > 0 && asusDramVoltage < 3;
+                        asusDramVoltage = sensor?.Value ?? 0;
+                        hasAsusDramVoltage = isDdr4 && asusDramVoltage > 0 && asusDramVoltage < 3;
                     }
 
                     //ReadDDR4MemoryConfig();
@@ -1149,6 +1341,54 @@ namespace ZenTimings
                         voltagesUpdated = cpu.memoryConfig.RefreshTelemetry(settings.AutoRefreshInterval / 2);
                     }
 
+                    // The memory P-state and the timings are read here too, off the UI thread: the timings read waits
+                    // up to 5 s for the PCI bus mutex, which other tools hold. The UI update below only publishes them.
+                    float newMclk = cpu.powerTable?.MCLK ?? 0;
+                    BaseDramTimings refreshedTimings = null;
+                    bool timingsRead = false;
+                    bool timingsCurrent = false;
+                    try
+                    {
+                        var modules = cpu.memoryConfig.Modules;
+
+                        // SelectedIndex is -1 with nothing selected, which ?? does not catch, and a stale
+                        // index can outlive a shorter module list
+                        MemoryModule module = modules != null && selectedIndex >= 0 && selectedIndex < modules.Count
+                            ? modules[selectedIndex]
+                            : null;
+                        uint dctOffset = module?.DctOffset ?? 0;
+
+                        // APUs switch memory P-state with load, and P-states can share MCLK (Rembrandt: P0 to P2 at
+                        // 800), so the P-state is checked too. Its register is read under the bus mutex like the
+                        // timings; while another tool holds the bus the check waits for the next tick.
+                        bool pstateChanged = false;
+                        if (shownTimings is Ddr5Timings shownDdr5 && Mutexes.WaitPciBus(PstateCheckLockTimeoutMs))
+                        {
+                            try
+                            {
+                                pstateChanged = shownDdr5.MemPstateChanged(dctOffset);
+                            }
+                            finally
+                            {
+                                Mutexes.ReleasePciBus();
+                            }
+                        }
+
+                        if (newMclk != lastMclk || pstateChanged)
+                        {
+                            refreshedTimings = ReadTimings(dctOffset);
+                            timingsRead = true;
+                        }
+
+                        timingsCurrent = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        // Bus busy past the timeout, or the read failed. The sensors are still shown below, and with
+                        // lastMclk left as it was the timings are tried again on the next tick.
+                        Debug.WriteLine($"Refresh: reading the timings failed: {ex.Message}");
+                    }
+
                     Interlocked.Exchange(ref refreshReadingHardware, 0);
 
                     if (cleanedUp)
@@ -1161,19 +1401,16 @@ namespace ZenTimings
                             if (cleanedUp)
                                 return;
 
-                            var newMclk = cpu.powerTable.MCLK;
-
-                            if (newMclk != lastMclk)
+                            // Published only while the module they were read for is still the selected one; a
+                            // selection made in the meantime has loaded its own timings
+                            if (timingsRead && (comboBoxPartNumber?.SelectedIndex ?? 0) == selectedIndex)
                             {
-                                var modules = cpu.memoryConfig.Modules;
-                                int selectedIndex = comboBoxPartNumber?.SelectedIndex ?? 0;
-                                MemoryModule module = modules?.Count > 0 ? modules[selectedIndex] : null;
-                                mainViewModel.Timings = ReadTimings(module?.DctOffset ?? 0);
-                                //Dictionary<byte, Ddr5SpdInfo> results = Ddr5SpdDecoder.ReadAndDecodeAll(CpuSingleton.Instance.SmbusPiix4);
+                                mainViewModel.Timings = refreshedTimings;
+                                UpdateApobForActivePstate();
                             }
 
                             if (voltagesUpdated)
-                                mainViewModel.PmicData = ModulePmicData(comboBoxPartNumber?.SelectedIndex ?? 0);
+                                mainViewModel.PmicData = ModulePmicData(Math.Max(0, comboBoxPartNumber?.SelectedIndex ?? 0));
 
                             if (cpu.memoryConfig.Type == MemType.DDR4 || cpu.memoryConfig.Type == MemType.LPDDR4)
                             {
@@ -1194,7 +1431,8 @@ namespace ZenTimings
 
                             mainViewModel.RefreshSensors();
 
-                            lastMclk = newMclk;
+                            if (timingsCurrent)
+                                lastMclk = newMclk;
 
                             if (timingsPanel is DDR4TimingsPanel ddr4Panel && isDdr4)
                                 ApplyDdr4Vsoc(ddr4Panel, false);
@@ -1237,23 +1475,76 @@ namespace ZenTimings
             return result;
         }
 
-        public void HandleError(string message, string title = "Error")
+        /// <summary>
+        /// The I/O driver error at startup, with "Don't show again", which turns it off
+        /// (<see cref="AppSettings.ShowInpOutDriverError"/>, back on in Options).
+        /// </summary>
+        private void ShowInpOutDriverError()
         {
+            var dontShowAgain = MessageBoxButtons.Custom("Don't show again");
+
             // The splash is topmost and could cover the message box during startup.
             SplashWindow.HideIfOpen();
             try
             {
-                MessageBox.Show(
-                    message,
-                    title,
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error
-                );
+                MessageBoxButtonModel pressed = ProblemReport.ShowErrorWithButtons(
+                    "I/O driver is not responding or not loaded.\n\n" +
+                    "Information that needs it, such as AOD and the AGESA version, is not shown. " +
+                    "You can turn this message back on in Options.",
+                    "Error",
+                    null,
+                    this,
+                    new[] { dontShowAgain });
+
+                if (ReferenceEquals(pressed, dontShowAgain))
+                {
+                    settings.ShowInpOutDriverError = false;
+                    settings.Save();
+                }
             }
             finally
             {
                 SplashWindow.ShowIfOpen();
             }
+        }
+
+        /// <param name="exception">Attached to the report when one is sent, null for none.</param>
+        /// <param name="offerReport">Offer to send a debug report; false for errors a report can't help with.</param>
+        public void HandleError(string message, string title = "Error", Exception exception = null, bool offerReport = true)
+        {
+            // The splash is topmost and could cover the message box during startup.
+            SplashWindow.HideIfOpen();
+            try
+            {
+                if (offerReport)
+                {
+                    ProblemReport.ShowError(message, title, exception, this);
+                }
+                else
+                {
+                    MessageBox.Show(
+                        message,
+                        title,
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error
+                    );
+                }
+            }
+            finally
+            {
+                SplashWindow.ShowIfOpen();
+            }
+        }
+
+        private void Bclk_MemoryBclkChanged(object sender, EventArgs e)
+        {
+            // Raised on the measurement thread
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                BaseDramTimings timings = mainViewModel?.Timings;
+                if (timings != null && mockData == null)
+                    mainViewModel.MemoryFrequency = timings.Frequency;
+            }));
         }
 
         private AllDimmsWindow allDimmsWnd;
@@ -1316,7 +1607,7 @@ namespace ZenTimings
             }
             catch (Exception ex)
             {
-                HandleError($"Could not restart {nameof(ZenTimings)}.\n{ex.Message}");
+                HandleError($"Could not restart {nameof(ZenTimings)}.\n{ex.Message}", offerReport: false);
             }
 
             Application.Current.Shutdown();
@@ -1427,7 +1718,7 @@ namespace ZenTimings
                 Window parent = Application.Current.MainWindow;
                 if (parent != null)
                 {
-                    DebugDialog debugWnd = new DebugDialog(BMC, AsusWmi)
+                    DebugDialog debugWnd = new DebugDialog(BMC)
                     {
                         Owner = parent,
                         Width = parent.Width,
@@ -1498,6 +1789,8 @@ namespace ZenTimings
 
         private void ExitToolStripMenuItem_Click(object sender, RoutedEventArgs e) => ExitApplication();
 
+        private void ReportProblemMenuItem_Click(object sender, RoutedEventArgs e) => ProblemReport.ShowSendDialog(this);
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             this.Topmost = true;
@@ -1539,8 +1832,13 @@ namespace ZenTimings
             MinimizeFootprint();
             InitLiveSnapshot();
 
+            Microsoft.Win32.SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
+
             if (settings.AdvancedMode && settings.AutoOpenTelemetry)
                 OpenSensorsWindowAfterFirstRender();
+
+            // Once the window is up and idle: offer a report when the last run ended with a crash
+            Dispatcher.BeginInvoke(new Action(() => ProblemReport.OfferAfterCrash(this)), DispatcherPriority.ApplicationIdle);
 
             //new Thread(() =>
             //{
@@ -1580,15 +1878,62 @@ namespace ZenTimings
         private void ButtonScreenshot_Click(object sender, RoutedEventArgs e)
         {
             Screenshot screenshot = new Screenshot();
+            // The window itself rather than the foreground one, with the area outside its rounded corners
+            // (Windows 11) left transparent instead of showing what is behind it.
             System.Drawing.Bitmap bitmap = (settings.ScreenshotMode == AppSettings.ScreenshotType.Desktop)
                 ? screenshot.CaptureDekstop()
-                : screenshot.CaptureActiveWindow();
+                : screenshot.CaptureWindow(new WindowInteropHelper(this).Handle, WindowUtils.GetCornerRadiusPixels(this));
 
             using (SaveWindow saveWnd = new SaveWindow(bitmap))
             {
                 saveWnd.Owner = Application.Current.MainWindow;
                 saveWnd.ShowDialog();
                 screenshot.Dispose();
+            }
+        }
+
+        private const int SpdStartupWaitMs = 8000;
+
+        // Subscribing and then checking IsSpdInfoLoaded can deliver the same load twice (the event fires between the two)
+        private int spdInfoHandled;
+
+        // Raised by the core on its SPD thread; the UI work runs on the dispatcher once the window is up.
+        private void MemoryConfig_SpdInfoLoaded(object sender, EventArgs e)
+        {
+            if (cleanedUp)
+                return;
+
+            if (Interlocked.Exchange(ref spdInfoHandled, 1) != 0)
+                return;
+
+            Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(ApplySpdInfo));
+        }
+
+        // Rebuilds the module list (the manufacturer and its logo come from the SPD) and shows the PMIC data of the
+        // selected module. Live only; a report window has its SPD from the start.
+        private void ApplySpdInfo()
+        {
+            if (cleanedUp || mockData != null || cpu?.memoryConfig == null)
+                return;
+
+            try
+            {
+                int selected = comboBoxPartNumber.SelectedIndex;
+
+                comboBoxPartNumber.SelectionChanged -= ComboBoxPartNumber_SelectionChanged;
+                comboBoxPartNumber.Items.Clear();
+                ReadMemoryModulesInfo(cpu.memoryConfig.Modules);
+
+                // ReadMemoryModulesInfo selects the first module; going back to another one reloads its timings too
+                if (selected > 0 && selected < comboBoxPartNumber.Items.Count)
+                    comboBoxPartNumber.SelectedIndex = selected;
+
+                if (mainViewModel != null)
+                    mainViewModel.PmicData = ModulePmicData(Math.Max(0, comboBoxPartNumber.SelectedIndex));
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Applying the SPD info failed: {ex.Message}");
             }
         }
 
@@ -1627,7 +1972,7 @@ namespace ZenTimings
                 sysInfoWindowWidth = settings.SysInfoWindowWidth;
             }
 
-            siWnd = new SystemInfoWindow(cpu.memoryConfig, BMC?.Config, AsusWmi?.sensors)
+            siWnd = new SystemInfoWindow(cpu.memoryConfig, BMC?.Config, AsusWmi)
             {
                 Width = sysInfoWindowWidth,
                 Height = sysInfoWindowHeight,
@@ -1636,6 +1981,7 @@ namespace ZenTimings
                 Left = sysInfoWindowLeft
             };
 
+            // The refresh reads all ASUS WMI sensors while this window shows them
             SystemInfoWindow shownWnd = siWnd;
             shownWnd.Closed += (s, args) =>
             {
@@ -1683,6 +2029,30 @@ namespace ZenTimings
             catch (Exception ex)
             {
                 MessageBox.Show($"Error opening APOB:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void ApcbInfoToolstripMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (apcbInfoWnd != null && apcbInfoWnd.IsLoaded)
+            {
+                apcbInfoWnd.Activate();
+                return;
+            }
+
+            try
+            {
+                // The APCB is read from the SPI flash of the running system; a debug report has none
+                var apob = isMockWindow ? mockData?.Apob : cpu?.info.apob;
+                apcbInfoWnd = new ApcbInfoWindow(apob)
+                {
+                    Owner = this
+                };
+                apcbInfoWnd.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error opening APCB:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1820,6 +2190,15 @@ namespace ZenTimings
                         Left = telemetryWindowLeft,
                         ShowActivated = activate
                     };
+
+                    // The refresh reads all ASUS WMI sensors only while a window shows them
+                    Windows.SensorsWindow shownSensorsWnd = sensorsWindw;
+                    shownSensorsWnd.Closed += (s, args) =>
+                    {
+                        if (ReferenceEquals(sensorsWindw, shownSensorsWnd))
+                            sensorsWindowOpen = false;
+                    };
+                    sensorsWindowOpen = true;
                     sensorsWindw.Show();
 
                     if (startMinimized)
@@ -2034,14 +2413,60 @@ namespace ZenTimings
             if (!ExportSettings.Instance.LiveSnapshotEnabled || !LiveSnapshot.IsDue)
                 return;
 
-            Task.Run(async () =>
-            {
-                // Wait for that refresh to finish so that the snapshot holds the new values
-                for (int waited = 0; Volatile.Read(ref isRefreshing) != 0 && waited < RefreshWaitLimitMs; waited += RefreshWaitStepMs)
-                    await Task.Delay(RefreshWaitStepMs);
+            // The one that is still writing is enough, the next tick asks again
+            if (Volatile.Read(ref snapshotsRunning) != 0)
+                return;
 
+            // Waits for that refresh to finish so that the snapshot holds the new values
+            RunSnapshotTask(() =>
+            {
                 lastRefreshUtc = DateTime.UtcNow;
                 LiveSnapshot.Update(GetSnapshotSource(true));
+            });
+        }
+
+        // Number of snapshot tasks that have not finished; Cleanup waits for them like for a refresh.
+        private int snapshotsRunning;
+
+        // A snapshot reads what the refresh writes (BMC, ASUS sensors, the plugins), so it runs in the refresh's own slot:
+        // it waits until no refresh is running, takes the slot, and the next tick skips while it holds it. It does not
+        // start once Cleanup has begun, and Cleanup waits for one that has.
+        private void RunSnapshotTask(Action work)
+        {
+            if (cleanedUp)
+                return;
+
+            Interlocked.Increment(ref snapshotsRunning);
+            Task.Run(() =>
+            {
+                bool hasSlot = false;
+                try
+                {
+                    for (int waited = 0; waited < RefreshWaitLimitMs && !cleanedUp; waited += RefreshWaitStepMs)
+                    {
+                        if (Interlocked.CompareExchange(ref isRefreshing, 1, 0) == 0)
+                        {
+                            hasSlot = true;
+                            break;
+                        }
+
+                        Thread.Sleep(RefreshWaitStepMs);
+                    }
+
+                    // A refresh that outlasts the wait skips this snapshot; the next one is not far off
+                    if (hasSlot && !cleanedUp)
+                        work();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Live snapshot failed: {ex.Message}");
+                }
+                finally
+                {
+                    if (hasSlot)
+                        Interlocked.Exchange(ref isRefreshing, 0);
+                    Interlocked.Decrement(ref snapshotsRunning);
+                }
             });
         }
 
@@ -2077,7 +2502,7 @@ namespace ZenTimings
             return new SnapshotSource
             {
                 BiosMemConfig = BMC?.Config,
-                AsusSensors = AsusWmi?.sensors,
+                AsusWmi = AsusWmi,
                 Plugins = plugins,
                 LastRefreshUtc = lastRefreshUtc,
                 AutoRefreshActive = autoRefreshActive ?? PowerCfgTimer.IsEnabled,
@@ -2087,10 +2512,15 @@ namespace ZenTimings
         private void UpdateLiveSnapshot()
         {
             SnapshotSource source = GetSnapshotSource();
-            Task.Run(() =>
+            RunSnapshotTask(() =>
             {
+                // Not Invoke: Cleanup on the UI thread may be waiting for this task
                 if (!LiveSnapshot.WriteNow(source))
-                    Dispatcher.Invoke(() => HandleError($"Could not write the live snapshot file.\n{LiveSnapshot.LastError}", "Live snapshot"));
+                    Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        if (!cleanedUp)
+                            HandleError($"Could not write the live snapshot file.\n{LiveSnapshot.LastError}", "Live snapshot", offerReport: false);
+                    }));
             });
         }
 
@@ -2121,8 +2551,7 @@ namespace ZenTimings
                 (options, selectedFormat) =>
                 {
                     // The refresh reads only the ASUS sensor it needs, so read them all for the export.
-                    if (mockData == null && AsusWmi != null && AsusWmi.Status == 1)
-                        AsusWmi.UpdateSensors();
+                    AsusWmi?.Update();
                     return SnapshotWriter.Write(SnapshotBuilder.Build(GetSnapshotSource(), options), selectedFormat);
                 },
                 format,

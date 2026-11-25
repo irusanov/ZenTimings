@@ -32,6 +32,13 @@ namespace ZenTimings.Theming
             Title = model.Caption ?? string.Empty;
             MessageIcon = GetSystemIcon(model.Icon);
 
+            if (model.ShowInTaskbar)
+            {
+                // The style makes message boxes tool windows without a taskbar button; a tool window gets none
+                ShowInTaskbar = true;
+                WindowStyle = WindowStyle.SingleBorderWindow;
+            }
+
             Closing += OnClosing;
             PreviewKeyDown += OnPreviewKeyDown;
         }

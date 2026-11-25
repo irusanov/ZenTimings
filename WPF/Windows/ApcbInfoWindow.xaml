@@ -1,0 +1,191 @@
+<local:ThemedWindow
+    xmlns:local="clr-namespace:ZenTimings"
+    xmlns:theming="clr-namespace:ZenTimings.Theming"
+    x:Class="ZenTimings.Windows.ApcbInfoWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="clr-namespace:ZenTimings.Controls"
+    mc:Ignorable="d"
+    Title="APCB Info"
+    SnapIdentifier="ApcbInfoWindow"
+    Height="640"
+    Width="760"
+    MinHeight="300"
+    MinWidth="480"
+    WindowStartupLocation="CenterOwner"
+    BorderThickness="1"
+    UseLayoutRounding="True"
+    Style="{DynamicResource WindowStyles}"
+    Loaded="Window_Loaded"
+    Activated="Window_Activated"
+    Icon="/ZenTimings;component/Resources/new-icon/16.png">
+
+    <Window.Resources>
+        <!-- Section header with a button that copies the grid the section names in its Tag -->
+        <DataTemplate x:Key="CopyHeaderTemplate">
+            <DockPanel>
+                <TextBlock Text="{Binding}" Style="{StaticResource SectionHeaderTextStyle}" />
+                <Button Style="{DynamicResource IconButtonStyle}"
+                        Margin="4,0,0,0"
+                        ToolTip="Copy to clipboard"
+                        Click="CopySection_Click"
+                        DockPanel.Dock="Right"
+                        HorizontalAlignment="Right">
+                    <controls:AppIcon Kind="IconCopy" IconWidth="11" IconHeight="11" Fill="{DynamicResource TextColor}" />
+                </Button>
+            </DockPanel>
+        </DataTemplate>
+
+        <SolidColorBrush x:Key="ChangedBrush" Color="{DynamicResource {x:Static theming:ThemeColors.WarningColor}}"/>
+
+        <!-- Tokens without a known name are shown in italics -->
+        <Style x:Key="ApcbNameTextStyle" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SectionNameTextStyle}">
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+            <Setter Property="ToolTip" Value="{Binding Tooltip}"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsUnknown}" Value="True">
+                    <Setter Property="FontStyle" Value="Italic" />
+                    <Setter Property="Opacity" Value="0.7" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Values that differ from the backup (default) APCB -->
+        <Style x:Key="ApcbValueTextStyle" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SectionValueTextStyle}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsChanged}" Value="True">
+                    <Setter Property="Foreground" Value="{StaticResource ChangedBrush}" />
+                    <Setter Property="FontWeight" Value="SemiBold" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ApcbDimTextStyle" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SectionNameTextStyle}">
+            <Setter Property="Opacity" Value="0.6"/>
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+        </Style>
+
+        <Style x:Key="LabelStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static theming:ThemeBrushes.ForegroundBrush}}"/>
+            <Setter Property="Opacity" Value="0.75"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="2,0"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <ScrollViewer Grid.Row="0" Padding="0" Margin="0" HorizontalScrollBarVisibility="Auto">
+            <StackPanel CanVerticallyScroll="False">
+                <GroupBox
+                    x:Name="OverviewSection"
+                    Header="Overview"
+                    Style="{StaticResource CollapsibleSectionStyle}" HeaderTemplate="{StaticResource CopyHeaderTemplate}"
+                    Tag="{x:Reference OverviewGrid}">
+                    <DataGrid
+                        Name="OverviewGrid"
+                        Style="{StaticResource SectionDataGridStyle}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Width="170" Binding="{Binding Option}" ElementStyle="{StaticResource SectionNameTextStyle}" />
+                            <DataGridTextColumn Width="auto" Binding="{Binding Value}" ElementStyle="{StaticResource SectionValueTextStyle}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+
+                <GroupBox
+                    x:Name="TrainingSection"
+                    Header="DFE &amp; 2D Training"
+                    ToolTip="RX/TX DFE and RX2D/TX2D options: the BIOS setting (booted APCB) next to what the APOB shows of the training"
+                    Style="{StaticResource CollapsibleSectionStyle}" HeaderTemplate="{StaticResource CopyHeaderTemplate}"
+                    Tag="{x:Reference TrainingGrid}">
+                    <DataGrid
+                        Name="TrainingGrid"
+                        Style="{StaticResource SectionDataGridStyle}"
+                        HeadersVisibility="Column">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Group" Width="auto" MinWidth="55" Binding="{Binding Group}" ElementStyle="{StaticResource SectionNameTextStyle}" />
+                            <DataGridTextColumn Header="Option" Width="230" Binding="{Binding Option}" ElementStyle="{StaticResource ApcbNameTextStyle}" />
+                            <DataGridTextColumn Header="BIOS (APCB)" Width="auto" MinWidth="90" Binding="{Binding Value}" ElementStyle="{StaticResource ApcbValueTextStyle}" />
+                            <DataGridTextColumn Header="Trained (APOB)" Width="auto" MinWidth="90" Binding="{Binding Apob}" ElementStyle="{StaticResource SectionValueTextStyle}" />
+                            <DataGridTextColumn Header="Token" Width="auto" Binding="{Binding Token}" ElementStyle="{StaticResource ApcbDimTextStyle}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+
+                <GroupBox
+                    x:Name="OptionsSection"
+                    Header="BIOS Options (booted APCB)"
+                    Style="{StaticResource CollapsibleSectionStyle}" HeaderTemplate="{StaticResource CopyHeaderTemplate}"
+                    Tag="{x:Reference OptionsGrid}">
+                    <DataGrid
+                        Name="OptionsGrid"
+                        Style="{StaticResource SectionDataGridStyle}"
+                        HeadersVisibility="Column">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Option" Width="230" Binding="{Binding Option}" ElementStyle="{StaticResource ApcbNameTextStyle}" />
+                            <DataGridTextColumn Header="Value" Width="auto" MinWidth="90" Binding="{Binding Value}" ElementStyle="{StaticResource ApcbValueTextStyle}" />
+                            <DataGridTextColumn Header="Default" Width="auto" MinWidth="70" Binding="{Binding Default}" ElementStyle="{StaticResource SectionNameTextStyle}" />
+                            <DataGridTextColumn Header="Name" Width="auto" MinWidth="80" Binding="{Binding Name}" ElementStyle="{StaticResource ApcbDimTextStyle}" />
+                            <DataGridTextColumn Header="Token" Width="auto" Binding="{Binding Token}" ElementStyle="{StaticResource ApcbDimTextStyle}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+
+                <GroupBox
+                    x:Name="DefaultsSection"
+                    Header="Defaults (backup APCB)"
+                    Style="{StaticResource CollapsibleSectionStyle}" HeaderTemplate="{StaticResource CopyHeaderTemplate}"
+                    Tag="{x:Reference DefaultsGrid}">
+                    <DataGrid
+                        Name="DefaultsGrid"
+                        Style="{StaticResource SectionDataGridStyle}"
+                        HeadersVisibility="Column">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Option" Width="230" Binding="{Binding Option}" ElementStyle="{StaticResource ApcbNameTextStyle}" />
+                            <DataGridTextColumn Header="Value" Width="auto" MinWidth="90" Binding="{Binding Value}" ElementStyle="{StaticResource SectionValueTextStyle}" />
+                            <DataGridTextColumn Header="Name" Width="auto" MinWidth="80" Binding="{Binding Name}" ElementStyle="{StaticResource ApcbDimTextStyle}" />
+                            <DataGridTextColumn Header="Token" Width="auto" Binding="{Binding Token}" ElementStyle="{StaticResource ApcbDimTextStyle}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+
+                <GroupBox
+                    x:Name="ImagesSection"
+                    Header="APCB Images (SPI flash)"
+                    Style="{StaticResource CollapsibleSectionStyle}" HeaderTemplate="{StaticResource CopyHeaderTemplate}"
+                    Tag="{x:Reference ImagesGrid}">
+                    <DataGrid
+                        Name="ImagesGrid"
+                        Style="{StaticResource SectionDataGridStyle}"
+                        HeadersVisibility="Column">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Type" Width="auto" MinWidth="60" Binding="{Binding Option}" ElementStyle="{StaticResource SectionNameTextStyle}" />
+                            <DataGridTextColumn Header="Address" Width="auto" MinWidth="90" Binding="{Binding Value}" ElementStyle="{StaticResource SectionValueTextStyle}" />
+                            <DataGridTextColumn Header="Size" Width="auto" MinWidth="60" Binding="{Binding Default}" ElementStyle="{StaticResource SectionNameTextStyle}" />
+                            <DataGridTextColumn Header="Instance" Width="auto" MinWidth="60" Binding="{Binding Name}" ElementStyle="{StaticResource SectionNameTextStyle}" />
+                            <DataGridTextColumn Header="Tokens / status" Width="auto" Binding="{Binding Token}" ElementStyle="{StaticResource SectionNameTextStyle}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Border Grid.Row="1" Style="{DynamicResource Separator}"/>
+
+        <!-- Status bar -->
+        <Border Grid.Row="2" Style="{DynamicResource BottomPanelStyles}">
+            <TextBlock x:Name="StatusText"
+                       Text="Reading the APCB from the SPI flash..."
+                       Style="{StaticResource LabelStyle}"
+                       TextTrimming="CharacterEllipsis"/>
+        </Border>
+    </Grid>
+</local:ThemedWindow>

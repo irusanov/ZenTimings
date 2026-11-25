@@ -122,9 +122,14 @@ namespace ZenTimings.ViewModels
         public bool WMIPresent { get; }
         public bool IsMotherboardLogoVisible { get; }
         public string MotherboardLogoTooltip { get; }
-        public bool IsRfcEnabled => Timings?.RefreshMode == BankRefreshMode.NORMAL;
-        public bool IsRfc2Enabled => Timings != null && Timings.RefreshMode != BankRefreshMode.NORMAL;
-        public bool IsRfcsbEnabled => Timings?.RefreshMode == BankRefreshMode.MIXED;
+        // DDR5 / LPDDR5: all-bank refresh uses tRFC (Fixed 1X) or tRFC2 (Fixed 2X) unless only same-bank refresh is on,
+        // tRFCsb is used with same-bank refresh (mixed or same-bank only)
+        private bool IsAllBankRefreshInUse => Timings != null &&
+            (Timings.RefreshMode == BankRefreshMode.NORMAL || Timings.RefreshMode == BankRefreshMode.FGR ||
+             Timings.RefreshMode == BankRefreshMode.MIXED);
+        public bool IsRfcEnabled => IsAllBankRefreshInUse && Timings.FGR == 0;
+        public bool IsRfc2Enabled => IsAllBankRefreshInUse && Timings.FGR != 0;
+        public bool IsRfcsbEnabled => Timings?.RefreshMode == BankRefreshMode.MIXED || Timings?.RefreshMode == BankRefreshMode.PBONLY;
 
         // DDR4 doesn't have separate RFCsb, but we can still indicate if it's using normal refresh or FGR
         public bool IsDdr4RfcEnabled => (Timings as Ddr4Timings)?.RefreshMode == BankRefreshMode.NORMAL;
@@ -396,7 +401,7 @@ namespace ZenTimings.ViewModels
                 ApobMainData = apob.Data;
                 ApobExtendedData = apob.ExtendedData;
                 CcdlData = apob.CcdlData;
-                ApobData = new ApobDataView(ApobMainData, ApobExtendedData);
+                ApobData = new ApobDataView(ApobMainData, ApobExtendedData, apob.ExtendedDataPerPstate);
             }
 
             AgesaVersion = mockData != null ? (mockData.AgesaVersion ?? agesaVersion) : agesaVersion;

@@ -9,6 +9,9 @@ namespace ZenTimings.Common
         private CpuSingleton() { }
         public static Action<string> InitProgress { get; set; }
 
+        /// <summary>The core when it has been created, null otherwise; never creates it.</summary>
+        public static Cpu Existing => instance;
+
         public static Cpu Instance
         {
             get

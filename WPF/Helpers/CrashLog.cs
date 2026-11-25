@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -13,6 +14,21 @@ namespace ZenTimings.Helpers
     {
         private const string FileName = "crash.log";
         private const string OldFileName = "crash.old.log";
+        private const string Separator = "==================================================";
+        private const string StampFormat = "yyyy-MM-dd HH:mm:ss";
+
+        /// <summary>Stands for "crash.log had no terminating entry" where a stamp is stored.</summary>
+        public const string NoEntry = "none";
+
+        /// <summary>An entry of crash.log.</summary>
+        public sealed class Entry
+        {
+            /// <summary>When it was written, local time as "yyyy-MM-dd HH:mm:ss" (sorts as text).</summary>
+            public string Stamp { get; set; }
+
+            /// <summary>The whole entry.</summary>
+            public string Text { get; set; }
+        }
 
         // Past this size the log is moved to crash.old.log, so it can't grow without limit.
         private const long MaxSizeBytes = 1024 * 1024;
@@ -45,8 +61,9 @@ namespace ZenTimings.Helpers
         private static string BuildEntry(string source, object exception, bool terminating)
         {
             var sb = new StringBuilder();
-            sb.AppendLine("==================================================");
-            sb.AppendLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss}  {source}{(terminating ? " (terminating)" : "")}");
+            sb.AppendLine(Separator);
+            // Invariant: a background thread runs with the OS culture, whose time separator may not be ':'
+            sb.AppendLine($"{DateTime.Now.ToString(StampFormat, CultureInfo.InvariantCulture)}  {source}{(terminating ? " (terminating)" : "")}");
             sb.AppendLine($"Version: {GetVersion()}");
             sb.AppendLine($"OS:      {Environment.OSVersion} ({(Environment.Is64BitOperatingSystem ? "64" : "32")}-bit)");
             sb.AppendLine($"CLR:     {Environment.Version}");
@@ -54,6 +71,51 @@ namespace ZenTimings.Helpers
             sb.AppendLine(exception?.ToString() ?? "(no exception object)");
             sb.AppendLine();
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// The newest entry of a crash that closed the app (written as terminating), from crash.log next to the
+        /// executable or in %TEMP%; null when there is none or crash.log can't be read.
+        /// </summary>
+        public static Entry FindLastTerminating()
+        {
+            Entry last = null;
+
+            foreach (string directory in new[] { AppDomain.CurrentDomain.BaseDirectory, Path.GetTempPath() })
+            {
+                try
+                {
+                    string path = Path.Combine(directory, FileName);
+                    if (!File.Exists(path))
+                        continue;
+
+                    string content;
+                    lock (SyncRoot)
+                        content = File.ReadAllText(path, Encoding.UTF8);
+
+                    foreach (string block in content.Split(new[] { Separator }, StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        string text = block.Trim();
+                        int lineEnd = text.IndexOf('\n');
+                        string header = (lineEnd < 0 ? text : text.Substring(0, lineEnd)).Trim();
+                        if (header.Length < StampFormat.Length || !header.EndsWith("(terminating)", StringComparison.Ordinal))
+                            continue;
+
+                        string stamp = header.Substring(0, StampFormat.Length);
+                        if (!DateTime.TryParseExact(stamp, StampFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
+                            continue;
+
+                        if (last == null || string.CompareOrdinal(stamp, last.Stamp) > 0)
+                            last = new Entry { Stamp = stamp, Text = text };
+                    }
+                }
+                catch
+                {
+                    // An unreadable log only means there is nothing to offer
+                }
+            }
+
+            return last;
         }
 
         private static string GetVersion()

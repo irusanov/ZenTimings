@@ -9,7 +9,11 @@ namespace ZenTimings.ViewModels
     {
         private readonly Dictionary<string, object> _values = new Dictionary<string, object>();
 
-        public ApobDataView(ApobData main, ApobData extended)
+        /// <param name="preferExtended">
+        /// Take the extended record's value first, when it is the record of the active memory P-state
+        /// (Apob.ExtendedDataPerPstate): the main record only holds the P-state 0 set.
+        /// </param>
+        public ApobDataView(ApobData main, ApobData extended, bool preferExtended = false)
         {
             var props = typeof(ApobData).GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
@@ -20,7 +24,7 @@ namespace ZenTimings.ViewModels
                 var mainVal = main != null ? p.GetValue(main) : null;
                 var extendedVal = extended != null ? p.GetValue(extended) : null;
 
-                _values[p.Name] = mainVal ?? extendedVal;
+                _values[p.Name] = preferExtended ? (extendedVal ?? mainVal) : (mainVal ?? extendedVal);
             }
         }
 

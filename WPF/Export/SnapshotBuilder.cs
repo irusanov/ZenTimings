@@ -340,6 +340,8 @@ namespace ZenTimings.Export
         private SnapshotObject BuildMemory(Cpu cpu)
         {
             MemoryConfig mc = cpu.GetMemoryConfig();
+            // The SPD (manufacturers, PMIC) is read in the background at startup; a snapshot taken right away waits for it
+            mc?.WaitForSpdInfo(5000);
             var smbios = SystemInfo.SMBios;
             var devices = smbios?.MemoryDevices?.Where(d => d.Size > 0).ToList();
             var modules = new List<object>();
@@ -946,19 +948,20 @@ namespace ZenTimings.Export
 
         private object BuildAsusWmi()
         {
-            if (source.AsusSensors == null || source.AsusSensors.Count == 0)
+            AsusWmiHardware asusWmi = source.AsusWmi;
+            if (asusWmi == null || !asusWmi.HasSensors)
             {
                 Missing("readings.asus_wmi", "not_present", "this system has no ASUS sensor interface (WMI class ASUSHW), it only exists on some older ASUS boards");
                 return null;
             }
 
             var result = new List<object>();
-            foreach (var sensor in source.AsusSensors.ToList())
+            foreach (Sensor sensor in asusWmi.Sensors)
             {
                 result.Add(new SnapshotObject()
                     .Add("name", Text(sensor.Name))
-                    .Add("type", sensor.Type.ToString())
-                    .Add("value", Text(sensor.Value)));
+                    .Add("type", asusWmi.GetInfo(sensor)?.Type.ToString())
+                    .Add("value", Text(asusWmi.FormatValue(sensor))));
             }
 
             return result;
@@ -1201,7 +1204,7 @@ namespace ZenTimings.Export
                 // The refresh timings and the way the active one is chosen differ between the generations
                 legend.Add("refresh", ddr4
                     ? "Only one refresh timing is in use: RFC when RefreshMode is NORMAL, otherwise RFC2 or RFC4, FgrMultiplier says which one (2 or 4; FGR is the raw mode, 1/5 = 2x, 2/6 = 4x). RFCns is the active one in nanoseconds."
-                    : "Only one refresh timing is in use: RFC when RefreshMode is NORMAL, otherwise RFC2, together with RFCsb when it is MIXED. RFCns is the active one in nanoseconds (active timing = RFCns x MCLK in GHz), the inactive ones keep their BIOS values.");
+                    : "All-bank refreshes use RFC (FGR 0) or RFC2 (FGR 1) when RefreshMode is NORMAL, FGR or MIXED, same-bank refreshes use RFCsb when it is MIXED or PBONLY. RFCns is the all-bank one in nanoseconds, RFCsb with PBONLY (active timing = RFCns x MCLK in GHz), the inactive ones keep their BIOS values.");
 
                 legend.Add("not_tunable", "PHYRDL, PHYWRL and PHYWRD are results of memory training, a PHYRDL difference between channels is common. SD and DD variants (RDRDSD, RDRDDD, WRWRSD, WRWRDD) only matter with two ranks or two DIMMs per channel.");
 
@@ -1319,7 +1322,7 @@ namespace ZenTimings.Export
                     return hasChip || hasPlugin ? null : "No supported sensor chip was detected on this board";
 
                 case SnapshotSections.AsusWmi:
-                    return source.AsusSensors == null || source.AsusSensors.Count == 0 ? "This system has no ASUS sensor interface (WMI class ASUSHW), it only exists on some older ASUS boards" : null;
+                    return source.AsusWmi == null || !source.AsusWmi.HasSensors ? "This system has no ASUS sensor interface (WMI class ASUSHW), it only exists on some older ASUS boards" : null;
 
                 default:
                     return null;

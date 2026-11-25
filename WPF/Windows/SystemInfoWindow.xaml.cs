@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 using ZenStates.Core.Hardware;
 using ZenStates.Core.Hardware.Aod;
 using ZenStates.Core.Hardware.DRAM;
@@ -33,7 +35,42 @@ namespace ZenTimings.Windows
             public bool IsMismatch { get; set; }
         }
 
-        public SystemInfoWindow(MemoryConfig mc, Resistances? mcConfig, List<AsusSensorInfo> asusSensors)
+        // A row of the ASUS WMI section; the main window's refresh updates the sensors while this window is open
+        private sealed class AsusSensorRow : INotifyPropertyChanged
+        {
+            private string _value;
+
+            public AsusSensorRow(Sensor sensor)
+            {
+                Sensor = sensor;
+                Name = sensor.Name;
+            }
+
+            public Sensor Sensor { get; }
+
+            public string Name { get; }
+
+            public string Value
+            {
+                get => _value;
+                set
+                {
+                    if (_value == value)
+                        return;
+
+                    _value = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
+                }
+            }
+
+            public event PropertyChangedEventHandler PropertyChanged;
+        }
+
+        private readonly AsusWmiHardware asusWmi;
+        private readonly List<AsusSensorRow> asusSensors;
+        private readonly DispatcherTimer asusTimer;
+
+        public SystemInfoWindow(MemoryConfig mc, Resistances? mcConfig, AsusWmiHardware asusWmi)
         {
             InitializeComponent();
             SystemInfo si = CpuSingleton.Instance.systemInfo;
@@ -148,12 +185,30 @@ namespace ZenTimings.Windows
                 // ignored
             }
 
-            //AsusWmiGrid.ItemsSource = asusSensors;
+            this.asusWmi = asusWmi;
+            asusSensors = asusWmi?.Sensors.Select(sensor => new AsusSensorRow(sensor)).ToList();
+            RefreshAsusSensors();
+
+            if (asusSensors != null && asusSensors.Count > 0)
+            {
+                asusTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+                asusTimer.Tick += (sender, args) => RefreshAsusSensors();
+                asusTimer.Start();
+            }
 
             DataContext = new
             {
                 asusSensors
             };
+        }
+
+        private void RefreshAsusSensors()
+        {
+            if (asusSensors == null)
+                return;
+
+            foreach (AsusSensorRow row in asusSensors)
+                row.Value = asusWmi.FormatValue(row.Sensor);
         }
 
         private static List<GridItem> GetItemsFromObject(object obj)
@@ -210,6 +265,8 @@ namespace ZenTimings.Windows
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            asusTimer?.Stop();
+
             AppSettings appSettings = AppSettings.Instance;
             if (appSettings.SaveWindowPosition)
             {

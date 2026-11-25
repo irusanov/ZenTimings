@@ -189,6 +189,10 @@ namespace ZenTimings.Windows
                 {
                     var result = new List<SlotItem>();
 
+                    // The SPD is read in the background at startup; a window opened right away waits for it,
+                    // otherwise an empty dictionary would be reported as no SPD and never retried.
+                    _memoryConfig?.WaitForSpdInfo(5000);
+
                     var spdByAddress = GetSpdEntries();
                     if (spdByAddress == null || spdByAddress.Count == 0)
                         return null;

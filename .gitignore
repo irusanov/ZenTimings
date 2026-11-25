@@ -359,3 +359,5 @@ WPF/Resources/PawnIO/PawnIO_setup.exe
 # ZenTimings crash logs
 crash.log
 crash.old.log
+
+CLAUDE.local.md

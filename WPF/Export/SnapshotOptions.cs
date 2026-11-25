@@ -52,7 +52,8 @@ namespace ZenTimings.Export
     {
         public BiosMemController.Resistances? BiosMemConfig { get; set; }
 
-        public List<AsusSensorInfo> AsusSensors { get; set; }
+        /// <summary>The ASUS WMI sensors; null when the board doesn't have them.</summary>
+        public ZenStates.Core.Hardware.AsusWmiHardware AsusWmi { get; set; }
 
         public List<IPlugin> Plugins { get; set; }
 

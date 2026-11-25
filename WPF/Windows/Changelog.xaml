@@ -51,9 +51,53 @@
                     <!-- TextBlock Text="Changelog" FontSize="14" FontWeight="Bold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" /-->
                     <TextBlock Text="{Binding Version, Mode=OneWay}" FontSize="13" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0,0,0,4" />
 
-                    <controls:ChangelogItem Text="Removed unused code to (hopefully) fix latest AV definitions flagging the release" />
-                    <controls:ChangelogItem Text="Add MAG B650 TOMAHAWK WIFI (MS-7D75) to the supported SuperIO list" />
+                    <TextBlock Text="Application" FontWeight="SemiBold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0,6,0,2" />
+                    <controls:ChangelogItem Text="Send debug reports directly from the Debug dialog" />
+                    <controls:ChangelogItem Text="Debug screenshot and UI improvements" />
+                    <controls:ChangelogItem Text="Modules dropdown stretches to the available width" />
+                    <controls:ChangelogItem Text="Faster startup: SPD and DIMM telemetry are read in the background" />
+                    <controls:ChangelogItem Text="Extended SPD decoding (tCCD groups) and short vendor names for memory modules" />
+                    <controls:ChangelogItem Text="DDR5 / LPDDR5: only the refresh timings in use are highlighted (tRFC, tRFC2, tRFCsb)" />
                     <controls:ChangelogItem Text="Replace beta update option checkbox to a dropdown" />
+                    <controls:ChangelogItem Text="Removed unused code to (hopefully) fix latest AV definitions flagging the release" />
+                    <controls:ChangelogItem Text="Settings are saved atomically, and an unreadable settings file is backed up before it is replaced" />
+                    <controls:ChangelogItem Text="Updater: the window stays responsive while an update downloads, and a failed update is reported" />
+                    <controls:ChangelogItem Text="Warning when enabling autostart from a folder that non-admin users can write to" />
+                    <controls:ChangelogItem Text="Power table readings are invalidated after resume from sleep" />
+                    <controls:ChangelogItem Text="Exit no longer freezes the window while a refresh is finishing" />
+                    <controls:ChangelogItem Text="New APCB window (Advanced mode): the BIOS options stored in the booted APCB with their names and defaults, and the DFE / 2D training options next to the trained values" />
+                    <controls:ChangelogItem Text="The inpoutx64 driver is left installed on exit while another application is using it" />
+                    <controls:ChangelogItem Text="PawnIO install prompt: clearer text, a button that opens the PawnIO GitHub page, shown in the taskbar and no longer kept on top of other windows" />
+                    <controls:ChangelogItem Text="ASUS WMI sensors are shown in the Sensors window on boards that have them" />
+                    <controls:ChangelogItem Text="A window opened from a debug report shows the ASUS WMI sensors captured in it (old and new reports)" />
+                    <controls:ChangelogItem Text="The I/O driver error at startup has a Don't show again button; it can be turned back on in Options" />
+                    <controls:ChangelogItem Text="Sensors window: a section named after the CPU with the measured CPU and memory BCLK" />
+                    <controls:ChangelogItem Text="Sensors window: value columns widen when a value no longer fits, and a sensor without a value yet shows - instead of recording 0" />
+                    <controls:ChangelogItem Text="Sensors window: WHEA error counter (errors logged since boot, updated as Windows logs them)" />
+
+                    <TextBlock Text="Core" FontWeight="SemiBold" Style="{DynamicResource ValueStyles}" Height="auto" HorizontalAlignment="Left" Margin="0,10,0,2" />
+                    <controls:ChangelogItem Text="tRFC is read from the populated DIMM (fixes wrong tRFC2 / tRFC4 with a single DIMM per channel in the second slot)" />
+                    <controls:ChangelogItem Text="APUs: timings and memory frequency follow the active memory P-state" />
+                    <controls:ChangelogItem Text="DDR5: fixed refresh mode detection (Normal, FGR, Mixed, Per-Bank Only) and tRFC in ns" />
+                    <controls:ChangelogItem Text="DDR5: fixed tWRWRSD above 15, BGS and rank detection" />
+                    <controls:ChangelogItem Text="APOB: the active timing block comes from the active memory P-state" />
+                    <controls:ChangelogItem Text="Improved power table refresh and state tracking" />
+                    <controls:ChangelogItem Text="AGESA version: fixed detection from the legacy BIOS region, the BIOS image and SMBIOS, with SMBIOS as the fallback when the region is empty" />
+                    <controls:ChangelogItem Text="APOB: the DF P-state extended table can be refreshed" />
+                    <controls:ChangelogItem Text="Performance improvements and additional null checks" />
+                    <controls:ChangelogItem Text="SuperIO: synced with LHWM, added ROG CROSSHAIR X870E GLACIAL and MAG B650 TOMAHAWK WIFI (MS-7D75), updated ROG STRIX B850-I GAMING WIFI, X670E Hero and Gene" />
+                    <controls:ChangelogItem Text="APCB: the BIOS option tokens are read from the SPI flash on demand and added to the debug report" />
+                    <controls:ChangelogItem Text="APOB: decoded the trained PHY data (S3 replay) and the DRAM training results (PMU message block, TX DFE taps)" />
+                    <controls:ChangelogItem Text="APOB: the table is found from its address in the BIOS image (ROM2 and ROM3 flash windows), with known addresses as the fallback" />
+                    <controls:ChangelogItem Text="APOB: Raven Ridge, Picasso and Dali DDR4 channel timings are decoded" />
+                    <controls:ChangelogItem Text="ASUS WMI sensors moved to the core as a sensor group" />
+                    <controls:ChangelogItem Text="APOB: the PawnIO module and InpOut lookups share a common driver base, selectable by option or in code" />
+                    <controls:ChangelogItem Text="BCLK: the memory side reference clock is measured with the UMC clock counter (AM5, also in asynchronous eCLK mode) or the TSC (AM4, APUs)" />
+                    <controls:ChangelogItem Text="BCLK: eCLK mode (sync / async) is detected from the CPU reference clock selection, fixes async mode not being detected" />
+                    <controls:ChangelogItem Text="MCLK, FCLK, UCLK, memory frequency and timings in ns follow the measured memory BCLK, measured at start and again periodically" />
+                    <controls:ChangelogItem Text="BCLK code moved to its own class, with both measurements in the debug report" />
+                    <controls:ChangelogItem Text="SuperIO: added ROG STRIX X570-E GAMING" />
+                    <controls:ChangelogItem Text="SuperIO: DDR4 VDIMM display should work on Gigabyte X570 AORUS MASTER / ULTRA / PRO, X570 GAMING X, X470 AORUS GAMING 7 WIFI and A320M-S2H" />
                 </StackPanel>
             </Grid>
         </ScrollViewer>

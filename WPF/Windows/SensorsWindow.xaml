@@ -499,7 +499,7 @@
                 <TextBlock x:Name="StatusText" Text="Ready" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" FontSize="11"/>
                 <Button x:Name="BtnSensorSettings" DockPanel.Dock="Right"
                     HorizontalAlignment="Right"
-                    Width="24" Height="24" Padding="0"
+                    Width="28" Padding="0"
                     Margin="6,0,0,0"
                     ToolTip="Manage Sensors"
                     Click="BtnSensorSettings_Click">
@@ -507,7 +507,7 @@
                 </Button>
                 <Button x:Name="BtnResetStats" DockPanel.Dock="Right"
                     HorizontalAlignment="Right"
-                    Content="Reset Stats" Width="80" Height="24"
+                    Content="Reset Stats" Width="80"
                     Click="BtnResetStats_Click"/>
                 <ToggleButton x:Name="ToggleAutoOpen"
                               DockPanel.Dock="Right"

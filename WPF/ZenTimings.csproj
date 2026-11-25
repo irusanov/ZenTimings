@@ -41,7 +41,7 @@
     <ApplicationIcon>Resources\ZenTimings2022.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <VersionMajor>142</VersionMajor>
+    <VersionMajor>143</VersionMajor>
     <VersionMinor>0</VersionMinor>
     <VersionBase>$(VersionMajor)</VersionBase>
   </PropertyGroup>
@@ -79,12 +79,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="..\Common\AsusSensorInfo.cs">
-      <Link>Common\AsusSensorInfo.cs</Link>
-    </Compile>
-    <Compile Include="..\Common\AsusWMI.cs">
-      <Link>Common\AsusWMI.cs</Link>
-    </Compile>
     <Compile Include="..\Common\BiosACPIFunction.cs">
       <Link>Common\BiosACPIFunction.cs</Link>
     </Compile>
@@ -121,12 +115,17 @@
     </Compile>
     <Compile Include="Helpers\DriverCleaner.cs" />
     <Compile Include="Helpers\DriverHelper.cs" />
+    <Compile Include="Helpers\InpOutUsage.cs" />
+    <Compile Include="Helpers\WheaErrorMonitor.cs" />
     <Compile Include="Encryption\UpdaterEncryption.cs" />
     <Compile Include="Common\ObservableObject.cs" />
     <Compile Include="Helpers\DriverCleanerNotification.cs" />
     <Compile Include="Helpers\StartupHelper.cs" />
     <Compile Include="Helpers\SecureDirectoryHelper.cs" />
     <Compile Include="Helpers\CrashLog.cs" />
+    <Compile Include="Helpers\DebugReportSender.cs" />
+    <Compile Include="Helpers\DebugReportGenerator.cs" />
+    <Compile Include="Helpers\ProblemReport.cs" />
     <Compile Include="Utils\VendorUtils.cs" />
     <Compile Include="Utils\VisualCapture.cs" />
     <Compile Include="Utils\ClipboardUtils.cs" />
@@ -171,6 +170,9 @@
     <Compile Include="Windows\ApobInfoWindow.xaml.cs">
       <DependentUpon>ApobInfoWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\ApcbInfoWindow.xaml.cs">
+      <DependentUpon>ApcbInfoWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\SpdPresenter.cs" />
     <Compile Include="Windows\SpdInfoWindow.xaml.cs">
       <DependentUpon>SpdInfoWindow.xaml</DependentUpon>
@@ -211,6 +213,9 @@
     </Compile>
     <Compile Include="Windows\DebugDialog.xaml.cs">
       <DependentUpon>DebugDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\SendReportDialog.xaml.cs">
+      <DependentUpon>SendReportDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\SaveScreenshotWindow.xaml.cs">
       <DependentUpon>SaveScreenshotWindow.xaml</DependentUpon>
@@ -288,6 +293,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Windows\ApobInfoWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\ApcbInfoWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -448,6 +457,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\DriverUpdateWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\SendReportDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

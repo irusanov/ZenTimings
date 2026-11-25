@@ -79,6 +79,7 @@ namespace ZenTimings.Windows
             if (notificationLevelIndex > comboBoxDriverNotification.Items.Count - 1)
                 notificationLevelIndex = comboBoxDriverNotification.Items.Count - 1;
             comboBoxDriverNotification.SelectedIndex = notificationLevelIndex;
+            checkBoxShowInpOutDriverError.IsChecked = settings.ShowInpOutDriverError;
             LoadVoltageSensorSources(settings);
         }
 
@@ -153,6 +154,33 @@ namespace ZenTimings.Windows
             appSettings.AutostartWithWindows = (bool)checkBoxAutostart.IsChecked;
             appSettings.AutostartDelaySeconds = Convert.ToInt32(numericUpDownAutostartDelay.Text);
             appSettings.StartMinimized = (bool)checkBoxStartMinimized.IsChecked;
+
+            // The task runs the exe elevated at every logon; where a normal user can replace it, that hands out
+            // administrator rights. Asked when the task is about to be created, not on every Apply.
+            if (appSettings.AutostartWithWindows && !StartupHelper.IsAutostartEnabled())
+            {
+                string writable = StartupHelper.FindUserWritableLocation();
+                if (writable != null)
+                {
+                    var answer = ZenTimings.Theming.MessageBox.Show(
+                        "The startup task runs ZenTimings with administrator rights at every logon, and " + writable +
+                        " can be changed without them. A program running as your user could replace ZenTimings and " +
+                        "get administrator rights at the next logon.\n\n" +
+                        "Moving ZenTimings to a folder only administrators can write to (for example under Program Files) avoids this.\n\n" +
+                        "Enable the startup task anyway?",
+                        "Startup task",
+                        ZenTimings.Theming.MessageBoxButton.YesNo,
+                        ZenTimings.Theming.MessageBoxImage.Warning);
+
+                    if (answer != ZenTimings.Theming.MessageBoxResult.Yes)
+                    {
+                        appSettings.AutostartWithWindows = false;
+                        checkBoxAutostart.IsChecked = false;
+                        numericUpDownAutostartDelay.IsEnabled = false;
+                    }
+                }
+            }
+
             if (!StartupHelper.SetAutostart(appSettings.AutostartWithWindows, appSettings.AutostartDelaySeconds))
             {
                 // Keep the setting in sync with the actual scheduled task state
@@ -173,6 +201,7 @@ namespace ZenTimings.Windows
                 appSettings.ImpedanceTableSrc = (ImpedanceTableSource)comboBoxImpedanceSource.SelectedIndex;
             appSettings.AutoUninstallDriver = (bool)checkBoxAutoUninstallDriver.IsChecked;
             appSettings.AutoUninstallDriverNotificationLevel = comboBoxDriverNotification.SelectedIndex - 1;
+            appSettings.ShowInpOutDriverError = (bool)checkBoxShowInpOutDriverError.IsChecked;
             if (_mainViewModel.IsVoltageSourceSelectionSupported)
             {
                 appSettings.VsocSensorSource = GetSelectedVoltageSensorSource(comboBoxVsocSensorSource, appSettings.VsocSensorSource);

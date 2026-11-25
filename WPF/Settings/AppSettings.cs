@@ -106,8 +106,10 @@ namespace ZenTimings.Settings
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
+                string backup = BackupUnreadableFile();
                 MessageBox.Show(
-                    "Invalid or outdated settings file!\nSettings will be reset to defaults and any custom settings will be lost.",
+                    "Invalid or outdated settings file!\nSettings will be reset to defaults and any custom settings will be lost." +
+                    (backup != null ? "\n\nThe old file was kept as " + backup : string.Empty),
                     "Error",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
@@ -116,17 +118,38 @@ namespace ZenTimings.Settings
             return Create();
         }
 
+        // The file is replaced with defaults when it can't be read, so the old one is kept for the user to look at or repair
+        private static string BackupUnreadableFile()
+        {
+            try
+            {
+                string backup = Filename + ".bak";
+                File.Copy(Filename, backup, true);
+                return backup;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
         public void Save()
         {
             try
             {
-                if (!DriverHelper.IsPawnIoInstalled)
+                // Without the driver the app does not start, so a file made now would only hold defaults. An existing
+                // one is saved as usual.
+                if (!DriverHelper.IsPawnIoInstalled && !File.Exists(Filename))
+                {
+                    Debug.WriteLine("Settings not saved: PawnIO is not installed and there is no settings file yet.");
                     return;
+                }
 
                 Version = new Version(VersionMajor, VersionMinor).ToString();
 
                 string xmlContent = XmlUtils.SerializeToXml<AppSettings>(this);
-                File.WriteAllText(Filename, xmlContent);
+                XmlUtils.WriteAllTextAtomic(Filename, xmlContent);
             }
             catch (Exception ex)
             {
@@ -258,6 +281,8 @@ namespace ZenTimings.Settings
         public bool StartMinimized { get; set; }
         public bool AutoUninstallDriver { get; set; } = true;
         public int AutoUninstallDriverNotificationLevel { get; set; } = (int)NotificationLevel.All;
+        /// <summary>Show the error at startup when the inpoutx64 driver can't be loaded (e.g. blocked by the system).</summary>
+        public bool ShowInpOutDriverError { get; set; } = true;
         public double WindowLeft { get; set; } = -1;
         public double WindowTop { get; set; } = -1;
         public double SysInfoWindowLeft { get; set; } = -1;
@@ -273,6 +298,7 @@ namespace ZenTimings.Settings
         public double AdvancedTimingsWindowWidth { get; set; }
         public double AdvancedTimingsWindowHeight { get; set; }
         public string NotifiedChangelog { get; set; } = "";
+        public string LastCrashOffered { get; set; } = "";
         public bool SingleInstance { get; set; } = true;
         public bool AutoOpenTelemetry { get; set; } = false;
         public bool ShowUclkRatio { get; set; } = false;

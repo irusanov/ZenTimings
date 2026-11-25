@@ -431,6 +431,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
 
                 <ToggleButton
@@ -458,6 +459,14 @@
                     <ComboBoxItem Content="Errors only" />
                     <ComboBoxItem Content="All" />
                 </ComboBox>
+
+                <ToggleButton
+                    x:Name="checkBoxShowInpOutDriverError"
+                    Grid.Column="0"
+                    Grid.Row="2"
+                    Grid.ColumnSpan="3"
+                    Style="{StaticResource SettingToggle}"
+                    Content="Show error when the driver is not loaded" />
             </Grid>
         </StackPanel>
 

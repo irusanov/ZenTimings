@@ -127,18 +127,24 @@ namespace ZenTimings
                 }
 
                 showingError = true;
+                string logHint = CrashLog.LastPath != null ? $"\n\nDetails were written to {CrashLog.LastPath}" : "";
+                string message = $"An unexpected error occurred: {args.Exception.Message}{logHint}";
                 try
                 {
-                    string logHint = CrashLog.LastPath != null ? $"\n\nDetails were written to {CrashLog.LastPath}" : "";
-                    MessageBox.Show(
-                        $"An unexpected error occurred: {args.Exception.Message}{logHint}",
-                        "ZenTimings",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Error);
+                    // Offers to send a report with the exception attached
+                    ProblemReport.ShowError(message, "ZenTimings", args.Exception);
                 }
                 catch
                 {
-                    // Nothing more can be done if the message box itself fails.
+                    // The themed box or the send dialog failed too (a broken theme): fall back to the plain box
+                    try
+                    {
+                        MessageBox.Show(message, "ZenTimings", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    catch
+                    {
+                        // Nothing more can be done if the message box itself fails.
+                    }
                 }
                 finally
                 {
@@ -174,7 +180,7 @@ namespace ZenTimings
 
                 try
                 {
-                    DriverCleaner.Cleanup(notificationLevel);
+                    DriverCleaner.Cleanup(notificationLevel, GetParentProcessId(e.Args));
                 }
                 finally
                 {
@@ -186,6 +192,15 @@ namespace ZenTimings
             DriverCleanerNotification.WaitForPending();
 
             Environment.Exit(0);
+        }
+
+        // The ZenTimings process that started the cleanup; it may still be exiting while the cleanup
+        // runs, so it must not count as another program using the driver.
+        private static int GetParentProcessId(string[] args)
+        {
+            string value = args.FirstOrDefault(a => a.StartsWith("/parent:", StringComparison.OrdinalIgnoreCase))?.Substring("/parent:".Length);
+
+            return int.TryParse(value, out int parentId) ? parentId : 0;
         }
 
         private static NotificationLevel GetNotificationLevel(string[] args)
@@ -313,6 +328,9 @@ namespace ZenTimings
             {
                 string exePath = Process.GetCurrentProcess().MainModule.FileName;
                 string arguments = "/driver-cleanup /notifications:" + notificationLevel.ToString().ToLowerInvariant();
+
+                using (Process current = Process.GetCurrentProcess())
+                    arguments += " /parent:" + current.Id;
 
                 Process.Start(new ProcessStartInfo
                 {

@@ -74,16 +74,34 @@ namespace ZenTimings.Windows
                 splash.Show();
         }
 
+        // Latest status from a background thread; only the newest one is shown.
+        private static string pendingStatus;
+        private static int updateQueued;
+
         public static void Loading(string status)
         {
             if (isClosed)
                 return;
 
-            splash.Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() =>
+            if (splash.Dispatcher.CheckAccess())
             {
+                // Render-priority flush only paints the new text; it doesn't wait for the dispatcher to go idle.
                 splash.status.Content = status;
                 Refresh(splash.status);
-            }));
+                return;
+            }
+
+            // From other threads: don't block the caller, coalesce overlapping messages.
+            pendingStatus = status;
+            if (Interlocked.Exchange(ref updateQueued, 1) == 0)
+            {
+                splash.Dispatcher.BeginInvoke(DispatcherPriority.Render, new Action(() =>
+                {
+                    Interlocked.Exchange(ref updateQueued, 0);
+                    if (!isClosed)
+                        splash.status.Content = pendingStatus;
+                }));
+            }
         }
 
         /// <summary>
