@@ -85,7 +85,10 @@ namespace ZenTimings
             "CPU VDDIO",
             "VDIMM",
             "VDDIO",
-            "CPU VDDIO Memory"
+            "CPU VDDIO Memory",
+            // Boards with a separate rail per DIMM pair (ROG ZENITH EXTREME, ZENITH II EXTREME)
+            "DIMM A/B",
+            "DIMM C/D"
         };
 
         private readonly string AssemblyProduct = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(
