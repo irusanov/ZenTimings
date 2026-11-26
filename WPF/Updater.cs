@@ -22,6 +22,7 @@ using MessageBoxButtons = ZenTimings.Theming.MessageBoxButtons;
 using MessageBoxImage = ZenTimings.Theming.MessageBoxImage;
 using MessageBoxModel = ZenTimings.Theming.MessageBoxModel;
 using MessageBoxResult = ZenTimings.Theming.MessageBoxResult;
+using ZenTimings.Localization;
 
 namespace ZenTimings
 {
@@ -70,7 +71,7 @@ namespace ZenTimings
         /// <summary>Checks for an update and waits for the answer of the server. Used on startup.</summary>
         public void CheckForUpdate(bool manualUpdate = false, bool suppressNetworkErrorDialog = false)
         {
-            if (!manualUpdate) SplashWindow.Loading("Checking for updates...");
+            if (!manualUpdate) SplashWindow.Loading(UiText.Get("CheckingForUpdates"));
 
             manual = manualUpdate;
 
@@ -123,7 +124,7 @@ namespace ZenTimings
                 {
                     MessageBox.Show(
                         result.BetaWarning,
-                        @"Beta Update Check Failed",
+                        UiText.Get("BetaUpdateCheckFailed"),
                         MessageBoxButton.OK,
                         MessageBoxImage.Warning);
                 }
@@ -143,7 +144,7 @@ namespace ZenTimings
 
                 if (!suppressNetworkErrorDialog)
                 {
-                    string message = "There is a problem reaching the update server. Please check your internet connection and try again later.";
+                    string message = UiText.Get("UpdateServerUnavailable");
                     ShowCheckFailed(message);
                 }
                 //else
@@ -170,7 +171,7 @@ namespace ZenTimings
 
                 //if (manual)
                 {
-                    ShowCheckFailed($"An error occurred while checking for updates:\n{ex.Message}");
+                    ShowCheckFailed(UiText.Format("UpdateCheckError", ex.Message));
                 }
                 //else
                 //{
@@ -185,7 +186,7 @@ namespace ZenTimings
         /// </summary>
         private static void ShowCheckFailed(string message)
         {
-            const string caption = "Update Check Failed";
+            string caption = UiText.Get("UpdateCheckFailed");
             AppSettings settings = AppSettings.Instance;
 
             if (manual || !settings.CheckForUpdates)
@@ -196,12 +197,12 @@ namespace ZenTimings
 
             var model = new MessageBoxModel
             {
-                Text = message + "\n\nThe check on startup can be turned off here, and back on in Options.",
+                Text = message + UiText.Get("UpdateCheckSettingsHint"),
                 Caption = caption,
                 Icon = MessageBoxImage.Error,
                 Buttons = new[]
                 {
-                    MessageBoxButtons.Custom("Don't check on startup", DisableCheckButtonId),
+                    MessageBoxButtons.Custom(UiText.Get("DontCheckOnStartup"), DisableCheckButtonId),
                     MessageBoxButtons.Ok(),
                 },
             };
@@ -267,7 +268,7 @@ namespace ZenTimings
                     throw;
 
                 result.BetaWarning = ex.Message + Environment.NewLine + Environment.NewLine +
-                    "The beta channel was skipped; checking the stable channel only.";
+                    UiText.Get("BetaChannelSkipped");
             }
             catch (Exception ex)
             {
@@ -300,11 +301,7 @@ namespace ZenTimings
 
                 if (!UpdaterSignature.Verify(xmlData, signature))
                 {
-                    throw new CryptographicException(
-                        "Update metadata signature verification failed. " +
-                        "The update XML may have been tampered with. " +
-                        Environment.NewLine +
-                        "The update has been cancelled for security reasons.");
+                    throw new CryptographicException(UiText.Get("UpdateMetadataSignatureInvalid"));
                 }
 
                 string xml = Encoding.UTF8.GetString(xmlData);
@@ -416,7 +413,7 @@ namespace ZenTimings
             progressWindow.CloseFromUpdater();
             MessageBox.Show(
                 message,
-                "Update Failed",
+                UiText.Get("UpdateFailed"),
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
         }
@@ -431,7 +428,7 @@ namespace ZenTimings
             using (var client = new TimeoutWebClient())
             {
                 // Download checksum and signature first (small files, fail early)
-                progressWindow.SetIndeterminate("Downloading verification files...");
+                progressWindow.SetIndeterminate(UiText.Get("DownloadingVerificationFiles"));
 
                 try
                 {
@@ -441,8 +438,8 @@ namespace ZenTimings
                 catch (WebException)
                 {
                     ShowUpdateFailed(progressWindow,
-                        "Could not download the checksum file.\n" +
-                        "The update has been cancelled for security reasons.");
+                        UiText.Get("ChecksumDownloadFailed") +
+                        UiText.Get("UpdateCancelledForSecurity"));
                     return false;
                 }
 
@@ -456,8 +453,8 @@ namespace ZenTimings
                 catch (WebException)
                 {
                     ShowUpdateFailed(progressWindow,
-                        "Could not download the signature file.\n" +
-                        "The update has been cancelled for security reasons.");
+                        UiText.Get("SignatureDownloadFailed") +
+                        UiText.Get("UpdateCancelledForSecurity"));
                     return false;
                 }
 
@@ -467,8 +464,8 @@ namespace ZenTimings
                 // Download the update zip into memory with progress reporting.
                 // The same bytes are verified and extracted, so nothing can be
                 // swapped on disk between verification and use.
-                progressWindow.SetStatus("Downloading update...");
-                progressWindow.SetProgress(0, "Connecting...");
+                progressWindow.SetStatus(UiText.Get("DownloadingUpdate"));
+                progressWindow.SetProgress(0, UiText.Get("Connecting"));
 
                 var downloadFrame = new DispatcherFrame();
                 Exception downloadError = null;
@@ -529,7 +526,7 @@ namespace ZenTimings
                 if (downloadError != null || downloadedData == null)
                 {
                     ShowUpdateFailed(progressWindow,
-                        $"Failed to download the update:\n{downloadError?.Message ?? "No data received."}");
+                        UiText.Format("UpdateDownloadFailed", downloadError?.Message ?? UiText.Get("NoUpdateData")));
                     return false;
                 }
 
@@ -537,31 +534,31 @@ namespace ZenTimings
             }
 
             // Verify checksum
-            progressWindow.SetIndeterminate("Verifying checksum...");
+            progressWindow.SetIndeterminate(UiText.Get("VerifyingChecksum"));
 
             string actualHash = ComputeHash(zipData, "SHA256");
             if (!string.Equals(actualHash, expectedHash, StringComparison.OrdinalIgnoreCase))
             {
                 ShowUpdateFailed(progressWindow,
-                    "Update verification failed. The downloaded file checksum does not match the expected value.\n" +
-                    "The update has been cancelled for security reasons.");
+                    UiText.Get("UpdateChecksumMismatch") +
+                    UiText.Get("UpdateCancelledForSecurity"));
                 return false;
             }
 
             // Verify RSA signature
-            progressWindow.SetIndeterminate("Verifying digital signature...");
+            progressWindow.SetIndeterminate(UiText.Get("VerifyingSignature"));
 
             if (!UpdaterSignature.Verify(zipData, zipSignature))
             {
                 ShowUpdateFailed(progressWindow,
-                    "Update signature verification failed. The downloaded file may have been tampered with.\n" +
-                    "The update has been cancelled for security reasons.");
+                    UiText.Get("UpdateSignatureInvalid") +
+                    UiText.Get("UpdateCancelledForSecurity"));
                 return false;
             }
 
             // Extract the verified bytes into a fresh directory that only
             // Administrators/SYSTEM can modify (the update script runs elevated).
-            progressWindow.SetIndeterminate("Extracting update...");
+            progressWindow.SetIndeterminate(UiText.Get("ExtractingUpdate"));
 
             string workDir = SecureDirectoryHelper.CreateAdminOnlyDirectory("Update");
             string extractDir = Path.Combine(workDir, "extracted");
@@ -586,15 +583,15 @@ namespace ZenTimings
             }
 
             // Anti-downgrade: verify the extracted exe is actually newer than what's installed
-            progressWindow.SetIndeterminate("Verifying update...");
+            progressWindow.SetIndeterminate(UiText.Get("VerifyingUpdate"));
 
             string extractedExe = Path.Combine(sourceDir, "ZenTimings.exe");
             if (!File.Exists(extractedExe))
             {
                 CleanupTempDir(workDir);
                 ShowUpdateFailed(progressWindow,
-                    "The downloaded update does not contain ZenTimings.exe.\n" +
-                    "The update has been cancelled.");
+                    UiText.Get("UpdateExeMissing") +
+                    UiText.Get("UpdateCancelled"));
                 return false;
             }
 
@@ -605,13 +602,13 @@ namespace ZenTimings
             {
                 CleanupTempDir(workDir);
                 ShowUpdateFailed(progressWindow,
-                    $"The downloaded version ({extractedVersion}) is not newer than the installed version ({installedVersion}).\n" +
-                    "The update has been cancelled for security reasons.");
+                    UiText.Format("UpdateNotNewer", extractedVersion, installedVersion) +
+                    UiText.Get("UpdateCancelledForSecurity"));
                 return false;
             }
 
             // Create and run update batch script (in the same protected directory)
-            progressWindow.SetIndeterminate("Applying update...");
+            progressWindow.SetIndeterminate(UiText.Get("ApplyingUpdate"));
 
             string appDir = AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\');
             int pid = Process.GetCurrentProcess().Id;

@@ -1,0 +1,2009 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="About" xml:space="preserve">
+    <value>关于</value>
+  </data>
+  <data name="AboutMenu" xml:space="preserve">
+    <value>关于(_A)</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>当前</value>
+  </data>
+  <data name="ActiveApcbInstance" xml:space="preserve">
+    <value>当前 APCB 实例</value>
+  </data>
+  <data name="ActiveMemoryClock" xml:space="preserve">
+    <value>当前 MemClk</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>地址</value>
+  </data>
+  <data name="AddressRange" xml:space="preserve">
+    <value>地址范围</value>
+  </data>
+  <data name="AddressUnavailableFromFile" xml:space="preserve">
+    <value>不可用（从文件加载）</value>
+  </data>
+  <data name="Addressing" xml:space="preserve">
+    <value>寻址</value>
+  </data>
+  <data name="AdvancedInfo" xml:space="preserve">
+    <value>高级信息</value>
+  </data>
+  <data name="AdvancedMode" xml:space="preserve">
+    <value>高级模式</value>
+  </data>
+  <data name="AdvancedTimings" xml:space="preserve">
+    <value>高级时序</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>全部</value>
+  </data>
+  <data name="AllChannelsSideBySide" xml:space="preserve">
+    <value>并排显示所有通道</value>
+  </data>
+  <data name="AllDimmsSnapshot" xml:space="preserve">
+    <value>所有内存条（快照）</value>
+  </data>
+  <data name="AllDimmsTitle" xml:space="preserve">
+    <value>{0} - 所有内存条</value>
+  </data>
+  <data name="Am5BiosList" xml:space="preserve">
+    <value>AM5 AGESA/UEFI/BIOS 列表（Reous）</value>
+  </data>
+  <data name="AnyReleaseChannel" xml:space="preserve">
+    <value>不限</value>
+  </data>
+  <data name="AnyReleaseChannelHint" xml:space="preserve">
+    <value>同时检查稳定版和测试版，提示较新的版本</value>
+  </data>
+  <data name="AodTable" xml:space="preserve">
+    <value>AOD 表</value>
+  </data>
+  <data name="ApcbDisplayFailed" xml:space="preserve">
+    <value>无法显示 APCB：</value>
+  </data>
+  <data name="ApcbImages" xml:space="preserve">
+    <value>APCB 镜像（SPI 闪存）</value>
+  </data>
+  <data name="ApcbInfo" xml:space="preserve">
+    <value>APCB 信息</value>
+  </data>
+  <data name="ApcbLiveSystemOnly" xml:space="preserve">
+    <value>仅支持从当前运行的系统读取 APCB。</value>
+  </data>
+  <data name="ApcbNamedOptionsCount" xml:space="preserve">
+    <value>{0} 项（{1} 项有名称）</value>
+  </data>
+  <data name="ApcbNeedsApob" xml:space="preserve">
+    <value>当前系统没有可用的 APOB 表，无法定位 APCB。</value>
+  </data>
+  <data name="ApcbNotFound" xml:space="preserve">
+    <value>在 BIOS 目录中未找到 APCB。</value>
+  </data>
+  <data name="ApcbOptionsHint" xml:space="preserve">
+    <value>设为“自动”的选项不会写入 APCB。列表仅显示在 BIOS 中手动设置或由主板预设写入的选项。</value>
+  </data>
+  <data name="ApcbReadFailed" xml:space="preserve">
+    <value>无法读取 APCB：</value>
+  </data>
+  <data name="ApcbSetOptions" xml:space="preserve">
+    <value>已设置的选项</value>
+  </data>
+  <data name="ApcbTokenDescription" xml:space="preserve">
+    <value>标识 0x{0:X8}，{1}，实例 {2}，优先级掩码 0x{3:X2}</value>
+  </data>
+  <data name="ApobBiosCopy" xml:space="preserve">
+    <value>APOB（BIOS 副本）</value>
+  </data>
+  <data name="ApobDump" xml:space="preserve">
+    <value>APOB 转储</value>
+  </data>
+  <data name="ApobDumpError" xml:space="preserve">
+    <value>APOB 转储失败</value>
+  </data>
+  <data name="ApobDumpFailed" xml:space="preserve">
+    <value>转储 APOB 时出错：
+{0}</value>
+  </data>
+  <data name="ApobDumpSaved" xml:space="preserve">
+    <value>APOB 表已导出到：
+{0}</value>
+  </data>
+  <data name="ApobEntries" xml:space="preserve">
+    <value>APOB 条目</value>
+  </data>
+  <data name="ApobEntriesCount" xml:space="preserve">
+    <value>{0} 个（{1} 个已加密）</value>
+  </data>
+  <data name="ApobEntryCount" xml:space="preserve">
+    <value>{0} 个条目</value>
+  </data>
+  <data name="ApobFileFilter" xml:space="preserve">
+    <value>二进制文件 (*.bin)|*.bin|APOB 文件 (*.apob)|*.apob|所有文件 (*.*)|*.*</value>
+  </data>
+  <data name="ApobInfo" xml:space="preserve">
+    <value>APOB 信息</value>
+  </data>
+  <data name="ApobTable" xml:space="preserve">
+    <value>APOB 表</value>
+  </data>
+  <data name="ApobTableUnavailable" xml:space="preserve">
+    <value>当前系统没有可用的 APOB 表。</value>
+  </data>
+  <data name="ApobUnavailable" xml:space="preserve">
+    <value>当前系统没有可用的 APOB 表。</value>
+  </data>
+  <data name="AppClosedUnexpectedly" xml:space="preserve">
+    <value>ZenTimings 意外关闭</value>
+  </data>
+  <data name="AppUpToDate" xml:space="preserve">
+    <value>ZenTimings 已是最新版本。</value>
+  </data>
+  <data name="AppWindow" xml:space="preserve">
+    <value>程序窗口</value>
+  </data>
+  <data name="Appearance" xml:space="preserve">
+    <value>外观</value>
+  </data>
+  <data name="Application" xml:space="preserve">
+    <value>应用程序</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>应用</value>
+  </data>
+  <data name="ApplyingUpdate" xml:space="preserve">
+    <value>正在应用更新…</value>
+  </data>
+  <data name="AsusWmiSensors" xml:space="preserve">
+    <value>ASUS WMI 传感器</value>
+  </data>
+  <data name="AtLeastTwoDfeTaps" xml:space="preserve">
+    <value>至少 2 个（抽头 2 已训练）</value>
+  </data>
+  <data name="AutoFit" xml:space="preserve">
+    <value>自动调整大小</value>
+  </data>
+  <data name="AutoFitTimingsHint" xml:space="preserve">
+    <value>根据搜索结果和“仅显示差异”筛选，调整窗口大小以显示所有匹配的时序。优先增加窗口高度，单列放不下时再并排增加列。</value>
+  </data>
+  <data name="AutoOpen" xml:space="preserve">
+    <value>自动打开</value>
+  </data>
+  <data name="AutoRefresh" xml:space="preserve">
+    <value>自动刷新</value>
+  </data>
+  <data name="AutoRefreshOff" xml:space="preserve">
+    <value>自动刷新已关闭</value>
+  </data>
+  <data name="AutoValueNotInApcb" xml:space="preserve">
+    <value>未写入 APCB（自动）</value>
+  </data>
+  <data name="Automatic" xml:space="preserve">
+    <value>自动</value>
+  </data>
+  <data name="AutomaticWithValue" xml:space="preserve">
+    <value>自动（{0}）</value>
+  </data>
+  <data name="AutostartOnLogon" xml:space="preserve">
+    <value>登录时启动</value>
+  </data>
+  <data name="AutostartWritablePathWarning" xml:space="preserve">
+    <value>启动任务会在每次登录时以管理员权限运行 ZenTimings。普通用户可以修改 {0}，以你的用户身份运行的程序也可能替换 ZenTimings，并在你下次登录时取得管理员权限。
+
+请将 ZenTimings 移至仅管理员可写入的文件夹，例如 Program Files 下的文件夹。
+
+是否仍要启用启动任务？</value>
+  </data>
+  <data name="AvailableVersion" xml:space="preserve">
+    <value>可用版本：</value>
+  </data>
+  <data name="Average" xml:space="preserve">
+    <value>平均值</value>
+  </data>
+  <data name="BackupApcbDefaults" xml:space="preserve">
+    <value>默认值（来自备用 APCB）</value>
+  </data>
+  <data name="Banks" xml:space="preserve">
+    <value>Bank 数量</value>
+  </data>
+  <data name="BaseAddress" xml:space="preserve">
+    <value>基址</value>
+  </data>
+  <data name="Beta" xml:space="preserve">
+    <value>测试版</value>
+  </data>
+  <data name="BetaBadge" xml:space="preserve">
+    <value>测试版</value>
+  </data>
+  <data name="BetaChannelSkipped" xml:space="preserve">
+    <value>已跳过测试版渠道，仅检查稳定版更新。</value>
+  </data>
+  <data name="BetaOnly" xml:space="preserve">
+    <value>仅检查测试版</value>
+  </data>
+  <data name="BetaUpdateAvailable" xml:space="preserve">
+    <value>发现测试版更新</value>
+  </data>
+  <data name="BetaUpdateCheckFailed" xml:space="preserve">
+    <value>检查测试版更新失败</value>
+  </data>
+  <data name="BetaVersionNumber" xml:space="preserve">
+    <value>版本 {0}（测试版）</value>
+  </data>
+  <data name="BiosApcb" xml:space="preserve">
+    <value>BIOS（APCB）</value>
+  </data>
+  <data name="BiosOptions" xml:space="preserve">
+    <value>BIOS 选项（启动时使用的 APCB）</value>
+  </data>
+  <data name="BootedApcbInstance" xml:space="preserve">
+    <value>启动时使用的 APCB 实例</value>
+  </data>
+  <data name="BootedApcbNotFound" xml:space="preserve">
+    <value>（闪存中未找到，正在列出所有可写入的 APCB）</value>
+  </data>
+  <data name="BootedApcbUnknown" xml:space="preserve">
+    <value>未知（正在列出所有可写入的 APCB）</value>
+  </data>
+  <data name="Browse" xml:space="preserve">
+    <value>浏览</value>
+  </data>
+  <data name="BrowseEllipsis" xml:space="preserve">
+    <value>浏览…</value>
+  </data>
+  <data name="BundledPawnIoMissing" xml:space="preserve">
+    <value>找不到随程序附带的 PawnIO 安装程序。</value>
+  </data>
+  <data name="Burst" xml:space="preserve">
+    <value>突发长度</value>
+  </data>
+  <data name="BusWidth" xml:space="preserve">
+    <value>总线位宽</value>
+  </data>
+  <data name="ByteCount" xml:space="preserve">
+    <value>{0} 字节</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Capacity" xml:space="preserve">
+    <value>容量</value>
+  </data>
+  <data name="ChangedFromDefault" xml:space="preserve">
+    <value>与默认值不同</value>
+  </data>
+  <data name="Changelog" xml:space="preserve">
+    <value>更新日志</value>
+  </data>
+  <data name="ChangelogAgesa" xml:space="preserve">
+    <value>修复从传统 BIOS 区域、BIOS 镜像和 SMBIOS 读取 AGESA 版本的问题。BIOS 区域为空时，改用 SMBIOS 提供的版本。</value>
+  </data>
+  <data name="ChangelogAntivirus" xml:space="preserve">
+    <value>移除未使用的代码，尝试减少新版杀毒软件规则造成的误报。</value>
+  </data>
+  <data name="ChangelogApcbDebugReport" xml:space="preserve">
+    <value>APCB：按需从 SPI 闪存读取 BIOS 选项标识，并将其添加到调试报告。</value>
+  </data>
+  <data name="ChangelogApcbWindow" xml:space="preserve">
+    <value>高级模式新增 APCB 窗口，可查看启动时使用的 APCB 中的 BIOS 选项及默认值，并对照 DFE／2D 训练设置与训练结果。</value>
+  </data>
+  <data name="ChangelogApobAddress" xml:space="preserve">
+    <value>APOB：优先按 BIOS 镜像（ROM2 和 ROM3 闪存窗口）中的地址查找数据表，找不到时尝试已知地址。</value>
+  </data>
+  <data name="ChangelogApobDdr4" xml:space="preserve">
+    <value>APOB：支持解析 Raven Ridge、Picasso 和 Dali 的 DDR4 通道时序。</value>
+  </data>
+  <data name="ChangelogApobDfPstate" xml:space="preserve">
+    <value>APOB：支持刷新 DF P-state 扩展表。</value>
+  </data>
+  <data name="ChangelogApobDriver" xml:space="preserve">
+    <value>APOB：PawnIO 模块和 InpOut 查询共用驱动基类，可在选项或代码中选择。</value>
+  </data>
+  <data name="ChangelogApobTimingBlock" xml:space="preserve">
+    <value>APOB：根据当前内存 P-state 选择对应的时序块。</value>
+  </data>
+  <data name="ChangelogApobTraining" xml:space="preserve">
+    <value>APOB：支持解析训练后的 PHY 数据（S3 恢复数据）和 DRAM 训练结果（PMU 消息块、TX DFE 抽头）。</value>
+  </data>
+  <data name="ChangelogApuPstate" xml:space="preserve">
+    <value>APU：时序和内存频率随当前内存 P-state 变化。</value>
+  </data>
+  <data name="ChangelogBackgroundSpd" xml:space="preserve">
+    <value>在后台读取 SPD 和内存条监控数据，加快启动速度。</value>
+  </data>
+  <data name="ChangelogBclkClass" xml:space="preserve">
+    <value>BCLK 测量代码移至独立类，调试报告会包含两项测量结果。</value>
+  </data>
+  <data name="ChangelogBclkMemory" xml:space="preserve">
+    <value>BCLK：AM5 使用 UMC 时钟计数器测量内存参考时钟，支持异步 eCLK。AM4 和 APU 使用 TSC。</value>
+  </data>
+  <data name="ChangelogBclkMode" xml:space="preserve">
+    <value>BCLK：根据 CPU 参考时钟设置识别 eCLK 模式（同步或异步），修复无法识别异步模式的问题。</value>
+  </data>
+  <data name="ChangelogBclkSensors" xml:space="preserve">
+    <value>传感器窗口新增以处理器命名的分组，显示实测 CPU 和内存 BCLK。</value>
+  </data>
+  <data name="ChangelogBclkValues" xml:space="preserve">
+    <value>MCLK、FCLK、UCLK、内存频率和以纳秒表示的时序均按实测内存 BCLK 计算。程序启动时测量一次，之后定期重新测量。</value>
+  </data>
+  <data name="ChangelogDdr5TimingDetection" xml:space="preserve">
+    <value>DDR5：修复 tWRWRSD 大于 15 时的读数，以及 BGS 和 Rank 识别。</value>
+  </data>
+  <data name="ChangelogDebugUi" xml:space="preserve">
+    <value>改进调试截图和界面。</value>
+  </data>
+  <data name="ChangelogExit" xml:space="preserve">
+    <value>修复在刷新即将完成时退出导致的窗口卡死。</value>
+  </data>
+  <data name="ChangelogHideDriverError" xml:space="preserve">
+    <value>启动时的 I/O 驱动错误提示新增“不再显示”按钮，可在设置中重新开启。</value>
+  </data>
+  <data name="ChangelogKeepDriverInUse" xml:space="preserve">
+    <value>退出时如果其他程序仍在使用 inpoutx64 驱动，将保留该驱动。</value>
+  </data>
+  <data name="ChangelogModulesDropdown" xml:space="preserve">
+    <value>内存条下拉列表会自动占满可用宽度。</value>
+  </data>
+  <data name="ChangelogNotFound" xml:space="preserve">
+    <value>找不到更新日志：{0}</value>
+  </data>
+  <data name="ChangelogPawnIoPrompt" xml:space="preserve">
+    <value>改进 PawnIO 安装提示，新增打开 GitHub 项目页的按钮。提示窗口会显示在任务栏，且无需始终置顶。</value>
+  </data>
+  <data name="ChangelogPerformance" xml:space="preserve">
+    <value>优化性能，并增加空值检查。</value>
+  </data>
+  <data name="ChangelogPowerTableRefresh" xml:space="preserve">
+    <value>改进功耗表的刷新和状态跟踪。</value>
+  </data>
+  <data name="ChangelogPowerTableResume" xml:space="preserve">
+    <value>从睡眠恢复后，旧的功耗表读数将标记为无效。</value>
+  </data>
+  <data name="ChangelogRefreshDetection" xml:space="preserve">
+    <value>DDR5：修复刷新模式（普通、FGR、混合、仅按 Bank）识别和 tRFC 纳秒值计算。</value>
+  </data>
+  <data name="ChangelogRefreshHighlight" xml:space="preserve">
+    <value>DDR5 / LPDDR5：仅高亮当前使用的刷新时序（tRFC、tRFC2、tRFCsb）。</value>
+  </data>
+  <data name="ChangelogReleaseChannel" xml:space="preserve">
+    <value>将测试版更新复选框改为更新渠道下拉框。</value>
+  </data>
+  <data name="ChangelogReportWmi" xml:space="preserve">
+    <value>从调试报告打开的窗口会显示报告中记录的 ASUS WMI 传感器，兼容新旧报告。</value>
+  </data>
+  <data name="ChangelogRfcDimm" xml:space="preserve">
+    <value>从实际插有内存条的槽位读取 tRFC，修复每通道仅在第二个插槽插有内存时 tRFC2／tRFC4 读数错误的问题。</value>
+  </data>
+  <data name="ChangelogSendDebugReport" xml:space="preserve">
+    <value>可直接从调试窗口发送报告。</value>
+  </data>
+  <data name="ChangelogSensorColumns" xml:space="preserve">
+    <value>传感器窗口的数值列会自动加宽。尚无读数的传感器显示“-”，并跳过此次统计。</value>
+  </data>
+  <data name="ChangelogSettingsBackup" xml:space="preserve">
+    <value>设置文件会以原子方式保存。无法读取的设置文件会先备份，再恢复为默认设置。</value>
+  </data>
+  <data name="ChangelogSpdVendors" xml:space="preserve">
+    <value>扩展 SPD 解析（tCCD 组），并简化内存条厂商名称。</value>
+  </data>
+  <data name="ChangelogStartupWarning" xml:space="preserve">
+    <value>从普通用户可写入的文件夹启用自动启动时会显示警告。</value>
+  </data>
+  <data name="ChangelogSuperIoBoards" xml:space="preserve">
+    <value>Super I/O：与 LHWM 同步，新增 ROG CROSSHAIR X870E GLACIAL 和 MAG B650 TOMAHAWK WIFI（MS-7D75）支持，并更新 ROG STRIX B850-I GAMING WIFI、X670E Hero 和 Gene 的支持。</value>
+  </data>
+  <data name="ChangelogSuperIoVdimm" xml:space="preserve">
+    <value>Super I/O：改进技嘉 X570 AORUS MASTER / ULTRA / PRO、X570 GAMING X、X470 AORUS GAMING 7 WIFI 和 A320M-S2H 的 DDR4 VDIMM 读数显示。</value>
+  </data>
+  <data name="ChangelogSuperIoX570E" xml:space="preserve">
+    <value>Super I/O：新增 ROG STRIX X570-E GAMING 支持。</value>
+  </data>
+  <data name="ChangelogUpdater" xml:space="preserve">
+    <value>下载更新时窗口可继续操作，更新失败时会显示提示。</value>
+  </data>
+  <data name="ChangelogWheaCounter" xml:space="preserve">
+    <value>传感器窗口新增 WHEA 错误计数，实时统计 Windows 自开机以来记录的错误。</value>
+  </data>
+  <data name="ChangelogWmiSensorGroup" xml:space="preserve">
+    <value>ASUS WMI 传感器已作为独立分组移至核心库。</value>
+  </data>
+  <data name="ChangelogWmiSensors" xml:space="preserve">
+    <value>支持 ASUS WMI 的主板会在传感器窗口中显示相应的传感器。</value>
+  </data>
+  <data name="ChannelInterleave" xml:space="preserve">
+    <value>通道交错</value>
+  </data>
+  <data name="ChannelTimings" xml:space="preserve">
+    <value>通道时序</value>
+  </data>
+  <data name="CheckForUpdate" xml:space="preserve">
+    <value>检查更新</value>
+  </data>
+  <data name="CheckForUpdates" xml:space="preserve">
+    <value>检查更新</value>
+  </data>
+  <data name="Checking" xml:space="preserve">
+    <value>正在检查…</value>
+  </data>
+  <data name="CheckingForUpdates" xml:space="preserve">
+    <value>正在检查更新…</value>
+  </data>
+  <data name="Checksum" xml:space="preserve">
+    <value>校验和</value>
+  </data>
+  <data name="ChecksumDownloadFailed" xml:space="preserve">
+    <value>无法下载校验和文件。
+</value>
+  </data>
+  <data name="ChooseExportSections" xml:space="preserve">
+    <value>选择要导出的内容</value>
+  </data>
+  <data name="ChooseVisibleSensors" xml:space="preserve">
+    <value>选择要显示的传感器</value>
+  </data>
+  <data name="Class" xml:space="preserve">
+    <value>类别</value>
+  </data>
+  <data name="Clipboard" xml:space="preserve">
+    <value>剪贴板</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="CodeContributors" xml:space="preserve">
+    <value>代码贡献者：mann1x、Erruar、tsg2k2、deadfellow34、b1zya</value>
+  </data>
+  <data name="Collecting" xml:space="preserve">
+    <value>正在收集…</value>
+  </data>
+  <data name="CollectingSystemInfo" xml:space="preserve">
+    <value>正在收集系统信息…</value>
+  </data>
+  <data name="Components" xml:space="preserve">
+    <value>组件</value>
+  </data>
+  <data name="ConfiguredSpeed" xml:space="preserve">
+    <value>设定速率</value>
+  </data>
+  <data name="ConfiguredVoltage" xml:space="preserve">
+    <value>设定电压</value>
+  </data>
+  <data name="ConfirmAppUpdate" xml:space="preserve">
+    <value>是否立即更新？</value>
+  </data>
+  <data name="ConfirmResetSettings" xml:space="preserve">
+    <value>是否将所有设置恢复为默认值？</value>
+  </data>
+  <data name="ConfirmResetTitle" xml:space="preserve">
+    <value>恢复默认设置</value>
+  </data>
+  <data name="Connecting" xml:space="preserve">
+    <value>正在连接…</value>
+  </data>
+  <data name="Continue" xml:space="preserve">
+    <value>继续</value>
+  </data>
+  <data name="CopiedCharacterCount" xml:space="preserve">
+    <value>已复制到剪贴板（{0} 个字符）。</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>复制</value>
+  </data>
+  <data name="CopyFailed" xml:space="preserve">
+    <value>无法复制：{0}</value>
+  </data>
+  <data name="CopyReferenceId" xml:space="preserve">
+    <value>复制报告编号</value>
+  </data>
+  <data name="CopyScreenshotFailed" xml:space="preserve">
+    <value>无法将截图复制到剪贴板：{0}</value>
+  </data>
+  <data name="CopySelectedTab" xml:space="preserve">
+    <value>将当前选项卡的内容复制到剪贴板</value>
+  </data>
+  <data name="CopyToClipboard" xml:space="preserve">
+    <value>复制到剪贴板</value>
+  </data>
+  <data name="CopyVisibleTimings" xml:space="preserve">
+    <value>将当前显示的时序复制到剪贴板</value>
+  </data>
+  <data name="Core" xml:space="preserve">
+    <value>核心库</value>
+  </data>
+  <data name="CoreLoading" xml:space="preserve">
+    <value>核心库：{0}</value>
+  </data>
+  <data name="CoreMap" xml:space="preserve">
+    <value>核心分布</value>
+  </data>
+  <data name="CornerRadius" xml:space="preserve">
+    <value>窗口圆角（Win 11）</value>
+  </data>
+  <data name="CrashLogLocation" xml:space="preserve">
+    <value>
+
+详细信息已写入 {0}</value>
+  </data>
+  <data name="CreateDebugReportMenu" xml:space="preserve">
+    <value>创建、保存或发送调试报告(_C)…</value>
+  </data>
+  <data name="Current" xml:space="preserve">
+    <value>当前值</value>
+  </data>
+  <data name="CurrentReadings" xml:space="preserve">
+    <value>当前读数</value>
+  </data>
+  <data name="CurrentVersion" xml:space="preserve">
+    <value>当前版本：</value>
+  </data>
+  <data name="Cycles" xml:space="preserve">
+    <value>周期数</value>
+  </data>
+  <data name="DataA" xml:space="preserve">
+    <value>数据 A</value>
+  </data>
+  <data name="DataB" xml:space="preserve">
+    <value>数据 B</value>
+  </data>
+  <data name="DataRate" xml:space="preserve">
+    <value>数据速率</value>
+  </data>
+  <data name="Debug" xml:space="preserve">
+    <value>调试</value>
+  </data>
+  <data name="DebugMenu" xml:space="preserve">
+    <value>调试(_D)</value>
+  </data>
+  <data name="DebugReport" xml:space="preserve">
+    <value>调试报告</value>
+  </data>
+  <data name="DebugReportGenerationFailed" xml:space="preserve">
+    <value>生成调试报告时出错：
+{0}</value>
+  </data>
+  <data name="DebugReportInstructions" xml:space="preserve">
+    <value>点击“调试”生成报告。</value>
+  </data>
+  <data name="DebugReportSaveFailed" xml:space="preserve">
+    <value>无法将调试报告保存到 {0}：
+{1}</value>
+  </data>
+  <data name="DebugReportSaved" xml:space="preserve">
+    <value>调试报告已保存到 {0}</value>
+  </data>
+  <data name="DebugReportTimedOut" xml:space="preserve">
+    <value>生成调试报告超时，已显示目前收集的信息。</value>
+  </data>
+  <data name="DebugReportVersion" xml:space="preserve">
+    <value>调试报告 v{0}</value>
+  </data>
+  <data name="DebugReportWindow" xml:space="preserve">
+    <value>调试报告窗口</value>
+  </data>
+  <data name="Decrease" xml:space="preserve">
+    <value>减小</value>
+  </data>
+  <data name="Default" xml:space="preserve">
+    <value>默认</value>
+  </data>
+  <data name="DefaultRadius" xml:space="preserve">
+    <value>默认圆角</value>
+  </data>
+  <data name="DefaultTokens" xml:space="preserve">
+    <value>默认标识</value>
+  </data>
+  <data name="DeleteLiveFileOnExit" xml:space="preserve">
+    <value>退出 ZenTimings 时删除文件</value>
+  </data>
+  <data name="DeleteLiveSnapshot" xml:space="preserve">
+    <value>实时快照已关闭。
+
+是否删除已写入的文件？
+{0}</value>
+  </data>
+  <data name="DerivedByAmdOverclocking" xml:space="preserve">
+    <value>由 AMD Overclocking 根据其他选项计算</value>
+  </data>
+  <data name="DescribeProblem" xml:space="preserve">
+    <value>请写明操作步骤、预期结果和实际情况。</value>
+  </data>
+  <data name="DfeTraining" xml:space="preserve">
+    <value>DFE 与 2D 训练</value>
+  </data>
+  <data name="DfeTrainingDescription" xml:space="preserve">
+    <value>对照 RX/TX DFE 和 RX2D/TX2D 的 BIOS 设置（启动时使用的 APCB）与 APOB 中的训练结果。</value>
+  </data>
+  <data name="DieDensity" xml:space="preserve">
+    <value>单颗粒容量</value>
+  </data>
+  <data name="DifferencesOnly" xml:space="preserve">
+    <value>仅显示差异</value>
+  </data>
+  <data name="DimmSlot" xml:space="preserve">
+    <value>内存插槽</value>
+  </data>
+  <data name="DimmTemperature" xml:space="preserve">
+    <value>内存条温度</value>
+  </data>
+  <data name="Dimms" xml:space="preserve">
+    <value>内存条</value>
+  </data>
+  <data name="DimmsPerChannel" xml:space="preserve">
+    <value>每通道内存条数</value>
+  </data>
+  <data name="DisabledZero" xml:space="preserve">
+    <value>已禁用 (0)</value>
+  </data>
+  <data name="DismissScreenshot" xml:space="preserve">
+    <value>点击或按 Esc 关闭</value>
+  </data>
+  <data name="DonatePayPal" xml:space="preserve">
+    <value>通过 PayPal 捐赠(_P)</value>
+  </data>
+  <data name="DonateRevolut" xml:space="preserve">
+    <value>通过 Revolut 捐赠(_R)</value>
+  </data>
+  <data name="Done" xml:space="preserve">
+    <value>完成</value>
+  </data>
+  <data name="DontCheckOnStartup" xml:space="preserve">
+    <value>启动时不检查</value>
+  </data>
+  <data name="DontShowAgain" xml:space="preserve">
+    <value>不再显示</value>
+  </data>
+  <data name="DownloadingUpdate" xml:space="preserve">
+    <value>正在下载更新…</value>
+  </data>
+  <data name="DownloadingVerificationFiles" xml:space="preserve">
+    <value>正在下载校验文件…</value>
+  </data>
+  <data name="DramCaOdtHint" xml:space="preserve">
+    <value>DRAM CA 端接阻抗（MR11）</value>
+  </data>
+  <data name="DramCkCsOdtHint" xml:space="preserve">
+    <value>DRAM CK／CS 端接状态（MR17 ODTD-CK／ODTD-CS）</value>
+  </data>
+  <data name="DramDqOdtHint" xml:space="preserve">
+    <value>DRAM DQ 端接阻抗（MR11）</value>
+  </data>
+  <data name="DramMaker" xml:space="preserve">
+    <value>DRAM 颗粒厂商</value>
+  </data>
+  <data name="DramManufacturer" xml:space="preserve">
+    <value>DRAM 颗粒厂商</value>
+  </data>
+  <data name="DramNonTargetDqOdtHint" xml:space="preserve">
+    <value>DRAM 非目标 DQ 端接阻抗（MR11／MR41）</value>
+  </data>
+  <data name="DramPullDownStrengthHint" xml:space="preserve">
+    <value>DRAM 下拉驱动强度（MR3）</value>
+  </data>
+  <data name="DramStepping" xml:space="preserve">
+    <value>DRAM 步进</value>
+  </data>
+  <data name="DramVrefCaHint" xml:space="preserve">
+    <value>DRAM 训练的起始 CA 参考电压（MR12）</value>
+  </data>
+  <data name="DramVrefDqHint" xml:space="preserve">
+    <value>DRAM 训练的起始 DQ 参考电压（MR14／MR15）</value>
+  </data>
+  <data name="DramWckOdtHint" xml:space="preserve">
+    <value>DRAM WCK 端接阻抗（MR18）</value>
+  </data>
+  <data name="Driver" xml:space="preserve">
+    <value>驱动程序</value>
+  </data>
+  <data name="DriverError" xml:space="preserve">
+    <value>驱动错误</value>
+  </data>
+  <data name="DriverUpdateDescription" xml:space="preserve">
+    <value>PawnIO 驱动有新版本。更新后可获得更好的性能、稳定性和兼容性。</value>
+  </data>
+  <data name="DriverUpdateRestartHint" xml:space="preserve">
+    <value>更新时会先卸载旧版驱动，再安装新版。安装后可能需要重启电脑，你可以选择“稍后重启”。</value>
+  </data>
+  <data name="DriverUpdateTitle" xml:space="preserve">
+    <value>PawnIO 驱动有新版本</value>
+  </data>
+  <data name="DumpApobMenu" xml:space="preserve">
+    <value>转储 APOB 表(_A)</value>
+  </data>
+  <data name="DumpSpd" xml:space="preserve">
+    <value>转储 SPD</value>
+  </data>
+  <data name="DumpingSpd" xml:space="preserve">
+    <value>正在转储 {0} 的 SPD…</value>
+  </data>
+  <data name="EccCapableSuffix" xml:space="preserve">
+    <value>，支持 ECC</value>
+  </data>
+  <data name="EccDetected" xml:space="preserve">
+    <value>检测到支持 ECC 纠错的内存</value>
+  </data>
+  <data name="EccEnabled" xml:space="preserve">
+    <value>ECC 已启用</value>
+  </data>
+  <data name="EmailHint" xml:space="preserve">
+    <value>如需接收回复，请填写邮箱。</value>
+  </data>
+  <data name="EnableAdvancedForDebug" xml:space="preserve">
+    <value>生成调试报告需要开启高级模式。
+
+是否立即开启？程序将自动重启。</value>
+  </data>
+  <data name="EnableLiveSnapshot" xml:space="preserve">
+    <value>启用实时快照文件</value>
+  </data>
+  <data name="EnabledOne" xml:space="preserve">
+    <value>已启用 (1)</value>
+  </data>
+  <data name="EncryptedSuffix" xml:space="preserve">
+    <value>（已加密）</value>
+  </data>
+  <data name="EndAddress" xml:space="preserve">
+    <value>结束地址</value>
+  </data>
+  <data name="Entries" xml:space="preserve">
+    <value>条目</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>错误</value>
+  </data>
+  <data name="ErrorDetails" xml:space="preserve">
+    <value>错误详情</value>
+  </data>
+  <data name="ErrorsOnly" xml:space="preserve">
+    <value>仅错误</value>
+  </data>
+  <data name="Event" xml:space="preserve">
+    <value>事件</value>
+  </data>
+  <data name="EventCount" xml:space="preserve">
+    <value>{0} 个事件</value>
+  </data>
+  <data name="EventLog" xml:space="preserve">
+    <value>事件日志</value>
+  </data>
+  <data name="EventLogSentence" xml:space="preserve">
+    <value>事件日志</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>退出</value>
+  </data>
+  <data name="ExitMenu" xml:space="preserve">
+    <value>退出(_X)</value>
+  </data>
+  <data name="ExpoBadChecksum" xml:space="preserve">
+    <value>{0}（校验和错误）</value>
+  </data>
+  <data name="ExpoProfileOneTaa" xml:space="preserve">
+    <value>配置 1 的 tAA</value>
+  </data>
+  <data name="ExpoProfileOneTck" xml:space="preserve">
+    <value>配置 1 的 tCK</value>
+  </data>
+  <data name="ExpoProfiles" xml:space="preserve">
+    <value>EXPO 配置</value>
+  </data>
+  <data name="ExpoRevision" xml:space="preserve">
+    <value>EXPO 版本</value>
+  </data>
+  <data name="ExpoVersion" xml:space="preserve">
+    <value>EXPO 版本</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>导出</value>
+  </data>
+  <data name="ExportAllTimings" xml:space="preserve">
+    <value>所有通道的时序</value>
+  </data>
+  <data name="ExportAod" xml:space="preserve">
+    <value>AOD 表（DDR5／LPDDR5）</value>
+  </data>
+  <data name="ExportApob" xml:space="preserve">
+    <value>APOB 表（DDR5／LPDDR5）</value>
+  </data>
+  <data name="ExportBiosMemoryController" xml:space="preserve">
+    <value>BIOS 内存控制器（DDR4／LPDDR4）</value>
+  </data>
+  <data name="ExportDimmReadings" xml:space="preserve">
+    <value>内存条电压和温度（DDR5／LPDDR5）</value>
+  </data>
+  <data name="ExportMemoryRegisters" xml:space="preserve">
+    <value>内存控制器寄存器（底层数据，DDR5／LPDDR5）</value>
+  </data>
+  <data name="ExportMenu" xml:space="preserve">
+    <value>导出…</value>
+  </data>
+  <data name="ExportPowerTable" xml:space="preserve">
+    <value>功耗表（时钟频率、SoC 电压）</value>
+  </data>
+  <data name="ExportSaved" xml:space="preserve">
+    <value>已保存到 {0}</value>
+  </data>
+  <data name="ExportSpd" xml:space="preserve">
+    <value>SPD、XMP／EXPO 配置及 PMIC 设置（DDR5／LPDDR5）</value>
+  </data>
+  <data name="ExportSystem" xml:space="preserve">
+    <value>系统（CPU、主板、BIOS、SMU）</value>
+  </data>
+  <data name="ExtendedDriver" xml:space="preserve">
+    <value>扩展</value>
+  </data>
+  <data name="ExtractingUpdate" xml:space="preserve">
+    <value>正在解压更新…</value>
+  </data>
+  <data name="FewerThanTwoDfeTaps" xml:space="preserve">
+    <value>1 个或关闭（抽头 2 未使用）</value>
+  </data>
+  <data name="FileMenu" xml:space="preserve">
+    <value>文件(_F)</value>
+  </data>
+  <data name="FileName" xml:space="preserve">
+    <value>文件名</value>
+  </data>
+  <data name="FileNotFound" xml:space="preserve">
+    <value>找不到文件</value>
+  </data>
+  <data name="FileWriteFailed" xml:space="preserve">
+    <value>无法写入文件：
+{0}</value>
+  </data>
+  <data name="FollowSystemLanguage" xml:space="preserve">
+    <value>跟随系统</value>
+  </data>
+  <data name="Format" xml:space="preserve">
+    <value>格式：</value>
+  </data>
+  <data name="FromAmdCbs" xml:space="preserve">
+    <value>来自 AMD CBS 菜单</value>
+  </data>
+  <data name="FromAmdOverclocking" xml:space="preserve">
+    <value>来自 AMD Overclocking 菜单</value>
+  </data>
+  <data name="FromOxideApcb" xml:space="preserve">
+    <value>名称来自 Oxide 的 amd-apcb</value>
+  </data>
+  <data name="FullDesktop" xml:space="preserve">
+    <value>整个桌面</value>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>常规</value>
+  </data>
+  <data name="Group" xml:space="preserve">
+    <value>分组</value>
+  </data>
+  <data name="Hardware" xml:space="preserve">
+    <value>硬件</value>
+  </data>
+  <data name="Height" xml:space="preserve">
+    <value>高度</value>
+  </data>
+  <data name="HeightWithHeatSpreader" xml:space="preserve">
+    <value>{0}，带散热片</value>
+  </data>
+  <data name="HelpMenu" xml:space="preserve">
+    <value>帮助(_H)</value>
+  </data>
+  <data name="HiddenValue" xml:space="preserve">
+    <value>（已隐藏）</value>
+  </data>
+  <data name="Hide" xml:space="preserve">
+    <value>隐藏</value>
+  </data>
+  <data name="HideAllFans" xml:space="preserve">
+    <value>隐藏所有风扇转速</value>
+  </data>
+  <data name="HideAllTemperatures" xml:space="preserve">
+    <value>隐藏所有温度</value>
+  </data>
+  <data name="HideAllVoltages" xml:space="preserve">
+    <value>隐藏所有电压</value>
+  </data>
+  <data name="HideAllZeroSensors" xml:space="preserve">
+    <value>隐藏所有读数为零的传感器</value>
+  </data>
+  <data name="HideSelected" xml:space="preserve">
+    <value>隐藏所选项</value>
+  </data>
+  <data name="HtmlFileFilter" xml:space="preserve">
+    <value>HTML 文件 (*.html)|*.html|所有文件 (*.*)|*.*</value>
+  </data>
+  <data name="ImpedanceTable" xml:space="preserve">
+    <value>阻抗表</value>
+  </data>
+  <data name="IncludeErrorDetails" xml:space="preserve">
+    <value>附上错误详情</value>
+  </data>
+  <data name="IncludeLegend" xml:space="preserve">
+    <value>附上简要字段说明，便于 AI 助手读取</value>
+  </data>
+  <data name="IncludeScreenshot" xml:space="preserve">
+    <value>附上截图</value>
+  </data>
+  <data name="IncludeSerialNumbers" xml:space="preserve">
+    <value>包含内存条序列号</value>
+  </data>
+  <data name="Increase" xml:space="preserve">
+    <value>增大</value>
+  </data>
+  <data name="Info" xml:space="preserve">
+    <value>信息</value>
+  </data>
+  <data name="Initializing" xml:space="preserve">
+    <value>正在初始化…</value>
+  </data>
+  <data name="InpOutDriverNotResponding" xml:space="preserve">
+    <value>I/O 驱动未加载或无响应。
+
+依赖此驱动的 AOD、AGESA 版本等信息暂时无法显示。你可以在设置中重新开启此提示。</value>
+  </data>
+  <data name="InstallPawnIo" xml:space="preserve">
+    <value>安装 PawnIO</value>
+  </data>
+  <data name="InstalledVersion" xml:space="preserve">
+    <value>当前使用的版本为 {0}。</value>
+  </data>
+  <data name="Instance" xml:space="preserve">
+    <value>实例</value>
+  </data>
+  <data name="InterleaveMode" xml:space="preserve">
+    <value>交错模式</value>
+  </data>
+  <data name="InterleaveModeDetails" xml:space="preserve">
+    <value>0x{0:X}（能力 0x{1:X}，大小 0x{2:X}）</value>
+  </data>
+  <data name="Interleaved" xml:space="preserve">
+    <value>交错</value>
+  </data>
+  <data name="InvalidEmail" xml:space="preserve">
+    <value>电子邮箱格式有误。请修改地址或将此项留空。</value>
+  </data>
+  <data name="IoDriver" xml:space="preserve">
+    <value>I/O 驱动</value>
+  </data>
+  <data name="JedecBase" xml:space="preserve">
+    <value>JEDEC 基准配置</value>
+  </data>
+  <data name="JsonFileFilter" xml:space="preserve">
+    <value>JSON 文件 (*.json)|*.json|所有文件 (*.*)|*.*</value>
+  </data>
+  <data name="KnownTokens" xml:space="preserve">
+    <value>{0} 个已知标识（AM5 / Phoenix / Strix 的 CBS 和 AOD）</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>界面语言</value>
+  </data>
+  <data name="LastMemoryTraining" xml:space="preserve">
+    <value>上次内存训练</value>
+  </data>
+  <data name="Later" xml:space="preserve">
+    <value>稍后</value>
+  </data>
+  <data name="LayoutProfile" xml:space="preserve">
+    <value>布局配置</value>
+  </data>
+  <data name="LegacyDriver" xml:space="preserve">
+    <value>旧版</value>
+  </data>
+  <data name="LiveSnapshot" xml:space="preserve">
+    <value>实时快照</value>
+  </data>
+  <data name="LiveSnapshotActiveHint" xml:space="preserve">
+    <value>实时快照已启用，点击修改设置
+{0}
+随主窗口自动刷新写入，间隔至少 {1:0.#} 秒</value>
+  </data>
+  <data name="LiveSnapshotDescription" xml:space="preserve">
+    <value>默认关闭。启用后，文件会随主窗口的自动刷新（高级模式）一同更新，无需额外读取硬件。取消勾选并确认后，程序会停止写入，并询问是否删除文件。</value>
+  </data>
+  <data name="LiveSnapshotFile" xml:space="preserve">
+    <value>实时快照文件</value>
+  </data>
+  <data name="LiveSnapshotFileCollision" xml:space="preserve">
+    <value>{0} 已存在，且不是 ZenTimings 快照。请使用其他文件名。</value>
+  </data>
+  <data name="LiveSnapshotFolder" xml:space="preserve">
+    <value>选择实时快照文件的保存位置</value>
+  </data>
+  <data name="LiveSnapshotInterval" xml:space="preserve">
+    <value>最短写入间隔</value>
+  </data>
+  <data name="LiveSnapshotIntervalRange" xml:space="preserve">
+    <value>间隔必须为 {0} 到 {1} 秒。</value>
+  </data>
+  <data name="LiveSnapshotInvalidName" xml:space="preserve">
+    <value>此文件名不可用，请尝试使用“{0}”。</value>
+  </data>
+  <data name="LiveSnapshotLinkedFolder" xml:space="preserve">
+    <value>{0} 是链接，无法向该文件夹写入。</value>
+  </data>
+  <data name="LiveSnapshotMenu" xml:space="preserve">
+    <value>实时快照文件…</value>
+  </data>
+  <data name="LiveSnapshotPrivacyHint" xml:space="preserve">
+    <value>实时快照文件不会写入序列号。任何有该文件夹写入权限的用户都可替换文件。如果其他程序需要读取它，请将它保存在你信任的文件夹中。</value>
+  </data>
+  <data name="LiveSnapshotUseAppFolder" xml:space="preserve">
+    <value>保存到 ZenTimings 所在文件夹</value>
+  </data>
+  <data name="LiveSnapshotWriteFailed" xml:space="preserve">
+    <value>无法写入实时快照文件。
+{0}</value>
+  </data>
+  <data name="LoadAdvancedTimingsError" xml:space="preserve">
+    <value>无法加载高级时序：{0}{1}</value>
+  </data>
+  <data name="LoadAdvancedTimingsFailed" xml:space="preserve">
+    <value>无法加载高级时序。</value>
+  </data>
+  <data name="LoadModuleDataFailed" xml:space="preserve">
+    <value>无法加载内存条数据：
+{0}</value>
+  </data>
+  <data name="LoadModulesFailed" xml:space="preserve">
+    <value>无法加载内存条：{0}</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>正在加载…</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>位置</value>
+  </data>
+  <data name="Logical" xml:space="preserve">
+    <value>逻辑</value>
+  </data>
+  <data name="LogicalCore" xml:space="preserve">
+    <value>逻辑核心</value>
+  </data>
+  <data name="MainWindowContents" xml:space="preserve">
+    <value>主窗口显示的内容</value>
+  </data>
+  <data name="ManageSensors" xml:space="preserve">
+    <value>管理传感器</value>
+  </data>
+  <data name="Manufactured" xml:space="preserve">
+    <value>生产日期</value>
+  </data>
+  <data name="Manufacturer" xml:space="preserve">
+    <value>厂商</value>
+  </data>
+  <data name="Max" xml:space="preserve">
+    <value>最大值</value>
+  </data>
+  <data name="Maximize" xml:space="preserve">
+    <value>最大化</value>
+  </data>
+  <data name="MbistResult" xml:space="preserve">
+    <value>MBIST 结果</value>
+  </data>
+  <data name="MemoryBoost" xml:space="preserve">
+    <value>内存加速</value>
+  </data>
+  <data name="MemoryConfiguration" xml:space="preserve">
+    <value>内存配置</value>
+  </data>
+  <data name="MemoryController" xml:space="preserve">
+    <value>内存控制器</value>
+  </data>
+  <data name="MemoryControllerReadFailed" xml:space="preserve">
+    <value>无法读取内存控制器配置。</value>
+  </data>
+  <data name="MemoryMap" xml:space="preserve">
+    <value>内存映射</value>
+  </data>
+  <data name="MemoryModule" xml:space="preserve">
+    <value>内存条</value>
+  </data>
+  <data name="MemoryModules" xml:space="preserve">
+    <value>内存条</value>
+  </data>
+  <data name="MemoryProfileExpo" xml:space="preserve">
+    <value>内存配置（EXPO）</value>
+  </data>
+  <data name="MemoryPstateHint" xml:space="preserve">
+    <value>内存控制器当前使用的 P-state（P0 为全速）。APU 空闲时会切换至较低的性能状态。</value>
+  </data>
+  <data name="MemorySettings" xml:space="preserve">
+    <value>内存设置</value>
+  </data>
+  <data name="MemorySpeed" xml:space="preserve">
+    <value>速率</value>
+  </data>
+  <data name="MemoryTimings" xml:space="preserve">
+    <value>内存时序</value>
+  </data>
+  <data name="MemoryType" xml:space="preserve">
+    <value>内存类型</value>
+  </data>
+  <data name="Min" xml:space="preserve">
+    <value>最小值</value>
+  </data>
+  <data name="Minimize" xml:space="preserve">
+    <value>最小化</value>
+  </data>
+  <data name="MinimizeToTray" xml:space="preserve">
+    <value>最小化到系统托盘</value>
+  </data>
+  <data name="Missing" xml:space="preserve">
+    <value>缺失</value>
+  </data>
+  <data name="Mode" xml:space="preserve">
+    <value>模式</value>
+  </data>
+  <data name="ModuleManufacturer" xml:space="preserve">
+    <value>内存条厂商</value>
+  </data>
+  <data name="ModuleType" xml:space="preserve">
+    <value>内存条类型</value>
+  </data>
+  <data name="Modules" xml:space="preserve">
+    <value>模块</value>
+  </data>
+  <data name="ModulesAndThermalSensorsLoaded" xml:space="preserve">
+    <value>已加载 {0} 根内存条，检测到 {1} 个温度传感器</value>
+  </data>
+  <data name="ModulesLoaded" xml:space="preserve">
+    <value>已加载 {0} 根内存条</value>
+  </data>
+  <data name="ModulesLoadedLimitedInfo" xml:space="preserve">
+    <value>已加载 {0} 根内存条（无 SPD／PMIC 数据）</value>
+  </data>
+  <data name="MotherboardSensors" xml:space="preserve">
+    <value>主板传感器</value>
+  </data>
+  <data name="MotherboardUnavailable" xml:space="preserve">
+    <value>主板：不可用</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>名称</value>
+  </data>
+  <data name="Names" xml:space="preserve">
+    <value>名称</value>
+  </data>
+  <data name="NewVersionAvailable" xml:space="preserve">
+    <value>发现新版本 {0}。{1}</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>否</value>
+  </data>
+  <data name="NoApcbOptions" xml:space="preserve">
+    <value>启动时使用的 APCB 中没有选项标识，所有选项均为“自动”。</value>
+  </data>
+  <data name="NoBackupApcb" xml:space="preserve">
+    <value>无备用 APCB</value>
+  </data>
+  <data name="NoData" xml:space="preserve">
+    <value>无数据</value>
+  </data>
+  <data name="NoDimmSlotSelected" xml:space="preserve">
+    <value>请选择内存插槽。</value>
+  </data>
+  <data name="NoEvents" xml:space="preserve">
+    <value>无事件</value>
+  </data>
+  <data name="NoMemoryTimings" xml:space="preserve">
+    <value>没有可用的内存时序。</value>
+  </data>
+  <data name="NoModuleTelemetry" xml:space="preserve">
+    <value>此内存条没有可用的监控数据。</value>
+  </data>
+  <data name="NoModulesDetected" xml:space="preserve">
+    <value>未检测到内存条</value>
+  </data>
+  <data name="NoRadius" xml:space="preserve">
+    <value>直角</value>
+  </data>
+  <data name="NoSectionsSelected" xml:space="preserve">
+    <value>请至少选择一项内容。</value>
+  </data>
+  <data name="NoSensorsAvailable" xml:space="preserve">
+    <value>当前系统没有可用的传感器。</value>
+  </data>
+  <data name="NoSpdData" xml:space="preserve">
+    <value>没有可用的 SPD 数据。</value>
+  </data>
+  <data name="NoTimingProfiles" xml:space="preserve">
+    <value>没有可用的时序配置。</value>
+  </data>
+  <data name="NoUpdateData" xml:space="preserve">
+    <value>未收到数据。</value>
+  </data>
+  <data name="NonZeroByteCount" xml:space="preserve">
+    <value>{0} 个非零字节</value>
+  </data>
+  <data name="None" xml:space="preserve">
+    <value>无</value>
+  </data>
+  <data name="NotAvailable" xml:space="preserve">
+    <value>不可用</value>
+  </data>
+  <data name="NotInApob" xml:space="preserve">
+    <value>APOB 中没有此项</value>
+  </data>
+  <data name="NotNow" xml:space="preserve">
+    <value>暂不</value>
+  </data>
+  <data name="NotSet" xml:space="preserve">
+    <value>未设置</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>确定</value>
+  </data>
+  <data name="OdtDriveStrength" xml:space="preserve">
+    <value>ODT 与驱动强度</value>
+  </data>
+  <data name="OdtDriveStrengthByBlock" xml:space="preserve">
+    <value>各时序块的 ODT 与驱动强度</value>
+  </data>
+  <data name="OfferCrashReport" xml:space="preserve">
+    <value>ZenTimings 于 {0} 意外关闭。
+
+是否将调试报告发送给开发者？</value>
+  </data>
+  <data name="OfferErrorReport" xml:space="preserve">
+    <value>
+
+你可以将调试报告发送给开发者，帮助定位问题。</value>
+  </data>
+  <data name="Offset" xml:space="preserve">
+    <value>偏移量</value>
+  </data>
+  <data name="OpenApcbFailed" xml:space="preserve">
+    <value>无法打开 APCB：
+{0}</value>
+  </data>
+  <data name="OpenApobFailed" xml:space="preserve">
+    <value>无法打开 APOB：
+{0}</value>
+  </data>
+  <data name="OpenChangelogFailed" xml:space="preserve">
+    <value>无法打开更新日志：{0}</value>
+  </data>
+  <data name="OpenDebugReport" xml:space="preserve">
+    <value>打开 ZenTimings 调试报告</value>
+  </data>
+  <data name="OpenDebugReportFailed" xml:space="preserve">
+    <value>无法打开调试报告：
+{0}</value>
+  </data>
+  <data name="OpenDebugReportMenu" xml:space="preserve">
+    <value>打开调试报告（测试功能）(_O)…</value>
+  </data>
+  <data name="OpenFolder" xml:space="preserve">
+    <value>打开文件夹</value>
+  </data>
+  <data name="OpenGitHub" xml:space="preserve">
+    <value>打开 GitHub 页面</value>
+  </data>
+  <data name="OpenLinkFailed" xml:space="preserve">
+    <value>无法打开 {0}：{1}</value>
+  </data>
+  <data name="OpenSensorsFailed" xml:space="preserve">
+    <value>无法打开传感器窗口：
+{0}</value>
+  </data>
+  <data name="OpenSpdFailed" xml:space="preserve">
+    <value>无法打开 SPD 信息：
+{0}</value>
+  </data>
+  <data name="Option" xml:space="preserve">
+    <value>选项</value>
+  </data>
+  <data name="OptionalEmail" xml:space="preserve">
+    <value>电子邮箱（选填）</value>
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="OptionsMenu" xml:space="preserve">
+    <value>设置(_O)</value>
+  </data>
+  <data name="Overview" xml:space="preserve">
+    <value>概览</value>
+  </data>
+  <data name="Package" xml:space="preserve">
+    <value>封装</value>
+  </data>
+  <data name="PartNumber" xml:space="preserve">
+    <value>型号</value>
+  </data>
+  <data name="PawnIoInstallFailed" xml:space="preserve">
+    <value>无法安装 PawnIO。</value>
+  </data>
+  <data name="PawnIoInstallPrompt" xml:space="preserve">
+    <value>ZenTimings 需要 PawnIO 驱动读取内存时序和传感器数据。当前系统尚未安装该驱动。
+
+是否立即安装随程序附带的 PawnIO{0}？安装程序将打开，安装完成后 ZenTimings 会重新启动。
+
+如果跳过安装，ZenTimings 将退出。
+
+PawnIO 开源项目：{1}</value>
+  </data>
+  <data name="PawnIoInstallerExitCode" xml:space="preserve">
+    <value>PawnIO 安装程序已退出，退出代码：{0}。</value>
+  </data>
+  <data name="PawnIoInstallerStartFailed" xml:space="preserve">
+    <value>无法启动 PawnIO 安装程序。</value>
+  </data>
+  <data name="PawnIoRequired" xml:space="preserve">
+    <value>需要安装 PawnIO 驱动</value>
+  </data>
+  <data name="Physical" xml:space="preserve">
+    <value>物理</value>
+  </data>
+  <data name="Plugins" xml:space="preserve">
+    <value>插件</value>
+  </data>
+  <data name="PmicHighTemperature" xml:space="preserve">
+    <value>PMIC 高温警告</value>
+  </data>
+  <data name="PmicTemperature" xml:space="preserve">
+    <value>PMIC 温度</value>
+  </data>
+  <data name="PmuTrainingFailure" xml:space="preserve">
+    <value>PMU 训练失败</value>
+  </data>
+  <data name="PngFileFilter" xml:space="preserve">
+    <value>PNG 图片 (*.png)|*.png|所有文件 (*.*)|*.*</value>
+  </data>
+  <data name="PowerTableError" xml:space="preserve">
+    <value>读取功耗表失败</value>
+  </data>
+  <data name="PowerTableInitFailed" xml:space="preserve">
+    <value>无法初始化功耗表。
+
+请关闭程序后重试。如果问题仍然存在，请尝试重启电脑。</value>
+  </data>
+  <data name="PowerTableSkipped" xml:space="preserve">
+    <value>无法读取功耗表。
+已跳过。</value>
+  </data>
+  <data name="PreparingUpdate" xml:space="preserve">
+    <value>正在准备更新…</value>
+  </data>
+  <data name="PrintSerialNumbers" xml:space="preserve">
+    <value>显示序列号</value>
+  </data>
+  <data name="ProcessorOdtPullDownHint" xml:space="preserve">
+    <value>处理器 ODT 下拉端接阻抗</value>
+  </data>
+  <data name="ProcessorOdtPullUpHint" xml:space="preserve">
+    <value>处理器 ODT 上拉端接阻抗</value>
+  </data>
+  <data name="Profiles" xml:space="preserve">
+    <value>配置</value>
+  </data>
+  <data name="RawCard" xml:space="preserve">
+    <value>原始板型</value>
+  </data>
+  <data name="ReadSpdFailed" xml:space="preserve">
+    <value>无法读取 SPD：{0}</value>
+  </data>
+  <data name="ReadSpdWarning" xml:space="preserve">
+    <value>警告：无法读取 SPD 数据。{0}</value>
+  </data>
+  <data name="ReadingApcb" xml:space="preserve">
+    <value>正在从 SPI 闪存读取 APCB…</value>
+  </data>
+  <data name="ReadingPowerTable" xml:space="preserve">
+    <value>正在读取功耗表</value>
+  </data>
+  <data name="ReadingPowerTableElapsed" xml:space="preserve">
+    <value>正在读取功耗表（{0} 秒）</value>
+  </data>
+  <data name="ReadingSpd" xml:space="preserve">
+    <value>正在读取 SPD 数据…</value>
+  </data>
+  <data name="Ready" xml:space="preserve">
+    <value>就绪</value>
+  </data>
+  <data name="ReferenceId" xml:space="preserve">
+    <value>报告编号</value>
+  </data>
+  <data name="ReferenceIdHint" xml:space="preserve">
+    <value>在 GitHub 或论坛跟进此问题时，请附上报告编号。</value>
+  </data>
+  <data name="RefreshMode" xml:space="preserve">
+    <value>刷新模式</value>
+  </data>
+  <data name="RefreshSensorsFailed" xml:space="preserve">
+    <value>刷新传感器时出错：{0}</value>
+  </data>
+  <data name="RefreshTelemetryFailed" xml:space="preserve">
+    <value>刷新监控数据时出错：{0}</value>
+  </data>
+  <data name="RefreshingPartialSpd" xml:space="preserve">
+    <value>SPD 数据不完整，正在重新读取…</value>
+  </data>
+  <data name="Register" xml:space="preserve">
+    <value>寄存器</value>
+  </data>
+  <data name="ReleaseChannel" xml:space="preserve">
+    <value>更新渠道</value>
+  </data>
+  <data name="ReportAdvancedModeOff" xml:space="preserve">
+    <value>高级模式已关闭，报告中未包含功耗表、APOB、AOD 和 AGESA 数据。</value>
+  </data>
+  <data name="ReportBuildFailed" xml:space="preserve">
+    <value>无法生成报告：</value>
+  </data>
+  <data name="ReportCopyFailed" xml:space="preserve">
+    <value>报告已发送，但无法保存副本</value>
+  </data>
+  <data name="ReportCopySaveFailed" xml:space="preserve">
+    <value>无法保存已发送的报告：</value>
+  </data>
+  <data name="ReportCopySaved" xml:space="preserve">
+    <value>已保存报告副本</value>
+  </data>
+  <data name="ReportErrorDetailsHint" xml:space="preserve">
+    <value>将错误消息及相关崩溃日志附在报告末尾。</value>
+  </data>
+  <data name="ReportFileFilter" xml:space="preserve">
+    <value>文本文件 (*.txt;*.log)|*.txt;*.log|所有文件 (*.*)|*.*</value>
+  </data>
+  <data name="ReportIntro" xml:space="preserve">
+    <value>报告将直接发送给 ZenTimings 开发者，帮助定位问题。</value>
+  </data>
+  <data name="ReportPrivacyHint" xml:space="preserve">
+    <value>仅发送上方显示的内容。生成报告时勾选“显示序列号”，报告才会包含序列号。</value>
+  </data>
+  <data name="ReportProblem" xml:space="preserve">
+    <value>反馈问题…</value>
+  </data>
+  <data name="ReportProblemMenu" xml:space="preserve">
+    <value>反馈问题(_R)…</value>
+  </data>
+  <data name="ReportRateLimit" xml:space="preserve">
+    <value>此网络已发送过多报告，请稍后重试。</value>
+  </data>
+  <data name="ReportScreenshotFailed" xml:space="preserve">
+    <value>无法截取主窗口。</value>
+  </data>
+  <data name="ReportScreenshotHint" xml:space="preserve">
+    <value>附上主窗口截图，方便开发者查看你遇到的问题。</value>
+  </data>
+  <data name="ReportSendFailed" xml:space="preserve">
+    <value>无法发送报告：</value>
+  </data>
+  <data name="ReportSent" xml:space="preserve">
+    <value>报告已发送</value>
+  </data>
+  <data name="ReportServerError" xml:space="preserve">
+    <value>服务器返回错误（{0}）。</value>
+  </data>
+  <data name="ReportServerTimeout" xml:space="preserve">
+    <value>服务器响应超时，请稍后重试。</value>
+  </data>
+  <data name="ReportServerUnavailable" xml:space="preserve">
+    <value>无法连接服务器。请检查网络连接后重试。</value>
+  </data>
+  <data name="ReportTextSize" xml:space="preserve">
+    <value>报告文本大小：{0}</value>
+  </data>
+  <data name="ReportThankYou" xml:space="preserve">
+    <value>感谢反馈！开发者会查看这份报告。</value>
+  </data>
+  <data name="ReportThankYouWithEmail" xml:space="preserve">
+    <value>感谢反馈！开发者会查看报告，如有需要会通过邮件联系你。</value>
+  </data>
+  <data name="ReportUnexpectedResponse" xml:space="preserve">
+    <value>服务器返回了无法识别的响应。</value>
+  </data>
+  <data name="RequiresWindows11" xml:space="preserve">
+    <value>需要 Windows 11</value>
+  </data>
+  <data name="ResetSettings" xml:space="preserve">
+    <value>恢复默认设置</value>
+  </data>
+  <data name="ResetStats" xml:space="preserve">
+    <value>重置统计</value>
+  </data>
+  <data name="ResizeWindowHint" xml:space="preserve">
+    <value>双击自动调整大小，拖动可手动调整</value>
+  </data>
+  <data name="Resources" xml:space="preserve">
+    <value>资源</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>重启程序</value>
+  </data>
+  <data name="RestartFailed" xml:space="preserve">
+    <value>无法重启 {0}。
+{1}</value>
+  </data>
+  <data name="RestoreWindow" xml:space="preserve">
+    <value>还原</value>
+  </data>
+  <data name="RowColumnAddressBits" xml:space="preserve">
+    <value>行地址 {0} 位／列地址 {1} 位</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="SaveAs" xml:space="preserve">
+    <value>另存为</value>
+  </data>
+  <data name="SaveAsMenu" xml:space="preserve">
+    <value>另存为…</value>
+  </data>
+  <data name="SaveEllipsis" xml:space="preserve">
+    <value>保存…</value>
+  </data>
+  <data name="SaveFailed" xml:space="preserve">
+    <value>无法保存：{0}</value>
+  </data>
+  <data name="SaveScreenshotFailed" xml:space="preserve">
+    <value>无法保存截图：{0}</value>
+  </data>
+  <data name="SaveSettingsFailed" xml:space="preserve">
+    <value>无法保存设置文件。</value>
+  </data>
+  <data name="SaveWindowPosition" xml:space="preserve">
+    <value>退出时记住窗口位置</value>
+  </data>
+  <data name="Screenshot" xml:space="preserve">
+    <value>截图</value>
+  </data>
+  <data name="ScreenshotCopied" xml:space="preserve">
+    <value>截图已复制到剪贴板。</value>
+  </data>
+  <data name="ScreenshotTitle" xml:space="preserve">
+    <value>ZenTimings 截图</value>
+  </data>
+  <data name="SdramWidth" xml:space="preserve">
+    <value>SDRAM 位宽</value>
+  </data>
+  <data name="SearchTimings" xml:space="preserve">
+    <value>搜索时序…</value>
+  </data>
+  <data name="Second" xml:space="preserve">
+    <value>秒</value>
+  </data>
+  <data name="Seconds" xml:space="preserve">
+    <value>秒</value>
+  </data>
+  <data name="SelectScreenshotFolder" xml:space="preserve">
+    <value>选择截图保存文件夹</value>
+  </data>
+  <data name="Send" xml:space="preserve">
+    <value>发送</value>
+  </data>
+  <data name="SendDebugReport" xml:space="preserve">
+    <value>发送调试报告</value>
+  </data>
+  <data name="SendEllipsis" xml:space="preserve">
+    <value>发送…</value>
+  </data>
+  <data name="SendReportEllipsis" xml:space="preserve">
+    <value>发送报告…</value>
+  </data>
+  <data name="SendToDeveloper" xml:space="preserve">
+    <value>发送给开发者</value>
+  </data>
+  <data name="Sending" xml:space="preserve">
+    <value>正在发送…</value>
+  </data>
+  <data name="Sensor" xml:space="preserve">
+    <value>传感器</value>
+  </data>
+  <data name="SensorSources" xml:space="preserve">
+    <value>传感器数据源</value>
+  </data>
+  <data name="Sensors" xml:space="preserve">
+    <value>传感器</value>
+  </data>
+  <data name="SensorsMenu" xml:space="preserve">
+    <value>传感器(_S)</value>
+  </data>
+  <data name="SensorsRunningTime" xml:space="preserve">
+    <value>运行时长：</value>
+  </data>
+  <data name="SerialNumber" xml:space="preserve">
+    <value>序列号</value>
+  </data>
+  <data name="SerialNumberShort" xml:space="preserve">
+    <value>序列号</value>
+  </data>
+  <data name="Setting" xml:space="preserve">
+    <value>设置项</value>
+  </data>
+  <data name="SettingStatus" xml:space="preserve">
+    <value>{0}（状态 0x{1:X4}）</value>
+  </data>
+  <data name="SettingsApplyOnRestart" xml:space="preserve">
+    <value>部分设置将在重启程序后生效。</value>
+  </data>
+  <data name="SettingsBackupLocation" xml:space="preserve">
+    <value>
+
+原文件已备份至：</value>
+  </data>
+  <data name="SettingsSaved" xml:space="preserve">
+    <value>设置已保存。</value>
+  </data>
+  <data name="Show" xml:space="preserve">
+    <value>显示</value>
+  </data>
+  <data name="ShowDriverError" xml:space="preserve">
+    <value>驱动加载失败时显示提示</value>
+  </data>
+  <data name="ShowingSpd" xml:space="preserve">
+    <value>正在显示 {0} 的 SPD</value>
+  </data>
+  <data name="SignatureDownloadFailed" xml:space="preserve">
+    <value>无法下载数字签名文件。
+</value>
+  </data>
+  <data name="SingleInstance" xml:space="preserve">
+    <value>仅允许运行一个实例</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>大小</value>
+  </data>
+  <data name="Skip" xml:space="preserve">
+    <value>跳过</value>
+  </data>
+  <data name="SkipAppUpdateVersion" xml:space="preserve">
+    <value>不再提示此版本</value>
+  </data>
+  <data name="SkipDriverUpdateVersion" xml:space="preserve">
+    <value>不再提醒此版本</value>
+  </data>
+  <data name="Slot" xml:space="preserve">
+    <value>插槽</value>
+  </data>
+  <data name="SmallRadius" xml:space="preserve">
+    <value>小圆角</value>
+  </data>
+  <data name="SmbiosHandle" xml:space="preserve">
+    <value>SMBIOS 句柄</value>
+  </data>
+  <data name="SmuDriverMissing" xml:space="preserve">
+    <value>Ryzen SMU 模块未加载。
+请确认 PawnIO 驱动已正确安装。</value>
+  </data>
+  <data name="SnapWindows" xml:space="preserve">
+    <value>窗口自动吸附</value>
+  </data>
+  <data name="SocOdtHint" xml:space="preserve">
+    <value>向 DRAM 通知的 SoC 端接阻抗（MR17）</value>
+  </data>
+  <data name="Source" xml:space="preserve">
+    <value>来源</value>
+  </data>
+  <data name="SpdDataUnavailable" xml:space="preserve">
+    <value>不可用（无 SPD 数据）</value>
+  </data>
+  <data name="SpdDumpError" xml:space="preserve">
+    <value>无法转储 SPD：{0}</value>
+  </data>
+  <data name="SpdDumpFailed" xml:space="preserve">
+    <value>SPD 转储失败。</value>
+  </data>
+  <data name="SpdDumpReturnedFalse" xml:space="preserve">
+    <value>SPD 转储失败，读取操作未成功。</value>
+  </data>
+  <data name="SpdDumpSaved" xml:space="preserve">
+    <value>SPD 已转储到 {0}</value>
+  </data>
+  <data name="SpdFileFilter" xml:space="preserve">
+    <value>SPD 文件 (*.spd)|*.spd|二进制文件 (*.bin)|*.bin|所有文件 (*.*)|*.*</value>
+  </data>
+  <data name="SpdHub" xml:space="preserve">
+    <value>SPD 集线器</value>
+  </data>
+  <data name="SpdHubTemperature" xml:space="preserve">
+    <value>SPD 集线器温度</value>
+  </data>
+  <data name="SpdInformation" xml:space="preserve">
+    <value>SPD 信息</value>
+  </data>
+  <data name="SpdModulesLoaded" xml:space="preserve">
+    <value>已读取 {0} 根内存条的 SPD</value>
+  </data>
+  <data name="SpdNotDetected" xml:space="preserve">
+    <value>未检测到 SPD 数据</value>
+  </data>
+  <data name="SpdRevision" xml:space="preserve">
+    <value>SPD 版本</value>
+  </data>
+  <data name="SpdTimingMinimum" xml:space="preserve">
+    <value>{0} ps，至少 {1} nCK</value>
+  </data>
+  <data name="Speed" xml:space="preserve">
+    <value>速率</value>
+  </data>
+  <data name="Stable" xml:space="preserve">
+    <value>稳定版</value>
+  </data>
+  <data name="StableOnly" xml:space="preserve">
+    <value>仅检查稳定版</value>
+  </data>
+  <data name="StableUpdateAvailable" xml:space="preserve">
+    <value>发现稳定版更新</value>
+  </data>
+  <data name="StartMinimized" xml:space="preserve">
+    <value>启动时最小化</value>
+  </data>
+  <data name="StartupAndWindow" xml:space="preserve">
+    <value>启动与窗口</value>
+  </data>
+  <data name="StartupTask" xml:space="preserve">
+    <value>启动任务</value>
+  </data>
+  <data name="SupportedCl" xml:space="preserve">
+    <value>支持的 CL</value>
+  </data>
+  <data name="Svi2Plugin" xml:space="preserve">
+    <value>SVI2 插件</value>
+  </data>
+  <data name="System" xml:space="preserve">
+    <value>系统</value>
+  </data>
+  <data name="SystemInfo" xml:space="preserve">
+    <value>系统信息</value>
+  </data>
+  <data name="SystemInfoWindowTitle" xml:space="preserve">
+    <value>系统信息</value>
+  </data>
+  <data name="TableSize" xml:space="preserve">
+    <value>表大小</value>
+  </data>
+  <data name="Temperature" xml:space="preserve">
+    <value>温度</value>
+  </data>
+  <data name="TextExportFormat" xml:space="preserve">
+    <value>文本（路径 = 值）</value>
+  </data>
+  <data name="TextFileFilter" xml:space="preserve">
+    <value>文本文件 (*.txt)|*.txt|所有文件 (*.*)|*.*</value>
+  </data>
+  <data name="TextFileFilterLower" xml:space="preserve">
+    <value>文本文件 (*.txt)|*.txt|所有文件 (*.*)|*.*</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>主题</value>
+  </data>
+  <data name="ThemeBlack" xml:space="preserve">
+    <value>纯黑</value>
+  </data>
+  <data name="ThemeBurntOrange" xml:space="preserve">
+    <value>焦橙</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>深色</value>
+  </data>
+  <data name="ThemeDarkMint" xml:space="preserve">
+    <value>深色薄荷</value>
+  </data>
+  <data name="ThemeDarkMintGradient" xml:space="preserve">
+    <value>深色薄荷渐变</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>浅色</value>
+  </data>
+  <data name="ThemeRetroWave" xml:space="preserve">
+    <value>复古霓虹</value>
+  </data>
+  <data name="ThermalSensor" xml:space="preserve">
+    <value>温度传感器</value>
+  </data>
+  <data name="ThermalSensors" xml:space="preserve">
+    <value>温度传感器</value>
+  </data>
+  <data name="Thickness" xml:space="preserve">
+    <value>厚度</value>
+  </data>
+  <data name="Threads" xml:space="preserve">
+    <value>线程</value>
+  </data>
+  <data name="Timing" xml:space="preserve">
+    <value>时序</value>
+  </data>
+  <data name="TimingBlockCount" xml:space="preserve">
+    <value>{0} 个时序块</value>
+  </data>
+  <data name="Timings" xml:space="preserve">
+    <value>时序</value>
+  </data>
+  <data name="TimingsPanelUnavailable" xml:space="preserve">
+    <value>此内存类型没有可用的时序面板。</value>
+  </data>
+  <data name="TimingsShown" xml:space="preserve">
+    <value>已显示 {0} 项时序，共 {1} 个通道。</value>
+  </data>
+  <data name="ToggleModuleInfo" xml:space="preserve">
+    <value>显示或隐藏内存条信息</value>
+  </data>
+  <data name="ToggleSection" xml:space="preserve">
+    <value>折叠或展开此部分</value>
+  </data>
+  <data name="Token" xml:space="preserve">
+    <value>标识</value>
+  </data>
+  <data name="TokensAndStatus" xml:space="preserve">
+    <value>标识与状态</value>
+  </data>
+  <data name="ToolsMenu" xml:space="preserve">
+    <value>工具(_T)</value>
+  </data>
+  <data name="TopOfSystemMemory" xml:space="preserve">
+    <value>系统内存上界</value>
+  </data>
+  <data name="TotalPower" xml:space="preserve">
+    <value>总功耗</value>
+  </data>
+  <data name="TrademarkNotice" xml:space="preserve">
+    <value>华硕、芝奇、微星、七彩虹、佰维及其 OriginCode 系列的标志和其他商标均归各自权利人所有。</value>
+  </data>
+  <data name="TrainedApob" xml:space="preserve">
+    <value>训练结果（APOB）</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>类型</value>
+  </data>
+  <data name="UclkRatio" xml:space="preserve">
+    <value>UCLK 分频比</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>发生意外错误：{0}{1}</value>
+  </data>
+  <data name="UninstallInpOutOnExit" xml:space="preserve">
+    <value>退出时卸载 inpoutx64 驱动</value>
+  </data>
+  <data name="UninstallNotifications" xml:space="preserve">
+    <value>卸载通知</value>
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>未知</value>
+  </data>
+  <data name="UnknownCpu" xml:space="preserve">
+    <value>未知 CPU</value>
+  </data>
+  <data name="UnknownToken" xml:space="preserve">
+    <value>未知标识</value>
+  </data>
+  <data name="UnreadableSettings" xml:space="preserve">
+    <value>设置文件无效或版本过旧。
+程序将恢复默认设置，自定义设置将丢失。</value>
+  </data>
+  <data name="Unsupported" xml:space="preserve">
+    <value>不支持</value>
+  </data>
+  <data name="UnsupportedCpu" xml:space="preserve">
+    <value>不支持的 CPU</value>
+  </data>
+  <data name="UnsupportedCpuFamily" xml:space="preserve">
+    <value>不支持此 CPU 系列。</value>
+  </data>
+  <data name="UnsupportedCpuModel" xml:space="preserve">
+    <value>不支持此 CPU 型号。</value>
+  </data>
+  <data name="UnsupportedCpuModelTitle" xml:space="preserve">
+    <value>不支持的 CPU 型号</value>
+  </data>
+  <data name="UnsupportedSpd" xml:space="preserve">
+    <value>SPD 无效或不受支持（设备类型 0x{0:X2}）</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>更新</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>发现新版本</value>
+  </data>
+  <data name="UpdateCancelled" xml:space="preserve">
+    <value>已取消更新。</value>
+  </data>
+  <data name="UpdateCancelledForSecurity" xml:space="preserve">
+    <value>为安全起见，已取消更新。</value>
+  </data>
+  <data name="UpdateCheckError" xml:space="preserve">
+    <value>检查更新时出错：
+{0}</value>
+  </data>
+  <data name="UpdateCheckFailed" xml:space="preserve">
+    <value>检查更新失败</value>
+  </data>
+  <data name="UpdateCheckSettingsHint" xml:space="preserve">
+    <value>
+
+你可以在这里关闭启动时检查更新，也可在设置中重新开启。</value>
+  </data>
+  <data name="UpdateChecksumMismatch" xml:space="preserve">
+    <value>更新校验失败。下载文件的校验和与预期值不一致。
+</value>
+  </data>
+  <data name="UpdateDownloadFailed" xml:space="preserve">
+    <value>无法下载更新：
+{0}</value>
+  </data>
+  <data name="UpdateExeMissing" xml:space="preserve">
+    <value>下载的更新中缺少 ZenTimings.exe。
+</value>
+  </data>
+  <data name="UpdateFailed" xml:space="preserve">
+    <value>更新失败</value>
+  </data>
+  <data name="UpdateMetadataSignatureInvalid" xml:space="preserve">
+    <value>更新信息的签名验证失败，更新 XML 文件可能已被篡改。为安全起见，已取消更新。</value>
+  </data>
+  <data name="UpdateNotNewer" xml:space="preserve">
+    <value>下载的版本（{0}）与当前版本（{1}）相同或更旧。
+</value>
+  </data>
+  <data name="UpdateNow" xml:space="preserve">
+    <value>立即更新</value>
+  </data>
+  <data name="UpdateServerUnavailable" xml:space="preserve">
+    <value>无法连接更新服务器。请检查网络连接后重试。</value>
+  </data>
+  <data name="UpdateSignatureInvalid" xml:space="preserve">
+    <value>更新签名验证失败。下载的文件可能已被篡改。
+</value>
+  </data>
+  <data name="UpdateStartupTaskFailed" xml:space="preserve">
+    <value>无法更新 Windows 启动任务。</value>
+  </data>
+  <data name="UpdateTitle" xml:space="preserve">
+    <value>ZenTimings 更新</value>
+  </data>
+  <data name="Value" xml:space="preserve">
+    <value>值</value>
+  </data>
+  <data name="VerifyingChecksum" xml:space="preserve">
+    <value>正在校验文件…</value>
+  </data>
+  <data name="VerifyingSignature" xml:space="preserve">
+    <value>正在验证数字签名…</value>
+  </data>
+  <data name="VerifyingUpdate" xml:space="preserve">
+    <value>正在验证更新…</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>版本</value>
+  </data>
+  <data name="VersionNumber" xml:space="preserve">
+    <value>版本 {0}</value>
+  </data>
+  <data name="ViewFullScreenshot" xml:space="preserve">
+    <value>查看完整截图</value>
+  </data>
+  <data name="VisitMotherboardPage" xml:space="preserve">
+    <value>点击打开 {0} 的产品页面</value>
+  </data>
+  <data name="Voltage" xml:space="preserve">
+    <value>电压</value>
+  </data>
+  <data name="Voltages" xml:space="preserve">
+    <value>电压</value>
+  </data>
+  <data name="WaitingForDriverCleanup" xml:space="preserve">
+    <value>正在等待驱动清理完成…</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>警告</value>
+  </data>
+  <data name="WckCkRatioHint" xml:space="preserve">
+    <value>WCK 与 CK 的比值，数据按 WCK 时钟传输</value>
+  </data>
+  <data name="WhatHappened" xml:space="preserve">
+    <value>遇到了什么问题？</value>
+  </data>
+  <data name="WhatsNew" xml:space="preserve">
+    <value>更新内容</value>
+  </data>
+  <data name="WheaErrorsSinceBoot" xml:space="preserve">
+    <value>自开机以来的错误数</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>是</value>
+  </data>
+</root>

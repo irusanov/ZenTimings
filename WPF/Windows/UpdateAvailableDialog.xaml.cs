@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows;
+using ZenTimings.Localization;
 
 namespace ZenTimings.Windows
 {
@@ -12,10 +13,10 @@ namespace ZenTimings.Windows
         {
             InitializeComponent();
 
-            Title = isBeta ? "BETA Update Available" : "Stable Update Available";
+            Title = isBeta ? UiText.Get("BetaUpdateAvailable") : UiText.Get("StableUpdateAvailable");
 
-            HeaderText.Text = $"There is new version {newVersion} available.{Environment.NewLine}" +
-                              $"You are using version {installedVersion}.";
+            HeaderText.Text = UiText.Format("NewVersionAvailable", newVersion, Environment.NewLine) +
+                              UiText.Format("InstalledVersion", installedVersion);
             ChangesList.ItemsSource = changes ?? new string[0];
             DontAskCheckBox.Visibility = showDontAskAgain ? Visibility.Visible : Visibility.Collapsed;
         }

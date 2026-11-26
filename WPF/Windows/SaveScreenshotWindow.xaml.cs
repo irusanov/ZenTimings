@@ -10,6 +10,7 @@ using MessageBox = ZenTimings.Theming.MessageBox;
 using MessageBoxButton = ZenTimings.Theming.MessageBoxButton;
 using MessageBoxImage = ZenTimings.Theming.MessageBoxImage;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
+using ZenTimings.Localization;
 
 namespace ZenTimings.Windows
 {
@@ -30,7 +31,7 @@ namespace ZenTimings.Windows
         {
             string unixTimestamp = Convert.ToString(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMinutes,
                 CultureInfo.InvariantCulture);
-            return $"{string.Join("_", this.Title.Split())}_{unixTimestamp}.png";
+            return $"ZenTimings_Screenshot_{unixTimestamp}.png";
         }
 
         // The configured screenshot folder, or the default one next to the executable when the
@@ -74,7 +75,7 @@ namespace ZenTimings.Windows
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to save screenshot: {ex.Message}", "Error", MessageBoxButton.OK,
+                MessageBox.Show(UiText.Format("SaveScreenshotFailed", ex.Message), UiText.Get("Error"), MessageBoxButton.OK,
                     MessageBoxImage.Error);
                 return;
             }
@@ -92,7 +93,7 @@ namespace ZenTimings.Windows
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog
             {
-                Filter = "png files (*.png)|*.png|All files (*.*)|*.*",
+                Filter = UiText.Get("PngFileFilter"),
                 FilterIndex = 1,
                 DefaultExt = "png",
                 FileName = GetFilenameWithTimestamp(),
@@ -120,7 +121,7 @@ namespace ZenTimings.Windows
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Could not copy the screenshot to the clipboard: {ex.Message}", "Clipboard",
+                MessageBox.Show(UiText.Format("CopyScreenshotFailed", ex.Message), UiText.Get("Clipboard"),
                     MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }

@@ -14,6 +14,7 @@ using ZenTimings.Plugin;
 using ZenTimings.Settings;
 using ZenTimings.Utils;
 using static ZenTimings.Settings.AppSettings;
+using ZenTimings.Localization;
 
 namespace ZenTimings.ViewModels
 {
@@ -370,7 +371,7 @@ namespace ZenTimings.ViewModels
             {
                 // Debug-report-driven ("mock") window: everything comes from the parsed report,
                 // never from the live machine's CpuSingleton.
-                CpuName = mockData.CpuName ?? "Unknown CPU";
+                CpuName = mockData.CpuName ?? UiText.Get("UnknownCpu");
                 SmuVersion = mockData.SmuVersion ?? "Unknown";
                 TotalCapacity = mockData.TotalCapacity;
                 CodeName = mockData.CpuInfo.codeName;
@@ -411,7 +412,7 @@ namespace ZenTimings.ViewModels
 
             IsMotherboardLogoVisible = motherboardLogoName != null;
             MotherboardLogoTooltip = motherboardLogoName != null
-                ? $"Click to visit {(mockData != null ? mockData.MbName : CpuSingleton.Instance.systemInfo?.MbName)} page"
+                ? UiText.Format("VisitMotherboardPage", (mockData != null ? mockData.MbName : CpuSingleton.Instance.systemInfo?.MbName))
                 : string.Empty;
 
             if (memoryType == MemType.DDR5 || memoryType == MemType.LPDDR5)

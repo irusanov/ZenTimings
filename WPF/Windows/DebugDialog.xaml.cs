@@ -8,6 +8,7 @@ using ZenTimings.Helpers;
 using ZenTimings.Utils;
 using MessageBox = ZenTimings.Theming.MessageBox;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
+using ZenTimings.Localization;
 
 namespace ZenTimings.Windows
 {
@@ -42,7 +43,7 @@ namespace ZenTimings.Windows
         {
             var unixTimestamp = Convert.ToString(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMinutes,
                 CultureInfo.InvariantCulture);
-            var filename = $@"{string.Join("_", Title.Split())}_{unixTimestamp}.txt";
+            var filename = $"Debug_Report_{unixTimestamp}.txt";
 
             // Never rely on the current directory (it is System32 when started by the scheduled task)
             var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filename);
@@ -51,7 +52,7 @@ namespace ZenTimings.Windows
             {
                 var saveFileDialog = new SaveFileDialog
                 {
-                    Filter = "text files (*.txt)|*.txt|All files (*.*)|*.*",
+                    Filter = UiText.Get("TextFileFilterLower"),
                     FilterIndex = 1,
                     DefaultExt = "txt",
                     FileName = filename,
@@ -68,13 +69,13 @@ namespace ZenTimings.Windows
             try
             {
                 File.WriteAllText(filePath, textBoxDebugOutput.Text);
-                MessageBox.Show($"Debug report saved as {filePath}", saveAs ? "Save As" : "Save");
+                MessageBox.Show(UiText.Format("DebugReportSaved", filePath), saveAs ? UiText.Get("SaveAs") : UiText.Get("Save"));
             }
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"Could not save the debug report to {filePath}:\n{ex.Message}",
-                    "Error",
+                    UiText.Format("DebugReportSaveFailed", filePath, ex.Message),
+                    UiText.Get("Error"),
                     ZenTimings.Theming.MessageBoxButton.OK,
                     ZenTimings.Theming.MessageBoxImage.Error);
             }
@@ -94,11 +95,11 @@ namespace ZenTimings.Windows
                 if (generator.Error != null || generator.TimedOut)
                 {
                     string reason = generator.TimedOut
-                        ? "The debug report did not finish in time, it shows what was collected."
-                        : $"An error occurred while generating the debug report:\n{generator.Error.Message}";
+                        ? UiText.Get("DebugReportTimedOut")
+                        : UiText.Format("DebugReportGenerationFailed", generator.Error.Message);
                     MessageBox.Show(
                         reason,
-                        "Error",
+                        UiText.Get("Error"),
                         ZenTimings.Theming.MessageBoxButton.OK,
                         ZenTimings.Theming.MessageBoxImage.Error);
                 }

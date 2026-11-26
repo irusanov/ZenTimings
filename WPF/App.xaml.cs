@@ -11,6 +11,7 @@ using ZenTimings.Helpers;
 using ZenTimings.Settings;
 using ZenTimings.Windows;
 using static ZenTimings.Helpers.DriverCleaner;
+using ZenTimings.Localization;
 
 namespace ZenTimings
 {
@@ -57,8 +58,10 @@ namespace ZenTimings
             WaitForDriverCleanup();
 
             instanceMutex = new Mutex(true, mutexName, out createdNew);
+            AppSettings settings = AppSettings.Instance;
+            UiText.SetLanguage(settings.Language);
 
-            if (!createdNew && AppSettings.Instance.SingleInstance)
+            if (!createdNew && settings.SingleInstance)
             {
                 // App is already running! Exit the application and
                 // show the other window.
@@ -86,7 +89,7 @@ namespace ZenTimings
 
             GC.KeepAlive(instanceMutex);
 
-            SplashWindow.Start(startedFromScheduledTask && AppSettings.Instance.AutostartWithWindows);
+            SplashWindow.Start(startedFromScheduledTask && settings.AutostartWithWindows);
 
             base.OnStartup(e);
         }
@@ -127,8 +130,8 @@ namespace ZenTimings
                 }
 
                 showingError = true;
-                string logHint = CrashLog.LastPath != null ? $"\n\nDetails were written to {CrashLog.LastPath}" : "";
-                string message = $"An unexpected error occurred: {args.Exception.Message}{logHint}";
+                string logHint = CrashLog.LastPath != null ? UiText.Format("CrashLogLocation", CrashLog.LastPath) : "";
+                string message = UiText.Format("UnexpectedError", args.Exception.Message, logHint);
                 try
                 {
                     // Offers to send a report with the exception attached
@@ -225,8 +228,9 @@ namespace ZenTimings
 
                 // Defer the update check here; it is performed by the regular
                 // SplashWindow.Start() call in OnStartup once cleanup has finished.
+                UiText.SetLanguage(AppSettings.Instance.Language);
                 SplashWindow.Start(true);
-                SplashWindow.Loading("Waiting for driver cleanup...");
+                SplashWindow.Loading(UiText.Get("WaitingForDriverCleanup"));
 
                 AcquireMutex(cleanupMutex);
                 cleanupMutex.ReleaseMutex();

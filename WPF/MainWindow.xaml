@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:loc="clr-namespace:ZenTimings.Localization"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:theming="clr-namespace:ZenTimings.Theming"
     xmlns:converters="clr-namespace:ZenTimings.Converters"
@@ -47,32 +48,32 @@
                         <ColumnDefinition Width="3" />
                     </Grid.ColumnDefinitions>
                     <Menu x:Name="MainMenu" Grid.Column="0" Style="{DynamicResource MenuStyles}">
-                        <MenuItem Header="_File">
-                            <MenuItem Header="Export..." Click="ExportSnapshotMenuItem_Click" />
-                            <MenuItem x:Name="menuItemLiveSnapshot" Header="Live snapshot file..." Click="LiveSnapshotMenuItem_Click" />
+                        <MenuItem Header="{loc:Text FileMenu}">
+                            <MenuItem Header="{loc:Text ExportMenu}" Click="ExportSnapshotMenuItem_Click" />
+                            <MenuItem x:Name="menuItemLiveSnapshot" Header="{loc:Text LiveSnapshotMenu}" Click="LiveSnapshotMenuItem_Click" />
                             <Separator Foreground="{DynamicResource PanelBackground}" />
-                            <MenuItem Header="E_xit" Click="ExitToolStripMenuItem_Click" />
+                            <MenuItem Header="{loc:Text ExitMenu}" Click="ExitToolStripMenuItem_Click" />
                         </MenuItem>
-                        <MenuItem Header="_Tools">
-                            <MenuItem Header="_Options" Click="OptionsToolStripMenuItem_Click" />
+                        <MenuItem Header="{loc:Text ToolsMenu}">
+                            <MenuItem Header="{loc:Text OptionsMenu}" Click="OptionsToolStripMenuItem_Click" />
                             <Separator Foreground="{DynamicResource PanelBackground}" />
                             <MenuItem
-                                Header="_Sensors"
+                                Header="{loc:Text SensorsMenu}"
                                 Click="TelemetryMonitorToolstripMenuItem_Click"
                                 Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
                             <MenuItem
-                                Header="UCLK ratio"
+                                Header="{loc:Text UclkRatio}"
                                 IsCheckable="True"
                                 IsChecked="{Binding Settings.ShowUclkRatio, Mode=TwoWay}"
                                 Click="UclkRatioMenuItem_Click"
                                 Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
-                            <MenuItem Header="Advanced Info">
+                            <MenuItem Header="{loc:Text AdvancedInfo}">
                                 <MenuItem
-                                    Header="System"
+                                    Header="{loc:Text System}"
                                     Click="SystemInfoToolstripMenuItem_Click"
                                     Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
                                 <MenuItem
-                                    Header="Timings"
+                                    Header="{loc:Text Timings}"
                                     Click="AdvancedTimingsToolstripMenuItem_Click"
                                     Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
                                 <MenuItem
@@ -89,26 +90,26 @@
                                     Visibility="{Binding Settings.AdvancedMode, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
                             </MenuItem>
                             <Separator Foreground="{DynamicResource PanelBackground}" />
-                            <MenuItem Header="_Debug">
-                                <MenuItem Header="_Create, save or send a debug report..." Click="DebugToolstripItem_Click" />
-                                <MenuItem Header="_Open a debug report (beta)..." Click="OpenDebugLogAsMockWindow_Click" />
+                            <MenuItem Header="{loc:Text DebugMenu}">
+                                <MenuItem Header="{loc:Text CreateDebugReportMenu}" Click="DebugToolstripItem_Click" />
+                                <MenuItem Header="{loc:Text OpenDebugReportMenu}" Click="OpenDebugLogAsMockWindow_Click" />
                                 <Separator Foreground="{DynamicResource PanelBackground}" />
-                                <MenuItem Header="Dump _APOB table" Click="DumpApobTable_Click" />
+                                <MenuItem Header="{loc:Text DumpApobMenu}" Click="DumpApobTable_Click" />
                             </MenuItem>
                         </MenuItem>
-                        <MenuItem Header="_Help">
-                            <MenuItem Header="_About" Click="AboutToolStripMenuItem_Click" />
-                            <MenuItem Header="Changelog" Click="MenuItem_Click_5" />
-                            <MenuItem Header="_Report a problem..." Click="ReportProblemMenuItem_Click" />
+                        <MenuItem Header="{loc:Text HelpMenu}">
+                            <MenuItem Header="{loc:Text AboutMenu}" Click="AboutToolStripMenuItem_Click" />
+                            <MenuItem Header="{loc:Text Changelog}" Click="MenuItem_Click_5" />
+                            <MenuItem Header="{loc:Text ReportProblemMenu}" Click="ReportProblemMenuItem_Click" />
                             <Separator Foreground="{DynamicResource PanelBackground}" />
                             <MenuItem Header="Discord" Click="MenuItem_Click_2" />
                             <MenuItem Header="GitHub" Click="MenuItem_Click_3" />
                             <MenuItem Header="Google Drive" Click="MenuItem_Click_6" />
                             <Separator Foreground="{DynamicResource PanelBackground}" />
-                            <MenuItem Header="Donate with _PayPal" Click="MenuItem_Click" />
-                            <MenuItem Header="Donate with _Revolut" Click="MenuItem_Click_1" />
+                            <MenuItem Header="{loc:Text DonatePayPal}" Click="MenuItem_Click" />
+                            <MenuItem Header="{loc:Text DonateRevolut}" Click="MenuItem_Click_1" />
                             <Separator Foreground="{DynamicResource PanelBackground}" />
-                            <MenuItem Header="AM5 AGESA/UEFI/BIOS List by Reous" Click="MenuItem_Click_4" />
+                            <MenuItem Header="{loc:Text Am5BiosList}" Click="MenuItem_Click_4" />
                         </MenuItem>
                     </Menu>
                     <!-- Shown while the live snapshot file is being written, so that it is not left on and forgotten -->
@@ -162,7 +163,7 @@
                         />
                         <TextBlock
                             x:Name="labelMB"
-                            Text="{Binding MotherboardInfo, Mode=OneWay, FallbackValue='Motherboard: N/A'}"
+                            Text="{Binding MotherboardInfo, Mode=OneWay, FallbackValue={loc:Text MotherboardUnavailable}}"
                             Padding="12 0 5 5"
                         />
                         <TextBlock
@@ -212,9 +213,9 @@
                         <Button 
                             x:Name="buttonAllDimms"
                             DockPanel.Dock="Right"
-                            Content="All"
+                            Content="{loc:Text All}"
                             Margin="4 0 0 0"
-                            ToolTip="All channels side by side"
+                            ToolTip="{loc:Text AllChannelsSideBySide}"
                             Visibility="Collapsed"
                             Click="ButtonAllDimms_Click" />
                         <ComboBox x:Name="comboBoxPartNumber" IsReadOnly="True" IsEnabled="False" />
@@ -235,7 +236,7 @@
                             MinWidth="35"
                             Visibility="{Binding ECC, Mode=OneWay, Converter={StaticResource BoolToVis}}"
                             IsEnabled="True"
-                            ToolTip="Error-Correcting Code memory detected"
+                            ToolTip="{loc:Text EccDetected}"
                         />
                     </StackPanel>
 

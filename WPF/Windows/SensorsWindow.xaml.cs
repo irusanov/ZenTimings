@@ -19,6 +19,7 @@ using ZenTimings.Helpers;
 using ZenTimings.Settings;
 using ZenTimings.Utils;
 using ZenTimings.ViewModels;
+using ZenTimings.Localization;
 
 namespace ZenTimings.Windows
 {
@@ -290,8 +291,8 @@ namespace ZenTimings.Windows
             {
                 case "Sensor":
                     // Icon (11) + its right margin (4) + the cell text's own padding (3 left, 3 right)
-                    contentWidth = AllTelemetryItems().Select(i => MeasureCellText(i.Name)).DefaultIfEmpty(0).Max() + 11 + 4 + 6;
-                    headerWidth = MeasureCellText("Sensor") + 16;
+                    contentWidth = AllTelemetryItems().Select(i => MeasureCellText(i.DisplayName)).DefaultIfEmpty(0).Max() + 11 + 4 + 6;
+                    headerWidth = MeasureCellText(UiText.Get("Sensor")) + 16;
                     minWidth = 60;
                     break;
                 case "Current":
@@ -299,7 +300,7 @@ namespace ZenTimings.Windows
                 case "Max":
                 case "Average":
                     contentWidth = AllTelemetryItems().Select(i => MeasureCellText(GetColumnText(i, column))).DefaultIfEmpty(0).Max() + 6;
-                    headerWidth = MeasureCellText(column) + 16;
+                    headerWidth = MeasureCellText(UiText.Get(column)) + 16;
                     minWidth = 40;
                     break;
                 default:
@@ -385,12 +386,12 @@ namespace ZenTimings.Windows
             bool hasAnySensors = moduleViewModels.Count > 0 || sensorGroupViewModels.Count > 0;
             NoSensorsMessage.Visibility = hasAnySensors ? Visibility.Collapsed : Visibility.Visible;
             if (!hasAnySensors)
-                StatusText.Text = "No sensors available on this system";
+                StatusText.Text = UiText.Get("NoSensorsAvailable");
         }
 
         private void UptimeTimer_Tick(object sender, EventArgs e)
         {
-            StatusText.Text = "Running: " + (DateTime.Now - _windowOpenedAt).ToString(@"hh\:mm\:ss");
+            StatusText.Text = UiText.Get("SensorsRunningTime") + (DateTime.Now - _windowOpenedAt).ToString(@"hh\:mm\:ss");
         }
 
         private void AppSettings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -428,7 +429,7 @@ namespace ZenTimings.Windows
             updateTimer.Stop();
             _uptimeStatusTimer.Stop();
             _windowOpenedAt = DateTime.Now;
-            StatusText.Text = "Auto-refresh off";
+            StatusText.Text = UiText.Get("AutoRefreshOff");
         }
 
         private async Task LoadModulesDataAsync()
@@ -440,7 +441,7 @@ namespace ZenTimings.Windows
 
             // Block periodic refresh while the initial SMBUS load is in progress.
             _isRefreshing = true;
-            StatusText.Text = "Loading...";
+            StatusText.Text = UiText.Get("Loading");
 
             Tuple<List<ModuleViewModel>, string> result = null;
             Exception loadError = null;
@@ -460,8 +461,8 @@ namespace ZenTimings.Windows
             moduleViewModels.Clear();
             if (loadError != null)
             {
-                StatusText.Text = $"Error loading modules: {loadError.Message}";
-                MessageBox.Show($"Error loading module data:\n{loadError.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                StatusText.Text = UiText.Format("LoadModulesFailed", loadError.Message);
+                MessageBox.Show(UiText.Format("LoadModuleDataFailed", loadError.Message), UiText.Get("Error"), MessageBoxButton.OK, MessageBoxImage.Error);
             }
             else
             {
@@ -544,7 +545,7 @@ namespace ZenTimings.Windows
             }
             catch (Exception ex)
             {
-                warning = $"Warning: Could not read SPD data - {ex.Message}";
+                warning = UiText.Format("ReadSpdWarning", ex.Message);
             }
 
             if (spdInfo != null && spdInfo.Count > 0)
@@ -597,7 +598,7 @@ namespace ZenTimings.Windows
                     vms.Add(vm);
                     slotIndex++;
                 }
-                return Tuple.Create(vms, $"Loaded {vms.Count} module(s)");
+                return Tuple.Create(vms, UiText.Format("ModulesLoaded", vms.Count));
             }
 
             if (memoryConfig.Modules != null && memoryConfig.Modules.Count > 0)
@@ -635,7 +636,7 @@ namespace ZenTimings.Windows
                         Rank = module.Rank.ToString(),
                         MemoryChip = hasSpd && !string.IsNullOrEmpty(spd.DramManufacturer)
                             ? $"{spd.DramManufacturer}, {spd.DieDensityMbit / 1024} Gb x{spd.DeviceWidthBits}"
-                            : "N/A (no SPD data)",
+                            : UiText.Get("SpdDataUnavailable"),
                         HasPmic = false
                     };
 
@@ -656,12 +657,12 @@ namespace ZenTimings.Windows
                 }
 
                 if (sensorCount > 0)
-                    return Tuple.Create(vms, $"Loaded {vms.Count} module(s) - {sensorCount} thermal sensor(s)");
+                    return Tuple.Create(vms, UiText.Format("ModulesAndThermalSensorsLoaded", vms.Count, sensorCount));
 
-                return Tuple.Create(vms, $"Loaded {vms.Count} module(s) - Limited info (no SPD/PMIC data available)");
+                return Tuple.Create(vms, UiText.Format("ModulesLoadedLimitedInfo", vms.Count));
             }
 
-            return Tuple.Create(vms, warning ?? "No memory modules detected");
+            return Tuple.Create(vms, warning ?? UiText.Get("NoModulesDetected"));
         }
 
         private void InitializePmicTelemetry(ModuleViewModel vm, Ddr5Pmic pmicData, int slotIndex)
@@ -837,7 +838,7 @@ namespace ZenTimings.Windows
             }
             catch (Exception ex)
             {
-                StatusText.Text = $"Error refreshing telemetry: {ex.Message}";
+                StatusText.Text = UiText.Format("RefreshTelemetryFailed", ex.Message);
             }
             finally
             {
@@ -929,9 +930,9 @@ namespace ZenTimings.Windows
                 return;
             }
 
-            text.AppendLine("Sensor\tCurrent\tMin\tMax\tAverage");
+            text.AppendLine(string.Join("\t", UiText.Get("Sensor"), UiText.Get("Current"), UiText.Get("Min"), UiText.Get("Max"), UiText.Get("Average")));
             foreach (TelemetryItemViewModel item in items)
-                text.AppendLine($"{item.Name}\t{item.Current}\t{item.Min}\t{item.Max}\t{item.Average}");
+                text.AppendLine($"{item.DisplayName}\t{item.Current}\t{item.Min}\t{item.Max}\t{item.Average}");
 
             ClipboardUtils.Copy(text.ToString(), button);
         }
@@ -1311,7 +1312,7 @@ namespace ZenTimings.Windows
 
             if (loadError != null)
             {
-                StatusText.Text = $"Error loading modules: {loadError.Message}";
+                StatusText.Text = UiText.Format("LoadModulesFailed", loadError.Message);
                 _isRefreshing = false;
                 return;
             }
@@ -1374,7 +1375,7 @@ namespace ZenTimings.Windows
                 foreach (var item in module.TelemetryItems)
                 {
                     if (!string.IsNullOrEmpty(item.GroupKey))
-                        group.Entries.Add(new SensorSettingsEntry(item.GroupKey, item.Name, true));
+                        group.Entries.Add(new SensorSettingsEntry(item.GroupKey, item.DisplayName, true));
                 }
 
                 foreach (var key in module.HiddenKeys)
@@ -1391,7 +1392,7 @@ namespace ZenTimings.Windows
                 foreach (var item in sensorGroup.TelemetryItems)
                 {
                     if (!string.IsNullOrEmpty(item.GroupKey))
-                        group.Entries.Add(new SensorSettingsEntry(item.GroupKey, item.Name, true));
+                        group.Entries.Add(new SensorSettingsEntry(item.GroupKey, item.DisplayName, true));
                 }
 
                 foreach (var key in sensorGroup.HiddenKeys)
@@ -1407,7 +1408,8 @@ namespace ZenTimings.Windows
         private static string GetSensorNameFromKey(string key)
         {
             int idx = key.LastIndexOf('|');
-            return idx >= 0 && idx < key.Length - 1 ? key.Substring(idx + 1) : key;
+            string name = idx >= 0 && idx < key.Length - 1 ? key.Substring(idx + 1) : key;
+            return TelemetryItemViewModel.GetDisplayName(name, key);
         }
 
         private void RefreshSensorGroups()
@@ -1427,7 +1429,7 @@ namespace ZenTimings.Windows
             }
             catch (Exception ex)
             {
-                StatusText.Text = $"Error refreshing sensors: {ex.Message}";
+                StatusText.Text = UiText.Format("RefreshSensorsFailed", ex.Message);
             }
         }
 

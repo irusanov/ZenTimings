@@ -13,6 +13,7 @@ using MessageBox = ZenTimings.Theming.MessageBox;
 using MessageBoxButton = ZenTimings.Theming.MessageBoxButton;
 using MessageBoxImage = ZenTimings.Theming.MessageBoxImage;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
+using ZenTimings.Localization;
 
 namespace ZenTimings.Windows
 {
@@ -74,7 +75,7 @@ namespace ZenTimings.Windows
             if (string.IsNullOrWhiteSpace(body))
                 return;
 
-            string tab = profiles ? "Profiles" : "Module";
+            string tab = profiles ? UiText.Get("Profiles") : UiText.Get("MemoryModule");
             string title = $"SPD {(ComboSlots.SelectedItem as SlotItem)?.Display} - {tab}";
             ClipboardUtils.Copy($"{title}{Environment.NewLine}{Environment.NewLine}{body.TrimEnd()}", sender as Button);
         }
@@ -90,13 +91,13 @@ namespace ZenTimings.Windows
             var selected = ComboSlots.SelectedItem as SlotItem;
             if (selected == null)
             {
-                MessageBox.Show("No DIMM slot selected.", "Dump SPD", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(UiText.Get("NoDimmSlotSelected"), UiText.Get("DumpSpd"), MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             var dlg = new SaveFileDialog
             {
-                Filter = "SPD files (*.spd)|*.spd|Binary files (*.bin)|*.bin|All files (*.*)|*.*",
+                Filter = UiText.Get("SpdFileFilter"),
                 FilterIndex = 1,
                 DefaultExt = "spd",
                 FileName = GetDumpFileName(selected),
@@ -107,7 +108,7 @@ namespace ZenTimings.Windows
                 return;
 
             ButtonDumpSpd.IsEnabled = false;
-            StatusText.Text = $"Dumping SPD for {selected.Display}…";
+            StatusText.Text = UiText.Format("DumpingSpd", selected.Display);
 
             bool success = false;
             string error = null;
@@ -130,17 +131,17 @@ namespace ZenTimings.Windows
 
             if (error != null)
             {
-                StatusText.Text = "Dump failed.";
-                MessageBox.Show($"Failed to dump SPD: {error}", "Dump SPD", MessageBoxButton.OK, MessageBoxImage.Error);
+                StatusText.Text = UiText.Get("SpdDumpFailed");
+                MessageBox.Show(UiText.Format("SpdDumpError", error), UiText.Get("DumpSpd"), MessageBoxButton.OK, MessageBoxImage.Error);
             }
             else if (!success)
             {
-                StatusText.Text = "Dump failed.";
-                MessageBox.Show("Failed to dump SPD. The operation returned false.", "Dump SPD", MessageBoxButton.OK, MessageBoxImage.Error);
+                StatusText.Text = UiText.Get("SpdDumpFailed");
+                MessageBox.Show(UiText.Get("SpdDumpReturnedFalse"), UiText.Get("DumpSpd"), MessageBoxButton.OK, MessageBoxImage.Error);
             }
             else
             {
-                StatusText.Text = $"SPD dumped to {dlg.FileName}";
+                StatusText.Text = UiText.Format("SpdDumpSaved", dlg.FileName);
             }
         }
 
@@ -177,7 +178,7 @@ namespace ZenTimings.Windows
 
         private async Task LoadSlotsAsync()
         {
-            StatusText.Text = "Reading SPD data…";
+            StatusText.Text = UiText.Get("ReadingSpd");
             ComboSlots.IsEnabled = false;
 
             List<SlotItem> loaded = null;
@@ -199,7 +200,7 @@ namespace ZenTimings.Windows
 
                     if (spdByAddress.Any(entry => IsPartial(entry.Value)))
                     {
-                        Dispatcher.Invoke(() => StatusText.Text = "Partial SPD detected, refreshing…");
+                        Dispatcher.Invoke(() => StatusText.Text = UiText.Get("RefreshingPartialSpd"));
                         _memoryConfig.RefreshSpdInfo();
                     }
 
@@ -240,13 +241,13 @@ namespace ZenTimings.Windows
 
             if (error != null)
             {
-                SetNoDataState($"Error reading SPD: {error}");
+                SetNoDataState(UiText.Format("ReadSpdFailed", error));
                 return;
             }
 
             if (loaded == null || loaded.Count == 0)
             {
-                SetNoDataState("No SPD data detected");
+                SetNoDataState(UiText.Get("SpdNotDetected"));
                 return;
             }
 
@@ -256,19 +257,19 @@ namespace ZenTimings.Windows
             ComboSlots.ItemsSource = null;
             ComboSlots.ItemsSource = _slots;
             ComboSlots.SelectedIndex = 0;
-            StatusText.Text = $"Loaded {_slots.Count} SPD module(s)";
+            StatusText.Text = UiText.Format("SpdModulesLoaded", _slots.Count);
         }
 
         private void RenderSelected(SlotItem slot)
         {
             if (slot == null || slot.SpdInfo == null)
             {
-                ShowView(SpdModuleView.Message("No SPD data available."));
+                ShowView(SpdModuleView.Message(UiText.Get("NoSpdData")));
                 return;
             }
 
             ShowView(SpdPresenter.Build(slot.SpdInfo));
-            StatusText.Text = $"Showing SPD for {slot.Display}";
+            StatusText.Text = UiText.Format("ShowingSpd", slot.Display);
         }
 
         private void ShowView(SpdModuleView view)

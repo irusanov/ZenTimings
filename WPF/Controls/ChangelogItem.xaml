@@ -1,6 +1,7 @@
 ﻿<UserControl x:Class="ZenTimings.Controls.ChangelogItem"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:ZenTimings.Localization"
              xmlns:t="clr-namespace:ZenTimings.Theming"
              x:Name="Root"
              Margin="0,2">
@@ -36,7 +37,7 @@
                         BorderThickness="1"
                         BorderBrush="{DynamicResource {x:Static t:ThemeBrushes.WarningBrush}}"
                         Visibility="{Binding IsBeta, ElementName=Root, Converter={StaticResource BoolToVis}}">
-                    <TextBlock Text="BETA"
+                    <TextBlock Text="{loc:Text BetaBadge}"
                                FontSize="9"
                                FontWeight="SemiBold"
                                Foreground="{DynamicResource {x:Static t:ThemeBrushes.WarningBrush}}"/>

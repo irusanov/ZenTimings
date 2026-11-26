@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using ZenTimings.Localization;
 
 namespace ZenTimings.Helpers
 {
@@ -92,15 +93,15 @@ namespace ZenTimings.Helpers
                         if (!response.IsSuccessStatusCode)
                         {
                             if ((int)response.StatusCode == 429)
-                                throw new DebugReportException("Too many reports were sent from your connection. Please try again later.");
+                                throw new DebugReportException(UiText.Get("ReportRateLimit"));
 
                             throw new DebugReportException(
-                                ReadJsonString(body, "error") ?? $"The server returned an error ({(int)response.StatusCode}).");
+                                ReadJsonString(body, "error") ?? UiText.Format("ReportServerError", (int)response.StatusCode));
                         }
 
                         string id = ReadJsonString(body, "id");
                         if (string.IsNullOrEmpty(id))
-                            throw new DebugReportException("The server sent an unexpected response.");
+                            throw new DebugReportException(UiText.Get("ReportUnexpectedResponse"));
 
                         return id;
                     }
@@ -184,7 +185,7 @@ namespace ZenTimings.Helpers
                 }
             }
 
-            throw new IOException("The sent report could not be saved: " + lastError?.Message, lastError);
+            throw new IOException(UiText.Get("ReportCopySaveFailed") + lastError?.Message, lastError);
         }
 
         private static string BuildInfo(string referenceId, DateTime sentAt, DebugReportSubmission submission)

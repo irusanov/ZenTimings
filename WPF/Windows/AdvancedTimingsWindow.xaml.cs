@@ -13,6 +13,7 @@ using ZenStates.Core.Hardware.DRAM;
 using ZenTimings.Common;
 using ZenTimings.Settings;
 using ZenTimings.Utils;
+using ZenTimings.Localization;
 
 namespace ZenTimings.Windows
 {
@@ -35,7 +36,6 @@ namespace ZenTimings.Windows
         private const double NameCellExtra = 2 + 9 + 3;
         private const double ValueCellExtra = 2 + 6 + 3;
 
-        private const string NameHeader = "Timing";
 
         private List<TimingGridItem> _allRows = new List<TimingGridItem>();
         private List<TimingGridItem> _visibleRows = new List<TimingGridItem>();
@@ -60,6 +60,8 @@ namespace ZenTimings.Windows
 
         // Set when a saved size and position were restored, so the default two-panel width is not applied
         private bool _placementRestored;
+
+        private static string NameHeader => UiText.Get("Timing");
 
         public AdvancedTimingsWindow()
         {
@@ -86,7 +88,7 @@ namespace ZenTimings.Windows
                     _valueHeaders = new string[0];
                     MeasureColumns();
                     ApplyFilter();
-                    StatusText.Text = "No memory timings available.";
+                    StatusText.Text = UiText.Get("NoMemoryTimings");
                     return;
                 }
 
@@ -117,8 +119,8 @@ namespace ZenTimings.Windows
             }
             catch (Exception ex)
             {
-                StatusText.Text = "Failed to load advanced timings.";
-                MessageBox.Show($"Failed to load advanced timings:{Environment.NewLine}{ex.Message}", "Advanced Timings", MessageBoxButton.OK, MessageBoxImage.Error);
+                StatusText.Text = UiText.Get("LoadAdvancedTimingsFailed");
+                MessageBox.Show(UiText.Format("LoadAdvancedTimingsError", Environment.NewLine, ex.Message), UiText.Get("AdvancedTimings"), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -500,7 +502,7 @@ namespace ZenTimings.Windows
             _rowsChanged = true;
             LayoutPanels();
 
-            StatusText.Text = $"{_visibleRows.Count} timings shown across {_channelCount} channel(s).";
+            StatusText.Text = UiText.Format("TimingsShown", _visibleRows.Count, _channelCount);
         }
 
         private void TimingSearchTextBox_TextChanged(object sender, TextChangedEventArgs e)

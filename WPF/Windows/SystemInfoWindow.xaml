@@ -4,11 +4,12 @@
     x:Class="ZenTimings.Windows.SystemInfoWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:loc="clr-namespace:ZenTimings.Localization"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="clr-namespace:ZenTimings.Controls"
     mc:Ignorable="d"
-    Title="System Info"
+    Title="{loc:Text SystemInfo}"
     SnapIdentifier="SystemInfoWindow"
     Height="450"
     Width="800"
@@ -27,7 +28,7 @@
                 <TextBlock Text="{Binding}" Style="{StaticResource SectionHeaderTextStyle}" />
                 <Button Style="{DynamicResource IconButtonStyle}"
                         Margin="4,0,0,0"
-                        ToolTip="Copy to clipboard"
+                        ToolTip="{loc:Text CopyToClipboard}"
                         Click="CopySection_Click"
                         DockPanel.Dock="Right"
                         HorizontalAlignment="Right">
@@ -66,7 +67,7 @@
     <ScrollViewer Padding="0" Margin="0" HorizontalScrollBarVisibility="Disabled">
         <StackPanel CanVerticallyScroll="False">
             <GroupBox
-                Header="SystemInfo"
+                Header="{loc:Text SystemInfoWindowTitle}"
                 Style="{StaticResource CollapsibleSectionStyle}" HeaderTemplate="{StaticResource CopyHeaderTemplate}"
                 Tag="{x:Reference TestGrid}">
                 <DataGrid
@@ -80,7 +81,7 @@
             </GroupBox>
 
             <GroupBox
-                Header="Memory Timings"
+                Header="{loc:Text MemoryTimings}"
                 Style="{StaticResource CollapsibleSectionStyle}" HeaderTemplate="{StaticResource CopyHeaderTemplate}"
                 Tag="{x:Reference MemCfgGrid}">
                 <DataGrid
@@ -96,7 +97,7 @@
             </GroupBox>
 
             <GroupBox
-                Header="AOD Table"
+                Header="{loc:Text AodTable}"
                 Style="{StaticResource CollapsibleSectionStyle}" HeaderTemplate="{StaticResource CopyHeaderTemplate}"
                 Tag="{x:Reference MemControllerGrid}">
                 <DataGrid
@@ -110,7 +111,7 @@
             </GroupBox>
 
             <GroupBox
-                Header="APOB Table"
+                Header="{loc:Text ApobTable}"
                 Style="{StaticResource CollapsibleSectionStyle}" HeaderTemplate="{StaticResource CopyHeaderTemplate}"
                 Tag="{x:Reference ApobTableGrid}">
                 <DataGrid

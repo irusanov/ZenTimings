@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using ZenStates.Core.PawnIo;
+using ZenTimings.Localization;
 
 namespace ZenTimings.Helpers
 {
@@ -40,7 +41,7 @@ namespace ZenTimings.Helpers
 
                 if (!IsSuccessExitCode(exitCode))
                 {
-                    ShowInstallError($"The PawnIO installer exited with code {exitCode}.");
+                    ShowInstallError(UiText.Format("PawnIoInstallerExitCode", exitCode));
                     return false;
                 }
 
@@ -72,7 +73,7 @@ namespace ZenTimings.Helpers
 
                 if (!IsSuccessExitCode(exitCode))
                 {
-                    ShowInstallError($"The PawnIO installer exited with code {exitCode}.");
+                    ShowInstallError(UiText.Format("PawnIoInstallerExitCode", exitCode));
                     return false;
                 }
 
@@ -95,7 +96,7 @@ namespace ZenTimings.Helpers
             try
             {
                 ZenTimings.Theming.MessageBox.Show(
-                    "PawnIO could not be installed." + Environment.NewLine + details,
+                    UiText.Get("PawnIoInstallFailed") + Environment.NewLine + details,
                     "PawnIO",
                     ZenTimings.Theming.MessageBoxButton.OK,
                     ZenTimings.Theming.MessageBoxImage.Error);
@@ -115,7 +116,7 @@ namespace ZenTimings.Helpers
             }))
             {
                 if (process == null)
-                    throw new InvalidOperationException("Could not start the PawnIO installer.");
+                    throw new InvalidOperationException(UiText.Get("PawnIoInstallerStartFailed"));
 
                 process.WaitForExit();
                 return process.ExitCode;
@@ -131,7 +132,7 @@ namespace ZenTimings.Helpers
             using (Stream resourceStream = typeof(MainWindow).Assembly.GetManifestResourceStream("ZenTimings.Resources.PawnIO.PawnIO_setup.exe"))
             {
                 if (resourceStream == null)
-                    throw new FileNotFoundException("The bundled PawnIO installer is missing.");
+                    throw new FileNotFoundException(UiText.Get("BundledPawnIoMissing"));
 
                 using (FileStream fileStream = new FileStream(destination, FileMode.CreateNew, FileAccess.Write))
                 {

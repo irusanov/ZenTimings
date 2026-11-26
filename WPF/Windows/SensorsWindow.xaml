@@ -4,6 +4,7 @@
     x:Class="ZenTimings.Windows.SensorsWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:loc="clr-namespace:ZenTimings.Localization"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:theming="clr-namespace:ZenTimings.Theming"
@@ -11,7 +12,7 @@
     xmlns:controls="clr-namespace:ZenTimings.Controls"
     xmlns:converters="clr-namespace:ZenTimings.Converters"
     mc:Ignorable="d"
-    Title="Sensors"
+    Title="{loc:Text Sensors}"
     SnapIdentifier="SensorsWindow"
     Height="500"
     Width="400"
@@ -73,7 +74,7 @@
         <DataTemplate x:Key="SensorNameCellTemplate">
             <StackPanel Orientation="Horizontal">
                 <Path Style="{StaticResource SensorIconStyle}"/>
-                <TextBlock Text="{Binding Name}" Foreground="{DynamicResource TextColor}" Padding="3,0" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding DisplayName}" Foreground="{DynamicResource TextColor}" Padding="3,0" VerticalAlignment="Center" TextWrapping="Wrap"/>
             </StackPanel>
         </DataTemplate>
 
@@ -193,7 +194,7 @@
                         </ToggleButton>
                         <Button Grid.Column="1"
                                 Style="{DynamicResource IconButtonStyle}"
-                                ToolTip="Show/hide module info"
+                                ToolTip="{loc:Text ToggleModuleInfo}"
                                 Margin="0,0,2,0"
                                 Visibility="{Binding HasModuleInfo, Converter={StaticResource BoolToVis}}"
                                 Click="ToggleModuleInfo_Click">
@@ -212,7 +213,7 @@
                         </Button>
                         <Button Grid.Column="2"
                                 Style="{DynamicResource IconButtonStyle}"
-                                ToolTip="Copy to clipboard"
+                                ToolTip="{loc:Text CopyToClipboard}"
                                 Click="CopyGroup_Click">
                             <controls:AppIcon Kind="IconCopy" IconWidth="11" IconHeight="11" Fill="{DynamicResource TextColor}" />
                         </Button>
@@ -275,7 +276,7 @@
 
                                 <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Manufacturer}" Style="{StaticResource ValueStyle}" Margin="0,2,0,0"/>
 
-                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Capacity" Style="{StaticResource LabelStyle}" Margin="0,2,8,0"/>
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="{loc:Text Capacity}" Style="{StaticResource LabelStyle}" Margin="0,2,8,0"/>
                                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Capacity}" Style="{StaticResource ValueStyle}"/>
 
                                 <TextBlock Grid.Row="2" Grid.Column="0" Text="DRAM" Style="{StaticResource LabelStyle}" Margin="0,2,8,0"/>
@@ -332,27 +333,27 @@
                           Visibility="{Binding HasTelemetry, Converter={StaticResource BoolToVis}}">
                         <DataGrid.ContextMenu>
                             <ContextMenu>
-                                <MenuItem Header="Hide selected" Click="HideSensors_Click">
+                                <MenuItem Header="{loc:Text HideSelected}" Click="HideSensors_Click">
                                     <MenuItem.Icon>
                                         <controls:AppIcon Kind="IconHide" Style="{StaticResource MenuIconStyle}"/>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Hide all zero-value sensors" Click="HideZeroValueSensors_Click">
+                                <MenuItem Header="{loc:Text HideAllZeroSensors}" Click="HideZeroValueSensors_Click">
                                     <MenuItem.Icon>
                                         <controls:AppIcon Kind="IconBlock" Style="{StaticResource MenuIconStyle}"/>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Hide all fans" Click="HideAllFans_Click">
+                                <MenuItem Header="{loc:Text HideAllFans}" Click="HideAllFans_Click">
                                     <MenuItem.Icon>
                                         <controls:AppIcon Kind="IconFan" Style="{StaticResource MenuIconStyle}"/>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Hide all temperatures" Click="HideAllTemperatures_Click">
+                                <MenuItem Header="{loc:Text HideAllTemperatures}" Click="HideAllTemperatures_Click">
                                     <MenuItem.Icon>
                                         <controls:AppIcon Kind="IconTemperature" Style="{StaticResource MenuIconStyle}"/>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Hide all voltages" Click="HideAllVoltages_Click">
+                                <MenuItem Header="{loc:Text HideAllVoltages}" Click="HideAllVoltages_Click">
                                     <MenuItem.Icon>
                                         <controls:AppIcon Kind="IconVoltage" Style="{StaticResource MenuIconStyle}"/>
                                     </MenuItem.Icon>
@@ -405,7 +406,7 @@
 
                     <!-- No telemetry message - can only show for a module section; a chip group section stays
                          hidden entirely (via GroupBox.Visibility above) whenever it has no telemetry items -->
-                    <TextBlock Text="No telemetry data available for this module"
+                    <TextBlock Text="{loc:Text NoModuleTelemetry}"
                            Margin="2"
                            FontStyle="Italic"
                            FontSize="11"
@@ -455,19 +456,19 @@
                     <ColumnDefinition Width="{Binding AverageColumnWidth, Source={StaticResource ColumnLayout}, Converter={StaticResource PixelToGridLength}, Mode=TwoWay}" MinWidth="40"/>
                 </Grid.ColumnDefinitions>
 
-                <DataGridColumnHeader Grid.Column="0" Content="Sensor" HorizontalContentAlignment="Left" Style="{StaticResource SectionColumnHeaderStyle}"/>
+                <DataGridColumnHeader Grid.Column="0" Content="{loc:Text Sensor}" HorizontalContentAlignment="Left" Style="{StaticResource SectionColumnHeaderStyle}"/>
                 <GridSplitter Grid.Column="1" Style="{StaticResource SectionColumnSplitterStyle}" Tag="Sensor" PreviewMouseLeftButtonDown="ColumnSplitter_PreviewMouseLeftButtonDown"/>
 
-                <DataGridColumnHeader Grid.Column="2" Content="Current" HorizontalContentAlignment="Right" Style="{StaticResource SectionColumnHeaderStyle}"/>
+                <DataGridColumnHeader Grid.Column="2" Content="{loc:Text Current}" HorizontalContentAlignment="Right" Style="{StaticResource SectionColumnHeaderStyle}"/>
                 <GridSplitter Grid.Column="3" Style="{StaticResource SectionColumnSplitterStyle}" Tag="Current" PreviewMouseLeftButtonDown="ColumnSplitter_PreviewMouseLeftButtonDown"/>
 
-                <DataGridColumnHeader Grid.Column="4" Content="Min" HorizontalContentAlignment="Right" Style="{StaticResource SectionColumnHeaderStyle}"/>
+                <DataGridColumnHeader Grid.Column="4" Content="{loc:Text Min}" HorizontalContentAlignment="Right" Style="{StaticResource SectionColumnHeaderStyle}"/>
                 <GridSplitter Grid.Column="5" Style="{StaticResource SectionColumnSplitterStyle}" Tag="Min" PreviewMouseLeftButtonDown="ColumnSplitter_PreviewMouseLeftButtonDown"/>
 
-                <DataGridColumnHeader Grid.Column="6" Content="Max" HorizontalContentAlignment="Right" Style="{StaticResource SectionColumnHeaderStyle}"/>
+                <DataGridColumnHeader Grid.Column="6" Content="{loc:Text Max}" HorizontalContentAlignment="Right" Style="{StaticResource SectionColumnHeaderStyle}"/>
                 <GridSplitter Grid.Column="7" Style="{StaticResource SectionColumnSplitterStyle}" Tag="Max" PreviewMouseLeftButtonDown="ColumnSplitter_PreviewMouseLeftButtonDown"/>
 
-                <DataGridColumnHeader Grid.Column="8" Content="Average" HorizontalContentAlignment="Right" Style="{StaticResource SectionColumnHeaderStyle}"/>
+                <DataGridColumnHeader Grid.Column="8" Content="{loc:Text Average}" HorizontalContentAlignment="Right" Style="{StaticResource SectionColumnHeaderStyle}"/>
             </Grid>
         </Border>
 
@@ -481,7 +482,7 @@
 
             <!-- Shown when no supported sensors were found on this system -->
             <TextBlock x:Name="NoSensorsMessage"
-                       Text="No sensors available on this system"
+                       Text="{loc:Text NoSensorsAvailable}"
                        Margin="4,12"
                        FontStyle="Italic"
                        FontSize="12"
@@ -496,22 +497,22 @@
 
         <Border Grid.Row="3" Style="{DynamicResource BottomPanelStyles}">
             <DockPanel>
-                <TextBlock x:Name="StatusText" Text="Ready" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" FontSize="11"/>
+                <TextBlock x:Name="StatusText" Text="{loc:Text Ready}" VerticalAlignment="Center" Foreground="{DynamicResource TextColor}" FontSize="11"/>
                 <Button x:Name="BtnSensorSettings" DockPanel.Dock="Right"
                     HorizontalAlignment="Right"
                     Width="28" Padding="0"
                     Margin="6,0,0,0"
-                    ToolTip="Manage Sensors"
+                    ToolTip="{loc:Text ManageSensors}"
                     Click="BtnSensorSettings_Click">
                     <controls:AppIcon Kind="IconSettings" IconWidth="12" IconHeight="12" Fill="{DynamicResource TextColor}"/>
                 </Button>
                 <Button x:Name="BtnResetStats" DockPanel.Dock="Right"
                     HorizontalAlignment="Right"
-                    Content="Reset Stats" Width="80"
+                    Content="{loc:Text ResetStats}" Width="80"
                     Click="BtnResetStats_Click"/>
                 <ToggleButton x:Name="ToggleAutoOpen"
                               DockPanel.Dock="Right"
-                              Content="Auto-open"
+                              Content="{loc:Text AutoOpen}"
                               Style="{DynamicResource {x:Static theming:ThemeStyles.ToggleSwitch}}"
                               HorizontalAlignment="Right"
                               Margin="0,0,12,0"

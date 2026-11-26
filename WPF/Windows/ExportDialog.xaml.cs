@@ -10,6 +10,7 @@ using System.Windows;
 using ZenTimings.Export;
 using ZenTimings.Settings;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
+using ZenTimings.Localization;
 
 namespace ZenTimings.Windows
 {
@@ -80,27 +81,27 @@ namespace ZenTimings.Windows
 
             SnapshotSections selected = liveMode ? settings.LiveSnapshotSections : settings.ExportSections;
 
-            AddGroup("Hardware", selected,
-                Entry(SnapshotSections.System, "System (CPU, board, BIOS, SMU)"),
-                Entry(SnapshotSections.Modules, "Memory modules"),
-                Entry(SnapshotSections.Spd, "SPD, XMP/EXPO profiles, PMIC setup (DDR5 / LPDDR5)"));
+            AddGroup(UiText.Get("Hardware"), selected,
+                Entry(SnapshotSections.System, UiText.Get("ExportSystem")),
+                Entry(SnapshotSections.Modules, UiText.Get("MemoryModules")),
+                Entry(SnapshotSections.Spd, UiText.Get("ExportSpd")));
 
-            AddGroup("Memory configuration", selected,
-                Entry(SnapshotSections.Timings, "Timings, all channels"),
-                Entry(SnapshotSections.Registers, "Memory controller registers (low level, DDR5 / LPDDR5)"),
-                Entry(SnapshotSections.Aod, "AOD table (DDR5 / LPDDR5)"),
-                Entry(SnapshotSections.Apob, "APOB table (DDR5 / LPDDR5)"),
-                Entry(SnapshotSections.BiosController, "BIOS memory controller (DDR4 / LPDDR4)"));
+            AddGroup(UiText.Get("MemoryConfiguration"), selected,
+                Entry(SnapshotSections.Timings, UiText.Get("ExportAllTimings")),
+                Entry(SnapshotSections.Registers, UiText.Get("ExportMemoryRegisters")),
+                Entry(SnapshotSections.Aod, UiText.Get("ExportAod")),
+                Entry(SnapshotSections.Apob, UiText.Get("ExportApob")),
+                Entry(SnapshotSections.BiosController, UiText.Get("ExportBiosMemoryController")));
 
-            AddGroup("Current readings", selected,
-                Entry(SnapshotSections.PowerTable, "Power table (clocks, SoC voltages)"),
-                Entry(SnapshotSections.DimmTelemetry, "DIMM voltages and temperatures (DDR5 / LPDDR5)"),
-                Entry(SnapshotSections.Sensors, "Motherboard sensors"),
-                Entry(SnapshotSections.AsusWmi, "ASUS WMI sensors"));
+            AddGroup(UiText.Get("CurrentReadings"), selected,
+                Entry(SnapshotSections.PowerTable, UiText.Get("ExportPowerTable")),
+                Entry(SnapshotSections.DimmTelemetry, UiText.Get("ExportDimmReadings")),
+                Entry(SnapshotSections.Sensors, UiText.Get("MotherboardSensors")),
+                Entry(SnapshotSections.AsusWmi, UiText.Get("AsusWmiSensors")));
 
             if (liveMode)
             {
-                Title = "Live snapshot file";
+                Title = UiText.Get("LiveSnapshotFile");
                 format = settings.LiveSnapshotFormat;
                 liveDirectory = settings.LiveSnapshotDirectory;
                 TextLiveFileName.Text = LiveSnapshot.CleanFileName(settings.LiveSnapshotFileName);
@@ -232,7 +233,7 @@ namespace ZenTimings.Windows
         {
             using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
             {
-                dialog.Description = "Folder for the live snapshot file";
+                dialog.Description = UiText.Get("LiveSnapshotFolder");
                 dialog.SelectedPath = string.IsNullOrWhiteSpace(liveDirectory) ? LiveSnapshot.DefaultDirectory : liveDirectory;
 
                 if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
@@ -254,7 +255,7 @@ namespace ZenTimings.Windows
             SnapshotSections sections = SelectedSections;
             if (sections == SnapshotSections.None)
             {
-                StatusText.Text = "Nothing is selected.";
+                StatusText.Text = UiText.Get("NoSectionsSelected");
                 return null;
             }
 
@@ -281,11 +282,11 @@ namespace ZenTimings.Windows
                     return;
 
                 Clipboard.SetText(content);
-                StatusText.Text = $"Copied to clipboard ({content.Length} characters).";
+                StatusText.Text = UiText.Format("CopiedCharacterCount", content.Length);
             }
             catch (Exception ex)
             {
-                StatusText.Text = $"Could not copy: {ex.Message}";
+                StatusText.Text = UiText.Format("CopyFailed", ex.Message);
             }
         }
 
@@ -306,15 +307,15 @@ namespace ZenTimings.Windows
                 switch (SelectedFormat)
                 {
                     case SnapshotFormat.Text:
-                        filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
+                        filter = UiText.Get("TextFileFilter");
                         extension = "txt";
                         break;
                     case SnapshotFormat.Html:
-                        filter = "HTML files (*.html)|*.html|All files (*.*)|*.*";
+                        filter = UiText.Get("HtmlFileFilter");
                         extension = "html";
                         break;
                     default:
-                        filter = "JSON files (*.json)|*.json|All files (*.*)|*.*";
+                        filter = UiText.Get("JsonFileFilter");
                         extension = "json";
                         break;
                 }
@@ -331,11 +332,11 @@ namespace ZenTimings.Windows
                     return;
 
                 File.WriteAllText(saveFileDialog.FileName, content, new UTF8Encoding(false));
-                StatusText.Text = $"Saved as {saveFileDialog.FileName}";
+                StatusText.Text = UiText.Format("ExportSaved", saveFileDialog.FileName);
             }
             catch (Exception ex)
             {
-                StatusText.Text = $"Could not save: {ex.Message}";
+                StatusText.Text = UiText.Format("SaveFailed", ex.Message);
             }
         }
 
@@ -346,13 +347,13 @@ namespace ZenTimings.Windows
 
             if (enabled && sections == SnapshotSections.None)
             {
-                StatusText.Text = "Nothing is selected.";
+                StatusText.Text = UiText.Get("NoSectionsSelected");
                 return;
             }
 
             if (!int.TryParse(TextInterval.Text, NumberStyles.Integer, CultureInfo.InvariantCulture, out int seconds))
             {
-                StatusText.Text = $"The interval must be between {TextInterval.Minimum} and {TextInterval.Maximum} seconds.";
+                StatusText.Text = UiText.Format("LiveSnapshotIntervalRange", TextInterval.Minimum, TextInterval.Maximum);
                 return;
             }
 
@@ -366,7 +367,7 @@ namespace ZenTimings.Windows
             string typed = TextLiveFileName.Text.Trim();
             if (typed.Length > 0 && !typed.StartsWith(fileName, StringComparison.Ordinal))
             {
-                StatusText.Text = $"This file name cannot be used, try \"{fileName}\".";
+                StatusText.Text = UiText.Format("LiveSnapshotInvalidName", fileName);
                 return;
             }
 

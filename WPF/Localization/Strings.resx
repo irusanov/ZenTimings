@@ -1,0 +1,2009 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="About" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="AboutMenu" xml:space="preserve">
+    <value>_About</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="ActiveApcbInstance" xml:space="preserve">
+    <value>Active APCB instance</value>
+  </data>
+  <data name="ActiveMemoryClock" xml:space="preserve">
+    <value>Active MemClk</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="AddressRange" xml:space="preserve">
+    <value>Address range</value>
+  </data>
+  <data name="AddressUnavailableFromFile" xml:space="preserve">
+    <value>n/a (loaded from a file)</value>
+  </data>
+  <data name="Addressing" xml:space="preserve">
+    <value>Addressing</value>
+  </data>
+  <data name="AdvancedInfo" xml:space="preserve">
+    <value>Advanced Info</value>
+  </data>
+  <data name="AdvancedMode" xml:space="preserve">
+    <value>Advanced mode</value>
+  </data>
+  <data name="AdvancedTimings" xml:space="preserve">
+    <value>Advanced Timings</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="AllChannelsSideBySide" xml:space="preserve">
+    <value>All channels side by side</value>
+  </data>
+  <data name="AllDimmsSnapshot" xml:space="preserve">
+    <value>All DIMMs (Snapshot)</value>
+  </data>
+  <data name="AllDimmsTitle" xml:space="preserve">
+    <value>{0} - All DIMMs</value>
+  </data>
+  <data name="Am5BiosList" xml:space="preserve">
+    <value>AM5 AGESA/UEFI/BIOS List by Reous</value>
+  </data>
+  <data name="AnyReleaseChannel" xml:space="preserve">
+    <value>Any</value>
+  </data>
+  <data name="AnyReleaseChannelHint" xml:space="preserve">
+    <value>Stable and beta releases, whichever is newer</value>
+  </data>
+  <data name="AodTable" xml:space="preserve">
+    <value>AOD Table</value>
+  </data>
+  <data name="ApcbDisplayFailed" xml:space="preserve">
+    <value>Could not show the APCB: </value>
+  </data>
+  <data name="ApcbImages" xml:space="preserve">
+    <value>APCB Images (SPI flash)</value>
+  </data>
+  <data name="ApcbInfo" xml:space="preserve">
+    <value>APCB Info</value>
+  </data>
+  <data name="ApcbLiveSystemOnly" xml:space="preserve">
+    <value>The APCB is only read on the running system (not from a debug report or a dump).</value>
+  </data>
+  <data name="ApcbNamedOptionsCount" xml:space="preserve">
+    <value>{0} ({1} named)</value>
+  </data>
+  <data name="ApcbNeedsApob" xml:space="preserve">
+    <value>The APOB table is not available on this system, so the APCB can't be located.</value>
+  </data>
+  <data name="ApcbNotFound" xml:space="preserve">
+    <value>No APCB was found in the BIOS directories.</value>
+  </data>
+  <data name="ApcbOptionsHint" xml:space="preserve">
+    <value>Options left at Auto are not stored in the APCB, so the list holds only what was set in BIOS (or by board presets).</value>
+  </data>
+  <data name="ApcbReadFailed" xml:space="preserve">
+    <value>Could not read the APCB: </value>
+  </data>
+  <data name="ApcbSetOptions" xml:space="preserve">
+    <value>Options set</value>
+  </data>
+  <data name="ApcbTokenDescription" xml:space="preserve">
+    <value>Token 0x{0:X8}, {1}, instance {2}, priority 0x{3:X2}</value>
+  </data>
+  <data name="ApobBiosCopy" xml:space="preserve">
+    <value>APOB (BIOS copy)</value>
+  </data>
+  <data name="ApobDump" xml:space="preserve">
+    <value>APOB Dump</value>
+  </data>
+  <data name="ApobDumpError" xml:space="preserve">
+    <value>APOB Dump Error</value>
+  </data>
+  <data name="ApobDumpFailed" xml:space="preserve">
+    <value>Error during APOB dump:
+{0}</value>
+  </data>
+  <data name="ApobDumpSaved" xml:space="preserve">
+    <value>APOB table successfully exported to:
+{0}</value>
+  </data>
+  <data name="ApobEntries" xml:space="preserve">
+    <value>APOB Entries</value>
+  </data>
+  <data name="ApobEntriesCount" xml:space="preserve">
+    <value>{0} ({1} encrypted)</value>
+  </data>
+  <data name="ApobEntryCount" xml:space="preserve">
+    <value>{0} entries</value>
+  </data>
+  <data name="ApobFileFilter" xml:space="preserve">
+    <value>Binary files (*.bin)|*.bin|APOB files (*.apob)|*.apob|All files (*.*)|*.*</value>
+  </data>
+  <data name="ApobInfo" xml:space="preserve">
+    <value>APOB Info</value>
+  </data>
+  <data name="ApobTable" xml:space="preserve">
+    <value>APOB Table</value>
+  </data>
+  <data name="ApobTableUnavailable" xml:space="preserve">
+    <value>The APOB table is not available on this system.</value>
+  </data>
+  <data name="ApobUnavailable" xml:space="preserve">
+    <value>APOB table is not available on this system.</value>
+  </data>
+  <data name="AppClosedUnexpectedly" xml:space="preserve">
+    <value>ZenTimings closed unexpectedly</value>
+  </data>
+  <data name="AppUpToDate" xml:space="preserve">
+    <value>ZenTimings is up to date.</value>
+  </data>
+  <data name="AppWindow" xml:space="preserve">
+    <value>App Window</value>
+  </data>
+  <data name="Appearance" xml:space="preserve">
+    <value>Appearance</value>
+  </data>
+  <data name="Application" xml:space="preserve">
+    <value>Application</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="ApplyingUpdate" xml:space="preserve">
+    <value>Applying update...</value>
+  </data>
+  <data name="AsusWmiSensors" xml:space="preserve">
+    <value>ASUS WMI sensors</value>
+  </data>
+  <data name="AtLeastTwoDfeTaps" xml:space="preserve">
+    <value>2 or more (tap 2 trained)</value>
+  </data>
+  <data name="AutoFit" xml:space="preserve">
+    <value>Auto-fit</value>
+  </data>
+  <data name="AutoFitTimingsHint" xml:space="preserve">
+    <value>Resizes the window to show all shown timings without scrolling. It grows taller first, up to the height of the screen, and only adds columns side by side when one column can't hold them all. Takes the search and Differences only filters into account.</value>
+  </data>
+  <data name="AutoOpen" xml:space="preserve">
+    <value>Auto-open</value>
+  </data>
+  <data name="AutoRefresh" xml:space="preserve">
+    <value>Auto refresh</value>
+  </data>
+  <data name="AutoRefreshOff" xml:space="preserve">
+    <value>Auto-refresh off</value>
+  </data>
+  <data name="AutoValueNotInApcb" xml:space="preserve">
+    <value>Not stored in the APCB (Auto)</value>
+  </data>
+  <data name="Automatic" xml:space="preserve">
+    <value>Auto</value>
+  </data>
+  <data name="AutomaticWithValue" xml:space="preserve">
+    <value>Auto ({0})</value>
+  </data>
+  <data name="AutostartOnLogon" xml:space="preserve">
+    <value>Autostart on logon</value>
+  </data>
+  <data name="AutostartWritablePathWarning" xml:space="preserve">
+    <value>The startup task runs ZenTimings with administrator rights at every logon, and {0} can be changed without them. A program running as your user could replace ZenTimings and get administrator rights at the next logon.
+
+Moving ZenTimings to a folder only administrators can write to (for example under Program Files) avoids this.
+
+Enable the startup task anyway?</value>
+  </data>
+  <data name="AvailableVersion" xml:space="preserve">
+    <value>Available version:</value>
+  </data>
+  <data name="Average" xml:space="preserve">
+    <value>Average</value>
+  </data>
+  <data name="BackupApcbDefaults" xml:space="preserve">
+    <value>Defaults (backup APCB)</value>
+  </data>
+  <data name="Banks" xml:space="preserve">
+    <value>Banks</value>
+  </data>
+  <data name="BaseAddress" xml:space="preserve">
+    <value>Base</value>
+  </data>
+  <data name="Beta" xml:space="preserve">
+    <value>Beta</value>
+  </data>
+  <data name="BetaBadge" xml:space="preserve">
+    <value>BETA</value>
+  </data>
+  <data name="BetaChannelSkipped" xml:space="preserve">
+    <value>The beta channel was skipped; checking the stable channel only.</value>
+  </data>
+  <data name="BetaOnly" xml:space="preserve">
+    <value>Beta releases only</value>
+  </data>
+  <data name="BetaUpdateAvailable" xml:space="preserve">
+    <value>BETA Update Available</value>
+  </data>
+  <data name="BetaUpdateCheckFailed" xml:space="preserve">
+    <value>Beta Update Check Failed</value>
+  </data>
+  <data name="BetaVersionNumber" xml:space="preserve">
+    <value>Version {0} - beta</value>
+  </data>
+  <data name="BiosApcb" xml:space="preserve">
+    <value>BIOS (APCB)</value>
+  </data>
+  <data name="BiosOptions" xml:space="preserve">
+    <value>BIOS Options (booted APCB)</value>
+  </data>
+  <data name="BootedApcbInstance" xml:space="preserve">
+    <value>Booted APCB instance</value>
+  </data>
+  <data name="BootedApcbNotFound" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="BootedApcbUnknown" xml:space="preserve">
+    <value>unknown (listing all writable APCBs)</value>
+  </data>
+  <data name="Browse" xml:space="preserve">
+    <value>Browse</value>
+  </data>
+  <data name="BrowseEllipsis" xml:space="preserve">
+    <value>Browse...</value>
+  </data>
+  <data name="BundledPawnIoMissing" xml:space="preserve">
+    <value>The bundled PawnIO installer is missing.</value>
+  </data>
+  <data name="Burst" xml:space="preserve">
+    <value>Burst</value>
+  </data>
+  <data name="BusWidth" xml:space="preserve">
+    <value>Bus width</value>
+  </data>
+  <data name="ByteCount" xml:space="preserve">
+    <value>{0} bytes</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Capacity" xml:space="preserve">
+    <value>Capacity</value>
+  </data>
+  <data name="ChangedFromDefault" xml:space="preserve">
+    <value>Changed from default</value>
+  </data>
+  <data name="Changelog" xml:space="preserve">
+    <value>Changelog</value>
+  </data>
+  <data name="ChangelogAgesa" xml:space="preserve">
+    <value>AGESA version: fixed detection from the legacy BIOS region, the BIOS image and SMBIOS, with SMBIOS as the fallback when the region is empty</value>
+  </data>
+  <data name="ChangelogAntivirus" xml:space="preserve">
+    <value>Removed unused code to (hopefully) fix latest AV definitions flagging the release</value>
+  </data>
+  <data name="ChangelogApcbDebugReport" xml:space="preserve">
+    <value>APCB: the BIOS option tokens are read from the SPI flash on demand and added to the debug report</value>
+  </data>
+  <data name="ChangelogApcbWindow" xml:space="preserve">
+    <value>New APCB window (Advanced mode): the BIOS options stored in the booted APCB with their names and defaults, and the DFE / 2D training options next to the trained values</value>
+  </data>
+  <data name="ChangelogApobAddress" xml:space="preserve">
+    <value>APOB: the table is found from its address in the BIOS image (ROM2 and ROM3 flash windows), with known addresses as the fallback</value>
+  </data>
+  <data name="ChangelogApobDdr4" xml:space="preserve">
+    <value>APOB: Raven Ridge, Picasso and Dali DDR4 channel timings are decoded</value>
+  </data>
+  <data name="ChangelogApobDfPstate" xml:space="preserve">
+    <value>APOB: the DF P-state extended table can be refreshed</value>
+  </data>
+  <data name="ChangelogApobDriver" xml:space="preserve">
+    <value>APOB: the PawnIO module and InpOut lookups share a common driver base, selectable by option or in code</value>
+  </data>
+  <data name="ChangelogApobTimingBlock" xml:space="preserve">
+    <value>APOB: the active timing block comes from the active memory P-state</value>
+  </data>
+  <data name="ChangelogApobTraining" xml:space="preserve">
+    <value>APOB: decoded the trained PHY data (S3 replay) and the DRAM training results (PMU message block, TX DFE taps)</value>
+  </data>
+  <data name="ChangelogApuPstate" xml:space="preserve">
+    <value>APUs: timings and memory frequency follow the active memory P-state</value>
+  </data>
+  <data name="ChangelogBackgroundSpd" xml:space="preserve">
+    <value>Faster startup: SPD and DIMM telemetry are read in the background</value>
+  </data>
+  <data name="ChangelogBclkClass" xml:space="preserve">
+    <value>BCLK code moved to its own class, with both measurements in the debug report</value>
+  </data>
+  <data name="ChangelogBclkMemory" xml:space="preserve">
+    <value>BCLK: the memory side reference clock is measured with the UMC clock counter (AM5, also in asynchronous eCLK mode) or the TSC (AM4, APUs)</value>
+  </data>
+  <data name="ChangelogBclkMode" xml:space="preserve">
+    <value>BCLK: eCLK mode (sync / async) is detected from the CPU reference clock selection, fixes async mode not being detected</value>
+  </data>
+  <data name="ChangelogBclkSensors" xml:space="preserve">
+    <value>Sensors window: a section named after the CPU with the measured CPU and memory BCLK</value>
+  </data>
+  <data name="ChangelogBclkValues" xml:space="preserve">
+    <value>MCLK, FCLK, UCLK, memory frequency and timings in ns follow the measured memory BCLK, measured at start and again periodically</value>
+  </data>
+  <data name="ChangelogDdr5TimingDetection" xml:space="preserve">
+    <value>DDR5: fixed tWRWRSD above 15, BGS and rank detection</value>
+  </data>
+  <data name="ChangelogDebugUi" xml:space="preserve">
+    <value>Debug screenshot and UI improvements</value>
+  </data>
+  <data name="ChangelogExit" xml:space="preserve">
+    <value>Exit no longer freezes the window while a refresh is finishing</value>
+  </data>
+  <data name="ChangelogHideDriverError" xml:space="preserve">
+    <value>The I/O driver error at startup has a Don't show again button; it can be turned back on in Options</value>
+  </data>
+  <data name="ChangelogKeepDriverInUse" xml:space="preserve">
+    <value>The inpoutx64 driver is left installed on exit while another application is using it</value>
+  </data>
+  <data name="ChangelogModulesDropdown" xml:space="preserve">
+    <value>Modules dropdown stretches to the available width</value>
+  </data>
+  <data name="ChangelogNotFound" xml:space="preserve">
+    <value>Changelog file not found: {0}</value>
+  </data>
+  <data name="ChangelogPawnIoPrompt" xml:space="preserve">
+    <value>PawnIO install prompt: clearer text, a button that opens the PawnIO GitHub page, shown in the taskbar and no longer kept on top of other windows</value>
+  </data>
+  <data name="ChangelogPerformance" xml:space="preserve">
+    <value>Performance improvements and additional null checks</value>
+  </data>
+  <data name="ChangelogPowerTableRefresh" xml:space="preserve">
+    <value>Improved power table refresh and state tracking</value>
+  </data>
+  <data name="ChangelogPowerTableResume" xml:space="preserve">
+    <value>Power table readings are invalidated after resume from sleep</value>
+  </data>
+  <data name="ChangelogRefreshDetection" xml:space="preserve">
+    <value>DDR5: fixed refresh mode detection (Normal, FGR, Mixed, Per-Bank Only) and tRFC in ns</value>
+  </data>
+  <data name="ChangelogRefreshHighlight" xml:space="preserve">
+    <value>DDR5 / LPDDR5: only the refresh timings in use are highlighted (tRFC, tRFC2, tRFCsb)</value>
+  </data>
+  <data name="ChangelogReleaseChannel" xml:space="preserve">
+    <value>Replace beta update option checkbox to a dropdown</value>
+  </data>
+  <data name="ChangelogReportWmi" xml:space="preserve">
+    <value>A window opened from a debug report shows the ASUS WMI sensors captured in it (old and new reports)</value>
+  </data>
+  <data name="ChangelogRfcDimm" xml:space="preserve">
+    <value>tRFC is read from the populated DIMM (fixes wrong tRFC2 / tRFC4 with a single DIMM per channel in the second slot)</value>
+  </data>
+  <data name="ChangelogSendDebugReport" xml:space="preserve">
+    <value>Send debug reports directly from the Debug dialog</value>
+  </data>
+  <data name="ChangelogSensorColumns" xml:space="preserve">
+    <value>Sensors window: value columns widen when a value no longer fits, and a sensor without a value yet shows - instead of recording 0</value>
+  </data>
+  <data name="ChangelogSettingsBackup" xml:space="preserve">
+    <value>Settings are saved atomically, and an unreadable settings file is backed up before it is replaced</value>
+  </data>
+  <data name="ChangelogSpdVendors" xml:space="preserve">
+    <value>Extended SPD decoding (tCCD groups) and short vendor names for memory modules</value>
+  </data>
+  <data name="ChangelogStartupWarning" xml:space="preserve">
+    <value>Warning when enabling autostart from a folder that non-admin users can write to</value>
+  </data>
+  <data name="ChangelogSuperIoBoards" xml:space="preserve">
+    <value>SuperIO: synced with LHWM, added ROG CROSSHAIR X870E GLACIAL and MAG B650 TOMAHAWK WIFI (MS-7D75), updated ROG STRIX B850-I GAMING WIFI, X670E Hero and Gene</value>
+  </data>
+  <data name="ChangelogSuperIoVdimm" xml:space="preserve">
+    <value>SuperIO: DDR4 VDIMM display should work on Gigabyte X570 AORUS MASTER / ULTRA / PRO, X570 GAMING X, X470 AORUS GAMING 7 WIFI and A320M-S2H</value>
+  </data>
+  <data name="ChangelogSuperIoX570E" xml:space="preserve">
+    <value>SuperIO: added ROG STRIX X570-E GAMING</value>
+  </data>
+  <data name="ChangelogUpdater" xml:space="preserve">
+    <value>Updater: the window stays responsive while an update downloads, and a failed update is reported</value>
+  </data>
+  <data name="ChangelogWheaCounter" xml:space="preserve">
+    <value>Sensors window: WHEA error counter (errors logged since boot, updated as Windows logs them)</value>
+  </data>
+  <data name="ChangelogWmiSensorGroup" xml:space="preserve">
+    <value>ASUS WMI sensors moved to the core as a sensor group</value>
+  </data>
+  <data name="ChangelogWmiSensors" xml:space="preserve">
+    <value>ASUS WMI sensors are shown in the Sensors window on boards that have them</value>
+  </data>
+  <data name="ChannelInterleave" xml:space="preserve">
+    <value>Channel interleave</value>
+  </data>
+  <data name="ChannelTimings" xml:space="preserve">
+    <value>Channel Timings</value>
+  </data>
+  <data name="CheckForUpdate" xml:space="preserve">
+    <value>Check for Update</value>
+  </data>
+  <data name="CheckForUpdates" xml:space="preserve">
+    <value>Check for updates</value>
+  </data>
+  <data name="Checking" xml:space="preserve">
+    <value>Checking...</value>
+  </data>
+  <data name="CheckingForUpdates" xml:space="preserve">
+    <value>Checking for updates...</value>
+  </data>
+  <data name="Checksum" xml:space="preserve">
+    <value>Checksum</value>
+  </data>
+  <data name="ChecksumDownloadFailed" xml:space="preserve">
+    <value>Could not download the checksum file.
+</value>
+  </data>
+  <data name="ChooseExportSections" xml:space="preserve">
+    <value>Choose what to include</value>
+  </data>
+  <data name="ChooseVisibleSensors" xml:space="preserve">
+    <value>Choose which sensors are visible</value>
+  </data>
+  <data name="Class" xml:space="preserve">
+    <value>#</value>
+  </data>
+  <data name="Clipboard" xml:space="preserve">
+    <value>Clipboard</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="CodeContributors" xml:space="preserve">
+    <value>Code contributors: mann1x, Erruar, tsg2k2, deadfellow34, b1zya</value>
+  </data>
+  <data name="Collecting" xml:space="preserve">
+    <value>Collecting...</value>
+  </data>
+  <data name="CollectingSystemInfo" xml:space="preserve">
+    <value>Collecting system information...</value>
+  </data>
+  <data name="Components" xml:space="preserve">
+    <value>Components</value>
+  </data>
+  <data name="ConfiguredSpeed" xml:space="preserve">
+    <value>Configured speed</value>
+  </data>
+  <data name="ConfiguredVoltage" xml:space="preserve">
+    <value>Configured voltage</value>
+  </data>
+  <data name="ConfirmAppUpdate" xml:space="preserve">
+    <value>Do you want to update the application now?</value>
+  </data>
+  <data name="ConfirmResetSettings" xml:space="preserve">
+    <value>Reset all application settings to default values?</value>
+  </data>
+  <data name="ConfirmResetTitle" xml:space="preserve">
+    <value>Confirm Reset</value>
+  </data>
+  <data name="Connecting" xml:space="preserve">
+    <value>Connecting...</value>
+  </data>
+  <data name="Continue" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="CopiedCharacterCount" xml:space="preserve">
+    <value>Copied to clipboard ({0} characters).</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="CopyFailed" xml:space="preserve">
+    <value>Could not copy: {0}</value>
+  </data>
+  <data name="CopyReferenceId" xml:space="preserve">
+    <value>Copy reference ID</value>
+  </data>
+  <data name="CopyScreenshotFailed" xml:space="preserve">
+    <value>Could not copy the screenshot to the clipboard: {0}</value>
+  </data>
+  <data name="CopySelectedTab" xml:space="preserve">
+    <value>Copy the selected tab to clipboard</value>
+  </data>
+  <data name="CopyToClipboard" xml:space="preserve">
+    <value>Copy to clipboard</value>
+  </data>
+  <data name="CopyVisibleTimings" xml:space="preserve">
+    <value>Copy the shown timings to clipboard</value>
+  </data>
+  <data name="Core" xml:space="preserve">
+    <value>Core</value>
+  </data>
+  <data name="CoreLoading" xml:space="preserve">
+    <value>Core: {0}</value>
+  </data>
+  <data name="CoreMap" xml:space="preserve">
+    <value>Core Map</value>
+  </data>
+  <data name="CornerRadius" xml:space="preserve">
+    <value>Corner radius (Win 11)</value>
+  </data>
+  <data name="CrashLogLocation" xml:space="preserve">
+    <value>
+
+Details were written to {0}</value>
+  </data>
+  <data name="CreateDebugReportMenu" xml:space="preserve">
+    <value>_Create, save or send a debug report...</value>
+  </data>
+  <data name="Current" xml:space="preserve">
+    <value>Current</value>
+  </data>
+  <data name="CurrentReadings" xml:space="preserve">
+    <value>Current readings</value>
+  </data>
+  <data name="CurrentVersion" xml:space="preserve">
+    <value>Current version:</value>
+  </data>
+  <data name="Cycles" xml:space="preserve">
+    <value>Cycles</value>
+  </data>
+  <data name="DataA" xml:space="preserve">
+    <value>Event</value>
+  </data>
+  <data name="DataB" xml:space="preserve">
+    <value>Data A</value>
+  </data>
+  <data name="DataRate" xml:space="preserve">
+    <value>Data rate</value>
+  </data>
+  <data name="Debug" xml:space="preserve">
+    <value>Debug</value>
+  </data>
+  <data name="DebugMenu" xml:space="preserve">
+    <value>_Debug</value>
+  </data>
+  <data name="DebugReport" xml:space="preserve">
+    <value>Debug Report</value>
+  </data>
+  <data name="DebugReportGenerationFailed" xml:space="preserve">
+    <value>An error occurred while generating the debug report:
+{0}</value>
+  </data>
+  <data name="DebugReportInstructions" xml:space="preserve">
+    <value>Click on Debug button to generate a report.</value>
+  </data>
+  <data name="DebugReportSaveFailed" xml:space="preserve">
+    <value>Could not save the debug report to {0}:
+{1}</value>
+  </data>
+  <data name="DebugReportSaved" xml:space="preserve">
+    <value>Debug report saved as {0}</value>
+  </data>
+  <data name="DebugReportTimedOut" xml:space="preserve">
+    <value>The debug report did not finish in time, it shows what was collected.</value>
+  </data>
+  <data name="DebugReportVersion" xml:space="preserve">
+    <value>Debug Report v{0}</value>
+  </data>
+  <data name="DebugReportWindow" xml:space="preserve">
+    <value>Mock Window</value>
+  </data>
+  <data name="Decrease" xml:space="preserve">
+    <value>Decrease</value>
+  </data>
+  <data name="Default" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="DefaultRadius" xml:space="preserve">
+    <value>Default Radius</value>
+  </data>
+  <data name="DefaultTokens" xml:space="preserve">
+    <value>Default tokens</value>
+  </data>
+  <data name="DeleteLiveFileOnExit" xml:space="preserve">
+    <value>Delete the file when ZenTimings exits</value>
+  </data>
+  <data name="DeleteLiveSnapshot" xml:space="preserve">
+    <value>The live snapshot is now off.
+
+Delete the file that was being written?
+{0}</value>
+  </data>
+  <data name="DerivedByAmdOverclocking" xml:space="preserve">
+    <value>Computed by AMD Overclocking from other options</value>
+  </data>
+  <data name="DescribeProblem" xml:space="preserve">
+    <value>Describe the problem: what you did, what you expected and what happened instead.</value>
+  </data>
+  <data name="DfeTraining" xml:space="preserve">
+    <value>DFE &amp; 2D Training</value>
+  </data>
+  <data name="DfeTrainingDescription" xml:space="preserve">
+    <value>RX/TX DFE and RX2D/TX2D options: the BIOS setting (booted APCB) next to what the APOB shows of the training</value>
+  </data>
+  <data name="DieDensity" xml:space="preserve">
+    <value>Die density</value>
+  </data>
+  <data name="DifferencesOnly" xml:space="preserve">
+    <value>Differences only</value>
+  </data>
+  <data name="DimmSlot" xml:space="preserve">
+    <value>DIMM Slot</value>
+  </data>
+  <data name="DimmTemperature" xml:space="preserve">
+    <value>DIMM Temp</value>
+  </data>
+  <data name="Dimms" xml:space="preserve">
+    <value>DIMMs</value>
+  </data>
+  <data name="DimmsPerChannel" xml:space="preserve">
+    <value>DIMMs/channel</value>
+  </data>
+  <data name="DisabledZero" xml:space="preserve">
+    <value>Disabled (0)</value>
+  </data>
+  <data name="DismissScreenshot" xml:space="preserve">
+    <value>Click or press Esc to close</value>
+  </data>
+  <data name="DonatePayPal" xml:space="preserve">
+    <value>Donate with _PayPal</value>
+  </data>
+  <data name="DonateRevolut" xml:space="preserve">
+    <value>Donate with _Revolut</value>
+  </data>
+  <data name="Done" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="DontCheckOnStartup" xml:space="preserve">
+    <value>Don't check on startup</value>
+  </data>
+  <data name="DontShowAgain" xml:space="preserve">
+    <value>Don't show again</value>
+  </data>
+  <data name="DownloadingUpdate" xml:space="preserve">
+    <value>Downloading update...</value>
+  </data>
+  <data name="DownloadingVerificationFiles" xml:space="preserve">
+    <value>Downloading verification files...</value>
+  </data>
+  <data name="DramCaOdtHint" xml:space="preserve">
+    <value>DRAM CA ODT (MR11)</value>
+  </data>
+  <data name="DramCkCsOdtHint" xml:space="preserve">
+    <value>DRAM CK / CS ODT enabled (MR17 ODTD-CK / ODTD-CS)</value>
+  </data>
+  <data name="DramDqOdtHint" xml:space="preserve">
+    <value>DRAM DQ ODT (MR11)</value>
+  </data>
+  <data name="DramMaker" xml:space="preserve">
+    <value>DRAM maker</value>
+  </data>
+  <data name="DramManufacturer" xml:space="preserve">
+    <value>DRAM manufacturer</value>
+  </data>
+  <data name="DramNonTargetDqOdtHint" xml:space="preserve">
+    <value>DRAM non-target DQ ODT (MR11 / MR41)</value>
+  </data>
+  <data name="DramPullDownStrengthHint" xml:space="preserve">
+    <value>DRAM pull-down drive strength (MR3)</value>
+  </data>
+  <data name="DramStepping" xml:space="preserve">
+    <value>DRAM stepping</value>
+  </data>
+  <data name="DramVrefCaHint" xml:space="preserve">
+    <value>DRAM VrefCA the training starts from (MR12)</value>
+  </data>
+  <data name="DramVrefDqHint" xml:space="preserve">
+    <value>DRAM VrefDQ the training starts from (MR14 / MR15)</value>
+  </data>
+  <data name="DramWckOdtHint" xml:space="preserve">
+    <value>DRAM WCK ODT (MR18)</value>
+  </data>
+  <data name="Driver" xml:space="preserve">
+    <value>Driver</value>
+  </data>
+  <data name="DriverError" xml:space="preserve">
+    <value>Driver Error</value>
+  </data>
+  <data name="DriverUpdateDescription" xml:space="preserve">
+    <value>A new PawnIO driver version is available. Updating ensures the best performance, stability, and compatibility.</value>
+  </data>
+  <data name="DriverUpdateRestartHint" xml:space="preserve">
+    <value>The update might require a system restart, but you can skip it by choosing 'Restart Later' and do it later. The application will first uninstall the previous driver before installing the new version.</value>
+  </data>
+  <data name="DriverUpdateTitle" xml:space="preserve">
+    <value>PawnIO Driver Update Available</value>
+  </data>
+  <data name="DumpApobMenu" xml:space="preserve">
+    <value>Dump _APOB table</value>
+  </data>
+  <data name="DumpSpd" xml:space="preserve">
+    <value>Dump SPD</value>
+  </data>
+  <data name="DumpingSpd" xml:space="preserve">
+    <value>Dumping SPD for {0}…</value>
+  </data>
+  <data name="EccCapableSuffix" xml:space="preserve">
+    <value>, ECC capable</value>
+  </data>
+  <data name="EccDetected" xml:space="preserve">
+    <value>Error-Correcting Code memory detected</value>
+  </data>
+  <data name="EccEnabled" xml:space="preserve">
+    <value>ECC enabled</value>
+  </data>
+  <data name="EmailHint" xml:space="preserve">
+    <value>Only needed if you'd like a reply</value>
+  </data>
+  <data name="EnableAdvancedForDebug" xml:space="preserve">
+    <value>Debug functionality requires Advanced Mode.
+
+Do you want to enable it now (the application will restart automatically)?</value>
+  </data>
+  <data name="EnableLiveSnapshot" xml:space="preserve">
+    <value>Enable the live snapshot file</value>
+  </data>
+  <data name="EnabledOne" xml:space="preserve">
+    <value>Enabled (1)</value>
+  </data>
+  <data name="EncryptedSuffix" xml:space="preserve">
+    <value> (encrypted)</value>
+  </data>
+  <data name="EndAddress" xml:space="preserve">
+    <value>End</value>
+  </data>
+  <data name="Entries" xml:space="preserve">
+    <value>Entries</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="ErrorDetails" xml:space="preserve">
+    <value>Error Details</value>
+  </data>
+  <data name="ErrorsOnly" xml:space="preserve">
+    <value>Errors only</value>
+  </data>
+  <data name="Event" xml:space="preserve">
+    <value>Class</value>
+  </data>
+  <data name="EventCount" xml:space="preserve">
+    <value>{0} event(s)</value>
+  </data>
+  <data name="EventLog" xml:space="preserve">
+    <value>Event Log</value>
+  </data>
+  <data name="EventLogSentence" xml:space="preserve">
+    <value>Event log</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="ExitMenu" xml:space="preserve">
+    <value>E_xit</value>
+  </data>
+  <data name="ExpoBadChecksum" xml:space="preserve">
+    <value>{0} (bad checksum)</value>
+  </data>
+  <data name="ExpoProfileOneTaa" xml:space="preserve">
+    <value>Profile 1 tAA</value>
+  </data>
+  <data name="ExpoProfileOneTck" xml:space="preserve">
+    <value>Profile 1 tCK</value>
+  </data>
+  <data name="ExpoProfiles" xml:space="preserve">
+    <value>EXPO profiles</value>
+  </data>
+  <data name="ExpoRevision" xml:space="preserve">
+    <value>EXPO revision</value>
+  </data>
+  <data name="ExpoVersion" xml:space="preserve">
+    <value>EXPO version</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="ExportAllTimings" xml:space="preserve">
+    <value>Timings, all channels</value>
+  </data>
+  <data name="ExportAod" xml:space="preserve">
+    <value>AOD table (DDR5 / LPDDR5)</value>
+  </data>
+  <data name="ExportApob" xml:space="preserve">
+    <value>APOB table (DDR5 / LPDDR5)</value>
+  </data>
+  <data name="ExportBiosMemoryController" xml:space="preserve">
+    <value>BIOS memory controller (DDR4 / LPDDR4)</value>
+  </data>
+  <data name="ExportDimmReadings" xml:space="preserve">
+    <value>DIMM voltages and temperatures (DDR5 / LPDDR5)</value>
+  </data>
+  <data name="ExportMemoryRegisters" xml:space="preserve">
+    <value>Memory controller registers (low level, DDR5 / LPDDR5)</value>
+  </data>
+  <data name="ExportMenu" xml:space="preserve">
+    <value>Export...</value>
+  </data>
+  <data name="ExportPowerTable" xml:space="preserve">
+    <value>Power table (clocks, SoC voltages)</value>
+  </data>
+  <data name="ExportSaved" xml:space="preserve">
+    <value>Saved as {0}</value>
+  </data>
+  <data name="ExportSpd" xml:space="preserve">
+    <value>SPD, XMP/EXPO profiles, PMIC setup (DDR5 / LPDDR5)</value>
+  </data>
+  <data name="ExportSystem" xml:space="preserve">
+    <value>System (CPU, board, BIOS, SMU)</value>
+  </data>
+  <data name="ExtendedDriver" xml:space="preserve">
+    <value>Extended</value>
+  </data>
+  <data name="ExtractingUpdate" xml:space="preserve">
+    <value>Extracting update...</value>
+  </data>
+  <data name="FewerThanTwoDfeTaps" xml:space="preserve">
+    <value>1 or off (tap 2 unused)</value>
+  </data>
+  <data name="FileMenu" xml:space="preserve">
+    <value>_File</value>
+  </data>
+  <data name="FileName" xml:space="preserve">
+    <value>File name</value>
+  </data>
+  <data name="FileNotFound" xml:space="preserve">
+    <value>File not found</value>
+  </data>
+  <data name="FileWriteFailed" xml:space="preserve">
+    <value>Error writing file:
+{0}</value>
+  </data>
+  <data name="FollowSystemLanguage" xml:space="preserve">
+    <value>Follow system</value>
+  </data>
+  <data name="Format" xml:space="preserve">
+    <value>Format:</value>
+  </data>
+  <data name="FromAmdCbs" xml:space="preserve">
+    <value>Set from the AMD CBS menu</value>
+  </data>
+  <data name="FromAmdOverclocking" xml:space="preserve">
+    <value>Set from the AMD Overclocking menu</value>
+  </data>
+  <data name="FromOxideApcb" xml:space="preserve">
+    <value>Name from Oxide's amd-apcb</value>
+  </data>
+  <data name="FullDesktop" xml:space="preserve">
+    <value>Full Desktop</value>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="Group" xml:space="preserve">
+    <value>Group</value>
+  </data>
+  <data name="Hardware" xml:space="preserve">
+    <value>Hardware</value>
+  </data>
+  <data name="Height" xml:space="preserve">
+    <value>Height</value>
+  </data>
+  <data name="HeightWithHeatSpreader" xml:space="preserve">
+    <value>{0}, heat spreader</value>
+  </data>
+  <data name="HelpMenu" xml:space="preserve">
+    <value>_Help</value>
+  </data>
+  <data name="HiddenValue" xml:space="preserve">
+    <value>(hidden)</value>
+  </data>
+  <data name="Hide" xml:space="preserve">
+    <value>Hide</value>
+  </data>
+  <data name="HideAllFans" xml:space="preserve">
+    <value>Hide all fans</value>
+  </data>
+  <data name="HideAllTemperatures" xml:space="preserve">
+    <value>Hide all temperatures</value>
+  </data>
+  <data name="HideAllVoltages" xml:space="preserve">
+    <value>Hide all voltages</value>
+  </data>
+  <data name="HideAllZeroSensors" xml:space="preserve">
+    <value>Hide all zero-value sensors</value>
+  </data>
+  <data name="HideSelected" xml:space="preserve">
+    <value>Hide selected</value>
+  </data>
+  <data name="HtmlFileFilter" xml:space="preserve">
+    <value>HTML files (*.html)|*.html|All files (*.*)|*.*</value>
+  </data>
+  <data name="ImpedanceTable" xml:space="preserve">
+    <value>Impedance table</value>
+  </data>
+  <data name="IncludeErrorDetails" xml:space="preserve">
+    <value>Include error details</value>
+  </data>
+  <data name="IncludeLegend" xml:space="preserve">
+    <value>Include a short legend (helps AI assistants read the file)</value>
+  </data>
+  <data name="IncludeScreenshot" xml:space="preserve">
+    <value>Include screenshot</value>
+  </data>
+  <data name="IncludeSerialNumbers" xml:space="preserve">
+    <value>Include memory module serial numbers</value>
+  </data>
+  <data name="Increase" xml:space="preserve">
+    <value>Increase</value>
+  </data>
+  <data name="Info" xml:space="preserve">
+    <value>Info</value>
+  </data>
+  <data name="Initializing" xml:space="preserve">
+    <value>Initializing...</value>
+  </data>
+  <data name="InpOutDriverNotResponding" xml:space="preserve">
+    <value>I/O driver is not responding or not loaded.
+
+Information that needs it, such as AOD and the AGESA version, is not shown. You can turn this message back on in Options.</value>
+  </data>
+  <data name="InstallPawnIo" xml:space="preserve">
+    <value>Install PawnIO</value>
+  </data>
+  <data name="InstalledVersion" xml:space="preserve">
+    <value>You are using version {0}.</value>
+  </data>
+  <data name="Instance" xml:space="preserve">
+    <value>Instance</value>
+  </data>
+  <data name="InterleaveMode" xml:space="preserve">
+    <value>Interleave mode</value>
+  </data>
+  <data name="InterleaveModeDetails" xml:space="preserve">
+    <value>0x{0:X} (capability 0x{1:X}, size 0x{2:X})</value>
+  </data>
+  <data name="Interleaved" xml:space="preserve">
+    <value>Interleaved</value>
+  </data>
+  <data name="InvalidEmail" xml:space="preserve">
+    <value>That email address doesn't look right. Correct it or leave the field empty.</value>
+  </data>
+  <data name="IoDriver" xml:space="preserve">
+    <value>IO Driver</value>
+  </data>
+  <data name="JedecBase" xml:space="preserve">
+    <value>JEDEC Base</value>
+  </data>
+  <data name="JsonFileFilter" xml:space="preserve">
+    <value>JSON files (*.json)|*.json|All files (*.*)|*.*</value>
+  </data>
+  <data name="KnownTokens" xml:space="preserve">
+    <value>{0} known tokens (AM5 / Phoenix / Strix CBS and AOD)</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="LastMemoryTraining" xml:space="preserve">
+    <value>Last memory training</value>
+  </data>
+  <data name="Later" xml:space="preserve">
+    <value>Later</value>
+  </data>
+  <data name="LayoutProfile" xml:space="preserve">
+    <value>Layout profile</value>
+  </data>
+  <data name="LegacyDriver" xml:space="preserve">
+    <value>Legacy</value>
+  </data>
+  <data name="LiveSnapshot" xml:space="preserve">
+    <value>Live snapshot</value>
+  </data>
+  <data name="LiveSnapshotActiveHint" xml:space="preserve">
+    <value>Live snapshot is on, click to change
+{0}
+Written with auto refresh, every {1:0.#} s at most</value>
+  </data>
+  <data name="LiveSnapshotDescription" xml:space="preserve">
+    <value>Off by default. While it is on, the file is rewritten together with the main window refresh (auto refresh in advanced mode), no extra hardware reads are made. Turn it off here and press OK to stop writing and remove the file.</value>
+  </data>
+  <data name="LiveSnapshotFile" xml:space="preserve">
+    <value>Live snapshot file</value>
+  </data>
+  <data name="LiveSnapshotFileCollision" xml:space="preserve">
+    <value>{0} already exists and is not a ZenTimings snapshot, choose another file name.</value>
+  </data>
+  <data name="LiveSnapshotFolder" xml:space="preserve">
+    <value>Folder for the live snapshot file</value>
+  </data>
+  <data name="LiveSnapshotInterval" xml:space="preserve">
+    <value>Write at most every</value>
+  </data>
+  <data name="LiveSnapshotIntervalRange" xml:space="preserve">
+    <value>The interval must be between {0} and {1} seconds.</value>
+  </data>
+  <data name="LiveSnapshotInvalidName" xml:space="preserve">
+    <value>This file name cannot be used, try "{0}".</value>
+  </data>
+  <data name="LiveSnapshotLinkedFolder" xml:space="preserve">
+    <value>{0} is a link, refusing to write into it.</value>
+  </data>
+  <data name="LiveSnapshotMenu" xml:space="preserve">
+    <value>Live snapshot file...</value>
+  </data>
+  <data name="LiveSnapshotPrivacyHint" xml:space="preserve">
+    <value>Serial numbers are never written to the file. Anyone who can write to the chosen folder can replace the file, keep it in a folder you trust if other programs rely on it.</value>
+  </data>
+  <data name="LiveSnapshotUseAppFolder" xml:space="preserve">
+    <value>Write the file next to ZenTimings</value>
+  </data>
+  <data name="LiveSnapshotWriteFailed" xml:space="preserve">
+    <value>Could not write the live snapshot file.
+{0}</value>
+  </data>
+  <data name="LoadAdvancedTimingsError" xml:space="preserve">
+    <value>Failed to load advanced timings:{0}{1}</value>
+  </data>
+  <data name="LoadAdvancedTimingsFailed" xml:space="preserve">
+    <value>Failed to load advanced timings.</value>
+  </data>
+  <data name="LoadModuleDataFailed" xml:space="preserve">
+    <value>Error loading module data:
+{0}</value>
+  </data>
+  <data name="LoadModulesFailed" xml:space="preserve">
+    <value>Error loading modules: {0}</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="Logical" xml:space="preserve">
+    <value>Logical</value>
+  </data>
+  <data name="LogicalCore" xml:space="preserve">
+    <value>Logical core</value>
+  </data>
+  <data name="MainWindowContents" xml:space="preserve">
+    <value>What the main window shows</value>
+  </data>
+  <data name="ManageSensors" xml:space="preserve">
+    <value>Manage Sensors</value>
+  </data>
+  <data name="Manufactured" xml:space="preserve">
+    <value>Manufactured</value>
+  </data>
+  <data name="Manufacturer" xml:space="preserve">
+    <value>Manufacturer</value>
+  </data>
+  <data name="Max" xml:space="preserve">
+    <value>Max</value>
+  </data>
+  <data name="Maximize" xml:space="preserve">
+    <value>Maximize</value>
+  </data>
+  <data name="MbistResult" xml:space="preserve">
+    <value>MBIST result</value>
+  </data>
+  <data name="MemoryBoost" xml:space="preserve">
+    <value>Memory boost</value>
+  </data>
+  <data name="MemoryConfiguration" xml:space="preserve">
+    <value>Memory configuration</value>
+  </data>
+  <data name="MemoryController" xml:space="preserve">
+    <value>Memory controller</value>
+  </data>
+  <data name="MemoryControllerReadFailed" xml:space="preserve">
+    <value>Could not read the memory controller configuration.</value>
+  </data>
+  <data name="MemoryMap" xml:space="preserve">
+    <value>Memory Map</value>
+  </data>
+  <data name="MemoryModule" xml:space="preserve">
+    <value>Module</value>
+  </data>
+  <data name="MemoryModules" xml:space="preserve">
+    <value>Memory modules</value>
+  </data>
+  <data name="MemoryProfileExpo" xml:space="preserve">
+    <value>Memory Profile (EXPO)</value>
+  </data>
+  <data name="MemoryPstateHint" xml:space="preserve">
+    <value>Memory P-state the memory controller runs (P0 = full speed); APUs switch to lower ones at idle</value>
+  </data>
+  <data name="MemorySettings" xml:space="preserve">
+    <value>Memory Settings</value>
+  </data>
+  <data name="MemorySpeed" xml:space="preserve">
+    <value>Speed</value>
+  </data>
+  <data name="MemoryTimings" xml:space="preserve">
+    <value>Memory Timings</value>
+  </data>
+  <data name="MemoryType" xml:space="preserve">
+    <value>Memory type</value>
+  </data>
+  <data name="Min" xml:space="preserve">
+    <value>Min</value>
+  </data>
+  <data name="Minimize" xml:space="preserve">
+    <value>Minimize</value>
+  </data>
+  <data name="MinimizeToTray" xml:space="preserve">
+    <value>Minimize to tray</value>
+  </data>
+  <data name="Missing" xml:space="preserve">
+    <value>missing</value>
+  </data>
+  <data name="Mode" xml:space="preserve">
+    <value>Mode</value>
+  </data>
+  <data name="ModuleManufacturer" xml:space="preserve">
+    <value>Module manufacturer</value>
+  </data>
+  <data name="ModuleType" xml:space="preserve">
+    <value>Module type</value>
+  </data>
+  <data name="Modules" xml:space="preserve">
+    <value>Modules</value>
+  </data>
+  <data name="ModulesAndThermalSensorsLoaded" xml:space="preserve">
+    <value>Loaded {0} module(s) - {1} thermal sensor(s)</value>
+  </data>
+  <data name="ModulesLoaded" xml:space="preserve">
+    <value>Loaded {0} module(s)</value>
+  </data>
+  <data name="ModulesLoadedLimitedInfo" xml:space="preserve">
+    <value>Loaded {0} module(s) - Limited info (no SPD/PMIC data available)</value>
+  </data>
+  <data name="MotherboardSensors" xml:space="preserve">
+    <value>Motherboard sensors</value>
+  </data>
+  <data name="MotherboardUnavailable" xml:space="preserve">
+    <value>Motherboard: N/A</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Names" xml:space="preserve">
+    <value>Names</value>
+  </data>
+  <data name="NewVersionAvailable" xml:space="preserve">
+    <value>There is new version {0} available.{1}</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="NoApcbOptions" xml:space="preserve">
+    <value>The booted APCB holds no option tokens (every option is at Auto).</value>
+  </data>
+  <data name="NoBackupApcb" xml:space="preserve">
+    <value>no backup APCB</value>
+  </data>
+  <data name="NoData" xml:space="preserve">
+    <value>No data</value>
+  </data>
+  <data name="NoDimmSlotSelected" xml:space="preserve">
+    <value>No DIMM slot selected.</value>
+  </data>
+  <data name="NoEvents" xml:space="preserve">
+    <value>No events</value>
+  </data>
+  <data name="NoMemoryTimings" xml:space="preserve">
+    <value>No memory timings available.</value>
+  </data>
+  <data name="NoModuleTelemetry" xml:space="preserve">
+    <value>No telemetry data available for this module</value>
+  </data>
+  <data name="NoModulesDetected" xml:space="preserve">
+    <value>No memory modules detected</value>
+  </data>
+  <data name="NoRadius" xml:space="preserve">
+    <value>No Radius</value>
+  </data>
+  <data name="NoSectionsSelected" xml:space="preserve">
+    <value>Nothing is selected.</value>
+  </data>
+  <data name="NoSensorsAvailable" xml:space="preserve">
+    <value>No sensors available on this system</value>
+  </data>
+  <data name="NoSpdData" xml:space="preserve">
+    <value>No SPD data available.</value>
+  </data>
+  <data name="NoTimingProfiles" xml:space="preserve">
+    <value>No timing profiles available.</value>
+  </data>
+  <data name="NoUpdateData" xml:space="preserve">
+    <value>No data received.</value>
+  </data>
+  <data name="NonZeroByteCount" xml:space="preserve">
+    <value>{0} non-zero bytes</value>
+  </data>
+  <data name="None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="NotAvailable" xml:space="preserve">
+    <value>Not available</value>
+  </data>
+  <data name="NotInApob" xml:space="preserve">
+    <value>not in APOB</value>
+  </data>
+  <data name="NotNow" xml:space="preserve">
+    <value>Not now</value>
+  </data>
+  <data name="NotSet" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="OdtDriveStrength" xml:space="preserve">
+    <value>ODT &amp; Drive Strength</value>
+  </data>
+  <data name="OdtDriveStrengthByBlock" xml:space="preserve">
+    <value>ODT &amp; Drive Strength per Timing Block</value>
+  </data>
+  <data name="OfferCrashReport" xml:space="preserve">
+    <value>ZenTimings closed unexpectedly on {0}.
+
+Do you want to send a debug report to the developer?</value>
+  </data>
+  <data name="OfferErrorReport" xml:space="preserve">
+    <value>
+
+You can send a debug report to the developer to help fix this.</value>
+  </data>
+  <data name="Offset" xml:space="preserve">
+    <value>Offset</value>
+  </data>
+  <data name="OpenApcbFailed" xml:space="preserve">
+    <value>Error opening APCB:
+{0}</value>
+  </data>
+  <data name="OpenApobFailed" xml:space="preserve">
+    <value>Error opening APOB:
+{0}</value>
+  </data>
+  <data name="OpenChangelogFailed" xml:space="preserve">
+    <value>Failed to open changelog: {0}</value>
+  </data>
+  <data name="OpenDebugReport" xml:space="preserve">
+    <value>Open ZenTimings debug report</value>
+  </data>
+  <data name="OpenDebugReportFailed" xml:space="preserve">
+    <value>Error opening debug report:
+{0}</value>
+  </data>
+  <data name="OpenDebugReportMenu" xml:space="preserve">
+    <value>_Open a debug report (beta)...</value>
+  </data>
+  <data name="OpenFolder" xml:space="preserve">
+    <value>Open folder</value>
+  </data>
+  <data name="OpenGitHub" xml:space="preserve">
+    <value>Open GitHub page</value>
+  </data>
+  <data name="OpenLinkFailed" xml:space="preserve">
+    <value>Could not open {0} {1}</value>
+  </data>
+  <data name="OpenSensorsFailed" xml:space="preserve">
+    <value>Error opening Sensors window:
+{0}</value>
+  </data>
+  <data name="OpenSpdFailed" xml:space="preserve">
+    <value>Error opening SPD Info:
+{0}</value>
+  </data>
+  <data name="Option" xml:space="preserve">
+    <value>Option</value>
+  </data>
+  <data name="OptionalEmail" xml:space="preserve">
+    <value>Email (optional)</value>
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="OptionsMenu" xml:space="preserve">
+    <value>_Options</value>
+  </data>
+  <data name="Overview" xml:space="preserve">
+    <value>Overview</value>
+  </data>
+  <data name="Package" xml:space="preserve">
+    <value>Package</value>
+  </data>
+  <data name="PartNumber" xml:space="preserve">
+    <value>Part number</value>
+  </data>
+  <data name="PawnIoInstallFailed" xml:space="preserve">
+    <value>PawnIO could not be installed.</value>
+  </data>
+  <data name="PawnIoInstallPrompt" xml:space="preserve">
+    <value>ZenTimings reads the memory timings and sensors through the PawnIO driver, which is not installed on this system.
+
+Install the bundled PawnIO{0} now? The PawnIO installer will open, and ZenTimings restarts when it finishes.
+
+Without the driver ZenTimings cannot run and will exit.
+
+PawnIO is open source: {1}</value>
+  </data>
+  <data name="PawnIoInstallerExitCode" xml:space="preserve">
+    <value>The PawnIO installer exited with code {0}.</value>
+  </data>
+  <data name="PawnIoInstallerStartFailed" xml:space="preserve">
+    <value>Could not start the PawnIO installer.</value>
+  </data>
+  <data name="PawnIoRequired" xml:space="preserve">
+    <value>PawnIO driver required</value>
+  </data>
+  <data name="Physical" xml:space="preserve">
+    <value>Physical</value>
+  </data>
+  <data name="Plugins" xml:space="preserve">
+    <value>Plugins</value>
+  </data>
+  <data name="PmicHighTemperature" xml:space="preserve">
+    <value>PMIC High Temp</value>
+  </data>
+  <data name="PmicTemperature" xml:space="preserve">
+    <value>PMIC Temp</value>
+  </data>
+  <data name="PmuTrainingFailure" xml:space="preserve">
+    <value>PMU training failure</value>
+  </data>
+  <data name="PngFileFilter" xml:space="preserve">
+    <value>png files (*.png)|*.png|All files (*.*)|*.*</value>
+  </data>
+  <data name="PowerTableError" xml:space="preserve">
+    <value>Power table error!</value>
+  </data>
+  <data name="PowerTableInitFailed" xml:space="preserve">
+    <value>Could not initialize power table.
+
+Close the application and try again. If the issue persists, you might want to try a system restart.</value>
+  </data>
+  <data name="PowerTableSkipped" xml:space="preserve">
+    <value>Could not get power table.
+Skipping.</value>
+  </data>
+  <data name="PreparingUpdate" xml:space="preserve">
+    <value>Preparing update...</value>
+  </data>
+  <data name="PrintSerialNumbers" xml:space="preserve">
+    <value>Print serial numbers</value>
+  </data>
+  <data name="ProcessorOdtPullDownHint" xml:space="preserve">
+    <value>Processor Odt Impedance Pull Down</value>
+  </data>
+  <data name="ProcessorOdtPullUpHint" xml:space="preserve">
+    <value>Processor Odt Impedance Pull Up</value>
+  </data>
+  <data name="Profiles" xml:space="preserve">
+    <value>Profiles</value>
+  </data>
+  <data name="RawCard" xml:space="preserve">
+    <value>Raw card</value>
+  </data>
+  <data name="ReadSpdFailed" xml:space="preserve">
+    <value>Error reading SPD: {0}</value>
+  </data>
+  <data name="ReadSpdWarning" xml:space="preserve">
+    <value>Warning: Could not read SPD data - {0}</value>
+  </data>
+  <data name="ReadingApcb" xml:space="preserve">
+    <value>Reading the APCB from the SPI flash...</value>
+  </data>
+  <data name="ReadingPowerTable" xml:space="preserve">
+    <value>Reading power table</value>
+  </data>
+  <data name="ReadingPowerTableElapsed" xml:space="preserve">
+    <value>Reading power table ({0}s)</value>
+  </data>
+  <data name="ReadingSpd" xml:space="preserve">
+    <value>Reading SPD data…</value>
+  </data>
+  <data name="Ready" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="ReferenceId" xml:space="preserve">
+    <value>Reference ID</value>
+  </data>
+  <data name="ReferenceIdHint" xml:space="preserve">
+    <value>Mention this ID if you reach out about the issue on GitHub or the forums.</value>
+  </data>
+  <data name="RefreshMode" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="RefreshSensorsFailed" xml:space="preserve">
+    <value>Error refreshing sensors: {0}</value>
+  </data>
+  <data name="RefreshTelemetryFailed" xml:space="preserve">
+    <value>Error refreshing telemetry: {0}</value>
+  </data>
+  <data name="RefreshingPartialSpd" xml:space="preserve">
+    <value>Partial SPD detected, refreshing…</value>
+  </data>
+  <data name="Register" xml:space="preserve">
+    <value>Register</value>
+  </data>
+  <data name="ReleaseChannel" xml:space="preserve">
+    <value>Release channel</value>
+  </data>
+  <data name="ReportAdvancedModeOff" xml:space="preserve">
+    <value>Advanced Mode is off, so the power table, APOB, AOD and AGESA data are not in the report.</value>
+  </data>
+  <data name="ReportBuildFailed" xml:space="preserve">
+    <value>The report could not be built: </value>
+  </data>
+  <data name="ReportCopyFailed" xml:space="preserve">
+    <value>The report was sent, but no copy could be saved</value>
+  </data>
+  <data name="ReportCopySaveFailed" xml:space="preserve">
+    <value>The sent report could not be saved: </value>
+  </data>
+  <data name="ReportCopySaved" xml:space="preserve">
+    <value>A copy of the report was saved</value>
+  </data>
+  <data name="ReportErrorDetailsHint" xml:space="preserve">
+    <value>The error message and the matching crash log lines, added to the end of the report.</value>
+  </data>
+  <data name="ReportFileFilter" xml:space="preserve">
+    <value>Text files (*.txt;*.log)|*.txt;*.log|All files (*.*)|*.*</value>
+  </data>
+  <data name="ReportIntro" xml:space="preserve">
+    <value>The report goes directly to the ZenTimings developer and helps track down your issue.</value>
+  </data>
+  <data name="ReportPrivacyHint" xml:space="preserve">
+    <value>Only what is shown above is sent. Serial numbers are included only if 'Print serial numbers' was enabled when the report was generated.</value>
+  </data>
+  <data name="ReportProblem" xml:space="preserve">
+    <value>Report a problem...</value>
+  </data>
+  <data name="ReportProblemMenu" xml:space="preserve">
+    <value>_Report a problem...</value>
+  </data>
+  <data name="ReportRateLimit" xml:space="preserve">
+    <value>Too many reports were sent from your connection. Please try again later.</value>
+  </data>
+  <data name="ReportScreenshotFailed" xml:space="preserve">
+    <value>The main window could not be captured.</value>
+  </data>
+  <data name="ReportScreenshotHint" xml:space="preserve">
+    <value>A picture of the main window, so the developer sees what you see.</value>
+  </data>
+  <data name="ReportSendFailed" xml:space="preserve">
+    <value>The report could not be sent: </value>
+  </data>
+  <data name="ReportSent" xml:space="preserve">
+    <value>Report sent</value>
+  </data>
+  <data name="ReportServerError" xml:space="preserve">
+    <value>The server returned an error ({0}).</value>
+  </data>
+  <data name="ReportServerTimeout" xml:space="preserve">
+    <value>The server did not respond in time. Please try again later.</value>
+  </data>
+  <data name="ReportServerUnavailable" xml:space="preserve">
+    <value>Could not reach the server. Check your internet connection and try again.</value>
+  </data>
+  <data name="ReportTextSize" xml:space="preserve">
+    <value>{0} of text</value>
+  </data>
+  <data name="ReportThankYou" xml:space="preserve">
+    <value>Thank you! The developer will look into it.</value>
+  </data>
+  <data name="ReportThankYouWithEmail" xml:space="preserve">
+    <value>Thank you! The developer will look into it and may contact you by email.</value>
+  </data>
+  <data name="ReportUnexpectedResponse" xml:space="preserve">
+    <value>The server sent an unexpected response.</value>
+  </data>
+  <data name="RequiresWindows11" xml:space="preserve">
+    <value>Requires Windows 11</value>
+  </data>
+  <data name="ResetSettings" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="ResetStats" xml:space="preserve">
+    <value>Reset Stats</value>
+  </data>
+  <data name="ResizeWindowHint" xml:space="preserve">
+    <value>Double-click to auto-fit, drag to resize</value>
+  </data>
+  <data name="Resources" xml:space="preserve">
+    <value>Resources</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>Restart</value>
+  </data>
+  <data name="RestartFailed" xml:space="preserve">
+    <value>Could not restart {0}.
+{1}</value>
+  </data>
+  <data name="RestoreWindow" xml:space="preserve">
+    <value>Restore</value>
+  </data>
+  <data name="RowColumnAddressBits" xml:space="preserve">
+    <value>{0} row / {1} column bits</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="SaveAs" xml:space="preserve">
+    <value>Save As</value>
+  </data>
+  <data name="SaveAsMenu" xml:space="preserve">
+    <value>Save As...</value>
+  </data>
+  <data name="SaveEllipsis" xml:space="preserve">
+    <value>Save...</value>
+  </data>
+  <data name="SaveFailed" xml:space="preserve">
+    <value>Could not save: {0}</value>
+  </data>
+  <data name="SaveScreenshotFailed" xml:space="preserve">
+    <value>Failed to save screenshot: {0}</value>
+  </data>
+  <data name="SaveSettingsFailed" xml:space="preserve">
+    <value>Could not save settings to file!</value>
+  </data>
+  <data name="SaveWindowPosition" xml:space="preserve">
+    <value>Save position on app close</value>
+  </data>
+  <data name="Screenshot" xml:space="preserve">
+    <value>Screenshot</value>
+  </data>
+  <data name="ScreenshotCopied" xml:space="preserve">
+    <value>Screenshot copied to clipboard.</value>
+  </data>
+  <data name="ScreenshotTitle" xml:space="preserve">
+    <value>ZenTimings Screenshot</value>
+  </data>
+  <data name="SdramWidth" xml:space="preserve">
+    <value>SDRAM width</value>
+  </data>
+  <data name="SearchTimings" xml:space="preserve">
+    <value>Search timings...</value>
+  </data>
+  <data name="Second" xml:space="preserve">
+    <value>sec</value>
+  </data>
+  <data name="Seconds" xml:space="preserve">
+    <value>seconds</value>
+  </data>
+  <data name="SelectScreenshotFolder" xml:space="preserve">
+    <value>Select folder to save screenshots</value>
+  </data>
+  <data name="Send" xml:space="preserve">
+    <value>Send</value>
+  </data>
+  <data name="SendDebugReport" xml:space="preserve">
+    <value>Send debug report</value>
+  </data>
+  <data name="SendEllipsis" xml:space="preserve">
+    <value>Send...</value>
+  </data>
+  <data name="SendReportEllipsis" xml:space="preserve">
+    <value>Send report...</value>
+  </data>
+  <data name="SendToDeveloper" xml:space="preserve">
+    <value>Send to Developer</value>
+  </data>
+  <data name="Sending" xml:space="preserve">
+    <value>Sending...</value>
+  </data>
+  <data name="Sensor" xml:space="preserve">
+    <value>Sensor</value>
+  </data>
+  <data name="SensorSources" xml:space="preserve">
+    <value>Sensor Sources</value>
+  </data>
+  <data name="Sensors" xml:space="preserve">
+    <value>Sensors</value>
+  </data>
+  <data name="SensorsMenu" xml:space="preserve">
+    <value>_Sensors</value>
+  </data>
+  <data name="SensorsRunningTime" xml:space="preserve">
+    <value>Running: </value>
+  </data>
+  <data name="SerialNumber" xml:space="preserve">
+    <value>Serial number</value>
+  </data>
+  <data name="SerialNumberShort" xml:space="preserve">
+    <value>Serial</value>
+  </data>
+  <data name="Setting" xml:space="preserve">
+    <value>Setting</value>
+  </data>
+  <data name="SettingStatus" xml:space="preserve">
+    <value>{0} (status 0x{1:X4})</value>
+  </data>
+  <data name="SettingsApplyOnRestart" xml:space="preserve">
+    <value>Some settings will be applied on next launch.</value>
+  </data>
+  <data name="SettingsBackupLocation" xml:space="preserve">
+    <value>
+
+The old file was kept as </value>
+  </data>
+  <data name="SettingsSaved" xml:space="preserve">
+    <value>Settings Saved.</value>
+  </data>
+  <data name="Show" xml:space="preserve">
+    <value>Show</value>
+  </data>
+  <data name="ShowDriverError" xml:space="preserve">
+    <value>Show error when the driver is not loaded</value>
+  </data>
+  <data name="ShowingSpd" xml:space="preserve">
+    <value>Showing SPD for {0}</value>
+  </data>
+  <data name="SignatureDownloadFailed" xml:space="preserve">
+    <value>Could not download the signature file.
+</value>
+  </data>
+  <data name="SingleInstance" xml:space="preserve">
+    <value>Single instance</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="Skip" xml:space="preserve">
+    <value>Skip</value>
+  </data>
+  <data name="SkipAppUpdateVersion" xml:space="preserve">
+    <value>Don't ask for this update again</value>
+  </data>
+  <data name="SkipDriverUpdateVersion" xml:space="preserve">
+    <value>Don't remind me about this version again</value>
+  </data>
+  <data name="Slot" xml:space="preserve">
+    <value>Slot</value>
+  </data>
+  <data name="SmallRadius" xml:space="preserve">
+    <value>Small Radius</value>
+  </data>
+  <data name="SmbiosHandle" xml:space="preserve">
+    <value>SMBIOS handle</value>
+  </data>
+  <data name="SmuDriverMissing" xml:space="preserve">
+    <value>Ryzen SMU module is not loaded.
+Make sure that the PawnIO driver is installed correctly.</value>
+  </data>
+  <data name="SnapWindows" xml:space="preserve">
+    <value>Snap windows together</value>
+  </data>
+  <data name="SocOdtHint" xml:space="preserve">
+    <value>SoC ODT the DRAM is told about (MR17)</value>
+  </data>
+  <data name="Source" xml:space="preserve">
+    <value>Source</value>
+  </data>
+  <data name="SpdDataUnavailable" xml:space="preserve">
+    <value>N/A (no SPD data)</value>
+  </data>
+  <data name="SpdDumpError" xml:space="preserve">
+    <value>Failed to dump SPD: {0}</value>
+  </data>
+  <data name="SpdDumpFailed" xml:space="preserve">
+    <value>Dump failed.</value>
+  </data>
+  <data name="SpdDumpReturnedFalse" xml:space="preserve">
+    <value>Failed to dump SPD. The operation returned false.</value>
+  </data>
+  <data name="SpdDumpSaved" xml:space="preserve">
+    <value>SPD dumped to {0}</value>
+  </data>
+  <data name="SpdFileFilter" xml:space="preserve">
+    <value>SPD files (*.spd)|*.spd|Binary files (*.bin)|*.bin|All files (*.*)|*.*</value>
+  </data>
+  <data name="SpdHub" xml:space="preserve">
+    <value>SPD hub</value>
+  </data>
+  <data name="SpdHubTemperature" xml:space="preserve">
+    <value>SPD Hub Temp</value>
+  </data>
+  <data name="SpdInformation" xml:space="preserve">
+    <value>SPD Information</value>
+  </data>
+  <data name="SpdModulesLoaded" xml:space="preserve">
+    <value>Loaded {0} SPD module(s)</value>
+  </data>
+  <data name="SpdNotDetected" xml:space="preserve">
+    <value>No SPD data detected</value>
+  </data>
+  <data name="SpdRevision" xml:space="preserve">
+    <value>SPD revision</value>
+  </data>
+  <data name="SpdTimingMinimum" xml:space="preserve">
+    <value>{0} ps, min {1} nCK</value>
+  </data>
+  <data name="Speed" xml:space="preserve">
+    <value>Speed</value>
+  </data>
+  <data name="Stable" xml:space="preserve">
+    <value>Stable</value>
+  </data>
+  <data name="StableOnly" xml:space="preserve">
+    <value>Stable releases only</value>
+  </data>
+  <data name="StableUpdateAvailable" xml:space="preserve">
+    <value>Stable Update Available</value>
+  </data>
+  <data name="StartMinimized" xml:space="preserve">
+    <value>Start minimized</value>
+  </data>
+  <data name="StartupAndWindow" xml:space="preserve">
+    <value>Startup &amp; Window</value>
+  </data>
+  <data name="StartupTask" xml:space="preserve">
+    <value>Startup task</value>
+  </data>
+  <data name="SupportedCl" xml:space="preserve">
+    <value>Supported CL</value>
+  </data>
+  <data name="Svi2Plugin" xml:space="preserve">
+    <value>SVI2 Plugin</value>
+  </data>
+  <data name="System" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="SystemInfo" xml:space="preserve">
+    <value>System Info</value>
+  </data>
+  <data name="SystemInfoWindowTitle" xml:space="preserve">
+    <value>SystemInfo</value>
+  </data>
+  <data name="TableSize" xml:space="preserve">
+    <value>Table size</value>
+  </data>
+  <data name="Temperature" xml:space="preserve">
+    <value>Temperature</value>
+  </data>
+  <data name="TextExportFormat" xml:space="preserve">
+    <value>Text (path = value)</value>
+  </data>
+  <data name="TextFileFilter" xml:space="preserve">
+    <value>Text files (*.txt)|*.txt|All files (*.*)|*.*</value>
+  </data>
+  <data name="TextFileFilterLower" xml:space="preserve">
+    <value>text files (*.txt)|*.txt|All files (*.*)|*.*</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>Theme</value>
+  </data>
+  <data name="ThemeBlack" xml:space="preserve">
+    <value>Black</value>
+  </data>
+  <data name="ThemeBurntOrange" xml:space="preserve">
+    <value>Burnt Orange</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="ThemeDarkMint" xml:space="preserve">
+    <value>Dark Mint</value>
+  </data>
+  <data name="ThemeDarkMintGradient" xml:space="preserve">
+    <value>Dark Mint Gradient</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="ThemeRetroWave" xml:space="preserve">
+    <value>Retro Wave</value>
+  </data>
+  <data name="ThermalSensor" xml:space="preserve">
+    <value>Thermal sensor</value>
+  </data>
+  <data name="ThermalSensors" xml:space="preserve">
+    <value>Thermal sensors</value>
+  </data>
+  <data name="Thickness" xml:space="preserve">
+    <value>Thickness</value>
+  </data>
+  <data name="Threads" xml:space="preserve">
+    <value>Threads</value>
+  </data>
+  <data name="Timing" xml:space="preserve">
+    <value>Timing</value>
+  </data>
+  <data name="TimingBlockCount" xml:space="preserve">
+    <value>{0} timing blocks</value>
+  </data>
+  <data name="Timings" xml:space="preserve">
+    <value>Timings</value>
+  </data>
+  <data name="TimingsPanelUnavailable" xml:space="preserve">
+    <value>No timings panel for this memory type.</value>
+  </data>
+  <data name="TimingsShown" xml:space="preserve">
+    <value>{0} timings shown across {1} channel(s).</value>
+  </data>
+  <data name="ToggleModuleInfo" xml:space="preserve">
+    <value>Show/hide module info</value>
+  </data>
+  <data name="ToggleSection" xml:space="preserve">
+    <value>Collapse / expand section</value>
+  </data>
+  <data name="Token" xml:space="preserve">
+    <value>Token</value>
+  </data>
+  <data name="TokensAndStatus" xml:space="preserve">
+    <value>Tokens / status</value>
+  </data>
+  <data name="ToolsMenu" xml:space="preserve">
+    <value>_Tools</value>
+  </data>
+  <data name="TopOfSystemMemory" xml:space="preserve">
+    <value>Top of memory</value>
+  </data>
+  <data name="TotalPower" xml:space="preserve">
+    <value>Total Power</value>
+  </data>
+  <data name="TrademarkNotice" xml:space="preserve">
+    <value>ASUS, G.Skill, MSI, Colorful, OriginCode, Biwin logos and other trademarks are the property of their respective owners.</value>
+  </data>
+  <data name="TrainedApob" xml:space="preserve">
+    <value>Trained (APOB)</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="UclkRatio" xml:space="preserve">
+    <value>UCLK ratio</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>An unexpected error occurred: {0}{1}</value>
+  </data>
+  <data name="UninstallInpOutOnExit" xml:space="preserve">
+    <value>Uninstall inpoutx64 driver on close</value>
+  </data>
+  <data name="UninstallNotifications" xml:space="preserve">
+    <value>Uninstall notifications</value>
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="UnknownCpu" xml:space="preserve">
+    <value>Unknown CPU</value>
+  </data>
+  <data name="UnknownToken" xml:space="preserve">
+    <value>Token not known</value>
+  </data>
+  <data name="UnreadableSettings" xml:space="preserve">
+    <value>Invalid or outdated settings file!
+Settings will be reset to defaults and any custom settings will be lost.</value>
+  </data>
+  <data name="Unsupported" xml:space="preserve">
+    <value>Unsupported</value>
+  </data>
+  <data name="UnsupportedCpu" xml:space="preserve">
+    <value>Unsupported CPU</value>
+  </data>
+  <data name="UnsupportedCpuFamily" xml:space="preserve">
+    <value>CPU family is not supported.</value>
+  </data>
+  <data name="UnsupportedCpuModel" xml:space="preserve">
+    <value>CPU model is not supported.</value>
+  </data>
+  <data name="UnsupportedCpuModelTitle" xml:space="preserve">
+    <value>Unsupported CPU Model</value>
+  </data>
+  <data name="UnsupportedSpd" xml:space="preserve">
+    <value>Invalid or unsupported SPD (device type 0x{0:X2})</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Update Available</value>
+  </data>
+  <data name="UpdateCancelled" xml:space="preserve">
+    <value>The update has been cancelled.</value>
+  </data>
+  <data name="UpdateCancelledForSecurity" xml:space="preserve">
+    <value>The update has been cancelled for security reasons.</value>
+  </data>
+  <data name="UpdateCheckError" xml:space="preserve">
+    <value>An error occurred while checking for updates:
+{0}</value>
+  </data>
+  <data name="UpdateCheckFailed" xml:space="preserve">
+    <value>Update Check Failed</value>
+  </data>
+  <data name="UpdateCheckSettingsHint" xml:space="preserve">
+    <value>
+
+The check on startup can be turned off here, and back on in Options.</value>
+  </data>
+  <data name="UpdateChecksumMismatch" xml:space="preserve">
+    <value>Update verification failed. The downloaded file checksum does not match the expected value.
+</value>
+  </data>
+  <data name="UpdateDownloadFailed" xml:space="preserve">
+    <value>Failed to download the update:
+{0}</value>
+  </data>
+  <data name="UpdateExeMissing" xml:space="preserve">
+    <value>The downloaded update does not contain ZenTimings.exe.
+</value>
+  </data>
+  <data name="UpdateFailed" xml:space="preserve">
+    <value>Update Failed</value>
+  </data>
+  <data name="UpdateMetadataSignatureInvalid" xml:space="preserve">
+    <value>Update metadata signature verification failed. The update XML may have been tampered with. The update has been cancelled for security reasons.</value>
+  </data>
+  <data name="UpdateNotNewer" xml:space="preserve">
+    <value>The downloaded version ({0}) is not newer than the installed version ({1}).
+</value>
+  </data>
+  <data name="UpdateNow" xml:space="preserve">
+    <value>Update Now</value>
+  </data>
+  <data name="UpdateServerUnavailable" xml:space="preserve">
+    <value>There is a problem reaching the update server. Please check your internet connection and try again later.</value>
+  </data>
+  <data name="UpdateSignatureInvalid" xml:space="preserve">
+    <value>Update signature verification failed. The downloaded file may have been tampered with.
+</value>
+  </data>
+  <data name="UpdateStartupTaskFailed" xml:space="preserve">
+    <value>Could not update the Windows startup task.</value>
+  </data>
+  <data name="UpdateTitle" xml:space="preserve">
+    <value>ZenTimings Update</value>
+  </data>
+  <data name="Value" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="VerifyingChecksum" xml:space="preserve">
+    <value>Verifying checksum...</value>
+  </data>
+  <data name="VerifyingSignature" xml:space="preserve">
+    <value>Verifying digital signature...</value>
+  </data>
+  <data name="VerifyingUpdate" xml:space="preserve">
+    <value>Verifying update...</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="VersionNumber" xml:space="preserve">
+    <value>Version {0}</value>
+  </data>
+  <data name="ViewFullScreenshot" xml:space="preserve">
+    <value>View the full screenshot</value>
+  </data>
+  <data name="VisitMotherboardPage" xml:space="preserve">
+    <value>Click to visit {0} page</value>
+  </data>
+  <data name="Voltage" xml:space="preserve">
+    <value>Voltage</value>
+  </data>
+  <data name="Voltages" xml:space="preserve">
+    <value>Voltages</value>
+  </data>
+  <data name="WaitingForDriverCleanup" xml:space="preserve">
+    <value>Waiting for driver cleanup...</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="WckCkRatioHint" xml:space="preserve">
+    <value>WCK to CK ratio, the data runs on WCK</value>
+  </data>
+  <data name="WhatHappened" xml:space="preserve">
+    <value>What happened?</value>
+  </data>
+  <data name="WhatsNew" xml:space="preserve">
+    <value>What's New</value>
+  </data>
+  <data name="WheaErrorsSinceBoot" xml:space="preserve">
+    <value>Errors since boot</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+</root>
