@@ -16,6 +16,7 @@ using System.Windows.Threading;
 using ZenStates.Core.Common;
 using ZenTimings.Helpers;
 using ZenTimings.Settings;
+using ZenTimings.Localization;
 
 namespace ZenTimings.Windows
 {
@@ -84,7 +85,7 @@ namespace ZenTimings.Windows
                 ScreenshotToggle.IsChecked = false;
                 ScreenshotToggle.IsEnabled = false;
                 ScreenshotFrame.Visibility = Visibility.Collapsed;
-                ScreenshotHint.Text = "The main window could not be captured.";
+                ScreenshotHint.Text = UiText.Get("ReportScreenshotFailed");
             }
 
             Loaded += async (s, e) =>
@@ -114,16 +115,16 @@ namespace ZenTimings.Windows
                     return report ?? "";
 
                 return (report ?? "").TrimEnd() + Environment.NewLine + Environment.NewLine +
-                    ReportBuilder.Heading("Error Details") + errorDetails + Environment.NewLine;
+                    ReportBuilder.Heading(UiText.Get("ErrorDetails")) + errorDetails + Environment.NewLine;
             }
         }
 
         private async Task CollectReportAsync()
         {
             IsCollecting = true;
-            BusyText.Text = "Collecting system information...";
+            BusyText.Text = UiText.Get("CollectingSystemInfo");
             BusyPanel.Visibility = Visibility.Visible;
-            ReportSizeText.Text = "Collecting...";
+            ReportSizeText.Text = UiText.Get("Collecting");
             TogglePreviewButton.IsEnabled = false;
 
             string collected;
@@ -133,12 +134,12 @@ namespace ZenTimings.Windows
             }
             catch (Exception ex)
             {
-                collected = DebugReportGenerator.BuildFallbackReport("The report could not be built: " + ex.Message, null, ex.ToString());
+                collected = DebugReportGenerator.BuildFallbackReport(UiText.Get("ReportBuildFailed") + ex.Message, null, ex.ToString());
             }
 
             IsCollecting = false;
             BusyPanel.Visibility = Visibility.Collapsed;
-            BusyText.Text = "Sending...";
+            BusyText.Text = UiText.Get("Sending");
             TogglePreviewButton.IsEnabled = true;
             SetReport(collected);
             SendButton.IsEnabled = !IsSending;
@@ -157,7 +158,7 @@ namespace ZenTimings.Windows
 
             string composed = ComposedReport;
             ReportPreview.Text = composed;
-            ReportSizeText.Text = FormatSize(Encoding.UTF8.GetByteCount(composed)) + " of text";
+            ReportSizeText.Text = UiText.Format("ReportTextSize", FormatSize(Encoding.UTF8.GetByteCount(composed)));
         }
 
         private void CenterOnScreen()
@@ -217,14 +218,14 @@ namespace ZenTimings.Windows
                 Stretch = Stretch.Uniform,
                 StretchDirection = StretchDirection.DownOnly,
                 Cursor = Cursors.Hand,
-                ToolTip = "Click or press Esc to close",
+                ToolTip = UiText.Get("DismissScreenshot"),
             };
             RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.HighQuality);
 
             Rect area = SystemParameters.WorkArea;
             var viewer = new ThemedWindow
             {
-                Title = "Screenshot",
+                Title = UiText.Get("Screenshot"),
                 Icon = Icon,
                 Content = image,
                 SizeToContent = SizeToContent.WidthAndHeight,
@@ -258,7 +259,7 @@ namespace ZenTimings.Windows
         {
             bool show = ReportPreview.Visibility != Visibility.Visible;
             ReportPreview.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
-            TogglePreviewButton.Content = show ? "Hide" : "Show";
+            TogglePreviewButton.Content = show ? UiText.Get("Hide") : UiText.Get("Show");
         }
 
         private async void SendButton_Click(object sender, RoutedEventArgs e)
@@ -266,7 +267,7 @@ namespace ZenTimings.Windows
             string email = EmailBox.Text.Trim();
             if (email.Length > 0 && !EmailPattern.IsMatch(email))
             {
-                ShowError("That email address doesn't look right. Correct it or leave the field empty.");
+                ShowError(UiText.Get("InvalidEmail"));
                 EmailBox.Focus();
                 return;
             }
@@ -305,11 +306,11 @@ namespace ZenTimings.Windows
             }
             catch (TaskCanceledException)
             {
-                ShowError("The server did not respond in time. Please try again later.");
+                ShowError(UiText.Get("ReportServerTimeout"));
             }
             catch (HttpRequestException)
             {
-                ShowError("Could not reach the server. Check your internet connection and try again.");
+                ShowError(UiText.Get("ReportServerUnavailable"));
             }
             catch (DebugReportException ex)
             {
@@ -317,7 +318,7 @@ namespace ZenTimings.Windows
             }
             catch (Exception ex)
             {
-                ShowError("The report could not be sent: " + ex.Message);
+                ShowError(UiText.Get("ReportSendFailed") + ex.Message);
             }
             finally
             {
@@ -386,8 +387,8 @@ namespace ZenTimings.Windows
         {
             ReferenceIdText.Text = id;
             SuccessText.Text = gaveEmail
-                ? "Thank you! The developer will look into it and may contact you by email."
-                : "Thank you! The developer will look into it.";
+                ? UiText.Get("ReportThankYouWithEmail")
+                : UiText.Get("ReportThankYou");
             FormView.Visibility = Visibility.Collapsed;
             SuccessView.Visibility = Visibility.Visible;
         }
@@ -397,13 +398,13 @@ namespace ZenTimings.Windows
             SavedCard.Visibility = Visibility.Visible;
             if (folder != null)
             {
-                SavedTitle.Text = "A copy of the report was saved";
+                SavedTitle.Text = UiText.Get("ReportCopySaved");
                 SavedPathText.Text = folder;
                 OpenSavedFolderButton.Visibility = Visibility.Visible;
             }
             else
             {
-                SavedTitle.Text = "The report was sent, but no copy could be saved";
+                SavedTitle.Text = UiText.Get("ReportCopyFailed");
                 SavedPathText.Text = error ?? "";
                 OpenSavedFolderButton.Visibility = Visibility.Collapsed;
             }

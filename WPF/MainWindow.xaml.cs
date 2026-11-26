@@ -41,6 +41,7 @@ using MessageBoxButtonModel = ZenTimings.Theming.MessageBoxButtonModel;
 using MessageBoxButton = ZenTimings.Theming.MessageBoxButton;
 using MessageBoxImage = ZenTimings.Theming.MessageBoxImage;
 using MessageBoxResult = ZenTimings.Theming.MessageBoxResult;
+using ZenTimings.Localization;
 //using OpenHardwareMonitor.Hardware;
 
 namespace ZenTimings
@@ -159,20 +160,15 @@ namespace ZenTimings
                         result = ZenTimings.Theming.MessageBox.Show(
                             new ZenTimings.Theming.MessageBoxModel
                             {
-                                Caption = "PawnIO driver required",
-                                Text = "ZenTimings reads the memory timings and sensors through the PawnIO driver, " +
-                                    "which is not installed on this system." + Environment.NewLine + Environment.NewLine +
-                                    $"Install the bundled PawnIO{bundledVersion} now? The PawnIO installer will open, " +
-                                    "and ZenTimings restarts when it finishes." + Environment.NewLine + Environment.NewLine +
-                                    "Without the driver ZenTimings cannot run and will exit." + Environment.NewLine + Environment.NewLine +
-                                    "PawnIO is open source: " + pawnIoUrl,
+                                Caption = UiText.Get("PawnIoRequired"),
+                                Text = UiText.Format("PawnIoInstallPrompt", bundledVersion, pawnIoUrl),
                                 Icon = ZenTimings.Theming.MessageBoxImage.Information,
                                 ShowInTaskbar = true,
                                 Buttons = new[]
                                 {
-                                    ZenTimings.Theming.MessageBoxButtons.Ok("Install PawnIO"),
-                                    ZenTimings.Theming.MessageBoxButtons.Custom("Open GitHub page"),
-                                    ZenTimings.Theming.MessageBoxButtons.Cancel("Exit"),
+                                    ZenTimings.Theming.MessageBoxButtons.Ok(UiText.Get("InstallPawnIo")),
+                                    ZenTimings.Theming.MessageBoxButtons.Custom(UiText.Get("OpenGitHub")),
+                                    ZenTimings.Theming.MessageBoxButtons.Cancel(UiText.Get("Exit")),
                                 },
                             });
 
@@ -219,23 +215,23 @@ namespace ZenTimings
                 SplashWindow.Loading("PawnIO");
                 CheckForDriver();
 
-                SplashWindow.Loading("Core");
+                SplashWindow.Loading(UiText.Get("Core"));
                 // Core initialization does most of the startup work; show each of its stages.
-                CpuSingleton.InitProgress = stage => SplashWindow.Loading($"Core: {stage}");
+                CpuSingleton.InitProgress = stage => SplashWindow.Loading(UiText.Format("CoreLoading", stage));
                 cpu = CpuSingleton.Instance;
                 CpuSingleton.InitProgress = null;
 
                 if (cpu.info.family.Equals(Cpu.Family.UNSUPPORTED))
                 {
-                    throw new ApplicationException("CPU family is not supported.");
+                    throw new ApplicationException(UiText.Get("UnsupportedCpuFamily"));
                 }
                 else if (cpu.info.codeName.Equals(Cpu.CodeName.Unsupported))
                 {
                     SplashWindow.HideIfOpen();
                     try
                     {
-                        ProblemReport.ShowError("CPU model is not supported.", "Unsupported CPU Model", null, null,
-                            MessageBoxImage.Warning, "Continue");
+                        ProblemReport.ShowError(UiText.Get("UnsupportedCpuModel"), UiText.Get("UnsupportedCpuModelTitle"), null, null,
+                            MessageBoxImage.Warning, UiText.Get("Continue"));
                     }
                     finally
                     {
@@ -245,13 +241,13 @@ namespace ZenTimings
 
                 if (!cpu.RyzenSmu.IsLoaded)
                 {
-                    HandleError("Ryzen SMU module is not loaded.\nMake sure that the PawnIO driver is installed correctly.", "Driver Error");
+                    HandleError(UiText.Get("SmuDriverMissing"), UiText.Get("DriverError"));
                     ExitApplication();
                     TerminateStartup();
                 }
 
                 // TODO: Add crash-logger and dump any info available to a file for debugging.
-                var memoryConfig = cpu.GetMemoryConfig() ?? throw new ApplicationException("Could not read the memory controller configuration.");
+                var memoryConfig = cpu.GetMemoryConfig() ?? throw new ApplicationException(UiText.Get("MemoryControllerReadFailed"));
                 var memoryType = memoryConfig.Type;
 
                 IconSource = GetIcon("pack://application:,,,/ZenTimings;component/Resources/ZenTimings2022.ico", 16);
@@ -260,10 +256,10 @@ namespace ZenTimings
                 InitializeComponent();
                 //SetResourceReference(NativeBorderBrushProperty, "WindowBorderColor");
 
-                SplashWindow.Loading("Timings");
+                SplashWindow.Loading(UiText.Get("Timings"));
                 var timings = ReadTimings();
 
-                SplashWindow.Loading("Memory modules");
+                SplashWindow.Loading(UiText.Get("MemoryModules"));
 
                 // The SPD read (only the init subset; the SPD window reads the rest) started with the core and ran next to
                 // the rest of its startup. What is left of it is waited for here, so the module names, their logos and the
@@ -281,11 +277,11 @@ namespace ZenTimings
                 if (!spdLoadedBeforeModules && memoryConfig.IsSpdInfoLoaded)
                     MemoryConfig_SpdInfoLoaded(memoryConfig, EventArgs.Empty);
 
-                SplashWindow.Loading("Sensors");
+                SplashWindow.Loading(UiText.Get("Sensors"));
                 new Task(() => cpu.systemInfo?.UpdateSensors()).Start();
 
                 // Motherboard logo
-                SplashWindow.Loading("Resources");
+                SplashWindow.Loading(UiText.Get("Resources"));
                 var motherboardLogoName = VendorUtils.GetMotherboardLogo(cpu.systemInfo);
                 if (motherboardLogoName != null)
                 {
@@ -297,26 +293,26 @@ namespace ZenTimings
                     PowerCfgTimer.Interval = TimeSpan.FromMilliseconds(settings.AutoRefreshInterval);
                     PowerCfgTimer.Tick += PowerCfgTimer_Tick;
 
-                    SplashWindow.Loading("Reading power table");
+                    SplashWindow.Loading(UiText.Get("ReadingPowerTable"));
                     if (!WaitForPowerTable())
                     {
-                        SplashWindow.Loading("Power table error!");
+                        SplashWindow.Loading(UiText.Get("PowerTableError"));
                     }
                     // I/O driver currently used for APOB, AOD and Agesa version
-                    SplashWindow.Loading("IO Driver");
+                    SplashWindow.Loading(UiText.Get("IoDriver"));
                     if (!WaitForInpoutDriverLoad() && settings.ShowInpOutDriverError)
                     {
                         ShowInpOutDriverError();
                     }
 
-                    SplashWindow.Loading("Plugins");
+                    SplashWindow.Loading(UiText.Get("Plugins"));
                     if (memoryType == MemType.DDR4 || memoryType == MemType.LPDDR4)
                     {
-                        SplashWindow.Loading("SVI2 Plugin");
+                        SplashWindow.Loading(UiText.Get("Svi2Plugin"));
                         plugins.Add(new SVI2Plugin(cpu));
                         //ReadSVI();
 
-                        SplashWindow.Loading("Memory controller");
+                        SplashWindow.Loading(UiText.Get("MemoryController"));
                         BMC = new BiosMemController();
                     }
                     //plugins.Add(new OHWMPlugin());
@@ -344,7 +340,7 @@ namespace ZenTimings
                 if (cpu.bclk != null)
                     cpu.bclk.MemoryBclkChanged += Bclk_MemoryBclkChanged;
 
-                SplashWindow.Loading("Done");
+                SplashWindow.Loading(UiText.Get("Done"));
 
                 AddTimingsPanel(memoryType);
 
@@ -367,7 +363,7 @@ namespace ZenTimings
             }
             catch (Exception ex)
             {
-                HandleError(ex.Message, "Error", ex);
+                HandleError(ex.Message, UiText.Get("Error"), ex);
                 ExitApplication();
                 TerminateStartup();
             }
@@ -433,7 +429,7 @@ namespace ZenTimings
             // the build that wrote it. The commit hash is left out: anything longer widens this SizeToContent
             // window in simple mode, as its title bar does not trim.
             string version = mockData.ReportVersion?.Split('+')[0];
-            Title = version != null ? $"Debug Report v{version}" : "Debug Report";
+            Title = version != null ? UiText.Format("DebugReportVersion", version) : UiText.Get("DebugReport");
 
             // A debug report is a read-only snapshot: the menu and the screenshot act on the live machine. Module
             // selection needs every channel's timings, which only reports carrying the register dump provide.
@@ -565,8 +561,8 @@ namespace ZenTimings
             notifyIcon.ContextMenuStrip = new Forms.ContextMenuStrip();
             notifyIcon.ContextMenuStrip.Items.Add($"{AssemblyProduct} v{AssemblyVersion}", null, OnAppContextMenuItemClick);
             notifyIcon.ContextMenuStrip.Items.Add("-");
-            notifyIcon.ContextMenuStrip.Items.Add("Report a problem...", null, (object sender, EventArgs e) => ProblemReport.ShowSendDialog(this));
-            notifyIcon.ContextMenuStrip.Items.Add("Exit", null, (object sender, EventArgs e) => ExitApplication());
+            notifyIcon.ContextMenuStrip.Items.Add(UiText.Get("ReportProblem"), null, (object sender, EventArgs e) => ProblemReport.ShowSendDialog(this));
+            notifyIcon.ContextMenuStrip.Items.Add(UiText.Get("Exit"), null, (object sender, EventArgs e) => ExitApplication());
 
             return notifyIcon;
         }
@@ -1110,7 +1106,7 @@ namespace ZenTimings
 
                 MessageBox.Show(
                     ex.Message,
-                    "Warning",
+                    UiText.Get("Warning"),
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
                 Debug.WriteLine(ex.Message);
@@ -1199,7 +1195,7 @@ namespace ZenTimings
 
             if (cpu.powerTable == null || cpu.powerTable.DramBaseAddress == 0)
             {
-                HandleError("Could not initialize power table.\n\nClose the application and try again. If the issue persists, you might want to try a system restart.");
+                HandleError(UiText.Get("PowerTableInitFailed"));
                 return false;
             }
 
@@ -1224,7 +1220,7 @@ namespace ZenTimings
                 if (status != SMU.Status.OK)
                 {
                     // Runs on the UI thread: wait with the splash kept responsive, and show how long it's been.
-                    SplashWindow.Loading($"Reading power table ({(int)timer.Elapsed.TotalSeconds}s)");
+                    SplashWindow.Loading(UiText.Format("ReadingPowerTableElapsed", (int)timer.Elapsed.TotalSeconds));
                     SplashWindow.Wait(200);
                 }
             } while (status != SMU.Status.OK && timer.Elapsed.TotalMilliseconds < timeout);
@@ -1233,7 +1229,7 @@ namespace ZenTimings
 
             if (status != SMU.Status.OK)
             {
-                HandleError("Could not get power table.\nSkipping.");
+                HandleError(UiText.Get("PowerTableSkipped"));
                 return false;
             }
 
@@ -1481,17 +1477,15 @@ namespace ZenTimings
         /// </summary>
         private void ShowInpOutDriverError()
         {
-            var dontShowAgain = MessageBoxButtons.Custom("Don't show again");
+            var dontShowAgain = MessageBoxButtons.Custom(UiText.Get("DontShowAgain"));
 
             // The splash is topmost and could cover the message box during startup.
             SplashWindow.HideIfOpen();
             try
             {
                 MessageBoxButtonModel pressed = ProblemReport.ShowErrorWithButtons(
-                    "I/O driver is not responding or not loaded.\n\n" +
-                    "Information that needs it, such as AOD and the AGESA version, is not shown. " +
-                    "You can turn this message back on in Options.",
-                    "Error",
+                    UiText.Get("InpOutDriverNotResponding"),
+                    UiText.Get("Error"),
                     null,
                     this,
                     new[] { dontShowAgain });
@@ -1510,8 +1504,9 @@ namespace ZenTimings
 
         /// <param name="exception">Attached to the report when one is sent, null for none.</param>
         /// <param name="offerReport">Offer to send a debug report; false for errors a report can't help with.</param>
-        public void HandleError(string message, string title = "Error", Exception exception = null, bool offerReport = true)
+        public void HandleError(string message, string title = null, Exception exception = null, bool offerReport = true)
         {
+            title = title ?? UiText.Get("Error");
             // The splash is topmost and could cover the message box during startup.
             SplashWindow.HideIfOpen();
             try
@@ -1572,7 +1567,7 @@ namespace ZenTimings
 
                 // Opened from a debug report, it carries the report's title so it is not mistaken for the live machine.
                 if (mockData != null)
-                    allDimmsWnd.Title = $"{Title} - All DIMMs";
+                    allDimmsWnd.Title = UiText.Format("AllDimmsTitle", Title);
 
                 allDimmsWnd.Closed += (s, args) => allDimmsWnd = null;
                 allDimmsWnd.Show();
@@ -1607,7 +1602,7 @@ namespace ZenTimings
             }
             catch (Exception ex)
             {
-                HandleError($"Could not restart {nameof(ZenTimings)}.\n{ex.Message}", offerReport: false);
+                HandleError(UiText.Format("RestartFailed", nameof(ZenTimings), ex.Message), offerReport: false);
             }
 
             Application.Current.Shutdown();
@@ -1731,9 +1726,8 @@ namespace ZenTimings
             {
                 MessageBoxModel messageBox = new MessageBoxModel
                 {
-                    Text = "Debug functionality requires Advanced Mode.\n\n" +
-                           "Do you want to enable it now (the application will restart automatically)?",
-                    Caption = "Debug Report",
+                    Text = UiText.Get("EnableAdvancedForDebug"),
+                    Caption = UiText.Get("DebugReport"),
                     Buttons = MessageBoxButtons.YesNoCancel()
                 };
 
@@ -2028,7 +2022,7 @@ namespace ZenTimings
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error opening APOB:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(UiText.Format("OpenApobFailed", ex.Message), UiText.Get("Error"), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -2052,7 +2046,7 @@ namespace ZenTimings
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error opening APCB:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(UiText.Format("OpenApcbFailed", ex.Message), UiText.Get("Error"), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -2064,8 +2058,8 @@ namespace ZenTimings
                 {
                     MessageBoxModel messageBox = new MessageBoxModel
                     {
-                        Text = "APOB table is not available on this system.",
-                        Caption = "APOB Dump",
+                        Text = UiText.Get("ApobUnavailable"),
+                        Caption = UiText.Get("ApobDump"),
                         Buttons = new[] { MessageBoxButtons.Ok() }
                     };
                     MessageBox.Show(messageBox);
@@ -2074,7 +2068,7 @@ namespace ZenTimings
 
                 Forms.SaveFileDialog saveFileDialog = new Forms.SaveFileDialog
                 {
-                    Filter = "Binary files (*.bin)|*.bin|APOB files (*.apob)|*.apob|All files (*.*)|*.*",
+                    Filter = UiText.Get("ApobFileFilter"),
                     DefaultExt = "bin",
                     FileName = $"APOB_{cpu.info.codeName}_{cpu.systemInfo.CpuId:X8}_{DateTime.Now:yyyyMMdd_HHmmss}.bin"
                 };
@@ -2086,8 +2080,8 @@ namespace ZenTimings
                         File.WriteAllBytes(saveFileDialog.FileName, cpu.info.apob.RawTable);
                         MessageBoxModel successBox = new MessageBoxModel
                         {
-                            Text = $"APOB table successfully exported to:\n{saveFileDialog.FileName}",
-                            Caption = "APOB Dump",
+                            Text = UiText.Format("ApobDumpSaved", saveFileDialog.FileName),
+                            Caption = UiText.Get("ApobDump"),
                             Buttons = new[] { MessageBoxButtons.Ok() }
                         };
                         MessageBox.Show(successBox);
@@ -2096,8 +2090,8 @@ namespace ZenTimings
                     {
                         MessageBoxModel errorBox = new MessageBoxModel
                         {
-                            Text = $"Error writing file:\n{ex.Message}",
-                            Caption = "APOB Dump Error",
+                            Text = UiText.Format("FileWriteFailed", ex.Message),
+                            Caption = UiText.Get("ApobDumpError"),
                             Buttons = new[] { MessageBoxButtons.Ok() }
                         };
                         MessageBox.Show(errorBox);
@@ -2108,8 +2102,8 @@ namespace ZenTimings
             {
                 MessageBoxModel errorBox = new MessageBoxModel
                 {
-                    Text = $"Error during APOB dump:\n{ex.Message}",
-                    Caption = "APOB Dump Error",
+                    Text = UiText.Format("ApobDumpFailed", ex.Message),
+                    Caption = UiText.Get("ApobDumpError"),
                     Buttons = new[] { MessageBoxButtons.Ok() }
                 };
                 MessageBox.Show(errorBox);
@@ -2211,7 +2205,7 @@ namespace ZenTimings
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error opening Sensors window:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(UiText.Format("OpenSensorsFailed", ex.Message), UiText.Get("Error"), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -2238,7 +2232,7 @@ namespace ZenTimings
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error opening SPD Info:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(UiText.Format("OpenSpdFailed", ex.Message), UiText.Get("Error"), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -2301,7 +2295,7 @@ namespace ZenTimings
             catch (Exception ex)
             {
                 // e.g. no default browser associated
-                MessageBox.Show($"Could not open {url} {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(UiText.Format("OpenLinkFailed", url, ex.Message), UiText.Get("Error"), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -2494,7 +2488,7 @@ namespace ZenTimings
 
             string path = LiveSnapshot.GetFilePath(exportSettings.LiveSnapshotDirectory, exportSettings.LiveSnapshotFileName, exportSettings.LiveSnapshotFormat);
             double seconds = Math.Max(LiveSnapshot.MinIntervalMs, exportSettings.LiveSnapshotIntervalMs) / 1000.0;
-            buttonLiveSnapshot.ToolTip = $"Live snapshot is on, click to change\n{path}\nWritten with auto refresh, every {seconds:0.#} s at most";
+            buttonLiveSnapshot.ToolTip = UiText.Format("LiveSnapshotActiveHint", path, seconds);
         }
 
         private SnapshotSource GetSnapshotSource(bool? autoRefreshActive = null)
@@ -2519,7 +2513,7 @@ namespace ZenTimings
                     Dispatcher.BeginInvoke(new Action(() =>
                     {
                         if (!cleanedUp)
-                            HandleError($"Could not write the live snapshot file.\n{LiveSnapshot.LastError}", "Live snapshot", offerReport: false);
+                            HandleError(UiText.Format("LiveSnapshotWriteFailed", LiveSnapshot.LastError), UiText.Get("LiveSnapshot"), offerReport: false);
                     }));
             });
         }
@@ -2584,8 +2578,8 @@ namespace ZenTimings
             if (wasEnabled && !ExportSettings.Instance.LiveSnapshotEnabled && written != null && System.IO.File.Exists(written))
             {
                 MessageBoxResult answer = MessageBox.Show(
-                    $"The live snapshot is now off.\n\nDelete the file that was being written?\n{written}",
-                    "Live snapshot",
+                    UiText.Format("DeleteLiveSnapshot", written),
+                    UiText.Get("LiveSnapshot"),
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Question);
 
@@ -2615,12 +2609,12 @@ namespace ZenTimings
                 }
                 else
                 {
-                    MessageBox.Show($"Changelog file not found: {changelogPath}", "File not found", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show(UiText.Format("ChangelogNotFound", changelogPath), UiText.Get("FileNotFound"), MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to open changelog: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(UiText.Format("OpenChangelogFailed", ex.Message), UiText.Get("Error"), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -2630,8 +2624,8 @@ namespace ZenTimings
             {
                 Forms.OpenFileDialog openFileDialog = new Forms.OpenFileDialog
                 {
-                    Filter = "Text files (*.txt;*.log)|*.txt;*.log|All files (*.*)|*.*",
-                    Title = "Open ZenTimings debug report"
+                    Filter = UiText.Get("ReportFileFilter"),
+                    Title = UiText.Get("OpenDebugReport")
                 };
 
                 if (openFileDialog.ShowDialog() != Forms.DialogResult.OK)
@@ -2672,7 +2666,7 @@ namespace ZenTimings
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error opening debug report:\n{ex.Message}", "Mock Window", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(UiText.Format("OpenDebugReportFailed", ex.Message), UiText.Get("DebugReportWindow"), MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

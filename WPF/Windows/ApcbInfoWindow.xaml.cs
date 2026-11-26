@@ -9,6 +9,7 @@ using System.Windows.Media;
 using ZenStates.Core.Hardware.Apob;
 using ZenStates.Core.OHWM;
 using ZenTimings.Utils;
+using ZenTimings.Localization;
 
 namespace ZenTimings.Windows
 {
@@ -53,7 +54,7 @@ namespace ZenTimings.Windows
         {
             if (_apob == null)
             {
-                StatusText.Text = "The APOB table is not available on this system, so the APCB can't be located.";
+                StatusText.Text = UiText.Get("ApcbNeedsApob");
                 return;
             }
 
@@ -67,7 +68,7 @@ namespace ZenTimings.Windows
             }
             catch (Exception ex)
             {
-                StatusText.Text = "Could not read the APCB: " + ex.Message;
+                StatusText.Text = UiText.Get("ApcbReadFailed") + ex.Message;
                 return;
             }
 
@@ -75,7 +76,7 @@ namespace ZenTimings.Windows
             {
                 // The trained values still come from the APOB
                 FillTraining(null, null);
-                StatusText.Text = "The APCB is only read on the running system (not from a debug report or a dump).";
+                StatusText.Text = UiText.Get("ApcbLiveSystemOnly");
                 return;
             }
 
@@ -86,7 +87,7 @@ namespace ZenTimings.Windows
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"APCB window: {ex}");
-                StatusText.Text = "Could not show the APCB: " + ex.Message;
+                StatusText.Text = UiText.Get("ApcbDisplayFailed") + ex.Message;
             }
         }
 
@@ -94,7 +95,7 @@ namespace ZenTimings.Windows
         {
             if (blobs.Count == 0)
             {
-                StatusText.Text = "No APCB was found in the BIOS directories.";
+                StatusText.Text = UiText.Get("ApcbNotFound");
                 return;
             }
 
@@ -122,7 +123,7 @@ namespace ZenTimings.Windows
                     ApcbToken def;
                     defaults.TryGetValue(t.Id, out def);
                     Row row = MakeRow(t);
-                    row.Default = def != null ? FormatValue(def, false) : "Auto";
+                    row.Default = def != null ? FormatValue(def, false) : UiText.Get("Automatic");
                     row.IsChanged = def == null || Mask(def) != Mask(t);
                     options.Add(row);
                 }
@@ -157,13 +158,13 @@ namespace ZenTimings.Windows
             int named = options.Count(r => !r.IsUnknown);
             var overview = new List<Row>
             {
-                Pair("Booted APCB instance", liveInstance.HasValue
-                    ? $"0x{liveInstance.Value:X}" + (haveBooted ? "" : " (not found in the flash, listing all writable APCBs)")
-                    : "unknown (listing all writable APCBs)"),
-                Pair("Options set", $"{options.Count} ({named} named)"),
-                Pair("Changed from default", $"{options.Count(r => r.IsChanged)}"),
-                Pair("Default tokens", backup != null ? $"{defaultRows.Count}" : "no backup APCB"),
-                Pair("Names", $"{ApcbTokenNames.Count} known tokens (AM5 / Phoenix / Strix CBS and AOD)")
+                Pair(UiText.Get("BootedApcbInstance"), liveInstance.HasValue
+                    ? $"0x{liveInstance.Value:X}" + (haveBooted ? UiText.Get("BootedApcbNotFound") : " (not found in the flash, listing all writable APCBs)")
+                    : UiText.Get("BootedApcbUnknown")),
+                Pair(UiText.Get("ApcbSetOptions"), UiText.Format("ApcbNamedOptionsCount", options.Count, named)),
+                Pair(UiText.Get("ChangedFromDefault"), $"{options.Count(r => r.IsChanged)}"),
+                Pair(UiText.Get("DefaultTokens"), backup != null ? $"{defaultRows.Count}" : UiText.Get("NoBackupApcb")),
+                Pair(UiText.Get("Names"), UiText.Format("KnownTokens", ApcbTokenNames.Count))
             };
 
             FillTraining(TokenMap(booted), defaults);
@@ -179,8 +180,8 @@ namespace ZenTimings.Windows
             ImagesSection.Visibility = Visibility.Visible;
 
             StatusText.Text = options.Count > 0
-                ? "Options left at Auto are not stored in the APCB, so the list holds only what was set in BIOS (or by board presets)."
-                : "The booted APCB holds no option tokens (every option is at Auto).";
+                ? UiText.Get("ApcbOptionsHint")
+                : UiText.Get("NoApcbOptions");
         }
 
         private static Dictionary<uint, ApcbToken> TokenMap(ApcbBlob blob)
@@ -209,7 +210,7 @@ namespace ZenTimings.Windows
 
         #region DFE / 2D training
 
-        private const string NotInApob = "not in APOB";
+        private static string NotInApob => UiText.Get("NotInApob");
 
         // The DDR training options of the CBS DDR menu, by group
         private static readonly KeyValuePair<string, uint>[] TrainingTokens =
@@ -271,7 +272,7 @@ namespace ZenTimings.Windows
                     else if (token != null)
                         value = FormatValue(token, true);
                     else
-                        value = def != null ? $"Auto ({FormatValue(def, false)})" : "Auto";
+                        value = def != null ? UiText.Format("AutomaticWithValue", FormatValue(def, false)) : UiText.Get("Automatic");
 
                     string prompt = name == null ? $"0x{id:X8}" : string.IsNullOrEmpty(name.Prompt) ? name.Name : name.Prompt;
                     rows.Add(new Row
@@ -283,7 +284,7 @@ namespace ZenTimings.Windows
                         Name = name?.Name ?? "",
                         Token = token != null ? $"0x{id:X8} {token.TypeName}" : $"0x{id:X8}",
                         IsChanged = token != null,
-                        Tooltip = token != null ? BuildTooltip(token, name) : (name != null ? name.Name + Environment.NewLine + "Not stored in the APCB (Auto)" : null)
+                        Tooltip = token != null ? BuildTooltip(token, name) : (name != null ? name.Name + Environment.NewLine + UiText.Get("AutoValueNotInApcb") : null)
                     });
                 }
 
@@ -320,7 +321,7 @@ namespace ZenTimings.Windows
                 if (tap2 == null)
                     values.Add("?");
                 else
-                    values.Add(tap2.Values.Any(v => v != 0) ? "2 or more (tap 2 trained)" : "1 or off (tap 2 unused)");
+                    values.Add(tap2.Values.Any(v => v != 0) ? UiText.Get("AtLeastTwoDfeTaps") : UiText.Get("FewerThanTwoDfeTaps"));
             }
 
             return JoinChannels(values);
@@ -346,7 +347,7 @@ namespace ZenTimings.Windows
 
             return new Row
             {
-                Option = prompt ?? "Unknown",
+                Option = prompt ?? UiText.Get("Unknown"),
                 Value = FormatValue(t, true),
                 Name = name?.Name ?? "",
                 Token = $"0x{t.Id:X8} {t.TypeName}",
@@ -365,18 +366,18 @@ namespace ZenTimings.Windows
                 lines.Add(name.Name);
                 switch (name.Source)
                 {
-                    case ApcbTokenSource.Cbs: lines.Add("Set from the AMD CBS menu"); break;
-                    case ApcbTokenSource.Aod: lines.Add("Set from the AMD Overclocking menu"); break;
-                    case ApcbTokenSource.AodDerived: lines.Add("Computed by AMD Overclocking from other options"); break;
-                    case ApcbTokenSource.Oxide: lines.Add("Name from Oxide's amd-apcb"); break;
+                    case ApcbTokenSource.Cbs: lines.Add(UiText.Get("FromAmdCbs")); break;
+                    case ApcbTokenSource.Aod: lines.Add(UiText.Get("FromAmdOverclocking")); break;
+                    case ApcbTokenSource.AodDerived: lines.Add(UiText.Get("DerivedByAmdOverclocking")); break;
+                    case ApcbTokenSource.Oxide: lines.Add(UiText.Get("FromOxideApcb")); break;
                 }
             }
             else
             {
-                lines.Add("Token not known");
+                lines.Add(UiText.Get("UnknownToken"));
             }
 
-            lines.Add($"Token 0x{t.Id:X8}, {t.TypeName}, instance {t.Instance}, priority 0x{t.PriorityMask:X2}");
+            lines.Add(UiText.Format("ApcbTokenDescription", t.Id, t.TypeName, t.Instance, t.PriorityMask));
             return string.Join(Environment.NewLine, lines);
         }
 
@@ -398,7 +399,7 @@ namespace ZenTimings.Windows
             string label = t.Name?.GetValueLabel(value);
 
             if (t.TypeId == 0)
-                return label ?? (value != 0 ? "Enabled (1)" : "Disabled (0)");
+                return label ?? (value != 0 ? UiText.Get("EnabledOne") : UiText.Get("DisabledZero"));
 
             string raw = value < 10 ? value.ToString(CultureInfo.InvariantCulture)
                 : string.Format(CultureInfo.InvariantCulture, "{0} (0x{0:X})", value);

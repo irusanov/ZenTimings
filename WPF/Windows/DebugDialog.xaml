@@ -3,11 +3,12 @@
     x:Class="ZenTimings.Windows.DebugDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:loc="clr-namespace:ZenTimings.Localization"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:theming="clr-namespace:ZenTimings.Theming"
     mc:Ignorable="d"
-    Title="Debug Report"
+    Title="{loc:Text DebugReport}"
     Height="550"
     Width="406"
     Icon="/ZenTimings;component/Resources/new-icon/16.png"
@@ -36,14 +37,12 @@
                  Width="auto"
                  TextWrapping="Wrap"
                  AcceptsReturn="True"
-                 Margin="5,5,5,5" FontFamily="Consolas" FontSize="11" Grid.ColumnSpan="2">
-            Click on Debug button to generate a report.
-        </TextBox>
+                 Margin="5,5,5,5" FontFamily="Consolas" FontSize="11" Grid.ColumnSpan="2" Text="{loc:Text DebugReportInstructions}" />
 
         <CheckBox x:Name="CheckPrintSerials"
                   Grid.Row="1"
                   Grid.ColumnSpan="2"
-                  Content="Print serial numbers"
+                  Content="{loc:Text PrintSerialNumbers}"
                   IsChecked="False"
                   Margin="7,0,5,2"
                   Foreground="{DynamicResource TextColor}" />
@@ -61,35 +60,35 @@
 
                 <Button x:Name="buttonDebug"
                         Grid.Column="0"
-                        Content="Debug"
+                        Content="{loc:Text Debug}"
                         Margin="0,0,5,0"
                         Style="{DynamicResource {x:Static theming:ThemeStyles.AccentButton}}"
                         Width="70"
                         Click="ButtonDebug_Click" />
                 <Button x:Name="buttonDebugSend"
                         Grid.Column="1"
-                        Content="Send..."
+                        Content="{loc:Text SendEllipsis}"
                         Margin="0,0,5,0"
                         IsEnabled="False"
                         Width="70"
                         Click="ButtonDebugSend_Click" />
                 <Button x:Name="buttonDebugSave"
                         Grid.Column="2"
-                        Content="Save"
+                        Content="{loc:Text Save}"
                         Margin="0,0,5,0"
                         IsEnabled="False"
                         Width="70"
                         Click="ButtonDebugSave_Click" />
                 <Button x:Name="buttonDebugSaveAs"
                         Grid.Column="3"
-                        Content="Save As..."
+                        Content="{loc:Text SaveAsMenu}"
                         Margin="0,0,5,0"
                         IsEnabled="False"
                         Width="70"
                         Click="ButtonDebugSaveAs_Click" />
                 <Button x:Name="buttonDebugCancel"
                         Grid.Column="5"
-                        Content="Close"
+                        Content="{loc:Text Close}"
                         IsCancel="True"
                         Width="70"
                         Click="ButtonDebugCancel_Click" />

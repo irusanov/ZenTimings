@@ -11,6 +11,7 @@ using ZenTimings.Helpers;
 using ZenTimings.Settings;
 using ZenTimings.ViewModels;
 using static ZenTimings.Settings.AppSettings;
+using ZenTimings.Localization;
 
 namespace ZenTimings.Windows
 {
@@ -41,6 +42,8 @@ namespace ZenTimings.Windows
             InitializeComponent();
 
             LoadSettingsToUi();
+            if (UiText.Language != appSettings.Language)
+                buttonSettingsRestart.Visibility = Visibility.Visible;
         }
 
         private void LoadSettingsToUi(AppSettings sourceSettings = null)
@@ -60,12 +63,13 @@ namespace ZenTimings.Windows
             numericUpDownAutostartDelay.Text = settings.AutostartDelaySeconds.ToString();
             checkBoxStartMinimized.IsChecked = settings.StartMinimized;
             checkBoxSingleInstance.IsChecked = settings.SingleInstance;
+            comboBoxLanguage.SelectedIndex = (int)settings.Language;
             comboBoxCornerRadius.SelectedIndex = settings.CornerRadius;
             // Rounded corners are a DWM feature of Windows 11; keep the saved value but grey the option out elsewhere.
             bool cornersSupported = ZenTimings.Utils.WindowUtils.SupportsCornerPreference;
             labelCornerRadius.IsEnabled = cornersSupported;
             comboBoxCornerRadius.IsEnabled = cornersSupported;
-            comboBoxCornerRadius.ToolTip = cornersSupported ? null : "Requires Windows 11";
+            comboBoxCornerRadius.ToolTip = cornersSupported ? null : UiText.Get("RequiresWindows11");
             System.Windows.Controls.ToolTipService.SetShowOnDisabled(comboBoxCornerRadius, true);
             numericUpDownRefreshInterval.IsEnabled = settings.AutoRefresh && settings.AdvancedMode;
             numericUpDownRefreshInterval.Text = settings.AutoRefreshInterval.ToString();
@@ -110,7 +114,7 @@ namespace ZenTimings.Windows
                 string displayText;
                 if (source == VoltageSensorSource.Auto)
                 {
-                    displayText = "Auto";
+                    displayText = UiText.Get("Automatic");
                 }
                 else if (source == VoltageSensorSource.SuperIo)
                 {
@@ -163,12 +167,8 @@ namespace ZenTimings.Windows
                 if (writable != null)
                 {
                     var answer = ZenTimings.Theming.MessageBox.Show(
-                        "The startup task runs ZenTimings with administrator rights at every logon, and " + writable +
-                        " can be changed without them. A program running as your user could replace ZenTimings and " +
-                        "get administrator rights at the next logon.\n\n" +
-                        "Moving ZenTimings to a folder only administrators can write to (for example under Program Files) avoids this.\n\n" +
-                        "Enable the startup task anyway?",
-                        "Startup task",
+                        UiText.Format("AutostartWritablePathWarning", writable),
+                        UiText.Get("StartupTask"),
                         ZenTimings.Theming.MessageBoxButton.YesNo,
                         ZenTimings.Theming.MessageBoxImage.Warning);
 
@@ -188,12 +188,13 @@ namespace ZenTimings.Windows
                 checkBoxAutostart.IsChecked = appSettings.AutostartWithWindows;
                 numericUpDownAutostartDelay.IsEnabled = appSettings.AutostartWithWindows;
                 ZenTimings.Theming.MessageBox.Show(
-                    "Could not update the Windows startup task.",
-                    "Error",
+                    UiText.Get("UpdateStartupTaskFailed"),
+                    UiText.Get("Error"),
                     ZenTimings.Theming.MessageBoxButton.OK,
                     ZenTimings.Theming.MessageBoxImage.Error);
             }
             appSettings.SingleInstance = (bool)checkBoxSingleInstance.IsChecked;
+            appSettings.Language = (LanguagePreference)comboBoxLanguage.SelectedIndex;
             appSettings.CornerRadius = comboBoxCornerRadius.SelectedIndex;
             appSettings.ScreenshotMode = (ScreenshotType)comboBoxScreenshot.SelectedIndex;
             appSettings.ScreenshotSaveLocation = textBoxScreenshotPath.Text.Trim();
@@ -255,23 +256,19 @@ namespace ZenTimings.Windows
 
             var restartRequired = _AdvancedMode != appSettings.AdvancedMode ||
                                    _ImpedanceTableSource != appSettings.ImpedanceTableSrc ||
-                                   _CornerRadius != appSettings.CornerRadius;
+                                   _CornerRadius != appSettings.CornerRadius ||
+                                   UiText.Language != appSettings.Language;
 
-            if (restartRequired)
-            {
-                buttonSettingsRestart.Visibility = Visibility.Visible;
-                appSettings.Save();
-                OptionsPopupText.Text = "Some settings will be applied on next launch.";
-            }
-
+            buttonSettingsRestart.Visibility = restartRequired ? Visibility.Visible : Visibility.Hidden;
+            OptionsPopupText.Text = UiText.Get(restartRequired ? "SettingsApplyOnRestart" : "SettingsSaved");
             ShowSavedNotification();
         }
 
         private void ButtonSettingsReset_Click(object sender, RoutedEventArgs e)
         {
             var result = ZenTimings.Theming.MessageBox.Show(
-                "Reset all application settings to default values?",
-                "Confirm Reset",
+                UiText.Get("ConfirmResetSettings"),
+                UiText.Get("ConfirmResetTitle"),
                 ZenTimings.Theming.MessageBoxButton.YesNo,
                 ZenTimings.Theming.MessageBoxImage.Warning);
 
@@ -367,7 +364,7 @@ namespace ZenTimings.Windows
         {
             var folderDialog = new System.Windows.Forms.FolderBrowserDialog
             {
-                Description = "Select folder to save screenshots"
+                Description = UiText.Get("SelectScreenshotFolder")
             };
 
             // Set initial path to current screenshot path if valid

@@ -534,6 +534,15 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <Compile Include="Localization\TextExtension.cs" />
+    <Compile Include="Localization\UiText.cs" />
+    <EmbeddedResource Include="Localization\Strings.resx">
+      <LogicalName>ZenTimings.Localization.Strings.resources</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Localization\Strings.zh-CN.resx">
+      <WithCulture>false</WithCulture>
+      <LogicalName>ZenTimings.Localization.Strings.zh-CN.resources</LogicalName>
+    </EmbeddedResource>
     <None Include="app.config" />
     <None Include="app.manifest" />
     <Compile Include="Controls\NumericTextBox.cs" />

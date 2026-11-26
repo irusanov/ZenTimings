@@ -6,6 +6,7 @@
 -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:loc="clr-namespace:ZenTimings.Localization"
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:t="clr-namespace:ZenTimings.Theming"
                     xmlns:controls="clr-namespace:ZenTimings.Controls">
@@ -735,7 +736,7 @@
                                     <RowDefinition Height="*"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
-                                <RepeatButton x:Name="PART_IncreaseButton" Style="{StaticResource SpinButtonStyle}" ToolTip="Increase">
+                                <RepeatButton x:Name="PART_IncreaseButton" Style="{StaticResource SpinButtonStyle}" ToolTip="{loc:Text Increase}">
                                     <ContentControl ContentTemplate="{DynamicResource {x:Static t:ThemeTemplates.Expander}}"
                                                     Focusable="False"
                                                     IsTabStop="False"
@@ -745,7 +746,7 @@
                                         </ContentControl.RenderTransform>
                                     </ContentControl>
                                 </RepeatButton>
-                                <RepeatButton x:Name="PART_DecreaseButton" Grid.Row="1" Style="{StaticResource SpinButtonStyle}" ToolTip="Decrease">
+                                <RepeatButton x:Name="PART_DecreaseButton" Grid.Row="1" Style="{StaticResource SpinButtonStyle}" ToolTip="{loc:Text Decrease}">
                                     <ContentControl ContentTemplate="{DynamicResource {x:Static t:ThemeTemplates.Expander}}"
                                                     Focusable="False"
                                                     IsTabStop="False"/>
@@ -2061,7 +2062,7 @@
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Focusable" Value="False"/>
         <Setter Property="IsChecked" Value="True"/>
-        <Setter Property="ToolTip" Value="Collapse / expand section"/>
+        <Setter Property="ToolTip" Value="{loc:Text ToggleSection}"/>
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="Template">
@@ -2194,7 +2195,7 @@
         <Setter Property="ResizeDirection" Value="Columns"/>
         <Setter Property="ResizeBehavior" Value="PreviousAndNext"/>
         <Setter Property="Cursor" Value="SizeWE"/>
-        <Setter Property="ToolTip" Value="Double-click to auto-fit, drag to resize"/>
+        <Setter Property="ToolTip" Value="{loc:Text ResizeWindowHint}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="GridSplitter">

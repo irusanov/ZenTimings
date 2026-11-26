@@ -1,6 +1,7 @@
 <UserControl x:Class="ZenTimings.Controls.DDR5TimingsPanel19h"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:ZenTimings.Localization"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:converters="clr-namespace:ZenTimings.Converters"
@@ -25,7 +26,7 @@
                     </Style>
                 </StackPanel.Resources>
 
-                <local:TimingRow Label="{Binding MemoryType, FallbackValue='Speed'}" Value="{Binding MemoryFrequencyString, FallbackValue='N/A', StringFormat={}{0:F0}}" />
+                <local:TimingRow Label="{Binding MemoryType, FallbackValue={loc:Text MemorySpeed}}" Value="{Binding MemoryFrequencyString, FallbackValue='N/A', StringFormat={}{0:F0}}" />
                 <local:TimingRow Label="BGS" Value="{Binding Timings.BGS, FallbackValue='N/A'}" />
                 <local:TimingRow Label="GDM" Value="{Binding Timings.GDM, FallbackValue='N/A'}" />
                 <TextBlock Style="{DynamicResource DividerTextBlock}" />
@@ -58,7 +59,7 @@
 
             <!-- Second Column -->
             <StackPanel Grid.IsSharedSizeScope="True">
-                <local:TimingRow Label="Capacity" Value="{Binding TotalCapacity, FallbackValue='N/A'}" />
+                <local:TimingRow Label="{loc:Text Capacity}" Value="{Binding TotalCapacity, FallbackValue='N/A'}" />
                 <local:TimingRow Label="PwrDwn" Value="{Binding Timings.PowerDown, FallbackValue='N/A'}" />
                 <local:TimingRow Label="Cmd2T" Value="{Binding Timings.Cmd2T, FallbackValue='N/A'}" />
                 <TextBlock Style="{DynamicResource DividerTextBlock}" />
@@ -83,7 +84,7 @@
                         </StackPanel>
                     </local:TimingRow.ValueToolTip>
                 </local:TimingRow>
-                <local:TimingRow Label="Refresh" Value="{Binding Timings.RefreshMode, FallbackValue='N/A'}" />
+                <local:TimingRow Label="{loc:Text RefreshMode}" Value="{Binding Timings.RefreshMode, FallbackValue='N/A'}" />
                 <local:TimingRow Label="tSTAG" Value="{Binding Timings.STAG, FallbackValue='N/A'}" />
                 <local:TimingRow Label="tMRD" Value="{Binding Timings.MRD, FallbackValue='N/A'}" />
                 <local:TimingRow Label="tMRDPDA" Value="{Binding Timings.MRDPDA, FallbackValue='N/A'}" />

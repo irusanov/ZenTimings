@@ -10,6 +10,7 @@ using System.Windows.Media;
 using ZenStates.Core.Hardware.Apob;
 using ZenStates.Core.OHWM;
 using ZenTimings.Utils;
+using ZenTimings.Localization;
 
 namespace ZenTimings.Windows
 {
@@ -19,7 +20,7 @@ namespace ZenTimings.Windows
     /// </summary>
     public partial class ApobInfoWindow : ThemedWindow
     {
-        private const string SerialRowName = "Serial number";
+        private static string SerialRowName => UiText.Get("SerialNumber");
 
         private sealed class Row
         {
@@ -50,7 +51,7 @@ namespace ZenTimings.Windows
                 foreach (GroupBox section in AllSections())
                     section.Visibility = Visibility.Collapsed;
 
-                StatusText.Text = _apob?.ErrorReason ?? "The APOB table is not available on this system.";
+                StatusText.Text = _apob?.ErrorReason ?? UiText.Get("ApobTableUnavailable");
                 return;
             }
 
@@ -66,11 +67,11 @@ namespace ZenTimings.Windows
             Run(EventLogSection, FillEventLog);
             Run(EntriesSection, FillEntries);
 
-            var status = new List<string> { _apob.ProfileName ?? "Unsupported CPU" };
+            var status = new List<string> { _apob.ProfileName ?? UiText.Get("UnsupportedCpu") };
             if (_apob.Entries != null && _apob.Entries.Count > 0)
-                status.Add($"{_apob.Entries.Count} entries");
+                status.Add(UiText.Format("ApobEntryCount", _apob.Entries.Count));
             if (_apob.ChannelTimings != null && _apob.ChannelTimings.Count > 0)
-                status.Add($"{_apob.ChannelTimings.Count} timing blocks");
+                status.Add(UiText.Format("TimingBlockCount", _apob.ChannelTimings.Count));
             if (!string.IsNullOrEmpty(_apob.ErrorReason))
                 status.Add(_apob.ErrorReason);
 
@@ -109,43 +110,43 @@ namespace ZenTimings.Windows
         {
             var rows = new List<Row>();
 
-            rows.Add(Pair("Address", _apob.Address == 0xFFFFFFFF ? "n/a (loaded from a file)" : $"0x{_apob.Address:X8}"));
-            rows.Add(Pair("Version", $"{_apob.Header.Version}"));
-            rows.Add(Pair("Table size", $"{_apob.Header.TableSize} bytes"));
-            rows.Add(Pair("Layout profile", _apob.ProfileName ?? "Unsupported"));
+            rows.Add(Pair(UiText.Get("Address"), _apob.Address == 0xFFFFFFFF ? UiText.Get("AddressUnavailableFromFile") : $"0x{_apob.Address:X8}"));
+            rows.Add(Pair(UiText.Get("Version"), $"{_apob.Header.Version}"));
+            rows.Add(Pair(UiText.Get("TableSize"), UiText.Format("ByteCount", _apob.Header.TableSize)));
+            rows.Add(Pair(UiText.Get("LayoutProfile"), _apob.ProfileName ?? UiText.Get("Unsupported")));
 
             if (_apob.Entries != null && _apob.Entries.Count > 0)
             {
                 int encrypted = _apob.Entries.Count(e => e.IsEncrypted);
-                rows.Add(Pair("Entries", $"{_apob.Entries.Count} ({encrypted} encrypted)"));
+                rows.Add(Pair(UiText.Get("Entries"), UiText.Format("ApobEntriesCount", _apob.Entries.Count, encrypted)));
             }
 
             if (_apob.ActiveMemClk > 0)
-                rows.Add(Pair("Active MemClk", $"{_apob.ActiveMemClk} MHz"));
+                rows.Add(Pair(UiText.Get("ActiveMemoryClock"), $"{_apob.ActiveMemClk} MHz"));
 
             ApobBootInfo boot = _apob.BootInfo;
             if (boot != null)
             {
                 DateTime? date = boot.LastTrainingDate;
-                rows.Add(Pair("Last memory training", date.HasValue ? date.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) : "Unknown"));
-                rows.Add(Pair("Active APCB instance", $"0x{boot.ApcbActiveInstance:X}"));
+                rows.Add(Pair(UiText.Get("LastMemoryTraining"), date.HasValue ? date.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) : UiText.Get("Unknown")));
+                rows.Add(Pair(UiText.Get("ActiveApcbInstance"), $"0x{boot.ApcbActiveInstance:X}"));
             }
 
             ApobDmiInfo dmi = _apob.DmiInfo;
             if (dmi != null)
-                rows.Add(Pair("Memory type", dmi.MemoryTypeName + (dmi.EccCapable ? ", ECC capable" : "")));
+                rows.Add(Pair(UiText.Get("MemoryType"), dmi.MemoryTypeName + (dmi.EccCapable ? UiText.Get("EccCapableSuffix") : "")));
 
             if (_apob.MemoryMap != null)
-                rows.Add(Pair("Top of memory", $"{_apob.MemoryMap.TopOfSystemMemory >> 20} MB (0x{_apob.MemoryMap.TopOfSystemMemory:X})"));
+                rows.Add(Pair(UiText.Get("TopOfSystemMemory"), $"{_apob.MemoryMap.TopOfSystemMemory >> 20} MB (0x{_apob.MemoryMap.TopOfSystemMemory:X})"));
 
             if (_apob.CcdlData.Tccdl != 0)
                 rows.Add(Pair("tCCD_L / WR / WR2", $"{_apob.CcdlData.Tccdl} / {_apob.CcdlData.Tccdlwr} / {_apob.CcdlData.Tccdlwr2}"));
 
-            rows.Add(Pair("PMU training failure", NonZeroText(_apob.TrainingFailureDataBytes)));
-            rows.Add(Pair("MBIST result", NonZeroText(_apob.MbistResultDataBytes)));
+            rows.Add(Pair(UiText.Get("PmuTrainingFailure"), NonZeroText(_apob.TrainingFailureDataBytes)));
+            rows.Add(Pair(UiText.Get("MbistResult"), NonZeroText(_apob.MbistResultDataBytes)));
 
             if (_apob.EventLog != null)
-                rows.Add(Pair("Event log", _apob.EventLog.Count == 0 ? "No events" : $"{_apob.EventLog.Count} event(s)"));
+                rows.Add(Pair(UiText.Get("EventLogSentence"), _apob.EventLog.Count == 0 ? UiText.Get("NoEvents") : UiText.Format("EventCount", _apob.EventLog.Count)));
 
             OverviewGrid.ItemsSource = rows;
             return true;
@@ -159,12 +160,12 @@ namespace ZenTimings.Windows
 
             var rows = new List<Row>
             {
-                BlockRow("Data rate", blocks, b => $"{b.DataRate}"),
+                BlockRow(UiText.Get("DataRate"), blocks, b => $"{b.DataRate}"),
                 BlockRow("MemClk", blocks, b => $"{b.MemClk}")
             };
 
             if (_apob.ActiveMemClk > 0)
-                rows.Add(BlockRow("Active", blocks, b => b.IsActive ? "Yes" : "-"));
+                rows.Add(BlockRow(UiText.Get("Active"), blocks, b => b.IsActive ? UiText.Get("Yes") : "-"));
 
             // The fields are the same in every block of a layout
             List<ApobTimingValue> fields = blocks[0].Values;
@@ -178,7 +179,7 @@ namespace ZenTimings.Windows
                 rows.Add(row);
             }
 
-            SetupGrid(TimingsGrid, "Timing", BlockHeaders(blocks), rows, 110);
+            SetupGrid(TimingsGrid, UiText.Get("Timing"), BlockHeaders(blocks), rows, 110);
             return true;
         }
 
@@ -207,7 +208,7 @@ namespace ZenTimings.Windows
             if (rows.Count == 0)
                 return false;
 
-            SetupGrid(OdtGrid, "Setting", headers, rows, 150);
+            SetupGrid(OdtGrid, UiText.Get("Setting"), headers, rows, 150);
             return true;
         }
 
@@ -217,9 +218,9 @@ namespace ZenTimings.Windows
             if (blocks == null || blocks.Count == 0)
                 return false;
 
-            var rows = new List<Row> { BlockRow("Data rate", blocks, b => $"{b.DataRate}") };
+            var rows = new List<Row> { BlockRow(UiText.Get("DataRate"), blocks, b => $"{b.DataRate}") };
             if (_apob.ActiveMemClk > 0)
-                rows.Add(BlockRow("Active", blocks, b => b.IsActive ? "Yes" : "-"));
+                rows.Add(BlockRow(UiText.Get("Active"), blocks, b => b.IsActive ? UiText.Get("Yes") : "-"));
 
             List<KeyValuePair<string, string>> names = blocks[0].Lpddr5ModeRegisters.GetSettings();
             for (int f = 0; f < names.Count; f++)
@@ -228,7 +229,7 @@ namespace ZenTimings.Windows
                 rows.Add(BlockRow(names[f].Key, blocks, b => b.Lpddr5ModeRegisters.GetSettings()[index].Value));
             }
 
-            SetupGrid(OdtGrid, "Setting", BlockHeaders(blocks), rows, 150);
+            SetupGrid(OdtGrid, UiText.Get("Setting"), BlockHeaders(blocks), rows, 150);
             return true;
         }
 
@@ -269,7 +270,7 @@ namespace ZenTimings.Windows
                 }
             }
 
-            SetupGrid(OdtGrid, "Setting", channels.Select(c => $"Ch {ChannelLetter(c.Channel)}").ToArray(), rows, 150);
+            SetupGrid(OdtGrid, UiText.Get("Setting"), channels.Select(c => $"Ch {ChannelLetter(c.Channel)}").ToArray(), rows, 150);
             return true;
         }
 
@@ -297,14 +298,14 @@ namespace ZenTimings.Windows
             {
                 Pair("MemClkFreq", $"{config.MemClkFreq} MHz"),
                 Pair("DdrMaxRate", $"{config.DdrMaxRate}"),
-                Pair("ECC enabled", config.EccEnable.Any(e => e) ? "Yes" : "No"),
-                Pair("Channel interleave", config.ChannelInterleave ? "Yes" : "No"),
-                Pair("Interleave mode", $"0x{config.InterleaveCurrentMode:X} (capability 0x{config.InterleaveCapability:X}, size 0x{config.InterleaveSize:X})")
+                Pair(UiText.Get("EccEnabled"), config.EccEnable.Any(e => e) ? UiText.Get("Yes") : UiText.Get("No")),
+                Pair(UiText.Get("ChannelInterleave"), config.ChannelInterleave ? UiText.Get("Yes") : UiText.Get("No")),
+                Pair(UiText.Get("InterleaveMode"), UiText.Format("InterleaveModeDetails", config.InterleaveCurrentMode, config.InterleaveCapability, config.InterleaveSize))
             };
 
             // Unused chip select interleave entries of absent channels have a status code of 0
             foreach (ApobMemSetting setting in config.Settings.Where(s => s.StatusCode != 0))
-                rows.Add(Pair(setting.Name, $"{setting.Value} (status 0x{setting.StatusCode:X4})"));
+                rows.Add(Pair(setting.Name, UiText.Format("SettingStatus", setting.Value, setting.StatusCode)));
 
             MemorySettingsGrid.ItemsSource = rows;
             return true;
@@ -320,7 +321,7 @@ namespace ZenTimings.Windows
                     return false;
 
                 List<Row> single = DataRows(new List<object> { _apob.ExtendedData }, null);
-                SetupGrid(TrainingOdtGrid, "Setting", new[] { "Ch A" }, single, 150);
+                SetupGrid(TrainingOdtGrid, UiText.Get("Setting"), new[] { "Ch A" }, single, 150);
                 return single.Count > 0;
             }
 
@@ -328,7 +329,7 @@ namespace ZenTimings.Windows
             if (rows.Count == 0)
                 return false;
 
-            SetupGrid(TrainingOdtGrid, "Setting", BlockHeaders(blocks), rows, 150);
+            SetupGrid(TrainingOdtGrid, UiText.Get("Setting"), BlockHeaders(blocks), rows, 150);
             return true;
         }
 
@@ -359,39 +360,39 @@ namespace ZenTimings.Windows
 
             var rows = new List<Row>
             {
-                SlotRow("Module manufacturer", slots, s => BootDimm(boot, s)?.ModuleManufacturer),
-                SlotRow("DRAM manufacturer", slots, s => BootDimm(boot, s)?.DramManufacturer),
+                SlotRow(UiText.Get("ModuleManufacturer"), slots, s => BootDimm(boot, s)?.ModuleManufacturer),
+                SlotRow(UiText.Get("DramManufacturer"), slots, s => BootDimm(boot, s)?.DramManufacturer),
                 SlotRow(SerialRowName, slots, s =>
                 {
                     ApobBootDimm b = BootDimm(boot, s);
                     return b != null ? b.SerialNumber.ToString("X8", CultureInfo.InvariantCulture) : null;
                 }),
-                SlotRow("Size", slots, s =>
+                SlotRow(UiText.Get("Size"), slots, s =>
                 {
                     ApobDmiLogicalDimm l = LogicalDimm(dmi, s);
                     return l != null && l.SizeMB > 0 ? FormatMegabytes(l.SizeMB) : null;
                 }),
-                SlotRow("Configured speed", slots, s =>
+                SlotRow(UiText.Get("ConfiguredSpeed"), slots, s =>
                 {
                     ApobDmiPhysicalDimm p = PhysicalDimm(dmi, s);
                     return p != null ? $"{p.ConfiguredSpeed} MHz" : null;
                 }),
-                SlotRow("Configured voltage", slots, s =>
+                SlotRow(UiText.Get("ConfiguredVoltage"), slots, s =>
                 {
                     ApobDmiPhysicalDimm p = PhysicalDimm(dmi, s);
                     return p != null ? $"{p.ConfiguredVoltage / 1000.0:0.000} V" : null;
                 }),
-                SlotRow("Address range", slots, s =>
+                SlotRow(UiText.Get("AddressRange"), slots, s =>
                 {
                     ApobDmiLogicalDimm l = LogicalDimm(dmi, s);
                     return l != null ? $"{FormatMegabytes((ulong)l.StartingAddressKb >> 10)} - {FormatMegabytes(((ulong)l.EndingAddressKb + 1) >> 10)}" : null;
                 }),
-                SlotRow("Interleaved", slots, s =>
+                SlotRow(UiText.Get("Interleaved"), slots, s =>
                 {
                     ApobDmiLogicalDimm l = LogicalDimm(dmi, s);
-                    return l != null ? (l.Interleaved ? "Yes" : "No") : null;
+                    return l != null ? (l.Interleaved ? UiText.Get("Yes") : UiText.Get("No")) : null;
                 }),
-                SlotRow("SMBIOS handle", slots, s =>
+                SlotRow(UiText.Get("SmbiosHandle"), slots, s =>
                 {
                     ApobDmiPhysicalDimm p = PhysicalDimm(dmi, s);
                     return p != null ? $"0x{p.Handle:X4}" : null;
@@ -399,7 +400,7 @@ namespace ZenTimings.Windows
             };
 
             rows.RemoveAll(r => r.Values.All(v => v == "-"));
-            SetupGrid(DimmGrid, "Slot", names, rows, 150);
+            SetupGrid(DimmGrid, UiText.Get("Slot"), names, rows, 150);
             return true;
         }
 
@@ -418,10 +419,10 @@ namespace ZenTimings.Windows
 
             if (profile.HasExpoBlock)
             {
-                rows.Add(Pair("EXPO revision", $"{profile.ExpoRevision >> 4}.{profile.ExpoRevision & 0xF}"));
-                rows.Add(Pair("EXPO profiles", $"0x{profile.ExpoProfileBits:X2}"));
-                rows.Add(Pair("Profile 1 tCK", $"{profile.ExpoProfile1TckPs} ps"));
-                rows.Add(Pair("Profile 1 tAA", $"{profile.ExpoProfile1TaaPs} ps"));
+                rows.Add(Pair(UiText.Get("ExpoRevision"), $"{profile.ExpoRevision >> 4}.{profile.ExpoRevision & 0xF}"));
+                rows.Add(Pair(UiText.Get("ExpoProfiles"), $"0x{profile.ExpoProfileBits:X2}"));
+                rows.Add(Pair(UiText.Get("ExpoProfileOneTck"), $"{profile.ExpoProfile1TckPs} ps"));
+                rows.Add(Pair(UiText.Get("ExpoProfileOneTaa"), $"{profile.ExpoProfile1TaaPs} ps"));
             }
 
             ProfileGrid.ItemsSource = rows;
@@ -440,7 +441,7 @@ namespace ZenTimings.Windows
                 Values = new[] { $"0x{h.End:X12}", FormatMegabytes(h.Size >> 20, h.Size), h.TypeName }
             }).ToList();
 
-            SetupGrid(MemoryMapGrid, "Base", new[] { "End", "Size", "Type" }, rows, 120);
+            SetupGrid(MemoryMapGrid, UiText.Get("BaseAddress"), new[] { UiText.Get("EndAddress"), UiText.Get("Size"), UiText.Get("Type") }, rows, 120);
             return true;
         }
 
@@ -468,7 +469,7 @@ namespace ZenTimings.Windows
                 }
             }
 
-            SetupGrid(CoreMapGrid, "Logical core", new[] { "Logical", "Physical", "Threads" }, rows, 110);
+            SetupGrid(CoreMapGrid, UiText.Get("LogicalCore"), new[] { UiText.Get("Logical"), UiText.Get("Physical"), UiText.Get("Threads") }, rows, 110);
             return rows.Count > 0;
         }
 
@@ -484,7 +485,7 @@ namespace ZenTimings.Windows
                 Values = new[] { e.EventClassName, $"0x{e.EventInfo:X8}", $"0x{e.DataA:X8}", $"0x{e.DataB:X8}" }
             }).ToList();
 
-            SetupGrid(EventLogGrid, "#", new[] { "Class", "Event", "Data A", "Data B" }, rows, 40);
+            SetupGrid(EventLogGrid, UiText.Get("Class"), new[] { UiText.Get("Event"), UiText.Get("DataA"), UiText.Get("DataB"), "Data B" }, rows, 40);
             return true;
         }
 
@@ -503,11 +504,11 @@ namespace ZenTimings.Windows
                     $"{e.InstanceId}",
                     $"{e.Size}",
                     e.GroupName,
-                    e.IsEncrypted ? e.Name + " (encrypted)" : e.Name
+                    e.IsEncrypted ? e.Name + UiText.Get("EncryptedSuffix") : e.Name
                 }
             }).ToList();
 
-            SetupGrid(EntriesGrid, "#", new[] { "Offset", "Type", "Instance", "Size", "Group", "Name" }, rows, 40);
+            SetupGrid(EntriesGrid, "#", new[] { UiText.Get("Offset"), UiText.Get("Type"), UiText.Get("Instance"), UiText.Get("Size"), UiText.Get("Group"), UiText.Get("Name") }, rows, 40);
             return true;
         }
 
@@ -523,9 +524,9 @@ namespace ZenTimings.Windows
         private static string NonZeroText(int? nonZeroBytes)
         {
             if (!nonZeroBytes.HasValue)
-                return "Not available";
+                return UiText.Get("NotAvailable");
 
-            return nonZeroBytes.Value == 0 ? "No data" : $"{nonZeroBytes.Value} non-zero bytes";
+            return nonZeroBytes.Value == 0 ? UiText.Get("NoData") : UiText.Format("NonZeroByteCount", nonZeroBytes.Value);
         }
 
         private static char ChannelLetter(int channel)
@@ -629,7 +630,7 @@ namespace ZenTimings.Windows
             grid.Columns.Add(new DataGridTextColumn
             {
                 Header = nameHeader,
-                Binding = new Binding("Name"),
+                Binding = new Binding(UiText.Get("Name")),
                 ElementStyle = nameStyle,
                 HeaderStyle = headerStyle,
                 Width = nameWidth
@@ -672,7 +673,7 @@ namespace ZenTimings.Windows
             {
                 text = string.Join(Environment.NewLine, text
                     .Split(new[] { Environment.NewLine }, StringSplitOptions.None)
-                    .Select(l => l.StartsWith(SerialRowName + "\t", StringComparison.Ordinal) ? SerialRowName + "\t(hidden)" : l));
+                    .Select(l => l.StartsWith(SerialRowName + "\t", StringComparison.Ordinal) ? SerialRowName + "\t" + UiText.Get("HiddenValue") : l));
             }
 
             ClipboardUtils.Copy($"{section.Header}{Environment.NewLine}{text}", button);

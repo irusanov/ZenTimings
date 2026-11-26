@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Threading;
+using ZenTimings.Localization;
 
 namespace ZenTimings.Windows
 {
@@ -60,7 +61,7 @@ namespace ZenTimings.Windows
         {
             Dispatcher.Invoke(DispatcherPriority.Render, new Action(() =>
             {
-                CancelButton.Content = "Close";
+                CancelButton.Content = UiText.Get("Close");
             }));
         }
 

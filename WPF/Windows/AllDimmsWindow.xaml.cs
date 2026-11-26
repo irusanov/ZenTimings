@@ -9,6 +9,7 @@ using System.Windows.Shapes;
 using ZenStates.Core.Hardware.DRAM;
 using ZenTimings.Controls;
 using ZenTimings.ViewModels;
+using ZenTimings.Localization;
 
 namespace ZenTimings.Windows
 {
@@ -193,7 +194,7 @@ namespace ZenTimings.Windows
 
         private FrameworkElement CreatePanel(AllDimmsCapture.DimmFrame dimm)
         {
-            FrameworkElement panel = createPanel() ?? throw new InvalidOperationException("No timings panel for this memory type.");
+            FrameworkElement panel = createPanel() ?? throw new InvalidOperationException(UiText.Get("TimingsPanelUnavailable"));
             panel.DataContext = sourceViewModel.CreateChannelViewModel(dimm.Timings, dimm.PmicData, dimm.Capacity);
             return panel;
         }

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Globalization;
+using ZenTimings.Localization;
 using ZenTimings.Windows;
 
 namespace ZenTimings.ViewModels
@@ -36,6 +37,28 @@ namespace ZenTimings.ViewModels
 
         // Identifies the sensor's group + name for persisting hide/unhide state.
         public string GroupKey { get; set; }
+
+        public string DisplayName => GetDisplayName(Name, GroupKey);
+
+        internal static string GetDisplayName(string name, string groupKey)
+        {
+            if (groupKey == "WHEA|Errors since boot")
+                return UiText.Get("WheaErrorsSinceBoot");
+
+            if (groupKey?.StartsWith("PMIC|", System.StringComparison.Ordinal) == true)
+            {
+                switch (name)
+                {
+                    case "PMIC Temp": return UiText.Get("PmicTemperature");
+                    case "PMIC High Temp": return UiText.Get("PmicHighTemperature");
+                    case "SPD Hub Temp": return UiText.Get("SpdHubTemperature");
+                    case "DIMM Temp": return UiText.Get("DimmTemperature");
+                    case "Total Power": return UiText.Get("TotalPower");
+                }
+            }
+
+            return name;
+        }
 
         public SensorIconKind IconKind => GetIconKind(unit);
 

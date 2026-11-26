@@ -10,6 +10,7 @@ using ZenTimings.Utils;
 using ZenTimings.Windows;
 using MessageBox = ZenTimings.Theming.MessageBox;
 using MessageBoxImage = ZenTimings.Theming.MessageBoxImage;
+using ZenTimings.Localization;
 
 namespace ZenTimings.Helpers
 {
@@ -70,10 +71,10 @@ namespace ZenTimings.Helpers
         /// the same message); a repeat only shows the message.
         /// </summary>
         /// <returns>True when the user chose to send a report.</returns>
-        public static bool ShowError(string message, string caption = "Error", Exception exception = null, Window owner = null,
-            MessageBoxImage icon = MessageBoxImage.Error, string closeLabel = "Close")
+        public static bool ShowError(string message, string caption = null, Exception exception = null, Window owner = null,
+            MessageBoxImage icon = MessageBoxImage.Error, string closeLabel = null)
         {
-            MessageBoxButtonModel pressed = ShowErrorWithButtons(message, caption, exception, owner, null, icon, closeLabel);
+            MessageBoxButtonModel pressed = ShowErrorWithButtons(message, caption ?? UiText.Get("Error"), exception, owner, null, icon, closeLabel);
             return pressed != null && ReferenceEquals(pressed.Id, SendButtonId);
         }
 
@@ -88,20 +89,20 @@ namespace ZenTimings.Helpers
         /// dialog has already been shown.
         /// </returns>
         public static MessageBoxButtonModel ShowErrorWithButtons(string message, string caption, Exception exception, Window owner,
-            IEnumerable<MessageBoxButtonModel> extraButtons, MessageBoxImage icon = MessageBoxImage.Error, string closeLabel = "Close")
+            IEnumerable<MessageBoxButtonModel> extraButtons, MessageBoxImage icon = MessageBoxImage.Error, string closeLabel = null)
         {
             bool offerReport = offeredErrors.Add(GetSignature(message, caption, exception));
 
             var buttons = new List<MessageBoxButtonModel>();
             if (offerReport)
-                buttons.Add(MessageBoxButtons.Custom("Send report...", SendButtonId));
+                buttons.Add(MessageBoxButtons.Custom(UiText.Get("SendReportEllipsis"), SendButtonId));
             if (extraButtons != null)
                 buttons.AddRange(extraButtons);
-            buttons.Add(MessageBoxButtons.Ok(closeLabel));
+            buttons.Add(MessageBoxButtons.Ok(closeLabel ?? UiText.Get("Close")));
 
             var model = new MessageBoxModel
             {
-                Text = offerReport ? message + "\n\nYou can send a debug report to the developer to help fix this." : message,
+                Text = offerReport ? message + UiText.Get("OfferErrorReport") : message,
                 Caption = caption,
                 Icon = icon,
                 Buttons = buttons,
@@ -144,20 +145,20 @@ namespace ZenTimings.Helpers
 
             var model = new MessageBoxModel
             {
-                Text = $"ZenTimings closed unexpectedly on {entry.Stamp}.\n\nDo you want to send a debug report to the developer?",
+                Text = UiText.Format("OfferCrashReport", entry.Stamp),
                 Caption = "ZenTimings",
                 Icon = MessageBoxImage.Warning,
                 Buttons = new[]
                 {
-                    MessageBoxButtons.Custom("Send report...", SendButtonId),
-                    MessageBoxButtons.Ok("Not now"),
+                    MessageBoxButtons.Custom(UiText.Get("SendReportEllipsis"), SendButtonId),
+                    MessageBoxButtons.Ok(UiText.Get("NotNow")),
                 },
             };
 
             MessageBox.Show(owner, model);
 
             if (model.ButtonPressed != null && ReferenceEquals(model.ButtonPressed.Id, SendButtonId))
-                ShowSendDialog(owner, entry.Text, "ZenTimings closed unexpectedly");
+                ShowSendDialog(owner, entry.Text, UiText.Get("AppClosedUnexpectedly"));
         }
 
         /// <summary>The error message, the exception and where crash.log is, as the error details of a report.</summary>

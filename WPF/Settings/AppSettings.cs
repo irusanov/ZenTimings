@@ -8,6 +8,7 @@ using System.Windows;
 using ZenTimings.Helpers;
 using ZenTimings.Utils;
 using static ZenTimings.Helpers.DriverCleaner;
+using ZenTimings.Localization;
 
 namespace ZenTimings.Settings
 {
@@ -60,6 +61,13 @@ namespace ZenTimings.Settings
             Desktop,
         }
 
+        public enum LanguagePreference : int
+        {
+            System,
+            English,
+            SimplifiedChinese,
+        }
+
         public enum ImpedanceTableSource : int
         {
             AOD,
@@ -108,9 +116,9 @@ namespace ZenTimings.Settings
                 Debug.WriteLine(ex.Message);
                 string backup = BackupUnreadableFile();
                 MessageBox.Show(
-                    "Invalid or outdated settings file!\nSettings will be reset to defaults and any custom settings will be lost." +
-                    (backup != null ? "\n\nThe old file was kept as " + backup : string.Empty),
-                    "Error",
+                    UiText.Get("UnreadableSettings") +
+                    (backup != null ? UiText.Get("SettingsBackupLocation") + backup : string.Empty),
+                    UiText.Get("Error"),
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
             }
@@ -155,8 +163,8 @@ namespace ZenTimings.Settings
             {
                 Debug.WriteLine(ex.Message);
                 ZenTimings.Theming.MessageBox.Show(
-                    "Could not save settings to file!",
-                    "Error",
+                    UiText.Get("SaveSettingsFailed"),
+                    UiText.Get("Error"),
                     ZenTimings.Theming.MessageBoxButton.OK,
                     ZenTimings.Theming.MessageBoxImage.Error);
             }
@@ -243,6 +251,7 @@ namespace ZenTimings.Settings
             }
         }
         public bool AdvancedMode { get; set; } = true;
+        public LanguagePreference Language { get; set; } = LanguagePreference.System;
         public Theme AppTheme { get; set; } = Theme.DarkMintGradient;
         public ScreenshotType ScreenshotMode { get; set; } = ScreenshotType.Window;
         public string ScreenshotSaveLocation { get; set; } = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Screenshots");

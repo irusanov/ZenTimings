@@ -3,12 +3,13 @@
     x:Class="ZenTimings.Windows.SpdInfoWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:loc="clr-namespace:ZenTimings.Localization"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:theming="clr-namespace:ZenTimings.Theming"
     xmlns:controls="clr-namespace:ZenTimings.Controls"
     mc:Ignorable="d"
-    Title="SPD Information"
+    Title="{loc:Text SpdInformation}"
     Height="700"
     Width="480"
     MinWidth="420"
@@ -76,9 +77,9 @@
                               Style="{StaticResource SpdRowsGridStyle}"
                               HeadersVisibility="Column">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Timing" Width="*" Binding="{Binding Name}" ElementStyle="{StaticResource SectionNameTextStyle}"/>
-                            <DataGridTextColumn Header="Cycles" Width="80" Binding="{Binding Cycles}" ElementStyle="{StaticResource SectionValueTextStyle}"/>
-                            <DataGridTextColumn Header="Value" Width="110" Binding="{Binding Value}" ElementStyle="{StaticResource SpdLabelTextStyle}"/>
+                            <DataGridTextColumn Header="{loc:Text Timing}" Width="*" Binding="{Binding Name}" ElementStyle="{StaticResource SectionNameTextStyle}"/>
+                            <DataGridTextColumn Header="{loc:Text Cycles}" Width="80" Binding="{Binding Cycles}" ElementStyle="{StaticResource SectionValueTextStyle}"/>
+                            <DataGridTextColumn Header="{loc:Text Value}" Width="110" Binding="{Binding Value}" ElementStyle="{StaticResource SpdLabelTextStyle}"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </StackPanel>
@@ -106,7 +107,7 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Column="0"
-                           Text="DIMM Slot"
+                           Text="{loc:Text DimmSlot}"
                            Style="{StaticResource LabelStyle}"
                            Margin="0,0,8,0"/>
                 <ComboBox x:Name="ComboSlots"
@@ -117,7 +118,7 @@
 
                 <Button x:Name="ButtonDumpSpd"
                         Grid.Column="3"
-                        Content="Dump SPD"
+                        Content="{loc:Text DumpSpd}"
                         Padding="10,4"
                         Click="ButtonDumpSpd_Click"/>
             </Grid>
@@ -130,12 +131,12 @@
             <TabControl x:Name="ProfilesTabControl"
                         BorderThickness="0">
 
-                <TabItem x:Name="ModuleTab" Header="Module">
+                <TabItem x:Name="ModuleTab" Header="{loc:Text MemoryModule}">
                     <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                                   VerticalScrollBarVisibility="Auto"
                                   Padding="0,6,0,0">
                         <StackPanel>
-                            <GroupBox Header="Module" Style="{StaticResource SpdSection}">
+                            <GroupBox Header="{loc:Text MemoryModule}" Style="{StaticResource SpdSection}">
                                 <DataGrid x:Name="ModuleGrid" Style="{StaticResource SpdRowsGridStyle}">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Width="120" Binding="{Binding Label}" ElementStyle="{StaticResource SpdLabelTextStyle}"/>
@@ -144,7 +145,7 @@
                                 </DataGrid>
                             </GroupBox>
 
-                            <GroupBox x:Name="ComponentsSection" Header="Components" Style="{StaticResource SpdSection}">
+                            <GroupBox x:Name="ComponentsSection" Header="{loc:Text Components}" Style="{StaticResource SpdSection}">
                                 <DataGrid x:Name="ComponentsGrid" Style="{StaticResource SpdRowsGridStyle}">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Width="120" Binding="{Binding Label}" ElementStyle="{StaticResource SpdLabelTextStyle}"/>
@@ -156,7 +157,7 @@
                     </ScrollViewer>
                 </TabItem>
 
-                <TabItem x:Name="ProfilesTab" Header="Profiles">
+                <TabItem x:Name="ProfilesTab" Header="{loc:Text Profiles}">
                     <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                                   VerticalScrollBarVisibility="Auto"
                                   Padding="0,6,0,0">
@@ -165,7 +166,7 @@
                                           Focusable="False"
                                           ItemTemplate="{StaticResource ProfileTemplate}"/>
                             <TextBlock x:Name="NoProfilesText"
-                                       Text="No timing profiles available."
+                                       Text="{loc:Text NoTimingProfiles}"
                                        Style="{StaticResource LabelStyle}"
                                        Margin="4"
                                        Visibility="Collapsed"/>
@@ -179,7 +180,7 @@
                     VerticalAlignment="Top"
                     Margin="0,4,0,0"
                     Style="{DynamicResource IconButtonStyle}"
-                    ToolTip="Copy the selected tab to clipboard"
+                    ToolTip="{loc:Text CopySelectedTab}"
                     Click="CopyTab_Click">
                 <controls:AppIcon Kind="IconCopy" IconWidth="11" IconHeight="11" Fill="{DynamicResource TextColor}" />
             </Button>
@@ -190,7 +191,7 @@
         <!-- Status bar -->
         <Border Grid.Row="4" Style="{DynamicResource BottomPanelStyles}">
             <TextBlock x:Name="StatusText"
-                       Text="Ready"
+                       Text="{loc:Text Ready}"
                        Style="{StaticResource LabelStyle}"
                        Opacity="0.75"
                        VerticalAlignment="Center"/>

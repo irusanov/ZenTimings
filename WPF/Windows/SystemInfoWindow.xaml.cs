@@ -14,6 +14,7 @@ using ZenTimings.Common;
 using ZenTimings.Settings;
 using ZenTimings.Utils;
 using static ZenTimings.Common.BiosMemController;
+using ZenTimings.Localization;
 
 namespace ZenTimings.Windows
 {
@@ -138,7 +139,7 @@ namespace ZenTimings.Windows
 
                     var nameColumn = new System.Windows.Controls.DataGridTextColumn
                     {
-                        Header = "Name",
+                        Header = UiText.Get("Name"),
                         Binding = new System.Windows.Data.Binding("PropertyName"),
                         ElementStyle = (System.Windows.Style)this.FindResource("TimingNameTextStyle"),
                         HeaderStyle = (System.Windows.Style)this.FindResource("SectionGridColumnHeaderStyle"),

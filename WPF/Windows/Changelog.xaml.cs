@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
+using ZenTimings.Localization;
 
 namespace ZenTimings.Windows
 {
@@ -21,9 +22,9 @@ namespace ZenTimings.Windows
             this.DataContext = new
             {
 #if BETA
-                Version = $"Version {Version} - beta",
+                Version = UiText.Format("BetaVersionNumber", Version),
 #else
-                Version = $"Version {Version}",
+                Version = UiText.Format("VersionNumber", Version),
 #endif
             };
         }

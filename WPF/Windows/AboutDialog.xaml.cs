@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
 using ZenTimings.Helpers;
+using ZenTimings.Localization;
 
 namespace ZenTimings.Windows
 {
@@ -49,7 +50,7 @@ namespace ZenTimings.Windows
 
             //this.Title = string.Format("About {0}", AssemblyTitle);
             this.labelProductName.Content = AssemblyProduct;
-            this.labelVersion.Text = $"Version {AssemblyInformationalVersion}";
+            this.labelVersion.Text = UiText.Format("VersionNumber", AssemblyInformationalVersion);
             this.labelCopyright.Text = AssemblyCopyright;
             this.labelCompanyName.Text = AssemblyDescription;
 
@@ -64,7 +65,7 @@ namespace ZenTimings.Windows
 
             foreach (var file in files)
             {
-                var version = "missing";
+                var version = UiText.Get("Missing");
 
                 try
                 {
@@ -105,7 +106,7 @@ namespace ZenTimings.Windows
             checkingUpdate = true;
             object content = CheckUpdateBtn.Content;
             CheckUpdateBtn.MinWidth = CheckUpdateBtn.ActualWidth;
-            CheckUpdateBtn.Content = "Checking...";
+            CheckUpdateBtn.Content = UiText.Get("Checking");
             CheckUpdateBtn.IsEnabled = false;
 
             try

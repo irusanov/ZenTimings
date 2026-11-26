@@ -4,12 +4,13 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:loc="clr-namespace:ZenTimings.Localization"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:theming="clr-namespace:ZenTimings.Theming"
     xmlns:controls="clr-namespace:ZenTimings.Controls"
     mc:Ignorable="d"
     x:Name="OptionsWindow"
-    Title="Options"
+    Title="{loc:Text Options}"
     Height="560"
     Width="702"
     ResizeMode="NoResize"
@@ -77,9 +78,7 @@
             <TextBlock
                 Name="OptionsPopupText"
                 Background="{DynamicResource SuccessBackground}"
-                Padding="10" Opacity="0.95">
-                Settings Saved.
-            </TextBlock>
+                Padding="10" Opacity="0.95" Text="{loc:Text SettingsSaved}" />
         </Popup>
 
         <Grid Margin="0 0 0 4">
@@ -97,7 +96,7 @@
         <StackPanel Grid.Column="0" Grid.Row="0" Style="{StaticResource SectionPanel}">
             <StackPanel Style="{StaticResource SectionHeaderPanel}">
                 <controls:AppIcon Kind="IconGeneral" Style="{StaticResource SectionIcon}" />
-                <TextBlock Text="General" Style="{StaticResource SectionHeader}" />
+                <TextBlock Text="{loc:Text General}" Style="{StaticResource SectionHeader}" />
             </StackPanel>
             <Border Style="{DynamicResource Separator}" />
             <Grid Style="{StaticResource SectionGrid}">
@@ -114,6 +113,7 @@
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
 
                 <ToggleButton
@@ -122,14 +122,14 @@
                     Grid.Row="0"
                     Grid.ColumnSpan="3"
                     Style="{StaticResource SettingToggle}"
-                    Content="Advanced mode"
+                    Content="{loc:Text AdvancedMode}"
                     Click="CheckBoxAdvancedMode_Click" />
 
                 <ToggleButton
                     x:Name="checkBoxAutoRefresh"
                     Grid.Column="0"
                     Grid.Row="1"
-                    Content="Auto refresh"
+                    Content="{loc:Text AutoRefresh}"
                     Style="{StaticResource SettingToggle}"
                     Click="CheckBoxAutoRefresh_Click" />
 
@@ -157,14 +157,14 @@
                     Grid.Row="2"
                     Grid.ColumnSpan="3"
                     Style="{StaticResource SettingToggle}"
-                    Content="Check for updates" />
+                    Content="{loc:Text CheckForUpdates}" />
 
                 <TextBlock
                     x:Name="labelReleaseChannel"
                     Grid.Column="0"
                     Grid.Row="3"
                     Style="{StaticResource SettingLabel}"
-                    Text="Release channel"
+                    Text="{loc:Text ReleaseChannel}"
                     IsEnabled="{Binding IsChecked, ElementName=checkBoxCheckUpdate}" />
 
                 <ComboBox
@@ -174,9 +174,9 @@
                     Grid.ColumnSpan="2"
                     Style="{StaticResource SettingCombo}"
                     IsEnabled="{Binding IsChecked, ElementName=checkBoxCheckUpdate}">
-                    <ComboBoxItem Content="Stable" ToolTip="Stable releases only" />
-                    <ComboBoxItem Content="Beta" ToolTip="Beta releases only" />
-                    <ComboBoxItem Content="Any" ToolTip="Stable and beta releases, whichever is newer" />
+                    <ComboBoxItem Content="{loc:Text Stable}" ToolTip="{loc:Text StableOnly}" />
+                    <ComboBoxItem Content="{loc:Text Beta}" ToolTip="{loc:Text BetaOnly}" />
+                    <ComboBoxItem Content="{loc:Text AnyReleaseChannel}" ToolTip="{loc:Text AnyReleaseChannelHint}" />
                 </ComboBox>
 
                 <ToggleButton
@@ -185,7 +185,26 @@
                     Grid.Row="4"
                     Grid.ColumnSpan="3"
                     Style="{StaticResource SettingToggle}"
-                    Content="Single instance" />
+                    Content="{loc:Text SingleInstance}" />
+
+                <Label
+                    Grid.Column="0"
+                    Grid.Row="5"
+                    Padding="0"
+                    VerticalAlignment="Center"
+                    Target="{Binding ElementName=comboBoxLanguage}"
+                    Content="{loc:Text Language}" />
+
+                <ComboBox
+                    x:Name="comboBoxLanguage"
+                    Grid.Column="1"
+                    Grid.Row="5"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource SettingCombo}">
+                    <ComboBoxItem Content="{loc:Text FollowSystemLanguage}" />
+                    <ComboBoxItem Content="English" />
+                    <ComboBoxItem Content="简体中文" />
+                </ComboBox>
             </Grid>
         </StackPanel>
 
@@ -193,7 +212,7 @@
         <StackPanel Grid.Column="0" Grid.Row="1" Style="{StaticResource SectionPanel}">
             <StackPanel Style="{StaticResource SectionHeaderPanel}">
                 <controls:AppIcon Kind="IconAppearance" Style="{StaticResource SectionIcon}" />
-                <TextBlock Text="Appearance" Style="{StaticResource SectionHeader}" />
+                <TextBlock Text="{loc:Text Appearance}" Style="{StaticResource SectionHeader}" />
             </StackPanel>
             <Border Style="{DynamicResource Separator}" />
             <Grid Style="{StaticResource SectionGrid}">
@@ -213,7 +232,7 @@
                     Grid.Column="0"
                     Grid.Row="0"
                     Style="{StaticResource SettingLabel}"
-                    Text="Theme" />
+                    Text="{loc:Text Theme}" />
                 <ComboBox
                     x:Name="comboBoxTheme"
                     Grid.ColumnSpan="2"
@@ -221,15 +240,15 @@
                     Grid.Row="0"
                     Style="{StaticResource SettingCombo}"
                     SelectionChanged="ComboBoxTheme_SelectionChanged">
-                    <ComboBoxItem Content="Light" Tag="Light" />
-                    <ComboBoxItem Content="Dark" Tag="Dark" />
-                    <ComboBoxItem Content="Dark Mint" Tag="DarkMint" />
-                    <ComboBoxItem Content="Dark Mint Gradient" Tag="DarkMintGradient" />
+                    <ComboBoxItem Content="{loc:Text ThemeLight}" Tag="Light" />
+                    <ComboBoxItem Content="{loc:Text ThemeDark}" Tag="Dark" />
+                    <ComboBoxItem Content="{loc:Text ThemeDarkMint}" Tag="DarkMint" />
+                    <ComboBoxItem Content="{loc:Text ThemeDarkMintGradient}" Tag="DarkMintGradient" />
                     <ComboBoxItem Content="Asus ROG" Tag="AsusRog" />
                     <ComboBoxItem Content="Dracula" Tag="Dracula" />
-                    <ComboBoxItem Content="Retro Wave" Tag="RetroWave" />
-                    <ComboBoxItem Content="Burnt Orange" Tag="BurntOrange" />
-                    <ComboBoxItem Content="Black" Tag="Black" />
+                    <ComboBoxItem Content="{loc:Text ThemeRetroWave}" Tag="RetroWave" />
+                    <ComboBoxItem Content="{loc:Text ThemeBurntOrange}" Tag="BurntOrange" />
+                    <ComboBoxItem Content="{loc:Text ThemeBlack}" Tag="Black" />
                 </ComboBox>
 
                 <TextBlock
@@ -237,17 +256,17 @@
                     Grid.Column="0"
                     Grid.Row="1"
                     Style="{StaticResource SettingLabel}"
-                    Text="Corner radius (Win 11)" />
+                    Text="{loc:Text CornerRadius}" />
                 <ComboBox
                     x:Name="comboBoxCornerRadius"
                     Grid.ColumnSpan="2"
                     Grid.Column="1"
                     Grid.Row="1"
                     Style="{StaticResource SettingCombo}">
-                    <ComboBoxItem Content="Auto" />
-                    <ComboBoxItem Content="No Radius" />
-                    <ComboBoxItem Content="Default Radius" />
-                    <ComboBoxItem Content="Small Radius" />
+                    <ComboBoxItem Content="{loc:Text Automatic}" />
+                    <ComboBoxItem Content="{loc:Text NoRadius}" />
+                    <ComboBoxItem Content="{loc:Text DefaultRadius}" />
+                    <ComboBoxItem Content="{loc:Text SmallRadius}" />
                 </ComboBox>
             </Grid>
         </StackPanel>
@@ -256,7 +275,7 @@
         <StackPanel Grid.Column="1" Grid.Row="0" Style="{StaticResource SectionPanel}">
             <StackPanel Style="{StaticResource SectionHeaderPanel}">
                 <controls:AppIcon Kind="IconTemperature" Style="{StaticResource SectionIcon}" />
-                <TextBlock Text="Sensor Sources" Style="{StaticResource SectionHeader}" />
+                <TextBlock Text="{loc:Text SensorSources}" Style="{StaticResource SectionHeader}" />
             </StackPanel>
             <Border Style="{DynamicResource Separator}" />
             <Grid Style="{StaticResource SectionGrid}">
@@ -279,15 +298,15 @@
                     Grid.Column="0"
                     Grid.Row="0"
                     Style="{StaticResource SettingLabel}"
-                    Text="Impedance table" />
+                    Text="{loc:Text ImpedanceTable}" />
                 <ComboBox
                     x:Name="comboBoxImpedanceSource"
                     Grid.ColumnSpan="2"
                     Grid.Column="1"
                     Grid.Row="0"
                     Style="{StaticResource SettingCombo}">
-                    <ComboBoxItem Content="Legacy" />
-                    <ComboBoxItem Content="Extended" />
+                    <ComboBoxItem Content="{loc:Text LegacyDriver}" />
+                    <ComboBoxItem Content="{loc:Text ExtendedDriver}" />
                 </ComboBox>
 
                 <TextBlock
@@ -335,7 +354,7 @@
         <StackPanel Grid.Column="0" Grid.Row="2" Style="{StaticResource SectionPanel}">
             <StackPanel Style="{StaticResource SectionHeaderPanel}">
                 <controls:AppIcon Kind="IconStartup" Style="{StaticResource SectionIcon}" />
-                <TextBlock Text="Startup &amp; Window" Style="{StaticResource SectionHeader}" />
+                <TextBlock Text="{loc:Text StartupAndWindow}" Style="{StaticResource SectionHeader}" />
             </StackPanel>
             <Border Style="{DynamicResource Separator}" />
             <Grid Style="{StaticResource SectionGrid}">
@@ -359,7 +378,7 @@
                     Grid.Column="0"
                     Grid.Row="0"
                     Style="{StaticResource SettingToggle}"
-                    Content="Autostart on logon"
+                    Content="{loc:Text AutostartOnLogon}"
                     Click="CheckBoxAutostart_Click" />
 
                 <controls:NumericTextBox
@@ -374,7 +393,7 @@
                     x:Name="secText"
                     Grid.Column="2"
                     Grid.Row="0"
-                    Content="sec"
+                    Content="{loc:Text Second}"
                     VerticalAlignment="Center"
                     Padding="5 0" FontWeight="Normal" />
 
@@ -384,11 +403,11 @@
                     Grid.Row="1"
                     Grid.ColumnSpan="3"
                     Style="{StaticResource SettingToggle}"
-                    Content="Start minimized" />
+                    Content="{loc:Text StartMinimized}" />
 
                 <ToggleButton
                     x:Name="checkBoxMinimizeToTray"
-                    Content="Minimize to tray"
+                    Content="{loc:Text MinimizeToTray}"
                     Grid.Row="2"
                     Grid.Column="0"
                     Grid.ColumnSpan="3"
@@ -400,7 +419,7 @@
                     Grid.Row="3"
                     Grid.ColumnSpan="3"
                     Style="{StaticResource SettingToggle}"
-                    Content="Save position on app close" />
+                    Content="{loc:Text SaveWindowPosition}" />
 
                 <ToggleButton
                     x:Name="checkBoxWindowSnapping"
@@ -408,7 +427,7 @@
                     Grid.Row="4"
                     Grid.ColumnSpan="3"
                     Style="{StaticResource SettingToggle}"
-                    Content="Snap windows together" />
+                    Content="{loc:Text SnapWindows}" />
             </Grid>
         </StackPanel>
 
@@ -416,7 +435,7 @@
         <StackPanel Grid.Column="1" Grid.Row="2" Style="{StaticResource SectionPanel}">
             <StackPanel Style="{StaticResource SectionHeaderPanel}">
                 <controls:AppIcon Kind="IconDriver" Style="{StaticResource SectionIcon}" />
-                <TextBlock Text="Driver" Style="{StaticResource SectionHeader}" />
+                <TextBlock Text="{loc:Text Driver}" Style="{StaticResource SectionHeader}" />
             </StackPanel>
             <Border Style="{DynamicResource Separator}" />
 
@@ -440,13 +459,13 @@
                     Grid.Row="0"
                     Grid.ColumnSpan="3"
                     Style="{StaticResource SettingToggle}"
-                    Content="Uninstall inpoutx64 driver on close" />
+                    Content="{loc:Text UninstallInpOutOnExit}" />
 
                 <TextBlock
                     Grid.Column="0"
                     Grid.Row="1"
                     Style="{StaticResource SettingLabel}"
-                    Text="Uninstall notifications" />
+                    Text="{loc:Text UninstallNotifications}" />
 
                 <ComboBox
                     x:Name="comboBoxDriverNotification"
@@ -455,9 +474,9 @@
                     Grid.ColumnSpan="2"
                     Style="{StaticResource SettingCombo}"
                     IsEnabled="{Binding IsChecked, ElementName=checkBoxAutoUninstallDriver}">
-                    <ComboBoxItem Content="None" />
-                    <ComboBoxItem Content="Errors only" />
-                    <ComboBoxItem Content="All" />
+                    <ComboBoxItem Content="{loc:Text None}" />
+                    <ComboBoxItem Content="{loc:Text ErrorsOnly}" />
+                    <ComboBoxItem Content="{loc:Text All}" />
                 </ComboBox>
 
                 <ToggleButton
@@ -466,7 +485,7 @@
                     Grid.Row="2"
                     Grid.ColumnSpan="3"
                     Style="{StaticResource SettingToggle}"
-                    Content="Show error when the driver is not loaded" />
+                    Content="{loc:Text ShowDriverError}" />
             </Grid>
         </StackPanel>
 
@@ -474,7 +493,7 @@
         <StackPanel Grid.Column="1" Grid.Row="1" Style="{StaticResource SectionPanel}">
             <StackPanel Style="{StaticResource SectionHeaderPanel}">
                 <controls:AppIcon Kind="IconScreenshot" Style="{StaticResource SectionIcon}" />
-                <TextBlock Text="Screenshot" Style="{StaticResource SectionHeader}" />
+                <TextBlock Text="{loc:Text Screenshot}" Style="{StaticResource SectionHeader}" />
             </StackPanel>
             <Border Style="{DynamicResource Separator}" />
             <Grid Style="{StaticResource SectionGrid}">
@@ -494,15 +513,15 @@
                     Grid.Column="0"
                     Grid.Row="0"
                     Style="{StaticResource SettingLabel}"
-                    Text="Mode" />
+                    Text="{loc:Text Mode}" />
                 <ComboBox
                     x:Name="comboBoxScreenshot"
                     Grid.ColumnSpan="2"
                     Grid.Column="1"
                     Grid.Row="0"
                     Style="{StaticResource SettingCombo}">
-                    <ComboBoxItem Content="App Window" />
-                    <ComboBoxItem Content="Full Desktop" />
+                    <ComboBoxItem Content="{loc:Text AppWindow}" />
+                    <ComboBoxItem Content="{loc:Text FullDesktop}" />
                 </ComboBox>
 
                 <TextBlock
@@ -510,7 +529,7 @@
                     Grid.Column="0"
                     Grid.Row="1"
                     Style="{StaticResource SettingLabel}"
-                    Text="Location" />
+                    Text="{loc:Text Location}" />
 
                     <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2">
                         <TextBox
@@ -527,7 +546,7 @@
                             Height="24"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Top"
-                            ToolTip="Browse"
+                            ToolTip="{loc:Text Browse}"
                             Click="ButtonBrowseScreenshotPath_Click">
                             <controls:AppIcon Kind="IconFolder" IconWidth="13" IconHeight="13" Fill="{DynamicResource TextColor}" />
                         </Button>
@@ -548,7 +567,7 @@
             <Button
                 x:Name="buttonSettingsRestart"
                 Grid.Column="1"
-                Content="Restart"
+                Content="{loc:Text Restart}"
                 Visibility="Hidden"
                 Margin="6 6 0 6"
                 Width="70"
@@ -557,16 +576,16 @@
             <Button
                 x:Name="buttonSettingsReset"
                 Grid.Column="0"
-                Content="Reset"
+                Content="{loc:Text ResetSettings}"
                 HorizontalAlignment="Left"
                 Margin="6 6 0 6"
-                Width="70"
+                MinWidth="70"
                 Click="ButtonSettingsReset_Click" />
 
             <Button
                 x:Name="buttonSettingsApply"
                 Grid.Column="3"
-                Content="Apply"
+                Content="{loc:Text Apply}"
                 Margin="6 6 0 6"
                 Style="{DynamicResource {x:Static theming:ThemeStyles.AccentButton}}"
                 Width="70"
@@ -575,7 +594,7 @@
             <Button
                 x:Name="buttonSettingsCancel"
                 Grid.Column="4"
-                Content="Close"
+                Content="{loc:Text Close}"
                 IsCancel="True"
                 Width="70"
                 Margin="6"

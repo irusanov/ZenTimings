@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ZenTimings.Settings;
+using ZenTimings.Localization;
 
 namespace ZenTimings.Export
 {
@@ -226,12 +227,12 @@ namespace ZenTimings.Export
                 {
                     // The name is free to choose, never replace a file that is not a snapshot
                     if (target != lastWrittenPath && File.Exists(target) && !IsSnapshotFile(target))
-                        throw new IOException($"{target} already exists and is not a ZenTimings snapshot, choose another file name.");
+                        throw new IOException(UiText.Format("LiveSnapshotFileCollision", target));
 
                     string directory = Path.GetDirectoryName(target);
                     Directory.CreateDirectory(directory);
                     if ((new DirectoryInfo(directory).Attributes & FileAttributes.ReparsePoint) != 0)
-                        throw new IOException($"{directory} is a link, refusing to write into it.");
+                        throw new IOException(UiText.Format("LiveSnapshotLinkedFolder", directory));
 
                     temp = Path.Combine(directory, Path.GetRandomFileName() + ".tmp");
                     byte[] bytes = new UTF8Encoding(false).GetBytes(content);

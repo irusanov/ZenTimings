@@ -8,6 +8,7 @@ using ZenStates.Core.Hardware.DRAM.DDR4.Spd;
 using ZenStates.Core.Hardware.DRAM.DDR5.Profiles;
 using ZenStates.Core.Hardware.DRAM.DDR5.Spd;
 using ZenTimings.Utils;
+using ZenTimings.Localization;
 
 namespace ZenTimings.Windows
 {
@@ -65,7 +66,7 @@ namespace ZenTimings.Windows
         public static SpdModuleView Message(string text)
         {
             var view = new SpdModuleView();
-            view.Module.Add(new SpdRow("Info", text));
+            view.Module.Add(new SpdRow(UiText.Get("Info"), text));
             return view;
         }
 
@@ -73,11 +74,11 @@ namespace ZenTimings.Windows
         public string ModuleText()
         {
             var sb = new StringBuilder();
-            AppendRows(sb, "Module", Module);
+            AppendRows(sb, UiText.Get("MemoryModule"), Module);
             if (Components.Count > 0)
             {
                 sb.AppendLine();
-                AppendRows(sb, "Components", Components);
+                AppendRows(sb, UiText.Get("Components"), Components);
             }
             return sb.ToString();
         }
@@ -97,7 +98,7 @@ namespace ZenTimings.Windows
 
                 if (profile.Timings.Count > 0)
                 {
-                    sb.AppendLine($"  {"Timing",-16} {"Cycles",7}  Value");
+                    sb.AppendLine($"  {UiText.Get("Timing"),-16} {UiText.Get("Cycles"),7}  {UiText.Get("Value")}");
                     foreach (SpdTimingRow row in profile.Timings)
                         sb.AppendLine($"  {row.Name,-16} {row.Cycles,7}  {row.Value}");
                 }
@@ -109,7 +110,7 @@ namespace ZenTimings.Windows
         {
             sb.AppendLine(title);
             foreach (SpdRow row in rows)
-                sb.AppendLine($"  {row.Label,-16} {(row.IsSerial ? "(hidden)" : row.Value)}");
+                sb.AppendLine($"  {row.Label,-16} {(row.IsSerial ? UiText.Get("HiddenValue") : row.Value)}");
         }
     }
 
@@ -124,13 +125,13 @@ namespace ZenTimings.Windows
             if (info is Ddr4SpdInfo ddr4)
                 return Build(ddr4);
 
-            return SpdModuleView.Message("No SPD data available.");
+            return SpdModuleView.Message(UiText.Get("NoSpdData"));
         }
 
         private static SpdModuleView Build(Ddr5SpdInfo info)
         {
             if (!info.IsValid)
-                return SpdModuleView.Message($"Invalid or unsupported SPD (device type 0x{info.DeviceType:X2})");
+                return SpdModuleView.Message(UiText.Format("UnsupportedSpd", info.DeviceType));
 
             var view = new SpdModuleView();
             AddModule(view.Module, info);
@@ -142,7 +143,7 @@ namespace ZenTimings.Windows
         private static SpdModuleView Build(Ddr4SpdInfo info)
         {
             if (!info.IsValid)
-                return SpdModuleView.Message($"Invalid or unsupported SPD (device type 0x{info.DeviceType:X2})");
+                return SpdModuleView.Message(UiText.Format("UnsupportedSpd", info.DeviceType));
 
             var view = new SpdModuleView();
             AddModule(view.Module, info);
@@ -167,10 +168,10 @@ namespace ZenTimings.Windows
             string ranks = info.RanksPerChannel > 0 ? Plural(info.RanksPerChannel, "rank") : null;
             if (ranks != null && info.LogicalRanksPerChannel > info.RanksPerChannel)
                 ranks += $", {info.LogicalRanksPerChannel} logical";
-            Add(rows, "Capacity", FormatCapacity(info.TotalCapacityMB, ranks));
-            Add(rows, "DRAM maker", ShortVendor(info.DramManufacturer));
-            Add(rows, "DRAM stepping", $"0x{info.DramStepping:X2}");
-            Add(rows, "SPD revision", info.SpdRevision);
+            Add(rows, UiText.Get("Capacity"), FormatCapacity(info.TotalCapacityMB, ranks));
+            Add(rows, UiText.Get("DramMaker"), ShortVendor(info.DramManufacturer));
+            Add(rows, UiText.Get("DramStepping"), $"0x{info.DramStepping:X2}");
+            Add(rows, UiText.Get("SpdRevision"), info.SpdRevision);
 
             if (info.PrimaryBusWidthBits > 0)
             {
@@ -180,35 +181,35 @@ namespace ZenTimings.Windows
                     : $"{total}-bit";
                 if (info.BusWidthExtensionBits > 0)
                     width += $" + {info.BusWidthExtensionBits}-bit ECC per sub-channel";
-                Add(rows, "Bus width", width);
+                Add(rows, UiText.Get("BusWidth"), width);
             }
 
-            Add(rows, "Temperature", info.OperatingTemperatureRange);
+            Add(rows, UiText.Get("Temperature"), info.OperatingTemperatureRange);
             AddSdram(rows, info.FirstDieDensityMbit, info.FirstDieCount, info.IsAsymmetric, info.SecondDieDensityMbit,
                 info.FirstRowBits, info.FirstColumnBits, info.FirstDeviceWidthBits, info.FirstBankGroups, info.FirstBanksPerBankGroup);
 
             if (!string.IsNullOrEmpty(info.FirstPackageType))
-                Add(rows, "Package", info.FirstPackageType);
+                Add(rows, UiText.Get("Package"), info.FirstPackageType);
 
             if (!info.IsLpddr5)
-                Add(rows, "Voltage", $"VDD {info.VddString}, VDDQ {info.VddqString}, VPP {info.VppString}");
+                Add(rows, UiText.Get("Voltage"), $"VDD {info.VddString}, VDDQ {info.VddqString}, VPP {info.VppString}");
 
             AddOutline(rows, info.ModuleHeight, info.ModuleThickness, info.ReferenceRawCard, info.HeatSpreader);
 
             if (!info.IsPartial)
-                Add(rows, "Checksum", info.BaseCrcValid ? "OK" : info.IsMemoryDownLayout && info.BaseCrc == 0 ? "Not set" : "Bad");
+                Add(rows, UiText.Get("Checksum"), info.BaseCrcValid ? UiText.Get("NotSet") : info.IsMemoryDownLayout && info.BaseCrc == 0 ? "Not set" : "Bad");
 
             // Soldered LPDDR5 has no SPD device: the copy the BIOS trained with, from the APOB
             if (info.FromApob)
-                Add(rows, "Source", "APOB (BIOS copy)");
+                Add(rows, UiText.Get("Source"), UiText.Get("ApobBiosCopy"));
 
             if (info.HasXmp)
                 Add(rows, "XMP", DescribeProfiles($"XMP {info.XmpRevision}", XmpNumbers(info.XmpProfiles)));
 
             if (info.HasExpo)
             {
-                Add(rows, "EXPO version", info.ExpoCrcValid ? info.ExpoRevision : $"{info.ExpoRevision} (bad checksum)");
-                Add(rows, "EXPO profiles", DescribeProfiles(null, ExpoNumbers(info.ExpoProfile1, info.ExpoProfile2)));
+                Add(rows, UiText.Get("ExpoVersion"), info.ExpoCrcValid ? info.ExpoRevision : UiText.Format("ExpoBadChecksum", info.ExpoRevision));
+                Add(rows, UiText.Get("ExpoProfiles"), DescribeProfiles(null, ExpoNumbers(info.ExpoProfile1, info.ExpoProfile2)));
             }
         }
 
@@ -220,13 +221,13 @@ namespace ZenTimings.Windows
             string ranks = info.PackageRanks > 0 ? Plural(info.PackageRanks, "rank") : null;
             if (ranks != null && info.LogicalRanks > info.PackageRanks)
                 ranks += $", {info.LogicalRanks} logical";
-            Add(rows, "Capacity", FormatCapacity(info.TotalCapacityMB, ranks));
-            Add(rows, "DRAM maker", ShortVendor(info.DramManufacturer));
-            Add(rows, "DRAM stepping", $"0x{info.DramStepping:X2}");
-            Add(rows, "SPD revision", info.SpdRevision);
+            Add(rows, UiText.Get("Capacity"), FormatCapacity(info.TotalCapacityMB, ranks));
+            Add(rows, UiText.Get("DramMaker"), ShortVendor(info.DramManufacturer));
+            Add(rows, UiText.Get("DramStepping"), $"0x{info.DramStepping:X2}");
+            Add(rows, UiText.Get("SpdRevision"), info.SpdRevision);
 
             if (info.PrimaryBusWidthBits > 0)
-                Add(rows, "Bus width", info.HasEcc
+                Add(rows, UiText.Get("BusWidth"), info.HasEcc
                     ? $"{info.PrimaryBusWidthBits}-bit + {info.BusWidthExtensionBits}-bit ECC"
                     : $"{info.PrimaryBusWidthBits}-bit");
 
@@ -238,15 +239,15 @@ namespace ZenTimings.Windows
                 string package = info.PackageType;
                 if (!string.IsNullOrEmpty(info.SignalLoading))
                     package += ", " + info.SignalLoading;
-                Add(rows, "Package", package);
+                Add(rows, UiText.Get("Package"), package);
             }
 
-            Add(rows, "Voltage", info.VddString);
+            Add(rows, UiText.Get("Voltage"), info.VddString);
             Add(rows, "PPR", info.PostPackageRepair + (info.SoftPpr ? ", soft PPR" : ""));
             AddOutline(rows, info.ModuleHeight, info.ModuleThickness, info.ReferenceRawCard, false);
 
             if (!info.IsPartial)
-                Add(rows, "Checksum", info.BaseCrcValid && info.ModuleCrcValid ? "OK" : "Bad");
+                Add(rows, UiText.Get("Checksum"), info.BaseCrcValid && info.ModuleCrcValid ? "OK" : "Bad");
 
             if (info.HasXmp)
                 Add(rows, "XMP", DescribeProfiles($"XMP {info.XmpRevision}", XmpNumbers(info.XmpProfiles)));
@@ -255,16 +256,16 @@ namespace ZenTimings.Windows
         private static void AddIdentity(List<SpdRow> rows, string manufacturer, string partNumber, string serial, string date,
             string family, string moduleType, bool isHybrid, string hybridType)
         {
-            Add(rows, "Manufacturer", ShortVendor(manufacturer));
-            Add(rows, "Part number", partNumber);
+            Add(rows, UiText.Get("Manufacturer"), ShortVendor(manufacturer));
+            Add(rows, UiText.Get("PartNumber"), partNumber);
             if (!string.IsNullOrEmpty(serial))
-                rows.Add(new SpdRow("Serial", serial, true));
-            Add(rows, "Manufactured", date);
+                rows.Add(new SpdRow(UiText.Get("SerialNumberShort"), serial, true));
+            Add(rows, UiText.Get("Manufactured"), date);
 
             string type = moduleType;
             if (isHybrid && !string.IsNullOrEmpty(hybridType))
                 type += $" ({hybridType})";
-            Add(rows, "Module type", $"{family} {type}".Trim());
+            Add(rows, UiText.Get("ModuleType"), $"{family} {type}".Trim());
         }
 
         private static void AddSdram(List<SpdRow> rows, int densityMbit, int dieCount, bool asymmetric, int secondDensityMbit,
@@ -277,25 +278,25 @@ namespace ZenTimings.Windows
                     density += $", {dieCount} dies per package";
                 if (asymmetric && secondDensityMbit > 0)
                     density += $" (odd ranks {FormatDensity(secondDensityMbit)})";
-                Add(rows, "Die density", density);
+                Add(rows, UiText.Get("DieDensity"), density);
             }
 
             if (rowBits > 0 && columnBits > 0)
-                Add(rows, "Addressing", $"{rowBits} row / {columnBits} column bits");
+                Add(rows, UiText.Get("Addressing"), UiText.Format("RowColumnAddressBits", rowBits, columnBits));
 
             if (deviceWidth > 0)
-                Add(rows, "SDRAM width", $"x{deviceWidth}");
+                Add(rows, UiText.Get("SdramWidth"), $"x{deviceWidth}");
 
             if (bankGroups > 0 && banksPerGroup > 0)
-                Add(rows, "Banks", $"{Plural(bankGroups, "group")} x {banksPerGroup} = {bankGroups * banksPerGroup} banks");
+                Add(rows, UiText.Get("Banks"), $"{Plural(bankGroups, "group")} x {banksPerGroup} = {bankGroups * banksPerGroup} banks");
         }
 
         private static void AddOutline(List<SpdRow> rows, string height, string thickness, string rawCard, bool heatSpreader)
         {
             if (!string.IsNullOrEmpty(height))
-                Add(rows, "Height", heatSpreader ? $"{height}, heat spreader" : height);
-            Add(rows, "Thickness", thickness);
-            Add(rows, "Raw card", rawCard);
+                Add(rows, UiText.Get("Height"), heatSpreader ? UiText.Format("HeightWithHeatSpreader", height) : height);
+            Add(rows, UiText.Get("Thickness"), thickness);
+            Add(rows, UiText.Get("RawCard"), rawCard);
         }
 
         #endregion
@@ -304,7 +305,7 @@ namespace ZenTimings.Windows
 
         private static void AddComponents(List<SpdRow> rows, Ddr5SpdInfo info)
         {
-            AddDevice(rows, "SPD hub", info.SpdDevice);
+            AddDevice(rows, UiText.Get("SpdHub"), info.SpdDevice);
             AddDevice(rows, "PMIC 0", info.Pmic0);
             AddDevice(rows, "PMIC 1", info.Pmic1);
             AddDevice(rows, "PMIC 2", info.Pmic2);
@@ -313,17 +314,17 @@ namespace ZenTimings.Windows
             {
                 string which = info.ThermalSensor0Present && info.ThermalSensor1Present ? "TS0, TS1"
                     : info.ThermalSensor0Present ? "TS0" : "TS1";
-                Add(rows, "Thermal sensors", $"{DescribeDevice(info.ThermalSensors)}, {which}");
+                Add(rows, UiText.Get("ThermalSensors"), $"{DescribeDevice(info.ThermalSensors)}, {which}");
             }
         }
 
         private static void AddComponents(List<SpdRow> rows, Ddr4SpdInfo info)
         {
             if (!string.IsNullOrEmpty(info.RegisterManufacturer))
-                Add(rows, "Register", $"{ShortVendor(info.RegisterManufacturer)} (rev 0x{info.RegisterRevision:X2})");
+                Add(rows, UiText.Get("Register"), $"{ShortVendor(info.RegisterManufacturer)} (rev 0x{info.RegisterRevision:X2})");
 
             if (info.HasThermalSensor)
-                Add(rows, "Thermal sensor", "TSOD (JC-42.4)");
+                Add(rows, UiText.Get("ThermalSensor"), "TSOD (JC-42.4)");
         }
 
         private static void AddDevice(List<SpdRow> rows, string label, Ddr5SpdDevice device)
@@ -349,11 +350,11 @@ namespace ZenTimings.Windows
             if (info.tCKAVGminPs > 0)
             {
                 int tCK = info.tCKAVGminPs;
-                var jedec = new SpdProfileView { Title = "JEDEC Base" };
+                var jedec = new SpdProfileView { Title = UiText.Get("JedecBase") };
                 jedec.Summary = Summary(info.SpeedGrade, Ddr5Clocks, tCK, info.CL, info.tRCDminPs, info.tRPminPs, info.tRASminPs);
                 AddSpeed(jedec, info.SpeedMTs, info.ClockMHz, tCK);
                 if (info.SupportedCLs != null && info.SupportedCLs.Count > 0)
-                    jedec.Details.Add(new SpdRow("Supported CL", string.Join(", ", info.SupportedCLs)));
+                    jedec.Details.Add(new SpdRow(UiText.Get("SupportedCl"), string.Join(", ", info.SupportedCLs)));
 
                 if (info.IsLpddr5)
                 {
@@ -390,11 +391,11 @@ namespace ZenTimings.Windows
 
                     SpdProfileView view = Ddr5Profile(title, xmp.SpeedGrade, xmp.SpeedMTs, xmp.ClockMHz, xmp.tCKAVGminPs, xmp.CL,
                         xmp.tRCDminPs, xmp.tRPminPs, xmp.tRASminPs);
-                    view.Details.Add(new SpdRow("Voltages", $"VDD {Volts(xmp.VddMv)}, VDDQ {Volts(xmp.VddqMv)}, VPP {Volts(xmp.VppMv)}"));
+                    view.Details.Add(new SpdRow(UiText.Get("Voltages"), $"VDD {Volts(xmp.VddMv)}, VDDQ {Volts(xmp.VddqMv)}, VPP {Volts(xmp.VppMv)}"));
                     if (xmp.SupportedCLs != null && xmp.SupportedCLs.Count > 0)
-                        view.Details.Add(new SpdRow("Supported CL", string.Join(", ", xmp.SupportedCLs)));
+                        view.Details.Add(new SpdRow(UiText.Get("SupportedCl"), string.Join(", ", xmp.SupportedCLs)));
                     if (xmp.DynamicMemoryBoost)
-                        view.Details.Add(new SpdRow("Memory boost", "Dynamic Memory Boost"));
+                        view.Details.Add(new SpdRow(UiText.Get("MemoryBoost"), "Dynamic Memory Boost"));
                     AddDdr5ProfileTimings(view, xmp.tCKAVGminPs, xmp.CL, xmp.tAAminPs, xmp.tRCDminPs, xmp.tRPminPs, xmp.tRASminPs,
                         xmp.tRCminPs, xmp.tWRminPs, xmp.tRFC1minNs, xmp.tRFC2minNs, xmp.tRFCsbMinNs);
                     profiles.Add(view);
@@ -408,7 +409,7 @@ namespace ZenTimings.Windows
 
                 SpdProfileView view = Ddr5Profile($"EXPO {expo.ProfileNumber}", expo.SpeedGrade, expo.SpeedMTs, expo.ClockMHz,
                     expo.tCKAVGminPs, expo.CL, expo.tRCDminPs, expo.tRPminPs, expo.tRASminPs);
-                view.Details.Add(new SpdRow("Voltages", $"VDD {Volts(expo.VddMv)}, VDDQ {Volts(expo.VddqMv)}, VPP {Volts(expo.VppMv)}"));
+                view.Details.Add(new SpdRow(UiText.Get("Voltages"), $"VDD {Volts(expo.VddMv)}, VDDQ {Volts(expo.VddqMv)}, VPP {Volts(expo.VppMv)}"));
                 AddDdr5ProfileTimings(view, expo.tCKAVGminPs, expo.CL, expo.tAAminPs, expo.tRCDminPs, expo.tRPminPs, expo.tRASminPs,
                     expo.tRCminPs, expo.tWRminPs, expo.tRFC1minNs, expo.tRFC2minNs, expo.tRFCsbMinNs);
                 if (expo.HasSecondaryTimings)
@@ -452,11 +453,11 @@ namespace ZenTimings.Windows
             if (info.tCKAVGminPs > 0)
             {
                 int tCK = info.tCKAVGminPs;
-                var jedec = new SpdProfileView { Title = "JEDEC Base" };
+                var jedec = new SpdProfileView { Title = UiText.Get("JedecBase") };
                 jedec.Summary = Summary(info.SpeedGrade, Ddr4Clocks, tCK, info.CL, info.tRCDminPs, info.tRPminPs, info.tRASminPs);
                 AddSpeed(jedec, info.SpeedMTs, info.ClockMHz, tCK);
                 if (info.SupportedCLs != null && info.SupportedCLs.Count > 0)
-                    jedec.Details.Add(new SpdRow("Supported CL", string.Join(", ", info.SupportedCLs)));
+                    jedec.Details.Add(new SpdRow(UiText.Get("SupportedCl"), string.Join(", ", info.SupportedCLs)));
 
                 AddPrimaryTimings(jedec, Ddr4Clocks, tCK, info.CL, info.tAAminPs, info.tRCDminPs, info.tRPminPs, info.tRASminPs, info.tRCminPs, info.tWRminPs);
                 AddDdr4Timings(jedec, tCK, info.tRFC1minPs, info.tRFC2minPs, info.tRFC4minPs,
@@ -481,11 +482,11 @@ namespace ZenTimings.Windows
                     Summary = Summary(xmp.SpeedGrade, Ddr4Clocks, tCK, xmp.CL, xmp.tRCDminPs, xmp.tRPminPs, xmp.tRASminPs)
                 };
                 AddSpeed(view, xmp.SpeedMTs, xmp.ClockMHz, tCK);
-                view.Details.Add(new SpdRow("Voltage", $"VDD {Volts(xmp.VddMv)}"));
+                view.Details.Add(new SpdRow(UiText.Get("Voltage"), $"VDD {Volts(xmp.VddMv)}"));
                 if (xmp.DimmsPerChannel > 0)
-                    view.Details.Add(new SpdRow("DIMMs/channel", xmp.DimmsPerChannel.ToString(CultureInfo.InvariantCulture)));
+                    view.Details.Add(new SpdRow(UiText.Get("DimmsPerChannel"), xmp.DimmsPerChannel.ToString(CultureInfo.InvariantCulture)));
                 if (xmp.SupportedCLs != null && xmp.SupportedCLs.Count > 0)
-                    view.Details.Add(new SpdRow("Supported CL", string.Join(", ", xmp.SupportedCLs)));
+                    view.Details.Add(new SpdRow(UiText.Get("SupportedCl"), string.Join(", ", xmp.SupportedCLs)));
 
                 AddPrimaryTimings(view, Ddr4Clocks, tCK, xmp.CL, xmp.tAAminPs, xmp.tRCDminPs, xmp.tRPminPs, xmp.tRASminPs, xmp.tRCminPs, 0);
                 AddDdr4Timings(view, tCK, xmp.tRFC1minPs, xmp.tRFC2minPs, xmp.tRFC4minPs,
@@ -522,7 +523,7 @@ namespace ZenTimings.Windows
         private static void AddSpeed(SpdProfileView view, int speedMTs, double clockMHz, int tCK)
         {
             if (speedMTs > 0)
-                view.Details.Add(new SpdRow("Speed", $"{speedMTs} MT/s ({clockMHz.ToString("0.#", CultureInfo.InvariantCulture)} MHz), tCK {tCK} ps"));
+                view.Details.Add(new SpdRow(UiText.Get("Speed"), $"{speedMTs} MT/s ({clockMHz.ToString("0.#", CultureInfo.InvariantCulture)} MHz), tCK {tCK} ps"));
         }
 
         private static void AddPs(SpdProfileView view, ClockConverter clocks, int tCK, string name, int ps, bool asNs = false)
@@ -538,7 +539,7 @@ namespace ZenTimings.Windows
         private static void AddTiming(SpdProfileView view, string name, Ddr5SpdTiming timing)
         {
             if (timing != null && timing.IsDefined)
-                view.Timings.Add(new SpdTimingRow(name, timing.Nck, timing.MinNck > 0 ? $"{timing.Ps} ps, min {timing.MinNck} nCK" : $"{timing.Ps} ps"));
+                view.Timings.Add(new SpdTimingRow(name, timing.Nck, timing.MinNck > 0 ? UiText.Format("SpdTimingMinimum", timing.Ps, timing.MinNck) : $"{timing.Ps} ps"));
         }
 
         private static void AddNs(SpdProfileView view, ClockConverter clocks, int tCK, string name, int ns)

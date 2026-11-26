@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Windows;
 
+using ZenTimings.Localization;
+
 namespace ZenTimings.Theming
 {
     public enum MessageBoxButton
@@ -79,16 +81,16 @@ namespace ZenTimings.Theming
             new[] { Yes(yesLabel), No(noLabel), Cancel(cancelLabel) };
 
         public static MessageBoxButtonModel Ok(string label = null) =>
-            new MessageBoxButtonModel(label ?? "OK", MessageBoxResult.OK) { IsDefault = true };
+            new MessageBoxButtonModel(label ?? UiText.Get("OK"), MessageBoxResult.OK) { IsDefault = true };
 
         public static MessageBoxButtonModel Yes(string label = null) =>
-            new MessageBoxButtonModel(label ?? "Yes", MessageBoxResult.Yes) { IsDefault = true };
+            new MessageBoxButtonModel(label ?? UiText.Get("Yes"), MessageBoxResult.Yes) { IsDefault = true };
 
         public static MessageBoxButtonModel No(string label = null) =>
-            new MessageBoxButtonModel(label ?? "No", MessageBoxResult.No);
+            new MessageBoxButtonModel(label ?? UiText.Get("No"), MessageBoxResult.No);
 
         public static MessageBoxButtonModel Cancel(string label = null) =>
-            new MessageBoxButtonModel(label ?? "Cancel", MessageBoxResult.Cancel) { IsCancel = true };
+            new MessageBoxButtonModel(label ?? UiText.Get("Cancel"), MessageBoxResult.Cancel) { IsCancel = true };
 
         public static MessageBoxButtonModel Custom(string label, object id = null) =>
             new MessageBoxButtonModel(label, MessageBoxResult.Custom) { Id = id };
